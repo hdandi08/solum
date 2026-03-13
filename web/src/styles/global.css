@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap');
+
+:root {
+  --black:#08090b; --char:#0c0e12; --dark:#10131a;
+  --mid:#181c24;   --panel:#1c2030;
+  --bone:#f0ece2;  --stone:#6a7380;
+  --mist:rgba(240,236,226,0.55);
+  --blue:#2e6da4;  --blit:#4a8fc7; --bdim:#1a4a78;
+  --line:rgba(240,236,226,0.055);
+  --lineb:rgba(46,109,164,0.18);
+  --glit:#3aaa68;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;cursor:crosshair;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:var(--blue);}
