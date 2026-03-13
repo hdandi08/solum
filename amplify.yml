@@ -3,11 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pwd && ls
+        - node --version && npm --version
+        - nvm install 22 && nvm use 22 && node --version
         - npm --prefix web ci
     build:
       commands:
-        - pwd && ls
+        - nvm use 22
         - npm --prefix web run build
   artifacts:
     baseDirectory: web/dist
