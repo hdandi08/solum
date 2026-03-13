@@ -4,15 +4,15 @@ frontend:
     preBuild:
       commands:
         - nvm install 22 && nvm use 22
-        - pwd && ls web/
-        - npm --prefix web install
+        - bash --noprofile --norc -c "cd web && npm install"
     build:
       commands:
         - nvm use 22
-        - node --version
-        - ls web/node_modules/.bin/vite || echo "VITE NOT FOUND"
-        - npm --prefix web run build
+        - bash --noprofile --norc -c "cd web && npm run build"
   artifacts:
     baseDirectory: web/dist
     files:
       - '**/*'
+  cache:
+    paths:
+      - web/node_modules/**/*
