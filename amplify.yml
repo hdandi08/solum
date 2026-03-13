@@ -3,16 +3,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 22 && nvm use 22
-        - bash --noprofile --norc -c "cd web && npm install"
+        - npm ci
     build:
       commands:
-        - nvm use 22
-        - bash --noprofile --norc -c "cd web && npm run build"
+        - npm run build
   artifacts:
-    baseDirectory: web/dist
+    baseDirectory: dist
     files:
       - '**/*'
   cache:
     paths:
-      - web/node_modules/**/*
+      - node_modules/**/*
