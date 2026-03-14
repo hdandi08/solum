@@ -5,7 +5,7 @@ applications:
       phases:
         preBuild:
           commands:
-            - npm ci
+            - cd web && npm ci
         build:
           commands:
             - npm run build
@@ -15,4 +15,4 @@ applications:
           - '**/*'
       cache:
         paths:
-          - node_modules/**/*
+          - web/node_modules/**/*
