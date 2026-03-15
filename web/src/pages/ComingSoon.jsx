@@ -620,14 +620,21 @@ const MC_HONEYPOT = 'b_45c32693942e5a8c9e6828488_31f70ffa8e';
 function MailchimpForm({ label = 'Claim Early Access' }) {
   const [submitted, setSubmitted] = useState(false);
 
+  const handleSubmit = () => {
+    // Delay success state so form POST completes before unmounting
+    setTimeout(() => setSubmitted(true), 800);
+  };
+
   return (
     <div className="cs-form-placeholder">
+      {/* iframe always in DOM so it exists when form submits */}
+      <iframe name="mc_iframe" style={{ display: 'none' }} title="mc" />
       {!submitted ? (
         <form
           action={MC_ACTION}
           method="post"
           target="mc_iframe"
-          onSubmit={() => setSubmitted(true)}
+          onSubmit={handleSubmit}
         >
           <input
             className="cs-input"
@@ -643,7 +650,6 @@ function MailchimpForm({ label = 'Claim Early Access' }) {
       ) : (
         <button className="cs-submit sent">✓ You're on the list</button>
       )}
-      <iframe name="mc_iframe" style={{ display: 'none' }} title="mc" />
     </div>
   );
 }
