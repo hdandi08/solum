@@ -299,6 +299,63 @@ const styles = `
     margin-right: 6px;
   }
 
+  /* Provenance section */
+  .cs-provenance {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(240,236,226,0.055);
+    border-bottom: 1px solid rgba(240,236,226,0.055);
+  }
+  .cs-prov-item {
+    padding: 32px 28px;
+    border-right: 1px solid rgba(240,236,226,0.055);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cs-prov-item:last-child { border-right: none; }
+  .cs-prov-flag {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .cs-prov-country {
+    font-size: 9px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #2e6da4;
+    font-weight: 600;
+  }
+  .cs-prov-tradition {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    line-height: 1;
+  }
+  .cs-prov-body {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.5);
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+  .cs-prov-products {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(46,109,164,0.7);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  @media (max-width: 640px) {
+    .cs-provenance { grid-template-columns: 1fr 1fr; }
+    .cs-prov-item:nth-child(2) { border-right: none; }
+    .cs-prov-item:nth-child(3) { border-top: 1px solid rgba(240,236,226,0.055); }
+    .cs-prov-item:nth-child(4) { border-top: 1px solid rgba(240,236,226,0.055); border-right: none; }
+  }
+
   /* Marquee */
   .cs-marquee-wrap {
     position: relative;
@@ -548,6 +605,38 @@ export default function ComingSoon() {
             ))}
           </div>
         </main>
+
+        {/* Provenance */}
+        <div className="cs-provenance">
+          <div className="cs-prov-item">
+            <div className="cs-prov-flag">🇬🇧</div>
+            <div className="cs-prov-country">United Kingdom</div>
+            <div className="cs-prov-tradition">British Formulation</div>
+            <div className="cs-prov-body">Amino acid body wash and fast-absorb lotion. Sulphate-free, pH-balanced, skin barrier safe.</div>
+            <div className="cs-prov-products">Products 01 · 07</div>
+          </div>
+          <div className="cs-prov-item">
+            <div className="cs-prov-flag">🇰🇷</div>
+            <div className="cs-prov-country">Korea</div>
+            <div className="cs-prov-tradition">Bathhouse Tradition</div>
+            <div className="cs-prov-body">The Italy Towel and back cloth — tools of the Korean jjimjilbang. Used for centuries to remove dead skin through friction, not chemicals.</div>
+            <div className="cs-prov-products">Products 02 · 03 · 04</div>
+          </div>
+          <div className="cs-prov-item">
+            <div className="cs-prov-flag">🇲🇦</div>
+            <div className="cs-prov-country">Morocco</div>
+            <div className="cs-prov-tradition">Hammam Ritual</div>
+            <div className="cs-prov-body">Atlas Mountain Rhassoul clay and cold-pressed Argan oil. The hammam has used both for over a thousand years. Single ingredient. Nothing added.</div>
+            <div className="cs-prov-products">Products 05 · 06</div>
+          </div>
+          <div className="cs-prov-item">
+            <div className="cs-prov-flag">🇹🇷</div>
+            <div className="cs-prov-country">Turkey</div>
+            <div className="cs-prov-tradition">Hamam Craft</div>
+            <div className="cs-prov-body">The Kese mitt — hand-woven raw silk from Istanbul artisans. The original exfoliation tool of the Ottoman hamam. Nothing replaces it.</div>
+            <div className="cs-prov-products">Product 08</div>
+          </div>
+        </div>
 
         {/* Marquee */}
         <div className="cs-marquee-wrap">
