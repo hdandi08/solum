@@ -674,7 +674,7 @@ export default function ComingSoon() {
             and a scalp they've never properly cleaned.
             Not laziness — nobody built them a system.
             Korean bathhouses, Moroccan hammams, Turkish hamams — centuries of body ritual, perfected over generations.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM compressed that wisdom into 8 minutes. Built for modern men. Maximum impact, zero wasted time.</strong>
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM compressed that wisdom into 8 minutes. Built for modern men.</strong>
           </p>
 
           {/* 2 — Stats */}
