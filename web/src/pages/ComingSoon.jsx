@@ -748,7 +748,7 @@ export default function ComingSoon() {
           <div className="cs-ritual-col">
             <div className="cs-ritual-header">
               <div className="cs-ritual-tag daily">Daily Ritual</div>
-              <div className="cs-ritual-title">8 Minutes.<br />Every Morning.</div>
+              <div className="cs-ritual-title">8 Minutes.<br />Every Shower.</div>
               <div className="cs-ritual-time">5 steps · Products 01 02 03 04 07</div>
             </div>
             <div className="cs-ritual-steps">
