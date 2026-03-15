@@ -3,7 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm --prefix web ci
+        - npm --prefix web ci --include=dev
     build:
       commands:
         - npm --prefix web run build
