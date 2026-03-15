@@ -614,42 +614,42 @@ const PRODUCTS = [
   { num: '08', name: 'Bamboo Cloth' },
 ];
 
-const MAILCHIMP_FORM = null;
+const MC_ACTION = 'https://bysolum.us5.list-manage.com/subscribe/post?u=45c32693942e5a8c9e6828488&id=31f70ffa8e&f_id=0099c2e1f0';
+const MC_HONEYPOT = 'b_45c32693942e5a8c9e6828488_31f70ffa8e';
 
-function FallbackForm({ label = 'Claim Early Access' }) {
-  const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+function MailchimpForm({ label = 'Claim Early Access' }) {
+  const [submitted, setSubmitted] = useState(false);
+
   return (
     <div className="cs-form-placeholder">
-      {!sent ? (
-        <>
+      {!submitted ? (
+        <form
+          action={MC_ACTION}
+          method="post"
+          target="mc_iframe"
+          onSubmit={() => setSubmitted(true)}
+        >
           <input
             className="cs-input"
             type="email"
+            name="EMAIL"
             placeholder="Enter your email address"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            required
           />
-          <button className="cs-submit" onClick={() => { if (email) setSent(true); }}>
-            {label}
-          </button>
-        </>
+          {/* Mailchimp honeypot — do not remove */}
+          <input type="text" name={MC_HONEYPOT} style={{ position: 'absolute', left: '-5000px' }} tabIndex="-1" defaultValue="" />
+          <button type="submit" className="cs-submit">{label}</button>
+        </form>
       ) : (
         <button className="cs-submit sent">✓ You're on the list</button>
       )}
+      <iframe name="mc_iframe" style={{ display: 'none' }} title="mc" />
     </div>
   );
 }
 
 export default function ComingSoon() {
-  useEffect(() => {
-    if (MAILCHIMP_FORM) {
-      const script = document.createElement('script');
-      script.src = '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -700,10 +700,7 @@ export default function ComingSoon() {
             <div className="cs-offer-bar">
               Sign up now → get <strong>20% off your first kit</strong> at launch
             </div>
-            {MAILCHIMP_FORM
-              ? <div dangerouslySetInnerHTML={{ __html: MAILCHIMP_FORM }} />
-              : <FallbackForm label="Claim Early Access" />
-            }
+            <MailchimpForm label="Claim Early Access" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
         </main>
@@ -829,10 +826,7 @@ export default function ComingSoon() {
           <div className="cs-cta2-headline">Ready to start the ritual?</div>
           <div className="cs-cta2-sub">Join the waitlist. 20% off your first kit at launch.</div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
-            {MAILCHIMP_FORM
-              ? <div dangerouslySetInnerHTML={{ __html: MAILCHIMP_FORM }} />
-              : <FallbackForm label="Join the Waitlist" />
-            }
+            <MailchimpForm label="Join the Waitlist" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
         </div>
