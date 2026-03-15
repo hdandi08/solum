@@ -4,9 +4,9 @@ const CSS = `
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(8,9,11,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.18em;color:var(--bone);text-decoration:none;}
 .nav-links{display:flex;gap:36px;list-style:none;}
-.nav-links a{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
+.nav-links a{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
 .nav-links a:hover,.nav-links a.active-link{color:var(--bone);}
-.nav-cta{font-size:9px;letter-spacing:4px;text-transform:uppercase;background:var(--blue);color:var(--bone);padding:10px 24px;text-decoration:none;transition:background .2s;}
+.nav-cta{font-size:11px;letter-spacing:4px;text-transform:uppercase;background:var(--blue);color:var(--bone);padding:10px 24px;text-decoration:none;transition:background .2s;}
 .nav-cta:hover{background:var(--blit);}
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 48px 80px;position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(46,109,164,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.03) 1px,transparent 1px);background-size:80px 80px;animation:gridFade 3s ease forwards;}
@@ -17,7 +17,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hero-rule{position:absolute;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(46,109,164,0.15),transparent);}
 .hero-rule.top{top:30%;}.hero-rule.bot{bottom:25%;}
 .hero-content{position:relative;z-index:1;max-width:860px;}
-.hero-tag{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .6s both;}
+.hero-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .6s both;}
 .hero-tag::before{content:'';width:32px;height:1px;background:var(--blue);}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,9vw,136px);line-height:.92;letter-spacing:0.03em;color:var(--bone);margin-bottom:32px;animation:fadeUp .8s ease .75s both;}
 .hero-title em{font-style:normal;color:var(--blue);}
@@ -25,22 +25,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
 .hero-body{font-size:16px;font-weight:300;letter-spacing:.4px;color:var(--mist);max-width:500px;line-height:1.7;margin-bottom:20px;animation:fadeUp .8s ease .9s both;}
 .hero-scope{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--lineb);padding:9px 18px;margin-bottom:40px;animation:fadeUp .8s ease .95s both;}
-.hero-scope-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.hero-scope-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
 .hero-scope-divider{width:1px;height:14px;background:var(--lineb);}
-.hero-scope-note{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.hero-scope-note{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .hero-actions{display:flex;gap:16px;align-items:center;animation:fadeUp .8s ease 1.05s both;}
 .btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--blue);color:var(--bone);padding:16px 40px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;}
 .btn-primary:hover{background:var(--blit);transform:translateY(-1px);}
-.btn-ghost{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;}
+.btn-ghost{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
-.scroll-cue{position:absolute;bottom:32px;right:48px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
+.scroll-cue{position:absolute;bottom:32px;right:48px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
 .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
 @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 .marquee-wrap{overflow:hidden;border-top:1px solid var(--lineb);border-bottom:1px solid var(--lineb);background:var(--char);padding:14px 0;}
 .marquee-track{display:flex;gap:0;white-space:nowrap;animation:marquee 24s linear infinite;}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:0.18em;color:var(--stone);padding:0 36px;display:flex;align-items:center;gap:36px;}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.18em;color:var(--stone);padding:0 36px;display:flex;align-items:center;gap:36px;}
 .marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);flex-shrink:0;display:inline-block;}
 .truth-section{background:var(--char);border-top:1px solid var(--line);padding:100px 48px;}
 .truth-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
@@ -48,21 +48,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .truth-stat{background:var(--black);padding:32px 36px;display:grid;grid-template-columns:80px 1fr;gap:24px;align-items:center;transition:background .25s;}
 .truth-stat:hover{background:var(--mid);}
 .ts-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--blue);line-height:1;letter-spacing:-1px;}
-.ts-body{font-size:13px;color:var(--mist);font-weight:300;line-height:1.6;}
+.ts-body{font-size:15px;color:var(--mist);font-weight:300;line-height:1.6;}
 .ts-body strong{color:var(--bone);font-weight:600;}
-.sec-tag{font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
 .sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:24px;}
-.sec-body{font-size:14px;color:var(--stone);font-weight:300;line-height:1.7;max-width:480px;}
+.sec-body{font-size:16px;color:var(--stone);font-weight:300;line-height:1.7;max-width:480px;}
 .truth-quote{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,58px);letter-spacing:0.04em;color:var(--bone);line-height:1.05;margin-bottom:32px;}
 .truth-quote em{font-style:normal;color:var(--blue);}
-.truth-body{font-size:15px;font-weight:300;color:var(--mist);line-height:1.75;max-width:480px;margin-bottom:32px;}
-.truth-note{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);border-left:2px solid var(--blue);padding-left:16px;line-height:1.7;}
+.truth-body{font-size:17px;font-weight:300;color:var(--mist);line-height:1.75;max-width:480px;margin-bottom:32px;}
+.truth-note{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);border-left:2px solid var(--blue);padding-left:16px;line-height:1.7;}
 .scope-banner{background:var(--blue);padding:40px 48px;display:grid;grid-template-columns:1fr 2px 1fr 2px 1fr;gap:40px;align-items:center;}
 .scope-divider{width:1px;height:100%;background:rgba(255,255,255,0.15);align-self:stretch;}
 .scope-item{display:flex;flex-direction:column;gap:8px;}
-.scope-label{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:600;}
+.scope-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.8);font-weight:600;}
 .scope-value{font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,2.2vw,30px);letter-spacing:0.06em;color:#fff;line-height:1.1;}
-.scope-note{font-size:11px;color:rgba(255,255,255,0.45);font-weight:300;line-height:1.5;}
+.scope-note{font-size:13px;color:rgba(255,255,255,0.78);font-weight:300;line-height:1.5;}
 .products-section{background:var(--black);padding:80px 48px;}
 .products-header{max-width:1400px;margin:0 auto 64px;display:grid;grid-template-columns:1fr 1fr;gap:80px;}
 .products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);max-width:1400px;margin:0 auto;}
@@ -70,49 +70,49 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .product-card:hover{background:var(--mid);}
 .product-card:hover .prod-visual{border-color:rgba(46,109,164,0.25);}
 .prod-num{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:-2px;color:rgba(46,109,164,0.1);line-height:1;margin-bottom:12px;}
-.prod-origin{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;font-weight:600;}
-.prod-name{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.35;margin-bottom:16px;}
+.prod-origin{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;font-weight:600;}
+.prod-name{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.35;margin-bottom:16px;}
 .prod-visual{width:100%;aspect-ratio:3/4;border:1px solid var(--line);background:var(--dark);display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color .25s;}
 .prod-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(46,109,164,0.07),transparent 65%);}
 .prod-visual svg{width:65%;height:65%;opacity:.75;position:relative;z-index:1;}
 .prod-body-tag{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
 .pbt-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
-.pbt-text{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
-.prod-desc{font-size:11px;color:var(--stone);line-height:1.6;font-weight:300;margin-top:auto;}
+.pbt-text{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.prod-desc{font-size:13px;color:var(--stone);line-height:1.6;font-weight:300;margin-top:auto;}
 .ritual-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px;}
 .ritual-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:400px 1fr;gap:80px;}
 .ritual-steps{display:flex;flex-direction:column;gap:0;}
-.ritual-step{display:grid;grid-template-columns:52px 1fr;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);opacity:.4;transition:opacity .3s;cursor:pointer;}
+.ritual-step{display:grid;grid-template-columns:52px 1fr;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);opacity:.55;transition:opacity .3s;cursor:pointer;}
 .ritual-step.active{opacity:1;}
 .ritual-step:hover{opacity:1;}
 .step-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--blue);line-height:1;padding-top:4px;}
 .step-info{display:flex;flex-direction:column;gap:4px;}
-.step-title{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
-.step-time{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
-.step-desc{font-size:12px;color:var(--stone);font-weight:300;line-height:1.55;margin-top:6px;}
+.step-title{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
+.step-time{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.step-desc{font-size:14px;color:var(--stone);font-weight:300;line-height:1.55;margin-top:6px;}
 .ritual-visual{position:relative;display:flex;align-items:center;justify-content:center;}
 .ritual-canvas{width:100%;aspect-ratio:1;background:var(--dark);border:1px solid var(--lineb);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .ritual-canvas::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(46,109,164,0.1),transparent 60%);}
 .ritual-big-num{font-family:'Bebas Neue',sans-serif;font-size:220px;line-height:1;letter-spacing:-6px;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.12);user-select:none;pointer-events:none;position:absolute;}
-.ritual-step-name{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:rgba(240,236,226,.35);}
-.ritual-timer{position:absolute;top:24px;right:28px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);}
-.ritual-zone{position:absolute;top:24px;left:28px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.ritual-step-name{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:rgba(240,236,226,.7);}
+.ritual-timer{position:absolute;top:24px;right:28px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);}
+.ritual-zone{position:absolute;top:24px;left:28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .stats-strip{background:var(--blue);padding:0;display:grid;grid-template-columns:repeat(4,1fr);}
 .stat-item{padding:48px 40px;border-right:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;gap:8px;}
 .stat-item:last-child{border-right:none;}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:64px;color:#fff;line-height:1;letter-spacing:-1px;}
-.stat-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.55);font-weight:600;}
-.stat-note{font-size:12px;color:rgba(255,255,255,0.4);font-weight:300;line-height:1.55;margin-top:4px;}
+.stat-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.9);font-weight:600;}
+.stat-note{font-size:14px;color:rgba(255,255,255,0.78);font-weight:300;line-height:1.55;margin-top:4px;}
 .pricing-section{background:var(--black);padding:80px 48px;}
 .pricing-inner{max-width:1400px;margin:0 auto;}
 .pricing-header{margin-bottom:64px;}
 .pricing-explainer{background:var(--mid);border:1px solid var(--lineb);border-left:3px solid var(--blue);padding:24px 32px;margin-bottom:48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;}
 .pe-item{display:flex;flex-direction:column;gap:6px;}
-.pe-label{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.pe-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;}
 .pe-value{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.06em;color:var(--bone);line-height:1;}
-.pe-note{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;}
+.pe-note{font-size:14px;color:var(--stone);font-weight:300;line-height:1.5;}
 .pe-divider{width:1px;background:var(--lineb);align-self:stretch;}
-.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);max-width:900px;margin:0 auto;}
 .price-card{background:var(--char);padding:48px 36px;display:flex;flex-direction:column;}
 .price-card.featured{background:var(--blue);}
 .price-card.featured .price-tag,.price-card.featured .price-name,.price-card.featured .price-first-label,.price-card.featured .price-first-amount,.price-card.featured .price-then,.price-card.featured .price-sub-label,.price-card.featured .price-sub-amount,.price-card.featured .price-sub-note,.price-card.featured .pi-k,.price-card.featured .pi-v{color:#fff;}
@@ -123,38 +123,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .price-card.featured .btn-price:hover{background:var(--bone);}
 .price-card.featured .price-clarity{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);}
 .price-card.featured .price-clarity-text{color:rgba(255,255,255,0.75);}
-.price-tag{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);margin-bottom:20px;}
+.price-tag{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);margin-bottom:20px;}
 .price-name{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.08em;color:var(--bone);line-height:1;margin-bottom:28px;}
 .price-box{border:1px solid var(--lineb);margin-bottom:8px;}
 .price-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--lineb);}
 .price-row:last-child{border-bottom:none;}
 .price-row-label{display:flex;flex-direction:column;gap:3px;}
-.price-first-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.price-first-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
 .price-first-amount{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:-0.5px;color:var(--bone);line-height:1;}
-.price-first-note{font-size:10px;color:var(--stone);font-weight:300;}
-.price-then{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);padding:0 20px;text-align:center;font-style:italic;}
-.price-sub-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.price-first-note{font-size:13px;color:var(--stone);font-weight:300;}
+.price-then{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);padding:0 20px;text-align:center;font-style:italic;}
+.price-sub-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
 .price-sub-amount{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:-0.5px;color:var(--bone);line-height:1;}
-.price-sub-note{font-size:10px;color:var(--stone);font-weight:300;}
+.price-sub-note{font-size:13px;color:var(--stone);font-weight:300;}
 .price-clarity{background:rgba(46,109,164,0.06);border:1px solid var(--lineb);padding:12px 16px;margin-bottom:28px;}
-.price-clarity-text{font-size:11px;color:var(--stone);line-height:1.6;font-weight:300;}
+.price-clarity-text{font-size:13px;color:var(--stone);line-height:1.6;font-weight:300;}
 .price-clarity-text strong{color:var(--bone);}
 .price-items{display:flex;flex-direction:column;flex:1;margin-bottom:28px;}
-.price-item{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.price-item{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
 .price-item:last-child{border-bottom:none;}
 .pi-k{color:var(--stone);font-weight:300;}
 .pi-v{color:var(--bone);font-weight:500;letter-spacing:.5px;}
 .btn-price{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;background:var(--blue);color:var(--bone);padding:16px 32px;text-decoration:none;display:block;text-align:center;transition:background .2s,transform .15s;margin-top:auto;}
 .btn-price:hover{background:var(--blit);transform:translateY(-1px);}
-.price-cancel{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);text-align:center;margin-top:12px;}
+.price-cancel{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);text-align:center;margin-top:12px;}
 .how-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px;}
 .how-inner{max-width:1400px;margin:0 auto;}
 .how-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);margin-top:64px;}
 .how-step{background:var(--black);padding:48px 36px;display:flex;flex-direction:column;gap:16px;}
 .how-num{font-family:'Bebas Neue',sans-serif;font-size:88px;line-height:1;letter-spacing:-2px;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.18);}
 .how-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.08em;color:var(--bone);}
-.how-body{font-size:13px;color:var(--stone);font-weight:300;line-height:1.7;}
-.how-detail{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-top:auto;}
+.how-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.7;}
+.how-detail{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-top:auto;}
 .origins{background:var(--black);border-top:1px solid var(--line);padding:80px 48px;}
 .origins-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
 .origins-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);}
@@ -163,43 +163,43 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .origin-tile:hover{background:var(--mid);}
 .origin-tile:hover::after{transform:scaleX(1);}
 .origin-flag{font-size:20px;margin-bottom:2px;}
-.origin-country{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
-.origin-product{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.3;}
-.origin-why{font-size:11px;color:var(--stone);line-height:1.5;font-weight:300;margin-top:4px;}
+.origin-country{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.origin-product{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.3;}
+.origin-why{font-size:13px;color:var(--stone);line-height:1.5;font-weight:300;margin-top:4px;}
 .proof-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px;}
 .proof-inner{max-width:1400px;margin:0 auto;}
 .proof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);margin-top:64px;}
 .proof-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:16px;}
-.proof-stars{display:flex;gap:4px;color:var(--blue);font-size:14px;letter-spacing:2px;}
-.proof-quote{font-size:14px;font-weight:300;color:var(--mist);line-height:1.7;font-style:italic;}
+.proof-stars{display:flex;gap:4px;color:var(--blue);font-size:16px;letter-spacing:2px;}
+.proof-quote{font-size:16px;font-weight:300;color:var(--mist);line-height:1.7;font-style:italic;}
 .proof-author{display:flex;flex-direction:column;gap:3px;margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
-.proof-name{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
-.proof-info{font-size:10px;color:var(--stone);letter-spacing:1px;}
+.proof-name{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
+.proof-info{font-size:13px;color:var(--stone);letter-spacing:1px;}
 .faq-section{background:var(--black);padding:80px 48px;}
 .faq-inner{max-width:900px;margin:0 auto;}
 .faq-item{border-bottom:1px solid var(--line);}
-.faq-q{display:flex;justify-content:space-between;align-items:center;padding:24px 0;cursor:pointer;font-size:14px;letter-spacing:1px;color:var(--bone);font-weight:500;}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:24px 0;cursor:pointer;font-size:16px;letter-spacing:1px;color:var(--bone);font-weight:500;}
 .faq-q:hover{color:var(--blit);}
 .faq-toggle{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--blue);flex-shrink:0;margin-left:20px;transition:transform .25s;}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;font-size:13px;color:var(--stone);font-weight:300;line-height:1.75;padding:0;}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;font-size:15px;color:var(--stone);font-weight:300;line-height:1.75;padding:0;}
 .faq-item.open .faq-toggle{transform:rotate(45deg);}
 .faq-item.open .faq-a{max-height:220px;padding-bottom:24px;}
 .cta-section{background:var(--char);border-top:1px solid var(--lineb);text-align:center;padding:140px 48px;position:relative;overflow:hidden;}
 .cta-section::before{content:'SOLUM';pointer-events:none;user-select:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(200px,28vw,380px);letter-spacing:-4px;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.04);white-space:nowrap;}
-.cta-tag{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;position:relative;}
+.cta-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;position:relative;}
 .cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,6vw,96px);letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:24px;position:relative;}
-.cta-body{font-size:15px;color:var(--stone);font-weight:300;max-width:480px;margin:0 auto 48px;line-height:1.7;position:relative;}
+.cta-body{font-size:17px;color:var(--stone);font-weight:300;max-width:480px;margin:0 auto 48px;line-height:1.7;position:relative;}
 .cta-btns{display:flex;justify-content:center;gap:16px;position:relative;}
 footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48px 32px;}
 .footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.18em;color:var(--bone);margin-bottom:10px;display:block;}
-.footer-tagline{font-size:10px;color:var(--stone);letter-spacing:2px;font-style:italic;margin-bottom:8px;}
-.footer-scope{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
-.footer-col-title{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:20px;}
+.footer-tagline{font-size:13px;color:var(--stone);letter-spacing:2px;font-style:italic;margin-bottom:8px;}
+.footer-scope{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.footer-col-title{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:20px;}
 .footer-links{display:flex;flex-direction:column;gap:10px;list-style:none;}
-.footer-links a{font-size:12px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
+.footer-links a{font-size:14px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
 .footer-links a:hover{color:var(--bone);}
-.footer-bottom{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;font-size:10px;color:var(--stone);letter-spacing:2px;}
+.footer-bottom{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;font-size:13px;color:var(--stone);letter-spacing:2px;}
 .reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 .reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
@@ -215,7 +215,7 @@ const RITUAL_STEPS = [
 ];
 
 const FAQ_ITEMS = [
-  { q: 'Am I paying £78 every month?', a: 'No. £78 is a one-time payment for your first box, which includes physical tools that last 6–12 months. After that, you pay £44/month for consumables only — body wash, lotion, and clay. The tools are already in your home. You never pay £78 again unless you want another full kit.' },
+  { q: 'Am I paying the full kit price every month?', a: 'No. The first box price (£72 or £89) is a one-time payment that includes physical tools lasting 6–12 months. After that, you pay £40 or £52/month for consumables only — body wash, lotion, clay, and argan oil if you\'re on Full. The tools are already in your home. You never pay the setup price again.' },
   { q: 'Is this for my face or my body?', a: 'Your body. Entirely. SOLUM is the first serious body care system for men — it does not replace your face routine, shampoo, or deodorant. It addresses skin from your neck down: exfoliation, back care, scalp health, and daily moisturisation of the body. The 90% of your skin that most products ignore.' },
   { q: "I've never used anything on my body. Is this too advanced?", a: 'This is built specifically for that person. The Daily Starter is 3 products, numbered in order. The ritual card tells you exactly when to use each one and for how long. If you can remember to shower, you can follow this. Start with Daily Starter — upgrade to Full Ritual when it becomes automatic.' },
   { q: 'Why does it matter that I use the lotion within 3 minutes?', a: 'Immediately after showering, your skin is warm and the outer layer is still hydrated. Moisture absorption is significantly higher during this window. Wait 15 minutes and you\'ve largely missed it — the lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.' },
@@ -314,8 +314,8 @@ export default function FullSite() {
       {/* MARQUEE */}
       <div className="marquee-wrap">
         <div className="marquee-track">
-          {['Body Care','Not Face. Not Hair.','Japan · Korea · Morocco · Turkey · UK','10 Minutes Daily','8 Products · One System','The Ritual Men Were Never Taught',
-            'Body Care','Not Face. Not Hair.','Japan · Korea · Morocco · Turkey · UK','10 Minutes Daily','8 Products · One System','The Ritual Men Were Never Taught'].map((item, i) => (
+          {['Body Care','Not Face. Not Hair.','Korea · Morocco · UK','10 Minutes Daily','8 Products · One System','The Ritual Men Were Never Taught',
+            'Body Care','Not Face. Not Hair.','Korea · Morocco · UK','10 Minutes Daily','8 Products · One System','The Ritual Men Were Never Taught'].map((item, i) => (
             <span key={i} className="marquee-item">{item}<span className="marquee-dot" /></span>
           ))}
         </div>
@@ -379,7 +379,7 @@ export default function FullSite() {
         </div>
         <div className="products-grid reveal">
           {[
-            { num:'01', origin:'🇬🇧 United Kingdom', name:'Amino Acid\nBody Wash', tag:'Body · Daily', desc:'Amino acid surfactants. Zero sulphates. Cleans without stripping the skin barrier. The foundation of the daily routine.',
+            { num:'01', origin:'🇬🇧 United Kingdom', name:'Amino Acid\nBody Wash', tag:'Body · Daily · pH 4.5', desc:'Amino acid surfactants. Zero sulphates. pH 4.5 — matched to the body\'s natural level, safe for sensitive areas. Cleans without stripping the skin barrier.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="50" width="44" height="90" rx="6" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="38" y="30" width="24" height="22" rx="4" stroke="#4a8fc7" strokeWidth="1.2"/><rect x="46" y="18" width="8" height="14" rx="2" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="54" y1="22" x2="70" y2="22" stroke="#4a8fc7" strokeWidth="1.2"/><circle cx="70" cy="22" r="4" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="36" y1="80" x2="64" y2="80" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="36" y1="90" x2="58" y2="90" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><rect x="34" y="100" width="32" height="2" rx="1" fill="#2e6da4" opacity="0.4"/><text x="50" y="120" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.6" letterSpacing="1">250ml</text></svg> },
             { num:'02', origin:'🇰🇷 Korea', name:'Nylon Body\nScrub Cloth', tag:'Body · 3× Week', desc:'The Korean bathhouse standard for 60 years. Removes dead skin build-up that body wash alone cannot reach. The result is immediately visible.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25,90 Q22,60 30,40 Q38,20 50,22 Q62,20 70,40 Q78,60 75,90 Q72,120 50,130 Q28,120 25,90Z" stroke="#4a8fc7" strokeWidth="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="33" y1="62" x2="67" y2="62" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="32" y1="74" x2="68" y2="74" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="32" y1="86" x2="68" y2="86" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/><line x1="33" y1="98" x2="67" y2="98" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><path d="M38,128 Q50,135 62,128" stroke="#4a8fc7" strokeWidth="1.2" opacity="0.6"/><text x="50" y="150" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ITALY TOWEL</text></svg> },
@@ -389,12 +389,12 @@ export default function FullSite() {
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="65" r="32" stroke="#4a8fc7" strokeWidth="1.5"/><circle cx="50" cy="65" r="22" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/>{[[50,43],[64,50],[68,65],[64,80],[50,87],[36,80],[32,65],[36,50]].map(([cx,cy])=><circle key={`${cx}${cy}`} cx={cx} cy={cy} r="3" stroke="#4a8fc7" strokeWidth="1.2"/>)}<circle cx="50" cy="65" r="4" fill="#2e6da4" opacity="0.3"/><rect x="44" y="97" width="12" height="34" rx="6" stroke="#4a8fc7" strokeWidth="1.3"/><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">SILICONE</text></svg> },
             { num:'05', origin:'🇲🇦 Morocco', name:'Rhassoul Clay\nBody Mask', tag:'Body · Weekly', desc:'Atlas mountain clay. Used in Moroccan hammams for over 1,000 years. Draws out body impurities. The anchor of the weekly deep ritual.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="55" width="60" height="72" rx="4" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="18" y="42" width="64" height="16" rx="3" stroke="#4a8fc7" strokeWidth="1.3"/>{['78','91','104'].map(y=><line key={y} x1="28" y1={y} x2="72" y2={y} stroke="#2e6da4" strokeWidth="0.7" opacity="0.4"/>)}<rect x="28" y="64" width="44" height="26" rx="2" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><text x="50" y="73" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">RHASSOUL</text><text x="50" y="83" textAnchor="middle" fontFamily="sans-serif" fontSize="5.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">ATLAS CLAY</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">MOROCCO</text></svg> },
-            { num:'06', origin:'🇲🇦 Morocco', name:'Argan Body Oil\nOrganic', tag:'Body · Weekly', desc:'Cold-pressed. Organic. Applied to damp body skin immediately after the kese mitt. Absorption peaks on freshly exfoliated skin.',
+            { num:'06', origin:'🇲🇦 Morocco', name:'Argan Body Oil\nOrganic', tag:'Body · Weekly', desc:'Cold-pressed. Organic. Applied to damp body skin immediately after the weekly exfoliation. Absorption peaks on freshly exfoliated skin.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="32" y="60" width="36" height="78" rx="5" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="40" y="40" width="20" height="22" rx="3" stroke="#4a8fc7" strokeWidth="1.2"/><ellipse cx="50" cy="36" rx="10" ry="6" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="50" y1="18" x2="50" y2="30" stroke="#4a8fc7" strokeWidth="1.2"/><circle cx="50" cy="16" r="3" stroke="#4a8fc7" strokeWidth="1.2"/><rect x="34" y="95" width="32" height="41" rx="3" fill="#1a4a78" opacity="0.15"/><line x1="34" y1="95" x2="66" y2="95" stroke="#4a8fc7" strokeWidth="0.8" opacity="0.5"/><text x="50" y="80" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ARGAN</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">COLD PRESSED</text></svg> },
             { num:'07', origin:'🇬🇧 United Kingdom', name:'Fast-Absorb\nBody Lotion', tag:'Body · Daily · 3 Min Rule', desc:'400ml. Applied to the full body within 3 minutes of towelling. This window is when skin absorbs moisture at its peak. Miss it and it\'s largely wasted.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34,145 L30,60 Q30,50 50,48 Q70,50 70,60 L66,145 Z" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="38" y="36" width="24" height="14" rx="4" stroke="#4a8fc7" strokeWidth="1.3"/><line x1="32" y1="85" x2="68" y2="85" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="31" y1="100" x2="69" y2="100" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/><text x="50" y="94" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">400ml</text><text x="50" y="118" textAnchor="middle" fontFamily="sans-serif" fontSize="5.5" fill="#4a8fc7" opacity="0.45" letterSpacing="1">FAST ABSORB</text><text x="50" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">BODY ONLY</text></svg> },
-            { num:'08', origin:'🇹🇷 Turkey', name:'Artisan Kese\nMitt', tag:'Body · Weekly', desc:'Raw silk. Hand-loomed in Turkey. Used after clay rinse for the weekly deep ritual. The oldest body exfoliation tradition on earth.',
-              svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22,95 Q20,65 28,42 Q38,18 50,20 Q62,18 72,42 Q80,65 78,95 Q75,128 50,138 Q25,128 22,95Z" stroke="#4a8fc7" strokeWidth="1.5"/>{['52','65','78','91','104'].map((y,i)=><line key={y} x1={30-i} y1={y} x2={70+i} y2={y} stroke="#2e6da4" strokeWidth="0.7" opacity={0.5-i*0.02}/>)}<line x1="38" y1="28" x2="38" y2="118" stroke="#2e6da4" strokeWidth="0.5" opacity="0.25"/><line x1="50" y1="22" x2="50" y2="128" stroke="#2e6da4" strokeWidth="0.5" opacity="0.25"/><line x1="62" y1="28" x2="62" y2="118" stroke="#2e6da4" strokeWidth="0.5" opacity="0.25"/><text x="50" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">RAW SILK</text></svg> },
+            { num:'08', origin:'Bamboo Fibre', name:'Bamboo Sensitive\nCloth', tag:'Intimate Zones · Daily', desc:'Ultra-soft bamboo fibre. Naturally antibacterial. Built for the intimate areas a standard scrub cloth should never touch. Pair with the 4.5pH body wash for a complete clean.',
+              svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="38" width="56" height="84" rx="8" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="30" y="46" width="40" height="68" rx="5" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/>{['58','70','82','94','106'].map((y,i)=><line key={y} x1="30" y1={y} x2="70" y2={y} stroke="#2e6da4" strokeWidth="0.6" opacity={0.45-i*0.04}/>)}{['42','54','66'].map(x=><line key={x} x1={x} y1="46" x2={x} y2="114" stroke="#2e6da4" strokeWidth="0.5" opacity="0.2"/>)}<text x="50" y="30" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">BAMBOO</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ULTRA SOFT</text></svg> },
           ].map(p => (
             <div key={p.num} className="product-card">
               <div className="prod-num">{p.num}</div>
@@ -443,8 +443,8 @@ export default function FullSite() {
       <div className="stats-strip">
         {[['66','Days to habit','UCL research. Every design decision in SOLUM is built around making those 66 days achievable.'],
           ['10','Minutes daily','The full body ritual. Stacked onto the shower you\'re already taking. Nothing new to schedule.'],
-          ['5','Countries sourced','Japan · Korea · Morocco · Turkey · UK. The best of each tradition. One system.'],
-          ['£74','Saved vs. retail','Equivalent products bought separately cost £74/month. The Full Ritual sub is £44.']
+          ['3','Countries sourced','Korea · Morocco · UK. The best of each tradition. One system.'],
+          ['£52','Saved vs. retail','Equivalent products bought separately cost £104/month at retail. The Full sub is £52.']
         ].map(([num, label, note]) => (
           <div key={num} className="stat-item">
             <div className="stat-num">{num}</div>
@@ -465,69 +465,70 @@ export default function FullSite() {
           <div className="pricing-explainer reveal">
             <div className="pe-item">
               <div className="pe-label">First Box — One Time Only</div>
-              <div className="pe-value">£42 / £78 / £110</div>
+              <div className="pe-value">£72 / £89</div>
               <div className="pe-note">Includes all physical tools that last 6–12 months — plus your first supply of consumables. You pay this once. Not every month.</div>
             </div>
             <div className="pe-divider" />
             <div className="pe-item">
               <div className="pe-label">Monthly Subscription — Consumables Only</div>
-              <div className="pe-value">£28 / £44 / £52 per month</div>
-              <div className="pe-note">After your first box, the monthly sub covers only what runs out — body wash, lotion, clay. Pause or cancel any time with no penalty.</div>
+              <div className="pe-value">£40 / £52 per month</div>
+              <div className="pe-note">After your first box, only what runs out arrives — body wash, lotion, clay. Full adds argan oil. Pause or cancel any time, no penalty.</div>
             </div>
           </div>
           <div className="pricing-grid reveal">
-            {/* Daily Starter */}
+            {/* Basic */}
             <div className="price-card">
-              <div className="price-tag">Entry Level</div>
-              <div className="price-name">Daily Starter</div>
+              <div className="price-tag">Complete Daily System</div>
+              <div className="price-name">Basic</div>
               <div className="price-box">
-                <div className="price-row"><div className="price-row-label"><div className="price-first-label">First Box — One Time</div><div className="price-first-amount">£42</div><div className="price-first-note">Body wash + nylon scrub cloth + lotion. Pay once.</div></div></div>
+                <div className="price-row"><div className="price-row-label"><div className="price-first-label">First Box — One Time</div><div className="price-first-amount">£72</div><div className="price-first-note">All 7 products. Tools last 6–12 months.</div></div></div>
                 <div className="price-then">then, every month</div>
-                <div className="price-row"><div className="price-row-label"><div className="price-sub-label">Monthly Refills</div><div className="price-sub-amount">£28/mo</div><div className="price-sub-note">Wash + lotion only. Cancel any time.</div></div></div>
+                <div className="price-row"><div className="price-row-label"><div className="price-sub-label">Monthly Refills</div><div className="price-sub-amount">£40/mo</div><div className="price-sub-note">Wash + lotion + clay. Cancel any time.</div></div></div>
               </div>
-              <div className="price-clarity"><div className="price-clarity-text"><strong>What's in the first box:</strong> 3 products including tools that last 6–12 months. The £28/month covers consumables only.</div></div>
+              <div className="price-clarity"><div className="price-clarity-text"><strong>Tools last 6–12 months.</strong> You pay £72 once for the full setup. Then £40/month covers everything that runs out.</div></div>
               <div className="price-items">
-                {[['01 · Body Wash 250ml','🇬🇧 UK'],['02 · Nylon Scrub Cloth','Daily · Korean Tradition'],['04 · Scalp Massager','🇰🇷 Korea'],['07 · Body Lotion 400ml','🇬🇧 UK'],['Ritual card + free shipping','Included']].map(([k,v]) => (
+                {[
+                  ['01 · Body Wash 250ml','🇬🇧 UK'],
+                  ['02 · Italy Towel Mitt','Korean Tradition'],
+                  ['03 · Back Scrub Cloth','Korean Tradition'],
+                  ['04 · Scalp Massager','🇰🇷 Korea'],
+                  ['05 · Rhassoul Clay Mask','🇲🇦 Morocco'],
+                  ['07 · Body Lotion 400ml','🇬🇧 UK'],
+                  ['08 · Bamboo Sensitive Cloth','Bamboo Fibre'],
+                  ['Ritual card + free shipping','Included'],
+                ].map(([k,v]) => (
                   <div key={k} className="price-item"><span className="pi-k">{k}</span><span className="pi-v">{v}</span></div>
                 ))}
               </div>
-              <a href="#" className="btn-price">Start Daily Ritual</a>
+              <a href="#" className="btn-price">Start Basic</a>
               <div className="price-cancel">Cancel or pause any time</div>
             </div>
-            {/* Full Ritual */}
+            {/* Full */}
             <div className="price-card featured">
-              <div className="price-tag">★ Most Popular</div>
-              <div className="price-name">Full Ritual</div>
+              <div className="price-tag">★ Recommended</div>
+              <div className="price-name">Full</div>
               <div className="price-box">
-                <div className="price-row"><div className="price-row-label"><div className="price-first-label">First Box — One Time</div><div className="price-first-amount">£78</div><div className="price-first-note">Complete body system. Pay once.</div></div></div>
+                <div className="price-row"><div className="price-row-label"><div className="price-first-label">First Box — One Time</div><div className="price-first-amount">£89</div><div className="price-first-note">All 8 products. The complete system.</div></div></div>
                 <div className="price-then">then, every month</div>
-                <div className="price-row"><div className="price-row-label"><div className="price-sub-label">Monthly Refills</div><div className="price-sub-amount">£44/mo</div><div className="price-sub-note">Wash + clay + lotion. Cancel any time.</div></div></div>
+                <div className="price-row"><div className="price-row-label"><div className="price-sub-label">Monthly Refills</div><div className="price-sub-amount">£52/mo</div><div className="price-sub-note">Wash + lotion + clay + argan oil.</div></div></div>
               </div>
-              <div className="price-clarity"><div className="price-clarity-text"><strong>Tools last 6–12 months.</strong> You pay £78 once. Then £44/month for the consumables that run out. That's it.</div></div>
+              <div className="price-clarity"><div className="price-clarity-text"><strong>Everything in Basic, plus the argan oil.</strong> Applied weekly on damp skin — your skin absorbs it at peak capacity after exfoliation.</div></div>
               <div className="price-items">
-                {[['01 · Body Wash 250ml','🇬🇧 UK'],['02 · Nylon Scrub Cloth','Daily · Korean Tradition'],['03 · Back Scrub Cloth','Korean Tradition'],['04 · Scalp Massager','🇰🇷 Korea'],['05 · Rhassoul Clay Mask','🇲🇦 Morocco'],['07 · Body Lotion 400ml','🇬🇧 UK'],['Ritual card + free shipping','Included']].map(([k,v]) => (
+                {[
+                  ['01 · Body Wash 250ml','🇬🇧 UK'],
+                  ['02 · Italy Towel Mitt','Korean Tradition'],
+                  ['03 · Back Scrub Cloth','Korean Tradition'],
+                  ['04 · Scalp Massager','🇰🇷 Korea'],
+                  ['05 · Rhassoul Clay Mask','🇲🇦 Morocco'],
+                  ['06 · Argan Body Oil','🇲🇦 Morocco'],
+                  ['07 · Body Lotion 400ml','🇬🇧 UK'],
+                  ['08 · Bamboo Sensitive Cloth','Bamboo Fibre'],
+                  ['Ritual card + free shipping','Included'],
+                ].map(([k,v]) => (
                   <div key={k} className="price-item"><span className="pi-k">{k}</span><span className="pi-v">{v}</span></div>
                 ))}
               </div>
-              <a href="#" className="btn-price">Start Full Ritual</a>
-              <div className="price-cancel">Cancel or pause any time</div>
-            </div>
-            {/* World Kit */}
-            <div className="price-card">
-              <div className="price-tag">Premium</div>
-              <div className="price-name">World Kit</div>
-              <div className="price-box">
-                <div className="price-row"><div className="price-row-label"><div className="price-first-label">First Box — One Time</div><div className="price-first-amount">£110</div><div className="price-first-note">Every product. Gift-ready box.</div></div></div>
-                <div className="price-then">then, every month</div>
-                <div className="price-row"><div className="price-row-label"><div className="price-sub-label">Monthly Refills</div><div className="price-sub-amount">£52/mo</div><div className="price-sub-note">Wash + clay + argan + lotion.</div></div></div>
-              </div>
-              <div className="price-clarity"><div className="price-clarity-text"><strong>The complete system</strong> including Turkish kese mitt. The first box is a one-time setup. Monthly covers consumables only.</div></div>
-              <div className="price-items">
-                {[['All 7 core products','Full system'],['06 · Argan Body Oil','🇲🇦 Morocco'],['08 · Artisan Kese Mitt','🇹🇷 Turkey'],['Premium gift box','Included'],['Ritual card + free shipping','Included']].map(([k,v]) => (
-                  <div key={k} className="price-item"><span className="pi-k">{k}</span><span className="pi-v">{v}</span></div>
-                ))}
-              </div>
-              <a href="#" className="btn-price">Start World Ritual</a>
+              <a href="#" className="btn-price">Start Full</a>
               <div className="price-cancel">Cancel or pause any time</div>
             </div>
           </div>
@@ -541,7 +542,7 @@ export default function FullSite() {
           <h2 className="sec-title">Three Steps.<br />That's It.</h2>
           <div className="how-grid">
             {[['01','One-Time Box','Choose your kit. Pay once. Your box arrives with everything — tools that last 6–12 months, your first round of consumables, and a ritual card. You\'re fully set up from day one.','Ships in 2–3 days · RM Tracked'],
-              ['02','Follow The Numbers','Every product is numbered 01–08. The ritual card shows which steps are daily, which are weekly. You don\'t need to think — that\'s the entire point of the system. Sequence is what turns products into a ritual.','Daily: 10 min · Weekly deep ritual: 22 min'],
+              ['02','Follow The Numbers','Every product is numbered 01–08. The ritual card shows which steps are daily, which are weekly. You don\'t need to think — that\'s the entire point of the system. Sequence is what turns products into a ritual.','Daily: 10 min · Weekly deep ritual: 20 min'],
               ['03','Monthly Refills Only','Each month, only what runs out arrives at your door — body wash, lotion, clay. The tools are already in your home. Pause or cancel any time. No phone calls, no dark patterns, no lock-in.','Cancel any time · No penalty · No lock-in']
             ].map(([num, title, body, detail]) => (
               <div key={num} className="how-step">
@@ -562,7 +563,7 @@ export default function FullSite() {
             <div className="sec-tag">Global Sourcing</div>
             <h2 className="sec-title">Sourced<br />From Where<br />It's Best.</h2>
             <p className="sec-body" style={{marginBottom:'32px'}}>We don't manufacture everything in one factory and call it curated. Every SOLUM product is sourced from the tradition that perfected it. The country of origin is on every label. Always. No exceptions.</p>
-            <p className="sec-body">This isn't marketing. Korean exfoliation science is demonstrably different to what's available in the UK. Moroccan rhassoul clay is mined from a specific geological source. Turkish kese mitts are hand-loomed by artisans continuing a 500-year tradition. You can feel the difference.</p>
+            <p className="sec-body">This isn't marketing. Korean exfoliation science is demonstrably different to what's available in the UK. Moroccan rhassoul clay is mined from a specific geological source. You can feel the difference.</p>
           </div>
           <div className="origins-grid reveal">
             {[
@@ -571,7 +572,6 @@ export default function FullSite() {
               ['🇰🇷','Korea','Back Scrub Cloth','70cm reach. Dual-texture weave. Addresses the part of the body most men have never properly cleaned.'],
               ['🇰🇷','Korea','Scalp Massager','Silicone. Used during wash. Stimulates blood flow. A maintenance tool, not a luxury.'],
               ['🇲🇦','Morocco','Rhassoul Clay + Argan Oil','Atlas mountain minerals. 1,000-year hammam tradition. Cold-pressed organic oil.'],
-              ['🇹🇷','Turkey','Artisan Kese + Pestemal','Raw silk. Hand-loomed. The oldest body exfoliation tradition on earth.'],
               ['🇬🇧','United Kingdom','Body Lotion 400ml','Fast-absorb. CPSR certified. Formulated for the British climate. Applied within 3 minutes.'],
             ].map(([flag, country, product, why]) => (
               <div key={product} className="origin-tile">
@@ -583,7 +583,7 @@ export default function FullSite() {
             ))}
             <div className="origin-tile" style={{background:'var(--mid)',display:'flex',alignItems:'center',justifyContent:'center'}}>
               <div style={{textAlign:'center'}}>
-                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:'28px',letterSpacing:'0.1em',color:'var(--bone)',marginBottom:'6px'}}>5</div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:'28px',letterSpacing:'0.1em',color:'var(--bone)',marginBottom:'6px'}}>3</div>
                 <div style={{fontSize:'8px',letterSpacing:'4px',textTransform:'uppercase',color:'var(--blue)',fontWeight:600}}>Countries</div>
                 <div style={{fontSize:'8px',letterSpacing:'4px',textTransform:'uppercase',color:'var(--blue)',fontWeight:600,marginTop:'2px'}}>One System</div>
               </div>
@@ -642,7 +642,7 @@ export default function FullSite() {
         <h2 className="cta-title">Start Your<br />Body Ritual Today.</h2>
         <p className="cta-body">One first box. A lower monthly refill after that. Tools that last 6–12 months. Cancel any time. Your body, finally done right.</p>
         <div className="cta-btns">
-          <a href="#pricing" className="btn-primary">Get The Full Ritual — £78</a>
+          <a href="#pricing" className="btn-primary">Get The Full Kit — £89</a>
           <a href="#pricing" className="btn-ghost">Compare all kits</a>
         </div>
       </section>

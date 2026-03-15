@@ -3,8 +3,8 @@
 :root {
   --black:#08090b; --char:#0c0e12; --dark:#10131a;
   --mid:#181c24;   --panel:#1c2030;
-  --bone:#f0ece2;  --stone:#6a7380;
-  --mist:rgba(240,236,226,0.55);
+  --bone:#f0ece2;  --stone:#a8b4bc;
+  --mist:rgba(240,236,226,0.85);
   --blue:#2e6da4;  --blit:#4a8fc7; --bdim:#1a4a78;
   --line:rgba(240,236,226,0.055);
   --lineb:rgba(46,109,164,0.18);

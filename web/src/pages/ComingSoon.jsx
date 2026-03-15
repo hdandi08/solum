@@ -51,7 +51,7 @@ const styles = `
     text-decoration: none;
   }
   .cs-badge {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: #2e6da4;
@@ -73,7 +73,7 @@ const styles = `
   }
 
   .cs-eyebrow {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 6px;
     text-transform: uppercase;
     color: #2e6da4;
@@ -97,7 +97,7 @@ const styles = `
   .cs-subhead {
     font-size: clamp(16px, 2.2vw, 22px);
     font-weight: 300;
-    color: rgba(240,236,226,0.65);
+    color: rgba(240,236,226,0.88);
     max-width: 520px;
     line-height: 1.5;
     margin-bottom: 48px;
@@ -128,7 +128,7 @@ const styles = `
     margin-bottom: 4px;
   }
   .cs-stat-label {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: rgba(240,236,226,0.4);
@@ -142,7 +142,7 @@ const styles = `
     margin-bottom: 20px;
   }
   .cs-offer {
-    font-size: 11px;
+    font-size: 15px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #4a8fc7;
@@ -154,7 +154,7 @@ const styles = `
     border: 1px solid rgba(46,109,164,0.25);
     padding: 12px 20px;
     margin-bottom: 20px;
-    font-size: 13px;
+    font-size: 15px;
     color: #f0ece2;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -269,9 +269,9 @@ const styles = `
   .cs-submit.sent { background: #1a4a78; cursor: default; }
 
   .cs-privacy {
-    font-size: 10px;
+    font-size: 15px;
     letter-spacing: 1.5px;
-    color: rgba(240,236,226,0.3);
+    color: rgba(240,236,226,0.75);
     text-transform: uppercase;
     margin-top: 12px;
   }
@@ -286,10 +286,10 @@ const styles = `
     margin-bottom: 52px;
   }
   .cs-pill {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.45);
+    color: rgba(240,236,226,0.82);
     border: 1px solid rgba(240,236,226,0.07);
     padding: 7px 14px;
     font-weight: 600;
@@ -316,10 +316,10 @@ const styles = `
     width: max-content;
   }
   .cs-marquee-item {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 5px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.35);
+    color: rgba(240,236,226,0.72);
     font-weight: 600;
     padding: 0 28px;
     white-space: nowrap;
@@ -352,16 +352,16 @@ const styles = `
     font-family: 'Bebas Neue', sans-serif;
     font-size: 18px;
     letter-spacing: 0.18em;
-    color: rgba(240,236,226,0.4);
+    color: rgba(240,236,226,0.82);
   }
   .cs-footer-copy {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.2);
+    color: rgba(240,236,226,0.7);
   }
   .cs-footer-ig {
-    font-size: 9px;
+    font-size: 15px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #2e6da4;
@@ -395,13 +395,13 @@ const styles = `
 
 const MARQUEE_ITEMS = [
   'The Ritual Men Were Never Taught',
-  'UK · Korea · Morocco · Turkey',
+  'UK · Korea · Morocco',
   '10 Minutes Daily',
   '8 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Coming Soon',
   'The Ritual Men Were Never Taught',
-  'UK · Korea · Morocco · Turkey',
+  'UK · Korea · Morocco',
   '10 Minutes Daily',
   '8 Products · One System',
   'Body Care — Not Face. Not Hair.',
@@ -416,7 +416,7 @@ const PRODUCTS = [
   { num: '05', name: 'Rhassoul Clay' },
   { num: '06', name: 'Argan Body Oil' },
   { num: '07', name: 'Body Lotion' },
-  { num: '08', name: 'Kese Mitt' },
+  { num: '08', name: 'Bamboo Cloth' },
 ];
 
 // ── REPLACE THIS with your Mailchimp embedded form HTML once you have it ──
@@ -487,7 +487,7 @@ export default function ComingSoon() {
 
         {/* Main content */}
         <main className="cs-main">
-          <div className="cs-eyebrow">The Men's Body Ritual · bysolum.com</div>
+          <div className="cs-eyebrow">Centuries of ritual. Finally a system.</div>
 
           <h1 className="cs-headline">
             Your Body.<br />
@@ -497,9 +497,10 @@ export default function ComingSoon() {
 
           <p className="cs-subhead">
             Most men shower every day and still have rough skin, a neglected back,
-            and a scalp they've never once properly cleaned.
-            Not laziness — nobody ever built them a system worth following.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM fixes that.</strong>
+            and a scalp they've never properly cleaned.
+            Not laziness — nobody built them a system.
+            Korean bathhouses, Moroccan hammams, Turkish hamams — they figured this out centuries ago.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM brings it together.</strong>
           </p>
 
           {/* Stats */}
@@ -513,11 +514,11 @@ export default function ComingSoon() {
               <div className="cs-stat-label">minutes.<br />the full ritual.</div>
             </div>
             <div className="cs-stat">
-              <div className="cs-stat-num">66</div>
-              <div className="cs-stat-label">days to build<br />the habit</div>
+              <div className="cs-stat-num">1000+</div>
+              <div className="cs-stat-label">years of ritual.<br />one system.</div>
             </div>
             <div className="cs-stat">
-              <div className="cs-stat-num">5</div>
+              <div className="cs-stat-num">3</div>
               <div className="cs-stat-label">countries.<br />one system.</div>
             </div>
           </div>

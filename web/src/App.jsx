@@ -8,7 +8,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<ComingSoon />} />
-        <Route path="/home" element={<FullSite />} />
+        <Route path="/full" element={<FullSite />} />
       </Routes>
     </BrowserRouter>
   );
