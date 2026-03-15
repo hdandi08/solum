@@ -673,8 +673,8 @@ export default function ComingSoon() {
             Most men shower every day and still have rough skin, a neglected back,
             and a scalp they've never properly cleaned.
             Not laziness — nobody built them a system.
-            Korean bathhouses, Moroccan hammams, Turkish hamams — they figured this out centuries ago.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM brings it together.</strong>
+            You're already spending 8 minutes in the shower every day. Korean bathhouses, Moroccan hammams, Turkish hamams figured this out centuries ago.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM builds the system around those 8 minutes.</strong>
           </p>
 
           {/* 2 — Stats */}
@@ -689,8 +689,8 @@ export default function ComingSoon() {
               <div className="cs-stat-label">of men ever<br />moisturise their body</div>
             </div>
             <div className="cs-stat">
-              <div className="cs-stat-num">10 min</div>
-              <div className="cs-stat-label">already in your shower.<br />this is the system for it.</div>
+              <div className="cs-stat-num">8 min</div>
+              <div className="cs-stat-label">the average shower.<br />we built the system to fit.</div>
             </div>
           </div>
 
