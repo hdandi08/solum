@@ -209,7 +209,7 @@ footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48p
 const RITUAL_STEPS = [
   { num: '01', name: 'BODY WASH', time: '1 MIN · DAILY', zone: 'FULL BODY', title: 'Amino Acid Body Wash', timeLabel: '1 Minute · Daily · Full Body', desc: 'Apply from neck to feet. Let the amino acids work. No stripping. No residue.' },
   { num: '02', name: 'EXFOLIATE', time: '2 MIN · DAILY', zone: 'ARMS + LEGS + TORSO', title: 'Daily Body Scrub', timeLabel: '1 Minute · 3× Per Week · Body', desc: 'Damp skin. Circular motion. Arms, legs, torso. You will see years of buildup on first use.' },
-  { num: '03', name: 'BACK SCRUB', time: '1 MIN · WEEKLY', zone: 'BACK', title: 'Back Scrub Cloth', timeLabel: '1 Minute · Weekly · Back', desc: 'Both handles. Full 70cm reach. Your back has never been properly cleaned. This fixes that.' },
+  { num: '03', name: 'EXFOLIATING CLOTH', time: '1 MIN · WEEKLY', zone: 'BACK', title: 'Exfoliating Cloth', timeLabel: '1 Minute · Weekly · Back', desc: 'Both handles. Full 70cm reach. Your back has never been properly cleaned. This fixes that.' },
   { num: '04', name: 'SCALP MASSAGE', time: 'DURING WASH · DAILY', zone: 'SCALP', title: 'Scalp Massage', timeLabel: 'During Wash · Daily · Scalp', desc: 'Silicone pins. Press and rotate. Stimulates circulation. Distributes product. 60 seconds.' },
   { num: '07', name: 'BODY LOTION', time: 'WITHIN 3 MIN · DAILY', zone: 'FULL BODY', title: 'Body Lotion — The 3 Minute Rule', timeLabel: 'Within 3 Minutes of Towelling · Daily', desc: 'This window is when skin absorbs moisture most efficiently. 400ml. Full body. Every day. Non-negotiable.' },
 ];
@@ -353,7 +353,7 @@ export default function FullSite() {
           </div>
           <div className="truth-stats reveal">
             {[['58%','of UK men use zero skincare products.',"Not because they don't care — because nothing was built for them."],
-              ['0','Times the average man has properly exfoliated his back.','The back scrub exists because this area is almost universally neglected.'],
+              ['0','Times the average man has properly exfoliated his back.','The exfoliating cloth exists because this area is almost universally neglected.'],
               ['3','Minute window after showering','when your skin absorbs moisture most efficiently. Most men miss it every single day.'],
               ['66','Days for a habit to become automatic.','SOLUM is designed around this number. The system is built to get you there.']
             ].map(([num, bold, rest]) => (
@@ -383,13 +383,13 @@ export default function FullSite() {
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="50" width="44" height="90" rx="6" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="38" y="30" width="24" height="22" rx="4" stroke="#4a8fc7" strokeWidth="1.2"/><rect x="46" y="18" width="8" height="14" rx="2" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="54" y1="22" x2="70" y2="22" stroke="#4a8fc7" strokeWidth="1.2"/><circle cx="70" cy="22" r="4" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="36" y1="80" x2="64" y2="80" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="36" y1="90" x2="58" y2="90" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><rect x="34" y="100" width="32" height="2" rx="1" fill="#2e6da4" opacity="0.4"/><text x="50" y="120" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.6" letterSpacing="1">250ml</text></svg> },
             { num:'02', origin:'🇰🇷 Korea', name:'Nylon Body\nScrub Cloth', tag:'Body · 3× Week', desc:'The Korean bathhouse standard for 60 years. Removes dead skin build-up that body wash alone cannot reach. The result is immediately visible.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25,90 Q22,60 30,40 Q38,20 50,22 Q62,20 70,40 Q78,60 75,90 Q72,120 50,130 Q28,120 25,90Z" stroke="#4a8fc7" strokeWidth="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="33" y1="62" x2="67" y2="62" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="32" y1="74" x2="68" y2="74" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="32" y1="86" x2="68" y2="86" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/><line x1="33" y1="98" x2="67" y2="98" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><path d="M38,128 Q50,135 62,128" stroke="#4a8fc7" strokeWidth="1.2" opacity="0.6"/><text x="50" y="150" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ITALY TOWEL</text></svg> },
-            { num:'03', origin:'🇰🇷 Korea', name:'Back Scrub\nCloth 70cm', tag:'Back · Weekly', desc:'70cm. Full reach. Dual texture. Every inch of your back — the most consistently neglected area on the male body.',
+            { num:'03', origin:'🇰🇷 Korea', name:'Exfoliating\nCloth 70cm', tag:'Back · Weekly', desc:'70cm. Full reach. Dual texture. Every inch of your back — the most consistently neglected area on the male body.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="42" y="15" width="16" height="20" rx="3" stroke="#4a8fc7" strokeWidth="1.3"/><rect x="42" y="125" width="16" height="20" rx="3" stroke="#4a8fc7" strokeWidth="1.3"/><rect x="35" y="33" width="30" height="94" rx="2" stroke="#4a8fc7" strokeWidth="1.5"/>{['46','57','68','79','90','101','112'].map((y,i)=><line key={y} x1="35" y1={y} x2="65" y2={y} stroke="#2e6da4" strokeWidth="0.7" opacity={i<6?0.5:0.4}/>)}<text x="50" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">70CM REACH</text></svg> },
             { num:'04', origin:'🇰🇷 Korea', name:'Silicone Scalp\nMassager', tag:'Scalp · Daily', desc:'Used during wash. Stimulates blood flow to follicles. Distributes product evenly. Takes 60 seconds. Most men have never done this once.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="65" r="32" stroke="#4a8fc7" strokeWidth="1.5"/><circle cx="50" cy="65" r="22" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/>{[[50,43],[64,50],[68,65],[64,80],[50,87],[36,80],[32,65],[36,50]].map(([cx,cy])=><circle key={`${cx}${cy}`} cx={cx} cy={cy} r="3" stroke="#4a8fc7" strokeWidth="1.2"/>)}<circle cx="50" cy="65" r="4" fill="#2e6da4" opacity="0.3"/><rect x="44" y="97" width="12" height="34" rx="6" stroke="#4a8fc7" strokeWidth="1.3"/><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">SILICONE</text></svg> },
-            { num:'05', origin:'🇲🇦 Morocco', name:'Rhassoul Clay\nBody Mask', tag:'Body · Weekly', desc:'Atlas mountain clay. Used in Moroccan hammams for over 1,000 years. Draws out body impurities. The anchor of the weekly deep ritual.',
-              svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="55" width="60" height="72" rx="4" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="18" y="42" width="64" height="16" rx="3" stroke="#4a8fc7" strokeWidth="1.3"/>{['78','91','104'].map(y=><line key={y} x1="28" y1={y} x2="72" y2={y} stroke="#2e6da4" strokeWidth="0.7" opacity="0.4"/>)}<rect x="28" y="64" width="44" height="26" rx="2" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><text x="50" y="73" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">RHASSOUL</text><text x="50" y="83" textAnchor="middle" fontFamily="sans-serif" fontSize="5.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">ATLAS CLAY</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">MOROCCO</text></svg> },
-            { num:'06', origin:'🇲🇦 Morocco', name:'Argan Body Oil\nOrganic', tag:'Body · Weekly', desc:'Cold-pressed. Organic. Applied to damp body skin immediately after the weekly exfoliation. Absorption peaks on freshly exfoliated skin.',
+            { num:'05', origin:'🇲🇦 Morocco', name:'Atlas Clay\nBody Mask', tag:'Body · Weekly', desc:'Atlas mountain clay. Used in Moroccan hammams for over 1,000 years. Draws out body impurities. The anchor of the weekly deep ritual.',
+              svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="55" width="60" height="72" rx="4" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="18" y="42" width="64" height="16" rx="3" stroke="#4a8fc7" strokeWidth="1.3"/>{['78','91','104'].map(y=><line key={y} x1="28" y1={y} x2="72" y2={y} stroke="#2e6da4" strokeWidth="0.7" opacity="0.4"/>)}<rect x="28" y="64" width="44" height="26" rx="2" stroke="#2e6da4" strokeWidth="0.8" opacity="0.3"/><text x="50" y="73" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">ATLAS CLAY</text><text x="50" y="83" textAnchor="middle" fontFamily="sans-serif" fontSize="5.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">ATLAS CLAY</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">MOROCCO</text></svg> },
+            { num:'06', origin:'🇲🇦 Morocco', name:'Body Oil\nOrganic', tag:'Body · Weekly', desc:'Cold-pressed. Organic. Applied to damp body skin immediately after the weekly exfoliation. Absorption peaks on freshly exfoliated skin.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="32" y="60" width="36" height="78" rx="5" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="40" y="40" width="20" height="22" rx="3" stroke="#4a8fc7" strokeWidth="1.2"/><ellipse cx="50" cy="36" rx="10" ry="6" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="50" y1="18" x2="50" y2="30" stroke="#4a8fc7" strokeWidth="1.2"/><circle cx="50" cy="16" r="3" stroke="#4a8fc7" strokeWidth="1.2"/><rect x="34" y="95" width="32" height="41" rx="3" fill="#1a4a78" opacity="0.15"/><line x1="34" y1="95" x2="66" y2="95" stroke="#4a8fc7" strokeWidth="0.8" opacity="0.5"/><text x="50" y="80" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ARGAN</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">COLD PRESSED</text></svg> },
             { num:'07', origin:'🇬🇧 United Kingdom', name:'Fast-Absorb\nBody Lotion', tag:'Body · Daily · 3 Min Rule', desc:'400ml. Applied to the full body within 3 minutes of towelling. This window is when skin absorbs moisture at its peak. Miss it and it\'s largely wasted.',
               svg: <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34,145 L30,60 Q30,50 50,48 Q70,50 70,60 L66,145 Z" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="38" y="36" width="24" height="14" rx="4" stroke="#4a8fc7" strokeWidth="1.3"/><line x1="32" y1="85" x2="68" y2="85" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><line x1="31" y1="100" x2="69" y2="100" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/><text x="50" y="94" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">400ml</text><text x="50" y="118" textAnchor="middle" fontFamily="sans-serif" fontSize="5.5" fill="#4a8fc7" opacity="0.45" letterSpacing="1">FAST ABSORB</text><text x="50" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">BODY ONLY</text></svg> },
@@ -490,9 +490,9 @@ export default function FullSite() {
                 {[
                   ['01 · Body Wash 250ml','🇬🇧 UK'],
                   ['02 · Italy Towel Mitt','Korean Tradition'],
-                  ['03 · Back Scrub Cloth','Korean Tradition'],
+                  ['03 · Exfoliating Cloth','Korean Tradition'],
                   ['04 · Scalp Massager','🇰🇷 Korea'],
-                  ['05 · Rhassoul Clay Mask','🇲🇦 Morocco'],
+                  ['05 · Atlas Clay Mask','🇲🇦 Morocco'],
                   ['07 · Body Lotion 400ml','🇬🇧 UK'],
                   ['08 · Bamboo Sensitive Cloth','Bamboo Fibre'],
                   ['Ritual card + free shipping','Included'],
@@ -517,10 +517,10 @@ export default function FullSite() {
                 {[
                   ['01 · Body Wash 250ml','🇬🇧 UK'],
                   ['02 · Italy Towel Mitt','Korean Tradition'],
-                  ['03 · Back Scrub Cloth','Korean Tradition'],
+                  ['03 · Exfoliating Cloth','Korean Tradition'],
                   ['04 · Scalp Massager','🇰🇷 Korea'],
-                  ['05 · Rhassoul Clay Mask','🇲🇦 Morocco'],
-                  ['06 · Argan Body Oil','🇲🇦 Morocco'],
+                  ['05 · Atlas Clay Mask','🇲🇦 Morocco'],
+                  ['06 · Body Oil','🇲🇦 Morocco'],
                   ['07 · Body Lotion 400ml','🇬🇧 UK'],
                   ['08 · Bamboo Sensitive Cloth','Bamboo Fibre'],
                   ['Ritual card + free shipping','Included'],
@@ -569,9 +569,9 @@ export default function FullSite() {
             {[
               ['🇬🇧','United Kingdom','Amino Acid Body Wash','Preserves skin barrier. The formulation standard most brands ignore to cut costs.'],
               ['🇰🇷','Korea','Nylon Scrub Cloth','The Korean bathhouse standard for 60 years. Nothing exfoliates the body like it.'],
-              ['🇰🇷','Korea','Back Scrub Cloth','70cm reach. Dual-texture weave. Addresses the part of the body most men have never properly cleaned.'],
+              ['🇰🇷','Korea','Exfoliating Cloth','70cm reach. Dual-texture weave. Addresses the part of the body most men have never properly cleaned.'],
               ['🇰🇷','Korea','Scalp Massager','Silicone. Used during wash. Stimulates blood flow. A maintenance tool, not a luxury.'],
-              ['🇲🇦','Morocco','Rhassoul Clay + Argan Oil','Atlas mountain minerals. 1,000-year hammam tradition. Cold-pressed organic oil.'],
+              ['🇲🇦','Morocco','Atlas Clay + Body Oil','Atlas mountain minerals. 1,000-year hammam tradition. Cold-pressed organic oil.'],
               ['🇬🇧','United Kingdom','Body Lotion 400ml','Fast-absorb. CPSR certified. Formulated for the British climate. Applied within 3 minutes.'],
             ].map(([flag, country, product, why]) => (
               <div key={product} className="origin-tile">

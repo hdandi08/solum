@@ -605,8 +605,8 @@ const MARQUEE_ITEMS = [
 
 const PRODUCTS = [
   { num: '01', name: 'Body Wash' },
-  { num: '02', name: 'Exfoliating Mitt' },
-  { num: '03', name: 'Back Scrub Cloth' },
+  { num: '02', name: 'Italy Towel Mitt' },
+  { num: '03', name: 'Exfoliating Cloth' },
   { num: '04', name: 'Scalp Massager' },
   { num: '05', name: 'Atlas Clay' },
   { num: '06', name: 'Body Oil' },
@@ -680,7 +680,7 @@ export default function ComingSoon() {
             and a scalp they've never properly cleaned.
             Not laziness — nobody built them a system.
             Korean bathhouses, Moroccan hammams, Turkish hamams — centuries of body ritual, perfected over generations.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM compressed that wisdom into 8 minutes. Built for modern men.</strong>
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM compressed that wisdom into 10 minutes. Built for modern men.</strong>
           </p>
 
           {/* 2 — Stats */}
@@ -749,14 +749,14 @@ export default function ComingSoon() {
             <div className="cs-ritual-header">
               <div className="cs-ritual-tag daily">Daily Ritual</div>
               <div className="cs-ritual-title">10 Minutes.<br />Every Shower.</div>
-              <div className="cs-ritual-time">5 steps · Products 01 02 03 04 07</div>
+              <div className="cs-ritual-time">5 steps · Products 01 03 04 07 08</div>
             </div>
             <div className="cs-ritual-steps">
               {[
                 { n: '1', name: 'Scalp Massage', note: 'Small firm circles, hairline to back. 2–3 minutes.', prod: '04' },
                 { n: '2', name: 'Body Wash', note: 'Apply to wet skin. No sulphates. Cleans without stripping.', prod: '01' },
-                { n: '3', name: 'Exfoliating Mitt', note: 'Long circular strokes. Arms, chest, stomach, legs.', prod: '02' },
-                { n: '4', name: 'Back Scrub Cloth', note: 'One handle each hand. Saw back and forth. 60 seconds.', prod: '03' },
+                { n: '3', name: 'Exfoliating Cloth', note: 'Full body and back. Both handles for reach. 60 seconds each area.', prod: '03' },
+                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other cloths are not.', prod: '08' },
                 { n: '5', name: 'Body Lotion', note: 'Within 3 minutes of towelling. Skin absorbs 70% more while warm.', prod: '07' },
               ].map(s => (
                 <div key={s.n} className="cs-ritual-step">
@@ -775,14 +775,15 @@ export default function ComingSoon() {
             <div className="cs-ritual-header">
               <div className="cs-ritual-tag weekly">Weekly Ritual</div>
               <div className="cs-ritual-title">18 Minutes.<br />Once a Week.</div>
-              <div className="cs-ritual-time">4 steps · Products 04 05 06 08 03</div>
+              <div className="cs-ritual-time">5 steps · Products 02 04 05 06 08</div>
             </div>
             <div className="cs-ritual-steps">
               {[
                 { n: '1', name: 'Deep Scalp Massage', note: '5 minutes. More time, more pressure than daily.', prod: '04' },
                 { n: '2', name: 'Atlas Clay Mask', note: 'Apply head to toe on damp skin. Leave 8–10 minutes. Draws out impurities.', prod: '05' },
-                { n: '3', name: 'Kese Mitt + Back Cloth', note: 'Firm slow strokes. Dead skin rolls off. The weekly reset.', prod: '08 · 03' },
-                { n: '4', name: 'Body Oil', note: 'Stay damp. 10–15 drops pressed into skin. No lotion needed today.', prod: '06' },
+                { n: '3', name: 'Italy Towel Mitt', note: 'Deep exfoliation. Firm slow strokes top to bottom. Dead skin rolls off.', prod: '02' },
+                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other cloths are not.', prod: '08' },
+                { n: '5', name: 'Body Oil', note: 'Stay damp. 10–15 drops pressed into skin. No lotion needed today.', prod: '06' },
               ].map(s => (
                 <div key={s.n} className="cs-ritual-step">
                   <div className="cs-step-num weekly">{s.n}</div>
