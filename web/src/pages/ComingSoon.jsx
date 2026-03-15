@@ -101,12 +101,12 @@ const styles = `
     gap: 0;
     border: 1px solid rgba(240,236,226,0.07);
     margin-bottom: 52px;
-    max-width: 680px;
+    max-width: 600px;
     width: 100%;
   }
   .cs-stat {
     flex: 1;
-    padding: 20px 16px;
+    padding: 24px 20px;
     border-right: 1px solid rgba(240,236,226,0.07);
     text-align: center;
   }
@@ -123,7 +123,7 @@ const styles = `
     font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.45);
+    color: rgba(240,236,226,0.75);
     font-weight: 600;
     line-height: 1.4;
   }
@@ -213,7 +213,7 @@ const styles = `
   .cs-privacy {
     font-size: 13px;
     letter-spacing: 1.5px;
-    color: rgba(240,236,226,0.5);
+    color: rgba(240,236,226,0.7);
     text-transform: uppercase;
     margin-top: 12px;
   }
@@ -253,7 +253,7 @@ const styles = `
   .cs-prov-body {
     font-size: 14px;
     font-weight: 300;
-    color: rgba(240,236,226,0.6);
+    color: rgba(240,236,226,0.82);
     line-height: 1.6;
   }
   .cs-prov-products {
@@ -300,7 +300,7 @@ const styles = `
     font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.35);
+    color: rgba(240,236,226,0.65);
     font-weight: 600;
   }
   .cs-ritual-steps { display: flex; flex-direction: column; gap: 2px; }
@@ -331,18 +331,18 @@ const styles = `
   .cs-step-note {
     font-size: 13px;
     font-weight: 300;
-    color: rgba(240,236,226,0.5);
+    color: rgba(240,236,226,0.78);
     line-height: 1.5;
   }
   .cs-step-prod {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 600;
     white-space: nowrap;
   }
-  .cs-step-prod.daily { color: rgba(46,109,164,0.7); }
-  .cs-step-prod.weekly { color: rgba(200,169,110,0.7); }
+  .cs-step-prod.daily { color: #4a8fc7; }
+  .cs-step-prod.weekly { color: #c8a96e; }
 
   /* Subscription section */
   .cs-sub {
@@ -377,7 +377,7 @@ const styles = `
   .cs-sub-body {
     font-size: 16px;
     font-weight: 300;
-    color: rgba(240,236,226,0.65);
+    color: rgba(240,236,226,0.85);
     line-height: 1.65;
     max-width: 420px;
   }
@@ -412,7 +412,7 @@ const styles = `
   .cs-sub-item-body {
     font-size: 14px;
     font-weight: 300;
-    color: rgba(240,236,226,0.5);
+    color: rgba(240,236,226,0.78);
     line-height: 1.5;
   }
 
@@ -438,7 +438,7 @@ const styles = `
   .cs-cta2-sub {
     font-size: 16px;
     font-weight: 300;
-    color: rgba(240,236,226,0.5);
+    color: rgba(240,236,226,0.78);
     margin-bottom: 40px;
     letter-spacing: 0.3px;
   }
@@ -454,10 +454,10 @@ const styles = `
     border-bottom: 1px solid rgba(240,236,226,0.055);
   }
   .cs-products-label {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 5px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.3);
+    color: rgba(240,236,226,0.6);
     font-weight: 600;
     margin-bottom: 20px;
   }
@@ -466,8 +466,8 @@ const styles = `
     font-size: 13px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.75);
-    border: 1px solid rgba(240,236,226,0.07);
+    color: rgba(240,236,226,0.88);
+    border: 1px solid rgba(240,236,226,0.12);
     padding: 8px 16px;
     font-weight: 600;
   }
@@ -491,7 +491,7 @@ const styles = `
     font-size: 13px;
     letter-spacing: 5px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.6);
+    color: rgba(240,236,226,0.82);
     font-weight: 600;
     padding: 0 28px;
     white-space: nowrap;
@@ -522,17 +522,17 @@ const styles = `
     font-family: 'Bebas Neue', sans-serif;
     font-size: 18px;
     letter-spacing: 0.18em;
-    color: rgba(240,236,226,0.7);
+    color: rgba(240,236,226,0.88);
   }
   .cs-footer-contact {
     font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.4);
+    color: rgba(240,236,226,0.7);
     text-decoration: none;
     transition: color 0.2s;
   }
-  .cs-footer-contact:hover { color: rgba(240,236,226,0.7); }
+  .cs-footer-contact:hover { color: #f0ece2; }
   .cs-footer-ig {
     font-size: 13px;
     letter-spacing: 3px;
@@ -557,19 +557,33 @@ const styles = `
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
     .cs-main { padding: 100px 20px 60px; }
+    .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
+    .cs-subhead { font-size: 17px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
     .cs-stat:last-child { border-bottom: none; }
+    .cs-stat-num { font-size: 44px; }
+    .cs-stat-label { font-size: 14px; }
     .cs-provenance { grid-template-columns: 1fr 1fr; }
+    .cs-prov-item { padding: 28px 20px; }
     .cs-prov-item:nth-child(2) { border-right: none; }
     .cs-prov-item:nth-child(3) { border-top: 1px solid rgba(240,236,226,0.055); }
     .cs-prov-item:nth-child(4) { border-top: 1px solid rgba(240,236,226,0.055); border-right: none; }
+    .cs-prov-tradition { font-size: 22px; }
+    .cs-prov-body { font-size: 14px; }
     .cs-ritual { grid-template-columns: 1fr; }
     .cs-ritual-col:first-child { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.055); }
     .cs-ritual-col { padding: 40px 24px; }
+    .cs-ritual-title { font-size: 36px; }
+    .cs-step-name { font-size: 15px; }
+    .cs-step-note { font-size: 14px; }
     .cs-sub { grid-template-columns: 1fr; }
     .cs-sub-left { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.055); padding: 48px 24px; }
-    .cs-sub-right { padding: 48px 24px; }
+    .cs-sub-right { padding: 40px 24px; }
+    .cs-sub-body { font-size: 16px; }
+    .cs-sub-item-title { font-size: 17px; }
+    .cs-sub-item-body { font-size: 15px; }
+    .cs-cta2-sub { font-size: 16px; }
     .cs-footer { flex-direction: column; gap: 16px; text-align: center; padding: 24px 20px; }
   }
 `;
@@ -667,19 +681,16 @@ export default function ComingSoon() {
           <div className="cs-stats">
             <div className="cs-stat">
               <div className="cs-stat-num">58%</div>
-              <div className="cs-stat-label">of UK men use<br />zero skincare</div>
+              <div className="cs-stat-label">of men use<br />zero skincare</div>
+            </div>
+            {/* TODO: verify "<10% of men moisturise their body" stat via Mintel before launch */}
+            <div className="cs-stat">
+              <div className="cs-stat-num">&lt;10%</div>
+              <div className="cs-stat-label">of men ever<br />moisturise their body</div>
             </div>
             <div className="cs-stat">
-              <div className="cs-stat-num">10</div>
-              <div className="cs-stat-label">minutes.<br />the full ritual.</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">1000+</div>
-              <div className="cs-stat-label">years of ritual.<br />one system.</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">4</div>
-              <div className="cs-stat-label">countries.<br />one system.</div>
+              <div className="cs-stat-num">10 min</div>
+              <div className="cs-stat-label">already in your shower.<br />this is the system for it.</div>
             </div>
           </div>
 
