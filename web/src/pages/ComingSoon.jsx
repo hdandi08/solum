@@ -534,14 +534,22 @@ const styles = `
   }
   .cs-footer-contact:hover { color: #f0ece2; }
   .cs-footer-ig {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     font-size: 13px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    color: #2e6da4;
+    color: #f0ece2;
     text-decoration: none;
     font-weight: 600;
+    border: 1px solid rgba(46,109,164,0.5);
+    padding: 10px 16px;
+    background: rgba(46,109,164,0.08);
+    transition: border-color 0.2s, background 0.2s;
   }
-  .cs-footer-ig:hover { color: #4a8fc7; }
+  .cs-footer-ig:hover { border-color: #4a8fc7; background: rgba(74,143,199,0.13); }
+  .cs-footer-ig svg { width: 17px; height: 17px; color: #4a8fc7; flex-shrink: 0; }
 
   /* Glow */
   .cs-glow {
@@ -866,8 +874,13 @@ export default function ComingSoon() {
         <footer className="cs-footer">
           <span className="cs-footer-logo">SOLUM</span>
           <a href="mailto:contact@bysolum.com" className="cs-footer-contact">contact@bysolum.com</a>
-          <a href="https://instagram.com/bysolum" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
-            @bysolum ↗
+          <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            @bysolum.body
           </a>
         </footer>
       </div>
