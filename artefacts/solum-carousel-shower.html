@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Carousel: Why Your Shower Isn't Cleaning You</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black:    #08090B;
+  --charcoal: #181C24;
+  --deep:     #1A4A78;
+  --steel:    #2E6DA4;
+  --sky:      #4A8FC7;
+  --bone:     #F0ECE2;
+  --stone:    #6A7380;
+}
+
+body {
+  background: #0c0d0f;
+  font-family: 'Barlow Condensed', sans-serif;
+  padding: 48px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.page-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--bone);
+  opacity: 0.25;
+}
+.page-sub {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+  opacity: 0.6;
+}
+
+.btn-dl-all {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  background: var(--steel);
+  color: var(--bone);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 8px;
+}
+.btn-dl-all:hover { background: var(--sky); }
+.btn-dl-all:disabled { opacity: 0.4; cursor: default; }
+
+.dl-progress {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--steel);
+  opacity: 0;
+  transition: opacity 0.2s;
+  margin-top: 4px;
+  height: 16px;
+}
+.dl-progress.visible { opacity: 1; }
+
+/* ── SLIDE BLOCK ── */
+.slide-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 540px;
+}
+
+.slide-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.slide-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--steel);
+  opacity: 0.7;
+}
+
+.btn-dl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  background: var(--bone);
+  color: var(--black);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-dl:hover { opacity: 0.75; }
+.btn-dl:disabled { opacity: 0.35; cursor: default; }
+
+/* ── SLIDE BASE ── */
+.slide {
+  width: 540px;
+  height: 540px;
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+  flex-shrink: 0;
+}
+
+/* Left accent rule — all slides */
+.slide-rule {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--steel);
+  z-index: 3;
+}
+
+/* SOLUM micro-wordmark top-left — slides 2-7 */
+.slide-brand {
+  position: absolute;
+  top: 24px;
+  left: 26px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: var(--bone);
+  opacity: 0.55;
+  z-index: 5;
+}
+
+/* Slide number bottom-right */
+.slide-num {
+  position: absolute;
+  bottom: 22px;
+  right: 26px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  color: var(--bone);
+  opacity: 0.25;
+  z-index: 5;
+}
+
+/* Background glow */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+/* ═══════════════════════════════════════
+   SLIDE 1 — HOOK
+═══════════════════════════════════════ */
+#slide1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 52px 0 36px;
+}
+
+#slide1 .bg-glow {
+  width: 400px; height: 400px;
+  top: -80px; right: -80px;
+  background: radial-gradient(ellipse, rgba(46,109,164,0.12) 0%, transparent 65%);
+}
+
+#slide1 .s1-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide1 .s1-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.05em;
+  line-height: 0.92;
+  z-index: 2;
+  position: relative;
+}
+
+#slide1 .s1-line1 {
+  font-size: 68px;
+  color: var(--bone);
+  display: block;
+}
+
+#slide1 .s1-line2 {
+  font-size: 68px;
+  color: var(--bone);
+  display: block;
+}
+
+#slide1 .s1-line3 {
+  font-size: 88px;
+  color: var(--sky);
+  display: block;
+  line-height: 0.88;
+}
+
+#slide1 .s1-line4 {
+  font-size: 68px;
+  color: var(--bone);
+  display: block;
+}
+
+#slide1 .s1-rule-h {
+  width: 40px;
+  height: 2px;
+  background: var(--steel);
+  margin: 24px 0 18px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide1 .s1-sub {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--bone);
+  opacity: 0.55;
+  z-index: 2;
+  position: relative;
+}
+
+#slide1 .s1-swipe {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--steel);
+  opacity: 0.7;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════
+   SLIDES 2–4 — BODY PART BREAKDOWN
+═══════════════════════════════════════ */
+.breakdown-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px 40px 44px 36px;
+}
+
+.breakdown-slide .bs-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 14px;
+  z-index: 3;
+  position: relative;
+}
+
+.breakdown-slide .bs-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 80px;
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+  color: var(--bone);
+  z-index: 3;
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.breakdown-slide .bs-title em {
+  color: var(--sky);
+  font-style: normal;
+}
+
+.breakdown-slide .bs-rule {
+  width: 32px;
+  height: 2px;
+  background: var(--steel);
+  margin-bottom: 18px;
+  z-index: 3;
+  position: relative;
+}
+
+.breakdown-slide .bs-body {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  opacity: 0.85;
+  z-index: 3;
+  position: relative;
+}
+
+.breakdown-slide .bs-body strong {
+  font-weight: 600;
+  color: var(--bone);
+  opacity: 1;
+}
+
+.breakdown-slide .bs-accent {
+  position: absolute;
+  top: 28px;
+  right: 36px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  letter-spacing: 0.04em;
+  color: var(--steel);
+  opacity: 0.06;
+  z-index: 1;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 5 — STAT
+═══════════════════════════════════════ */
+#slide5 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 44px 0 36px;
+}
+
+#slide5 .bg-glow {
+  width: 380px; height: 380px;
+  bottom: -100px; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(46,109,164,0.1) 0%, transparent 65%);
+}
+
+#slide5 .s5-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 16px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide5 .s5-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 148px;
+  letter-spacing: 0.02em;
+  line-height: 0.85;
+  color: var(--sky);
+  z-index: 2;
+  position: relative;
+}
+
+#slide5 .s5-number sup {
+  font-size: 60px;
+  vertical-align: super;
+  line-height: 0;
+}
+
+#slide5 .s5-stat-line {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 0.08em;
+  color: var(--bone);
+  z-index: 2;
+  position: relative;
+  margin-top: 8px;
+  line-height: 1.1;
+}
+
+#slide5 .s5-rule {
+  width: 32px;
+  height: 2px;
+  background: var(--steel);
+  margin: 20px 0 16px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide5 .s5-context {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  opacity: 0.75;
+  z-index: 2;
+  position: relative;
+}
+
+#slide5 .s5-context strong {
+  font-weight: 600;
+  color: var(--bone);
+  opacity: 1;
+}
+
+#slide5 .s5-source {
+  position: absolute;
+  bottom: 22px;
+  left: 36px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone);
+  opacity: 0.22;
+  z-index: 3;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 6 — THE FIX
+═══════════════════════════════════════ */
+#slide6 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px 40px 36px 36px;
+}
+
+#slide6 .bg-glow {
+  width: 350px; height: 350px;
+  top: -60px; right: -60px;
+  background: radial-gradient(ellipse, rgba(46,109,164,0.1) 0%, transparent 65%);
+}
+
+#slide6 .s6-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 10px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide6 .s6-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 62px;
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+  color: var(--bone);
+  z-index: 2;
+  position: relative;
+  margin-bottom: 6px;
+}
+
+#slide6 .s6-time {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 62px;
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+  color: var(--sky);
+  z-index: 2;
+  position: relative;
+  margin-bottom: 22px;
+}
+
+#slide6 .s6-rule {
+  width: 32px;
+  height: 2px;
+  background: var(--steel);
+  margin-bottom: 18px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide6 .s6-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide6 .s6-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+#slide6 .s6-step-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--sky);
+  opacity: 0.8;
+  flex-shrink: 0;
+  padding-top: 1px;
+  min-width: 22px;
+}
+
+#slide6 .s6-step-text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  opacity: 0.85;
+}
+
+#slide6 .s6-step-text strong {
+  font-weight: 600;
+  color: var(--bone);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 7 — CTA
+═══════════════════════════════════════ */
+#slide7 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 44px 0 36px;
+}
+
+#slide7 .bg-glow {
+  width: 440px; height: 440px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse, rgba(46,109,164,0.13) 0%, transparent 65%);
+}
+
+#slide7 .s7-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 96px;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  line-height: 0.9;
+  z-index: 2;
+  position: relative;
+  margin-bottom: 18px;
+}
+
+#slide7 .s7-rule {
+  width: 40px;
+  height: 2px;
+  background: var(--steel);
+  margin-bottom: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+#slide7 .s7-tagline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  color: var(--bone);
+  opacity: 0.8;
+  line-height: 1.15;
+  z-index: 2;
+  position: relative;
+  margin-bottom: 28px;
+}
+
+#slide7 .s7-tagline em {
+  color: var(--sky);
+  font-style: normal;
+}
+
+#slide7 .s7-handle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+#slide7 .s7-handle svg {
+  width: 18px;
+  height: 18px;
+  color: var(--steel);
+  flex-shrink: 0;
+}
+
+#slide7 .s7-handle-text {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--bone);
+}
+
+#slide7 .s7-url {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  opacity: 0.4;
+  z-index: 2;
+  position: relative;
+  margin-left: 28px;
+}
+
+#slide7 .s7-coming {
+  position: absolute;
+  bottom: 22px;
+  right: 26px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--steel);
+  opacity: 0.6;
+  z-index: 3;
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">SOLUM · Instagram Carousel</div>
+  <div class="page-sub">Why Your Daily Shower Isn't Cleaning You — 7 Slides · 1080×1080</div>
+  <button class="btn-dl-all" id="btnAll" onclick="downloadAll()">↓ Download All 7 Slides</button>
+  <div class="dl-progress" id="dlProgress">—</div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 1 — HOOK
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 01 — Hook</span>
+    <button class="btn-dl" onclick="download('slide1','SOLUM-carousel-01-hook')">↓ Download PNG</button>
+  </div>
+  <div class="slide" id="slide1">
+    <div class="slide-rule"></div>
+    <div class="bg-glow"></div>
+    <div class="s1-eyebrow">Men shower. Men don't actually clean.</div>
+    <div class="s1-headline">
+      <span class="s1-line1">YOUR</span>
+      <span class="s1-line2">DAILY SHOWER</span>
+      <span class="s1-line3">ISN'T</span>
+      <span class="s1-line4">CLEANING YOU.</span>
+    </div>
+    <div class="s1-rule-h"></div>
+    <div class="s1-sub">Here's what's actually happening ↓</div>
+    <div class="s1-swipe">Swipe to find out →</div>
+    <div class="slide-num">01 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 2 — THE BACK
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 02 — The Back</span>
+    <button class="btn-dl" onclick="download('slide2','SOLUM-carousel-02-back')">↓ Download PNG</button>
+  </div>
+  <div class="slide breakdown-slide" id="slide2">
+    <div class="slide-rule"></div>
+    <div class="slide-brand">SOLUM</div>
+    <div class="bs-accent">BACK</div>
+    <div class="bs-tag">01 · The Problem</div>
+    <div class="bs-title">YOUR<br><em>BACK.</em></div>
+    <div class="bs-rule"></div>
+    <div class="bs-body">
+      You can't reach it with your hands.<br>
+      Shower gel runs straight off it.<br>
+      <strong>It hasn't been properly cleaned in years.</strong><br>
+      Possibly ever.<br><br>
+      The only tool that fixes this is a 70cm back cloth — one handle each end, sawing back and forth. Most men have never owned one.
+    </div>
+    <div class="slide-num">02 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 3 — THE SCALP
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 03 — The Scalp</span>
+    <button class="btn-dl" onclick="download('slide3','SOLUM-carousel-03-scalp')">↓ Download PNG</button>
+  </div>
+  <div class="slide breakdown-slide" id="slide3">
+    <div class="slide-rule"></div>
+    <div class="slide-brand">SOLUM</div>
+    <div class="bs-accent">SCALP</div>
+    <div class="bs-tag">02 · The Problem</div>
+    <div class="bs-title">YOUR<br><em>SCALP.</em></div>
+    <div class="bs-rule"></div>
+    <div class="bs-body">
+      Shampoo cleans your hair.<br>
+      <strong>Not your scalp.</strong><br><br>
+      Dead skin, sebum, product buildup — sitting on your head every single day.<br><br>
+      A silicone scalp massager takes 2 minutes during your normal shower. Most men have never once used one.
+    </div>
+    <div class="slide-num">03 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 4 — SKIN
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 04 — Skin</span>
+    <button class="btn-dl" onclick="download('slide4','SOLUM-carousel-04-skin')">↓ Download PNG</button>
+  </div>
+  <div class="slide breakdown-slide" id="slide4">
+    <div class="slide-rule"></div>
+    <div class="slide-brand">SOLUM</div>
+    <div class="bs-accent">SKIN</div>
+    <div class="bs-tag">03 · The Problem</div>
+    <div class="bs-title">YOUR<br><em>SKIN.</em></div>
+    <div class="bs-rule"></div>
+    <div class="bs-body">
+      Dead skin cells sit on the surface for weeks if you don't remove them.<br><br>
+      <strong>Your body wash isn't exfoliating. It's just rinsing.</strong><br><br>
+      You need friction — not more foam. A viscose exfoliating mitt with long circular strokes. Korean bathhouses have known this for generations.
+    </div>
+    <div class="slide-num">04 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 5 — THE STAT
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 05 — The Stat</span>
+    <button class="btn-dl" onclick="download('slide5','SOLUM-carousel-05-stat')">↓ Download PNG</button>
+  </div>
+  <div class="slide" id="slide5">
+    <div class="slide-rule"></div>
+    <div class="slide-brand">SOLUM</div>
+    <div class="bg-glow"></div>
+    <div class="s5-tag">The reality</div>
+    <div class="s5-number">58<sup>%</sup></div>
+    <div class="s5-stat-line">OF MEN USE<br>ZERO SKINCARE.</div>
+    <div class="s5-rule"></div>
+    <div class="s5-context">
+      Not laziness.<br>
+      <strong>Nobody ever built them a system worth following.</strong><br><br>
+      Korean bathhouses. Moroccan hammams. Turkish hamams.<br>
+      Centuries of body ritual — perfected over generations.
+    </div>
+    <div class="s5-source">Source: Mintel UK Grooming Report</div>
+    <div class="slide-num">05 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 6 — THE FIX
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 06 — The Fix</span>
+    <button class="btn-dl" onclick="download('slide6','SOLUM-carousel-06-fix')">↓ Download PNG</button>
+  </div>
+  <div class="slide" id="slide6">
+    <div class="slide-rule"></div>
+    <div class="slide-brand">SOLUM</div>
+    <div class="bg-glow"></div>
+    <div class="s6-tag">The SOLUM daily ritual</div>
+    <div class="s6-title">THE FIX IS</div>
+    <div class="s6-time">10 MINUTES.</div>
+    <div class="s6-rule"></div>
+    <div class="s6-steps">
+      <div class="s6-step">
+        <span class="s6-step-num">01</span>
+        <span class="s6-step-text"><strong>Scalp massager</strong> — 2 min. Firm circles, hairline to back.</span>
+      </div>
+      <div class="s6-step">
+        <span class="s6-step-num">02</span>
+        <span class="s6-step-text"><strong>Amino acid body wash</strong> — cleans without stripping your skin barrier.</span>
+      </div>
+      <div class="s6-step">
+        <span class="s6-step-num">03</span>
+        <span class="s6-step-text"><strong>Exfoliating mitt</strong> — long circular strokes. Dead skin removed.</span>
+      </div>
+      <div class="s6-step">
+        <span class="s6-step-num">04</span>
+        <span class="s6-step-text"><strong>Back scrub cloth</strong> — one handle each end. 60 seconds.</span>
+      </div>
+      <div class="s6-step">
+        <span class="s6-step-num">05</span>
+        <span class="s6-step-text"><strong>Body lotion</strong> — within 3 min of towelling. Skin absorbs 70% more moisture while still warm.</span>
+      </div>
+    </div>
+    <div class="slide-num">06 / 07</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SLIDE 7 — CTA
+══════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-meta">
+    <span class="slide-label">Slide 07 — CTA</span>
+    <button class="btn-dl" onclick="download('slide7','SOLUM-carousel-07-cta')">↓ Download PNG</button>
+  </div>
+  <div class="slide" id="slide7">
+    <div class="slide-rule"></div>
+    <div class="bg-glow"></div>
+    <div class="s7-wordmark">SOLUM</div>
+    <div class="s7-rule"></div>
+    <div class="s7-tagline">
+      YOUR BODY.<br>
+      ACTUALLY<br>
+      <em>TAKEN CARE OF.</em>
+    </div>
+    <div class="s7-handle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4.5"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+      <span class="s7-handle-text">@bysolum.body</span>
+    </div>
+    <div class="s7-url">bysolum.com</div>
+    <div class="s7-coming">Full kit launching soon</div>
+    <div class="slide-num">07 / 07</div>
+  </div>
+</div>
+
+
+<script>
+const SLIDES = [
+  { id: 'slide1', name: 'SOLUM-carousel-01-hook' },
+  { id: 'slide2', name: 'SOLUM-carousel-02-back' },
+  { id: 'slide3', name: 'SOLUM-carousel-03-scalp' },
+  { id: 'slide4', name: 'SOLUM-carousel-04-skin' },
+  { id: 'slide5', name: 'SOLUM-carousel-05-stat' },
+  { id: 'slide6', name: 'SOLUM-carousel-06-fix' },
+  { id: 'slide7', name: 'SOLUM-carousel-07-cta' },
+];
+
+async function downloadAll() {
+  const btn = document.getElementById('btnAll');
+  const progress = document.getElementById('dlProgress');
+  btn.disabled = true;
+  progress.classList.add('visible');
+
+  for (let i = 0; i < SLIDES.length; i++) {
+    const { id, name } = SLIDES[i];
+    progress.textContent = `Rendering ${i + 1} / ${SLIDES.length} — ${name}`;
+    const el = document.getElementById(id);
+    const canvas = await html2canvas(el, {
+      scale: 2, useCORS: true, allowTaint: false,
+      backgroundColor: '#08090B', width: 540, height: 540, logging: false
+    });
+    const link = document.createElement('a');
+    link.download = name + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    await new Promise(r => setTimeout(r, 600));
+  }
+
+  progress.textContent = '✓ All 7 slides downloaded';
+  setTimeout(() => {
+    btn.disabled = false;
+    progress.classList.remove('visible');
+  }, 3000);
+}
+
+async function download(slideId, filename) {
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = 'Rendering…';
+
+  const el = document.getElementById(slideId);
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#08090B',
+      width: 540,
+      height: 540,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = filename + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    btn.textContent = '✓ Saved';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '↓ Download PNG';
+    }, 2000);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '↓ Download PNG';
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>
