@@ -672,9 +672,9 @@ export default function ComingSoon() {
 
         {/* 1 — Headline + subhead */}
         <main className="cs-main">
-          <div className="cs-eyebrow">Centuries of ritual. Finally a system.</div>
+          <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
           <h1 className="cs-headline">
-            Your Body.<br />Finally<br /><em>Done Right.</em>
+            Your Body.<br />Actually<br /><em>Taken Care Of.</em>
           </h1>
           <p className="cs-subhead">
             Most men shower every day and still have rough skin, a neglected back,
