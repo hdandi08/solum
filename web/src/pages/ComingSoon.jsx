@@ -737,28 +737,28 @@ export default function ComingSoon() {
             <div className="cs-prov-flag">🇬🇧</div>
             <div className="cs-prov-country">United Kingdom</div>
             <div className="cs-prov-tradition">British Formulation</div>
-            <div className="cs-prov-body">Amino acid body wash and fast-absorb lotion. Sulphate-free, pH-balanced, skin barrier safe. Cleans without stripping — no tightness, no residue.</div>
+            <div className="cs-prov-body">Cleans without stripping. Most body washes use sulphates that remove dirt and your skin barrier at the same time. Amino acid surfactants don't. pH balanced, skin barrier safe — formulated in the UK.</div>
             <div className="cs-prov-products">Products 01 · 07</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇰🇷</div>
             <div className="cs-prov-country">Korea</div>
             <div className="cs-prov-tradition">Bathhouse Tradition</div>
-            <div className="cs-prov-body">The Italy Towel and back cloth — tools of the Korean jjimjilbang. Centuries of removing dead skin through friction, not chemicals. Dead skin you didn't know existed. Gone after one use.</div>
+            <div className="cs-prov-body">Centuries of men removing dead skin that rinsing never reaches. The Korean jjimjilbang perfected exfoliation through friction, not chemicals. The Italy Towel and back cloth bring that to your shower.</div>
             <div className="cs-prov-products">Products 02 · 03 · 04</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇲🇦</div>
             <div className="cs-prov-country">Morocco</div>
             <div className="cs-prov-tradition">Hammam Ritual</div>
-            <div className="cs-prov-body">Atlas Mountain clay and cold-pressed body oil. The hammam has used both for over a thousand years. Single ingredient. Nothing added. Skin that's properly fed — not just moisturised.</div>
+            <div className="cs-prov-body">Pulls out what daily washing never reaches. The Moroccan hammam has used Atlas Mountain clay and argan oil for over a thousand years. Single ingredient. Nothing added. Skin properly fed.</div>
             <div className="cs-prov-products">Products 05 · 06</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇹🇷</div>
             <div className="cs-prov-country">Turkey</div>
             <div className="cs-prov-tradition">Hamam Craft</div>
-            <div className="cs-prov-body">The Kese mitt — hand-woven raw silk from Istanbul artisans. The original exfoliation tool of the Ottoman hamam. The rougher texture that does what softer tools can't.</div>
+            <div className="cs-prov-body">The exfoliation step that goes further than the daily mitt. Istanbul artisans hand-weave raw silk Kese mitts for the Ottoman hamam tradition. The rougher resistance that does what softer tools can't.</div>
             <div className="cs-prov-products">Product 08</div>
           </div>
         </div>
