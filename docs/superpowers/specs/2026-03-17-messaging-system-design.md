@@ -7,7 +7,7 @@
 
 ## 0. Pre-conditions Before Implementing Page Changes
 
-- **Product count:** The live page currently renders 9 product pills (01–09) while the system is built around 8 products. Product 09 (Kese Mitt) is reserved for a future World Kit and should not appear in the current coming soon page. Resolve this before implementing copy changes.
+- **Product count:** The live page currently renders 9 product pills (01–09) while the system is built around 8 products. Product 09 (Kese Mitt) is reserved for a future World Kit. The fix is limited in scope: remove only the Product 09 entry from the `PRODUCTS` array in `ComingSoon.jsx` (line 622). Do not change any other product names, numbers, or ritual assignments — those are deferred to the lineup audit below.
 - **Ritual product assignments:** The live page ritual steps diverge from the original master brief (Bamboo Cloth 08 replaced Italy Towel Mitt 02 in the daily ritual; product numbers reflect a lineup revision not yet reflected in CLAUDE.md). The page's current ritual structure is taken as canonical for this implementation. A full product lineup audit should be done as a separate task.
 
 ---
