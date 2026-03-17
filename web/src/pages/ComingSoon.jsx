@@ -95,6 +95,16 @@ const styles = `
     margin-bottom: 48px;
   }
 
+  /* Stats intro */
+  .cs-stats-intro {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: rgba(240,236,226,0.75);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
   /* Stats */
   .cs-stats {
     display: flex;
@@ -566,6 +576,7 @@ const styles = `
     .cs-main { padding: 100px 20px 60px; }
     .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
     .cs-subhead { font-size: 17px; }
+    .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
     .cs-stat:last-child { border-bottom: none; }
@@ -689,6 +700,7 @@ export default function ComingSoon() {
           </p>
 
           {/* 2 — Stats */}
+          <div className="cs-stats-intro">Here's what actually happens when you do it right:</div>
           <div className="cs-stats">
             <div className="cs-stat">
               <div className="cs-stat-num">Week 1</div>
