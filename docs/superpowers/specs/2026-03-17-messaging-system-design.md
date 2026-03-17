@@ -1,7 +1,14 @@
 # SOLUM Messaging System — Design Spec
 **Date:** 2026-03-17
-**Status:** Approved
+**Status:** Approved — Implementation Pending
 **Scope:** Website · Instagram · Ads · Reels
+
+---
+
+## 0. Pre-conditions Before Implementing Page Changes
+
+- **Product count:** The live page currently renders 9 product pills (01–09) while the system is built around 8 products. Product 09 (Kese Mitt) is reserved for a future World Kit and should not appear in the current coming soon page. Resolve this before implementing copy changes.
+- **Ritual product assignments:** The live page ritual steps diverge from the original master brief (Bamboo Cloth 08 replaced Italy Towel Mitt 02 in the daily ritual; product numbers reflect a lineup revision not yet reflected in CLAUDE.md). The page's current ritual structure is taken as canonical for this implementation. A full product lineup audit should be done as a separate task.
 
 ---
 
@@ -47,7 +54,7 @@ Short sentences. Declarative. No hedging. Reads like a man who knows exactly wha
 | Empathetic on cause | *"Nobody built men this system"* | *"Men don't care about their skin"* |
 | Confrontational on result | *"You've been getting this wrong"* | *"You might want to consider..."* |
 | Specific, never vague | *"Dead skin feeds odour bacteria"* | *"Feel fresher and cleaner"* |
-| Urgency without shame | *"You know now. Here's the fix."* | *"Most men are failing at this"* |
+| Urgency without shame | *"You've been getting this wrong. Now you know why."* | *"Most men are failing at this"* |
 | Numbers anchor truth | *"70% more moisture in 3 minutes"* | *"Deeply hydrating formula"* |
 | Never "pamper" | Always "do this right" | *"Treat yourself"* |
 | Never "soap" or "skincare" | Body care. Body ritual. | *"Skincare for men"* |
@@ -76,7 +83,7 @@ Korean, Moroccan, Turkish, UK traditions are **proof of why the products work**,
 Each origin reference should open with what the tradition **solves**, not where it's from.
 
 - **Wrong:** *"The Italy Towel — tools of the Korean jjimjilbang."*
-- **Right:** *"Centuries of men removing dead skin that soap never touches. That's the Korea card."*
+- **Right:** *"Centuries of men removing dead skin that soap never touches."* — then the tool, then the tradition name.
 
 ---
 
@@ -106,6 +113,12 @@ Full ladder, top to bottom. Section mapping:
 
 **Caption rule:** Always open with Layer 1. Never start with SOLUM. Never start with a product name.
 
+**Reel format detail:**
+- Hook: text overlay + spoken (same line). Must land The Wrong in under 2 seconds.
+- Body: voiceover with b-roll (no talking head). Why in 5s, Fix in 10–15s.
+- Caption: runs Layer 1–2 only. The visual carries Layer 3. End caption with a question or curiosity loop — never "buy now" in awareness phase.
+- Product visibility: show product as proof tool, not as hero. Product appears at Layer 3 (The Fix), not before.
+
 ### Ads
 
 Single job: stop the scroll, create urgency, send to page.
@@ -118,6 +131,8 @@ Single job: stop the scroll, create urgency, send to page.
 ---
 
 ## 7. Coming Soon Page — Specific Changes Required
+
+> **Status:** These three changes are prescribed but not yet applied to the live page (`web/src/pages/ComingSoon.jsx`).
 
 ### Change 1 — H1 (urgency, not reframe)
 **Current:** *"Your Shower Routine Isn't A Body Routine."*
@@ -142,9 +157,9 @@ This turns the stats from aspirational timeline into confrontational proof.
 ## 8. What Does Not Change
 
 - Page structure and sections — same order
-- Week 1/2/3/Day 66 stats — keep, just reframe the intro
+- Week 1/2/3/Day 66 stats content — keep, just add the framing intro line
 - Subscription section copy — 66-day habit framing is strong
-- Ritual step notes (mostly) — already outcome-led after last session's changes
+- Ritual step notes — already outcome-led after previous session's changes
 - Brand rules — all CLAUDE.md brand rules remain locked
 
 ---
