@@ -619,7 +619,6 @@ const PRODUCTS = [
   { num: '06', name: 'Body Oil' },
   { num: '07', name: 'Body Lotion' },
   { num: '08', name: 'Bamboo Cloth' },
-  { num: '09', name: 'Kese Mitt' },
 ];
 
 const MC_ACTION = 'https://bysolum.us5.list-manage.com/subscribe/post?u=45c32693942e5a8c9e6828488&id=31f70ffa8e&f_id=0099c2e1f0';
