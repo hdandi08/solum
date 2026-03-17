@@ -680,7 +680,7 @@ export default function ComingSoon() {
         <main className="cs-main">
           <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
           <h1 className="cs-headline">
-            Your Shower Routine<br /><em>Isn't A Body Routine.</em>
+            You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
             Rough skin, a neglected back, a scalp that gets rinsed but never worked.
