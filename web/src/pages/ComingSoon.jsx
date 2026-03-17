@@ -70,18 +70,18 @@ const styles = `
     text-align: center;
   }
   .cs-eyebrow {
-    font-size: 13px;
-    letter-spacing: 6px;
+    font-size: 16px;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    color: #2e6da4;
+    color: rgba(240,236,226,0.75);
     margin-bottom: 28px;
     font-weight: 600;
   }
   .cs-headline {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 10vw, 120px);
+    font-size: clamp(44px, 6.5vw, 80px);
     letter-spacing: 0.04em;
-    line-height: 0.92;
+    line-height: 0.95;
     color: #f0ece2;
     margin-bottom: 32px;
   }
@@ -101,7 +101,7 @@ const styles = `
     gap: 0;
     border: 1px solid rgba(240,236,226,0.07);
     margin-bottom: 52px;
-    max-width: 600px;
+    max-width: 780px;
     width: 100%;
   }
   .cs-stat {
@@ -120,12 +120,11 @@ const styles = `
     margin-bottom: 6px;
   }
   .cs-stat-label {
-    font-size: 13px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(240,236,226,0.75);
-    font-weight: 600;
-    line-height: 1.4;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: rgba(240,236,226,0.88);
+    font-weight: 400;
+    line-height: 1.5;
   }
 
   /* Email form */
@@ -237,8 +236,8 @@ const styles = `
   .cs-prov-item:last-child { border-right: none; }
   .cs-prov-flag { font-size: 28px; line-height: 1; }
   .cs-prov-country {
-    font-size: 11px;
-    letter-spacing: 4px;
+    font-size: 14px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     color: #2e6da4;
     font-weight: 600;
@@ -251,16 +250,16 @@ const styles = `
     line-height: 1;
   }
   .cs-prov-body {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 300;
-    color: rgba(240,236,226,0.82);
+    color: rgba(240,236,226,0.88);
     line-height: 1.6;
   }
   .cs-prov-products {
-    font-size: 11px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(46,109,164,0.8);
+    color: rgba(46,109,164,0.9);
     font-weight: 600;
     margin-top: 4px;
   }
@@ -682,30 +681,31 @@ export default function ComingSoon() {
         <main className="cs-main">
           <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
           <h1 className="cs-headline">
-            Your Body.<br />Actually<br /><em>Taken Care Of.</em>
+            Your Shower Routine<br /><em>Isn't A Body Routine.</em>
           </h1>
           <p className="cs-subhead">
-            Most men shower every day and still have rough skin, a neglected back,
-            and a scalp they've never properly cleaned.
-            Not laziness — nobody built them a system.
-            Korean bathhouses, Moroccan hammams, Turkish hamams — centuries of body ritual, perfected over generations.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM compressed that wisdom into 10 minutes. Built for modern men.</strong>
+            Rough skin, a neglected back, a scalp that gets rinsed but never worked.
+            That's not laziness — nobody ever built a system to fix it.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. In 10 minutes a day, your body gets properly clean for the first time.</strong>
           </p>
 
           {/* 2 — Stats */}
           <div className="cs-stats">
             <div className="cs-stat">
-              <div className="cs-stat-num">58%</div>
-              <div className="cs-stat-label">of men use<br />zero skincare</div>
-            </div>
-            {/* TODO: verify "<10% of men moisturise their body" stat via Mintel before launch */}
-            <div className="cs-stat">
-              <div className="cs-stat-num">&lt;10%</div>
-              <div className="cs-stat-label">of men ever<br />moisturise their body</div>
+              <div className="cs-stat-num">Week 1</div>
+              <div className="cs-stat-label">dead skin you didn't know<br />existed rolls off</div>
             </div>
             <div className="cs-stat">
-              <div className="cs-stat-num">8 min</div>
-              <div className="cs-stat-label">the average shower.<br />we built the system to fit.</div>
+              <div className="cs-stat-num">Week 2</div>
+              <div className="cs-stat-label">body odour reduces —<br />dead cells feed bacteria, not sweat</div>
+            </div>
+            <div className="cs-stat">
+              <div className="cs-stat-num">Week 3</div>
+              <div className="cs-stat-label">skin holds moisture<br />past midday</div>
+            </div>
+            <div className="cs-stat">
+              <div className="cs-stat-num">Day 66</div>
+              <div className="cs-stat-label">the ritual is automatic.<br />you don't think about it.</div>
             </div>
           </div>
 
@@ -726,28 +726,28 @@ export default function ComingSoon() {
             <div className="cs-prov-flag">🇬🇧</div>
             <div className="cs-prov-country">United Kingdom</div>
             <div className="cs-prov-tradition">British Formulation</div>
-            <div className="cs-prov-body">Amino acid body wash and fast-absorb lotion. Sulphate-free, pH-balanced, skin barrier safe.</div>
+            <div className="cs-prov-body">Amino acid body wash and fast-absorb lotion. Sulphate-free, pH-balanced, skin barrier safe. Cleans without stripping — no tightness, no residue.</div>
             <div className="cs-prov-products">Products 01 · 07</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇰🇷</div>
             <div className="cs-prov-country">Korea</div>
             <div className="cs-prov-tradition">Bathhouse Tradition</div>
-            <div className="cs-prov-body">The Italy Towel and back cloth — tools of the Korean jjimjilbang. Centuries of removing dead skin through friction, not chemicals.</div>
+            <div className="cs-prov-body">The Italy Towel and back cloth — tools of the Korean jjimjilbang. Centuries of removing dead skin through friction, not chemicals. Dead skin you didn't know existed. Gone after one use.</div>
             <div className="cs-prov-products">Products 02 · 03 · 04</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇲🇦</div>
             <div className="cs-prov-country">Morocco</div>
             <div className="cs-prov-tradition">Hammam Ritual</div>
-            <div className="cs-prov-body">Atlas Mountain clay and cold-pressed body oil. The hammam has used both for over a thousand years. Single ingredient. Nothing added.</div>
+            <div className="cs-prov-body">Atlas Mountain clay and cold-pressed body oil. The hammam has used both for over a thousand years. Single ingredient. Nothing added. Skin that's properly fed — not just moisturised.</div>
             <div className="cs-prov-products">Products 05 · 06</div>
           </div>
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇹🇷</div>
             <div className="cs-prov-country">Turkey</div>
             <div className="cs-prov-tradition">Hamam Craft</div>
-            <div className="cs-prov-body">The Kese mitt — hand-woven raw silk from Istanbul artisans. The original exfoliation tool of the Ottoman hamam. Nothing replaces it.</div>
+            <div className="cs-prov-body">The Kese mitt — hand-woven raw silk from Istanbul artisans. The original exfoliation tool of the Ottoman hamam. The rougher texture that does what softer tools can't.</div>
             <div className="cs-prov-products">Product 08</div>
           </div>
         </div>
@@ -762,11 +762,11 @@ export default function ComingSoon() {
             </div>
             <div className="cs-ritual-steps">
               {[
-                { n: '1', name: 'Scalp Massage', note: 'Small firm circles, hairline to back. 2–3 minutes.', prod: '04' },
-                { n: '2', name: 'Body Wash', note: 'Apply to wet skin. No sulphates. Cleans without stripping.', prod: '01' },
-                { n: '3', name: 'Exfoliating Cloth', note: 'Full body and back. Both handles for reach. 60 seconds each area.', prod: '03' },
-                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other cloths are not.', prod: '08' },
-                { n: '5', name: 'Body Lotion', note: 'Within 3 minutes of towelling. Skin absorbs 70% more while warm.', prod: '07' },
+                { n: '1', name: 'Scalp Massage', note: 'Small firm circles, hairline to back. 2–3 minutes. Your scalp stops being an afterthought.', prod: '04' },
+                { n: '2', name: 'Body Wash', note: 'Amino acid formula. No sulphates. Cleans without stripping your skin barrier — no tightness after.', prod: '01' },
+                { n: '3', name: 'Exfoliating Cloth', note: 'Both handles, drape over shoulder, saw back and forth. The only way to actually reach your back.', prod: '03' },
+                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other tools are not. Nothing left uncleaned.', prod: '08' },
+                { n: '5', name: 'Body Lotion', note: 'Within 3 minutes of towelling, skin absorbs 70% more moisture. Smooth past midday — not just after the shower.', prod: '07' },
               ].map(s => (
                 <div key={s.n} className="cs-ritual-step">
                   <div className="cs-step-num daily">{s.n}</div>
@@ -788,11 +788,11 @@ export default function ComingSoon() {
             </div>
             <div className="cs-ritual-steps">
               {[
-                { n: '1', name: 'Deep Scalp Massage', note: '5 minutes. More time, more pressure than daily.', prod: '04' },
-                { n: '2', name: 'Atlas Clay Mask', note: 'Apply head to toe on damp skin. Leave 8–10 minutes. Draws out impurities.', prod: '05' },
-                { n: '3', name: 'Italy Towel Mitt', note: 'Deep exfoliation. Firm slow strokes top to bottom. Dead skin rolls off.', prod: '02' },
-                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other cloths are not.', prod: '08' },
-                { n: '5', name: 'Body Oil', note: 'Stay damp. 10–15 drops pressed into skin. No lotion needed today.', prod: '06' },
+                { n: '1', name: 'Deep Scalp Massage', note: '5 minutes, more pressure than daily. The scalp treatment most men have never once had.', prod: '04' },
+                { n: '2', name: 'Atlas Clay Mask', note: 'Apply head to toe on damp skin. Leave 8–10 minutes. Pulls out what daily washing never reaches.', prod: '05' },
+                { n: '3', name: 'Italy Towel Mitt', note: 'Firm slow strokes top to bottom. Dead skin rolls off. You\'ll see it. First time, every time.', prod: '02' },
+                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other tools are not. Nothing left uncleaned.', prod: '08' },
+                { n: '5', name: 'Body Oil', note: 'Stay damp. 10–15 drops pressed into freshly exfoliated skin. Absorbs completely. No lotion needed today.', prod: '06' },
               ].map(s => (
                 <div key={s.n} className="cs-ritual-step">
                   <div className="cs-step-num weekly">{s.n}</div>
@@ -821,26 +821,26 @@ export default function ComingSoon() {
           <div className="cs-sub-right">
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">First Box</div>
-              <div className="cs-sub-item-title">Everything included</div>
-              <div className="cs-sub-item-body">All 8 products — tools and consumables. Everything you need to start the ritual from day one.</div>
+              <div className="cs-sub-item-title">Your ritual starts day one</div>
+              <div className="cs-sub-item-body">All 8 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Monthly Refill</div>
-              <div className="cs-sub-item-title">Consumables. Automatically.</div>
-              <div className="cs-sub-item-body">Body wash, lotion, clay, oil, bamboo cloth — delivered before you run out. Tools last 6–12 months and stay in your bathroom.</div>
+              <div className="cs-sub-item-title">The ritual never stops</div>
+              <div className="cs-sub-item-body">Consumables replenished automatically before you run out. Body wash, lotion, clay, oil. The tools stay in your bathroom — they last 6–12 months.</div>
             </div>
             <div className="cs-sub-item">
-              <div className="cs-sub-item-tag">No lock-in</div>
-              <div className="cs-sub-item-title">Cancel any time</div>
-              <div className="cs-sub-item-body">No commitment. But once the ritual is part of your morning, you won't want to stop.</div>
+              <div className="cs-sub-item-tag">Built to stay</div>
+              <div className="cs-sub-item-title">66 days and it's automatic</div>
+              <div className="cs-sub-item-body">That's how long it takes for a habit to become permanent. By then, the ritual isn't something you do — it's just how you start the day.</div>
             </div>
           </div>
         </div>
 
         {/* 7 — CTA second */}
         <div className="cs-cta2">
-          <div className="cs-cta2-headline">Ready to start the ritual?</div>
-          <div className="cs-cta2-sub">Join the waitlist. 20% off your first kit at launch.</div>
+          <div className="cs-cta2-headline">Start the ritual. See the difference by week one.</div>
+          <div className="cs-cta2-sub">Sign up for early access — 20% off your first kit at launch.</div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <MailchimpForm label="Join the Waitlist" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
