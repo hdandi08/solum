@@ -65,52 +65,17 @@
 
   /* ── CSS SCENE BACKGROUNDS ── */
 
-  /* S1: Grain texture — dark, organic */
   .scene-bg {
     position: absolute;
     inset: 0;
     z-index: 0;
   }
 
-  #s1 .scene-bg {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 60%, rgba(46,109,164,0.08) 0%, transparent 70%),
-      var(--black);
-  }
-  #s1 .scene-bg::after {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-  }
-
-  /* S2: Blue-tinted bacterial feel */
-  #s2 .scene-bg {
-    background:
-      radial-gradient(ellipse 70% 50% at 50% 50%, rgba(20,80,120,0.25) 0%, transparent 65%),
-      #060A0F;
-  }
-  #s2 .scene-bg::after {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-  }
-
-  /* S3: Diagonal gradient — confrontational */
-  #s3 .scene-bg {
-    background: linear-gradient(135deg, rgba(46,109,164,0.07) 0%, var(--black) 50%, rgba(240,236,226,0.02) 100%);
-  }
-
-  /* S4: Pure black — maximum weight for the reveal */
-  #s4 .scene-bg {
-    background: radial-gradient(ellipse 90% 30% at 50% 50%, rgba(46,109,164,0.10) 0%, transparent 70%);
-  }
-
-  /* S5: CTA — blue glow */
-  #s5 .scene-bg {
-    background: radial-gradient(ellipse 70% 40% at 50% 55%, rgba(46,109,164,0.14) 0%, transparent 65%);
-  }
+  #s1 { background: radial-gradient(ellipse 80% 40% at 50% 80%, rgba(46,109,164,0.10) 0%, transparent 65%), var(--black); }
+  #s2 { background: var(--black); }
+  #s3 { background: #060A0F; }
+  #s4 { background: var(--black); }
+  #s5 { background: radial-gradient(ellipse 70% 40% at 50% 55%, rgba(46,109,164,0.16) 0%, transparent 65%), var(--black); }
 
   /* Left brand rule */
   .brand-rule {
@@ -163,7 +128,7 @@
   /* Text styles */
   .t-hook {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 88px;
+    font-size: 80px;
     letter-spacing: 0.04em;
     line-height: 0.90;
     color: var(--bone);
@@ -173,13 +138,23 @@
 
   .t-eyebrow {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 18px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--sky-blue);
+    opacity: 0.75;
     display: block;
     margin-bottom: 16px;
+  }
+
+  .t-body {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: var(--bone);
   }
 
   .t-rule {
@@ -197,26 +172,46 @@
     display: block;
   }
 
+  .t-cta-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    display: block;
+    margin-top: 8px;
+  }
+
+  .t-cta-hero {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    display: block;
+    margin-top: 6px;
+  }
+
   .t-cta-url {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
-    font-size: 17px;
-    letter-spacing: 0.18em;
+    font-size: 14px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--steel-blue);
     display: block;
-    margin-top: 8px;
+    margin-top: 12px;
   }
 
   .t-cta-tagline {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 300;
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: 0.1em;
     color: var(--bone);
     opacity: 0.42;
     display: block;
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   /* ── PROGRESS BAR ── */
@@ -456,11 +451,11 @@
 
 <script>
 const SCENES = [
-  { id: 's1', duration: 2800 },
-  { id: 's2', duration: 4500 },
-  { id: 's3', duration: 3500 },
-  { id: 's4', duration: 4800 },
-  { id: 's5', duration: 3500 },
+  { id: 's1', duration: 2500 },
+  { id: 's2', duration: 3000 },
+  { id: 's3', duration: 7000 },
+  { id: 's4', duration: 4000 },
+  { id: 's5', duration: 4000 },
 ];
 
 const TOTAL = SCENES.reduce((a, s) => a + s.duration, 0);
