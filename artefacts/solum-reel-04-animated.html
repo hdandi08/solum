@@ -386,6 +386,9 @@
     text-align: center;
     padding-top: 60px;
     padding-bottom: 60px;
+  }
+
+  #s3 .ingredient-list.scroll-running {
     animation: ingredientScroll 3.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
     will-change: transform;
   }
@@ -569,11 +572,18 @@ const TOTAL = SCENES.reduce((a, s) => a + s.duration, 0);
 
 let currentScene = -1;
 let timer = null;
+let revealTimer = null;
 let startTime = null;
 let rafId = null;
 let running = false;
 
 function showScene(index) {
+  // Clear reveal-active from previous scene
+  if (currentScene >= 0 && SCENES[currentScene]) {
+    const prev = document.getElementById(SCENES[currentScene].id);
+    if (prev) prev.classList.remove('reveal-active');
+  }
+
   SCENES.forEach(s => {
     const el = document.getElementById(s.id);
     el.classList.remove('active');
@@ -596,7 +606,9 @@ function showScene(index) {
 
   // Trigger ingredient reveal for S3
   if (SCENES[index].id === 's3') {
-    setTimeout(() => {
+    const list = el.querySelector('.ingredient-list');
+    if (list) list.classList.add('scroll-running');
+    revealTimer = setTimeout(() => {
       el.classList.add('reveal-active');
     }, 3900);
   }
@@ -640,11 +652,14 @@ function startReel() {
 
 function restartReel() {
   clearTimeout(timer);
+  clearTimeout(revealTimer);
   cancelAnimationFrame(rafId);
   running = true;
   startTime = Date.now();
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('s3').classList.remove('reveal-active');
+  const list = document.querySelector('#s3 .ingredient-list');
+  if (list) list.classList.remove('scroll-running');
   showScene(0);
   rafId = requestAnimationFrame(updateProgress);
 }
