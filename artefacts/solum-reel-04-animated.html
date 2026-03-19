@@ -364,6 +364,84 @@
     color: var(--bone);
     opacity: 1;
   }
+
+  /* ── INGREDIENT REVEAL (S3) ── */
+  #s3 .ingredient-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 28px;
+  }
+
+  #s3 .ingredient-list {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--bone);
+    opacity: 0.35;
+    text-align: center;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    animation: ingredientScroll 3.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    will-change: transform;
+  }
+
+  #s3.reveal-active .ingredient-list {
+    animation-play-state: paused;
+  }
+
+  @keyframes ingredientScroll {
+    0%   { transform: translateY(0); }
+    60%  { transform: translateY(-38%); }
+    80%  { transform: translateY(-52%); }
+    100% { transform: translateY(-56%); }
+  }
+
+  #s3 .ingredient-list span {
+    display: block;
+    transition: opacity 0.4s ease, color 0.4s ease, font-weight 0.4s ease, transform 0.4s ease, font-size 0.4s ease;
+  }
+
+  #s3.reveal-active .ingredient-list span.highlight {
+    opacity: 1;
+    color: var(--steel-blue);
+    font-weight: 700;
+    font-size: 15px;
+    transform: scale(1.04);
+  }
+
+  #s3.reveal-active .ingredient-list span:not(.highlight) {
+    opacity: 0.08;
+  }
+
+  /* SLES staggers 400ms after SLS */
+  #s3.reveal-active .ingredient-list span#sles {
+    transition-delay: 0.4s;
+  }
+
+  #s3 .reveal-label {
+    position: absolute;
+    bottom: 90px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    opacity: 0;
+    transition: opacity 0.5s ease 0.6s;
+    z-index: 5;
+  }
+
+  #s3.reveal-active .reveal-label {
+    opacity: 0.8;
+  }
 </style>
 </head>
 <body>
@@ -388,12 +466,35 @@
     </div>
   </div>
 
-  <!-- SCENE 3 — Ingredient reveal (placeholder) -->
+  <!-- SCENE 3 — Ingredient reveal -->
   <div class="scene" id="s3">
     <div class="brand-rule"></div>
-    <div class="txt pos-centre" data-delay="100">
-      <span class="t-eyebrow">Ingredient reveal — coming in Task 4</span>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="ingredient-wrap">
+      <div class="ingredient-list">
+        <span>Aqua (Water)</span>
+        <span class="highlight" id="sls">Sodium Lauryl Sulphate</span>
+        <span class="highlight" id="sles">Sodium Laureth Sulphate</span>
+        <span>Cocamidopropyl Betaine</span>
+        <span>Glycerin</span>
+        <span>Sodium Chloride</span>
+        <span>Parfum (Fragrance)</span>
+        <span>Citric Acid</span>
+        <span>Sodium Benzoate</span>
+        <span>Potassium Sorbate</span>
+        <span>Cocamide MEA</span>
+        <span>Polyquaternium-7</span>
+        <span>Tetrasodium EDTA</span>
+        <span>PEG-7 Glyceryl Cocoate</span>
+        <span>Hydroxypropyl Methylcellulose</span>
+        <span>Disodium EDTA</span>
+        <span>Methylisothiazolinone</span>
+        <span>Methylchloroisothiazolinone</span>
+        <span>CI 42090 (Blue 1)</span>
+        <span>CI 19140 (Yellow 5)</span>
+      </div>
     </div>
+    <div class="reveal-label">Found in most body washes</div>
   </div>
 
   <!-- SCENE 4 — Damage statement (placeholder) -->
@@ -493,6 +594,13 @@ function showScene(index) {
     setTimeout(() => t.classList.add('visible'), delay);
   });
 
+  // Trigger ingredient reveal for S3
+  if (SCENES[index].id === 's3') {
+    setTimeout(() => {
+      el.classList.add('reveal-active');
+    }, 3900);
+  }
+
   timer = setTimeout(() => showScene(index + 1), SCENES[index].duration);
 }
 
@@ -536,6 +644,7 @@ function restartReel() {
   running = true;
   startTime = Date.now();
   document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('s3').classList.remove('reveal-active');
   showScene(0);
   rafId = requestAnimationFrame(updateProgress);
 }
