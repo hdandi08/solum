@@ -427,12 +427,20 @@
   }
 
   /* S4 — staggered damage statement */
-  #s4 .txt-line2 {
+  #s4 .s4-line2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.04em;
+    line-height: 0.90;
+    color: var(--bone);
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s;
+    margin-top: 18px;
+    display: block;
   }
-  #s4 .txt-line2.visible {
+
+  #s4 .txt.visible .s4-line2 {
     opacity: 1;
     transform: translateY(0);
   }
@@ -516,10 +524,8 @@
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="150">
-      <div class="t-hook" style="font-size:64px;">SULPHATES<br>ARE<br>INDUSTRIAL<br>DEGREASERS.</div>
-    </div>
-    <div class="txt pos-centre txt-line2" data-delay="600" style="top:62%;">
-      <div class="t-hook" style="font-size:52px;">THEY <span class="accent">STRIP</span><br>YOUR SKIN<br>BARRIER<br>EVERY TIME<br>YOU WASH.</div>
+      <div class="t-hook" style="font-size:58px; line-height:0.90;">SULPHATES<br>ARE INDUSTRIAL<br>DEGREASERS.</div>
+      <div class="s4-line2">THEY <span class="accent">STRIP</span><br>YOUR SKIN<br>BARRIER.</div>
     </div>
   </div>
 
