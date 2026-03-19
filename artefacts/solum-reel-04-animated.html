@@ -132,12 +132,12 @@
 
   .t-eyebrow {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 18px;
-    letter-spacing: 0.18em;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--sky-blue);
-    opacity: 0.75;
+    opacity: 1;
     display: block;
     margin-bottom: 16px;
   }
@@ -169,8 +169,8 @@
   .t-cta-sub {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 18px;
-    letter-spacing: 0.18em;
+    font-size: 22px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--sky-blue);
     display: block;
@@ -179,7 +179,7 @@
 
   .t-cta-hero {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
+    font-size: 52px;
     letter-spacing: 0.06em;
     color: var(--bone);
     display: block;
@@ -188,9 +188,9 @@
 
   .t-cta-url {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.2em;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--steel-blue);
     display: block;
@@ -199,11 +199,11 @@
 
   .t-cta-tagline {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 300;
-    font-size: 14px;
-    letter-spacing: 0.1em;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.06em;
     color: var(--bone);
-    opacity: 0.42;
+    opacity: 0.7;
     display: block;
     margin-top: 8px;
   }
@@ -374,22 +374,26 @@
     align-items: flex-start;
     justify-content: center;
     padding: 0 28px;
+    /* Vignette spotlight — items fade in/out as they scroll through centre */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
   }
 
   #s3 .ingredient-list {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 300;
-    font-size: 13px;
-    line-height: 1.9;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.7;
     color: var(--bone);
-    opacity: 0.35;
+    opacity: 0.7;
     text-align: center;
-    padding-top: 60px;
+    /* Large top padding so items enter from bottom of viewport */
+    padding-top: 700px;
     padding-bottom: 60px;
   }
 
   #s3 .ingredient-list.scroll-running {
-    animation: ingredientScroll 3.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    animation: ingredientScroll 4.2s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
     will-change: transform;
   }
 
@@ -397,11 +401,14 @@
     animation-play-state: paused;
   }
 
+  /* List height ≈ 700 + (20 × 30.6) + 60 = 1372px
+     SLS at list-y ≈ 730px. Target: viewport centre = 360px.
+     Required translateY = -(730 - 360) = -370px = -27% of 1372px */
   @keyframes ingredientScroll {
     0%   { transform: translateY(0); }
-    60%  { transform: translateY(-38%); }
-    80%  { transform: translateY(-52%); }
-    100% { transform: translateY(-56%); }
+    50%  { transform: translateY(-12%); }
+    80%  { transform: translateY(-24%); }
+    100% { transform: translateY(-27%); }
   }
 
   #s3 .ingredient-list span {
@@ -413,12 +420,12 @@
     opacity: 1;
     color: var(--steel-blue);
     font-weight: 700;
-    font-size: 15px;
-    transform: scale(1.04);
+    font-size: 22px;
+    transform: scale(1.06);
   }
 
   #s3.reveal-active .ingredient-list span:not(.highlight) {
-    opacity: 0.08;
+    opacity: 0.06;
   }
 
   /* SLES staggers 400ms after SLS */
@@ -452,8 +459,8 @@
     text-align: center;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.28em;
+    font-size: 16px;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--sky-blue);
     opacity: 0;
@@ -484,7 +491,7 @@
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="150">
-      <span class="t-eyebrow">Most men have no idea why.</span>
+      <div class="t-hook" style="font-size:60px;">MOST MEN<br>HAVE NO<br>IDEA WHY.</div>
     </div>
   </div>
 
