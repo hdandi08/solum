@@ -29,8 +29,8 @@ const CSS = `
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
 .kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;text-decoration:none;transition:background .2s,transform .15s;margin-top:auto;}
-.kit-cta.active{background:var(--blue);color:var(--bone);}
-.kit-cta.active:hover{background:var(--blit);transform:translateY(-1px);}
+.kit-cta.active{background:var(--bone);color:var(--black);}
+.kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
 .reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
