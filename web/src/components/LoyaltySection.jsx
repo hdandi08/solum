@@ -16,10 +16,6 @@ const CSS = `
 .loyalty-image{position:relative;}
 .loyalty-img{width:100%;display:block;filter:brightness(0.92);}
 .loyalty-img-label{position:absolute;bottom:20px;left:20px;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:rgba(240,236,226,0.7);font-weight:600;background:rgba(8,9,11,0.75);padding:8px 14px;backdrop-filter:blur(8px);}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
-.reveal-left.visible{opacity:1;transform:translateX(0);}
 @media(max-width:768px){
   .loyalty-inner{grid-template-columns:1fr;gap:48px;}
   .loyalty-section{padding:60px 24px;}

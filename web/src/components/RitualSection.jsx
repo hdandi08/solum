@@ -29,10 +29,6 @@ const CSS = `
 .ritual-step-name{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:rgba(240,236,226,.7);}
 .ritual-timer{position:absolute;top:24px;right:28px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);}
 .ritual-zone{position:absolute;top:24px;left:28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
-.reveal-left.visible{opacity:1;transform:translateX(0);}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.ritual-content{grid-template-columns:1fr;}.ritual-visual{display:none;}.ritual-section{padding:60px 24px;}}
 `;
 

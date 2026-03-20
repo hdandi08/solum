@@ -13,10 +13,6 @@ const CSS = `
 .o-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
 .o-sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:24px;}
 .o-sec-body{font-size:16px;color:var(--mist);font-weight:300;line-height:1.7;max-width:480px;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
-.reveal-left.visible{opacity:1;transform:translateX(0);}
 @media(max-width:768px){.origins-inner{grid-template-columns:1fr;gap:40px;}.origins-grid{grid-template-columns:1fr;}.origins{padding:60px 24px;}}
 `;
 

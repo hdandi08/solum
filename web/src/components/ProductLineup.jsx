@@ -21,8 +21,6 @@ const CSS = `
 .pbt-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
 .pbt-text{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
 .prod-desc{font-size:14px;color:var(--stone);line-height:1.6;font-weight:300;margin-top:auto;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.products-grid{grid-template-columns:repeat(2,1fr);}.products-header{grid-template-columns:1fr;gap:24px;}.products-section{padding:60px 24px;}}
 `;
 

@@ -14,10 +14,6 @@ const CSS = `
 .truth-quote em{font-style:normal;color:var(--blue);}
 .truth-body{font-size:17px;font-weight:300;color:var(--mist);line-height:1.75;max-width:480px;margin-bottom:32px;}
 .truth-note{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);border-left:2px solid var(--blue);padding-left:16px;line-height:1.7;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
-.reveal-left.visible{opacity:1;transform:translateX(0);}
 @media(max-width:768px){.truth-inner{grid-template-columns:1fr;gap:48px;}.truth-section{padding:60px 24px;}.truth-stat{grid-template-columns:84px 1fr;}}
 `;
 

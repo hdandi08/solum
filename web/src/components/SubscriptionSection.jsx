@@ -21,8 +21,6 @@ const CSS = `
 .price-row-amount{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--bone);letter-spacing:-.5px;}
 .price-row-note{font-size:12px;color:var(--stone);font-weight:300;margin-top:2px;text-align:right;}
 .sub-footnote{font-size:15px;color:var(--stone);font-weight:300;line-height:1.7;border-left:2px solid var(--blue);padding-left:20px;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.sub-grid{grid-template-columns:1fr;gap:48px;}.sub-section{padding:60px 24px;}}
 `;
 

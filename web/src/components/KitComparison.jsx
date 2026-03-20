@@ -33,8 +33,6 @@ const CSS = `
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}}
 `;
 

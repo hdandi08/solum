@@ -13,8 +13,6 @@ const CSS = `
 .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;font-size:15px;color:var(--mist);font-weight:300;line-height:1.75;padding:0;}
 .faq-item.open .faq-toggle{transform:rotate(45deg);}
 .faq-item.open .faq-a{max-height:300px;padding-bottom:24px;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.faq-section{padding:60px 24px;}}
 `;
 

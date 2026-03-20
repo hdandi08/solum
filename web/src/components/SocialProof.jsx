@@ -11,8 +11,6 @@ const CSS = `
 .proof-author{display:flex;flex-direction:column;gap:3px;margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
 .proof-name{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
 .proof-info{font-size:13px;color:var(--stone);letter-spacing:1px;}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
 @media(max-width:768px){.proof-grid{grid-template-columns:1fr;}.proof-section{padding:60px 24px;}}
 `;
 
