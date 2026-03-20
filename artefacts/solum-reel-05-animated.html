@@ -312,11 +312,6 @@
 
   #s3.reveal-active .ingredient-list { animation-play-state: paused; }
 
-  /* Scroll ends with Blocked Follicles + Bacteria centred in the spotlight.
-     5 items × 30.6px/item = 153px content. Total list ≈ 913px.
-     Bacteria (item 5) centre ≈ 837px from list top.
-     translateY to land midpoint of items 4+5 at viewport centre (360px):
-     -(822 - 360) / 913 ≈ -51% */
   @keyframes scalpScroll {
     0%   { transform: translateY(0); }
     50%  { transform: translateY(-25%); }
@@ -339,10 +334,8 @@
 
   #s3.reveal-active .ingredient-list span:not(.highlight) { opacity: 0.06; }
 
-  /* Bacteria staggers 400ms after Blocked Follicles */
   #s3.reveal-active .ingredient-list span#bacteria { transition-delay: 0.4s; }
 
-  /* S3 eyebrow — outside the vignette-masked wrap, positioned at top */
   #s3 .s3-eyebrow {
     position: absolute;
     top: 52px; left: 0; right: 0;
@@ -406,7 +399,7 @@
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="150">
       <div class="t-hook" style="font-size:60px;">SHAMPOO RUNS<br>OVER IT.<br>YOU RINSE.</div>
-      <div class="s2-line2">THAT'S NOT CLEANING.<br>THAT'S WETTING IT.</div>
+      <div class="s2-line2">THAT'S NOT<br>CLEANING.</div>
     </div>
   </div>
 
@@ -442,6 +435,7 @@
   <!-- S5 — CTA -->
   <div class="scene" id="s5">
     <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="300">
       <span class="t-cta-wordmark">SOLUM</span>
       <div class="t-rule"></div>
@@ -531,7 +525,7 @@ function showScene(index) {
     if (eyebrow) setTimeout(() => eyebrow.classList.add('visible'), 150);
     const list = el.querySelector('.ingredient-list');
     if (list) list.classList.add('scroll-running');
-    revealTimer = setTimeout(() => el.classList.add('reveal-active'), 4500);
+    revealTimer = setTimeout(() => el.classList.add('reveal-active'), 3900);
   }
 
   timer = setTimeout(() => showScene(index + 1), SCENES[index].duration);
@@ -598,7 +592,6 @@ function toggleRecordMode() {
     btn.textContent = '⬤ Record Mode';
     stage.style.transform = '';
     clearTimeout(timer);
-    clearTimeout(revealTimer);
     cancelAnimationFrame(rafId);
     document.getElementById('countdown-overlay').classList.remove('active');
   }
