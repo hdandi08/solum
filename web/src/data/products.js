@@ -1,0 +1,12 @@
+export const PRODUCTS = [
+  { num: '01', name: 'Body Wash', fullName: 'Amino Acid Body Wash 250ml', origin: '🇬🇧 United Kingdom', tag: 'Body · Daily', desc: 'Amino acid surfactants. Zero sulphates. Cleans without stripping the skin barrier.', comingSoon: false },
+  { num: '02', name: 'Italy Towel Mitt', fullName: 'Italy Towel Mitt', origin: '🇰🇷 Korean Tradition', tag: 'Body · Weekly', desc: 'The Korean bathhouse standard. Removes dead skin buildup that body wash alone cannot reach. Weekend use only.', comingSoon: false },
+  { num: '03', name: 'Back Scrub Cloth', fullName: 'Back Scrub Cloth 70cm', origin: '🇰🇷 Korean Tradition', tag: 'Back · Daily', desc: '70cm. Handles at both ends. Your back has never been properly cleaned. This fixes that.', comingSoon: false },
+  { num: '04', name: 'Scalp Massager', fullName: 'Silicone Scalp Massager', origin: '🇰🇷 South Korea', tag: 'Scalp · Daily', desc: 'Used during wash. Stimulates blood flow to follicles. Distributes product evenly. 60 seconds.', comingSoon: false },
+  { num: '05', name: 'Atlas Clay Mask', fullName: 'Atlas Clay Mask 200g', origin: '🇲🇦 Morocco', tag: 'Body · Weekly', desc: 'Atlas mountain clay. Draws out body impurities. Applied head to toe. Leave 8–10 minutes.', comingSoon: false },
+  { num: '06', name: 'Argan Body Oil', fullName: 'Organic Argan Body Oil 50ml', origin: '🇲🇦 Morocco', tag: 'Body · Weekly', desc: 'Cold-pressed. Certified organic. Applied to damp skin after weekly exfoliation. Absorption peaks on freshly exfoliated skin.', comingSoon: false },
+  { num: '07', name: 'Body Lotion', fullName: 'Fast-Absorb Body Lotion 400ml', origin: '🇬🇧 United Kingdom', tag: 'Body · Daily · 3 Min Rule', desc: '400ml. Applied to the full body within 3 minutes of towelling. This window is when skin absorbs moisture most efficiently.', comingSoon: false },
+  { num: '08', name: 'Bamboo Cloth', fullName: 'Bamboo Cloth', origin: 'Bamboo Fibre', tag: 'Sensitive Areas · Daily', desc: 'Ultra-soft bamboo fibre. For sensitive areas. Nothing left uncleaned.', comingSoon: false },
+  { num: '09', name: 'Turkish Kese Mitt', fullName: 'Artisan Turkish Kese Mitt', origin: '🇹🇷 Turkey', tag: 'Body · Weekly', desc: 'Hand-woven by artisans in Istanbul. Replaces the Italy Towel Mitt in SOVEREIGN. Coming soon.', comingSoon: true },
+  { num: '10', name: 'Beidi Black Soap', fullName: 'Beidi Black Soap', origin: '🇹🇷 Turkey', tag: 'Body · Weekly', desc: 'Traditional hammam black soap. Coming soon.', comingSoon: true },
+];
