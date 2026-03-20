@@ -23,7 +23,7 @@ export const KITS = [
   {
     id: 'sovereign',
     name: 'SOVEREIGN',
-    firstBoxPrice: 130,
+    firstBoxPrice: 110,
     monthlyPrice: 58,
     // 02 replaced by 09 — Italy Towel Mitt → Turkish Kese Mitt
     productNums: ['01','03','04','05','06','07','08','09','10'],
