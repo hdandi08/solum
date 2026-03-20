@@ -1,5 +1,5 @@
 const CSS = `
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 48px 80px;position:relative;overflow:hidden;background:var(--black);}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:80px 48px 80px;position:relative;overflow:hidden;background:var(--black);}
 .hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(46,109,164,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.03) 1px,transparent 1px);background-size:80px 80px;animation:gridFade 3s ease forwards;}
 @keyframes gridFade{from{opacity:0;}to{opacity:1;}}
 .hero-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-family:'Bebas Neue',sans-serif;font-size:clamp(180px,22vw,340px);letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.07);pointer-events:none;user-select:none;white-space:nowrap;animation:ghostIn 2s cubic-bezier(.16,1,.3,1) .3s both;}
@@ -26,7 +26,7 @@ const CSS = `
 .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
 @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:768px){.hero{padding:0 24px 60px;}.hero-title{font-size:clamp(56px,14vw,96px);}}
+@media(max-width:768px){.hero{padding:80px 24px 60px;}.hero-title{font-size:clamp(56px,14vw,96px);}}
 `;
 
 export default function Hero() {
