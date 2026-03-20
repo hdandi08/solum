@@ -18,8 +18,8 @@ const CSS = `
 .hero-scope-divider{width:1px;height:14px;background:var(--lineb);}
 .hero-scope-note{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .hero-actions{display:flex;gap:16px;align-items:center;animation:fadeUp .8s ease 1.05s both;}
-.btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--blit);color:var(--bone);padding:16px 40px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;}
-.btn-primary:hover{background:#5fa3d8;transform:translateY(-1px);}
+.btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--bone);color:var(--black);padding:16px 40px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;}
+.btn-primary:hover{background:#fff;transform:translateY(-1px);}
 .btn-ghost{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
 .scroll-cue{position:absolute;bottom:32px;right:48px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
