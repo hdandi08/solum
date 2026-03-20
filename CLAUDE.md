@@ -71,7 +71,7 @@ This is a fresh project. Add Solum-specific guidelines below as the project evol
 
 ---
 
-## 2. PRODUCT LINEUP — 8 PRODUCTS
+## 2. PRODUCT LINEUP — 10 PRODUCTS
 
 | #   | Product                        | Origin (Manufacture)                 | Trade Cost | RRP | Gross Margin |
 | --- | ------------------------------ | ------------------------------------ | ---------- | --- | ------------ |
@@ -82,7 +82,11 @@ This is a fresh project. Add Solum-specific guidelines below as the project evol
 | 05  | Rhassoul Clay Body Mask 200g   | Morocco                              | £3.50      | £26 | 86.5%        |
 | 06  | Organic Argan Body Oil 50ml    | Morocco                              | £5.50      | £34 | 83.8%        |
 | 07  | Fast-Absorb Body Lotion 400ml  | UK (Cosmiko)                         | £4.40      | £22 | 80.0%        |
-| 08  | Artisan Kese Mitt (raw silk)   | Turkey (Jennifer's Hamam)            | £4.50      | £20 | 77.5%        |
+| 08  | Bamboo Cloth                   | TBD                                  | TBD        | TBD | TBD          |
+| 09  | Turkish Kese Mitt (artisan hand-woven)  | Turkey (artisan, Jennifer's Hamam) | TBD  | TBD | TBD |
+| 10  | Beidi Black Soap                        | Turkey                             | TBD  | TBD | TBD |
+
+**Note:** Product 08 = Bamboo Cloth. Products 09 + 10 are Coming Soon, SOVEREIGN tier only. CLAUDE.md product lineup was previously outdated.
 
 ---
 
@@ -174,11 +178,11 @@ This is a fresh project. Add Solum-specific guidelines below as the project evol
 
 | Kit           | Products           | First Box COGS | RRP  | Gross Margin | Monthly Sub | Sub GP |
 | ------------- | ------------------ | -------------- | ---- | ------------ | ----------- | ------ |
-| Daily Starter | 01, 02, 03, 04, 07 | £16.35         | £42  | 61.1%        | £28         | £18.20 |
-| Full Ritual ★ | 01–05, 07          | £21.55         | £78  | 72.4%        | £44         | £30.70 |
-| World Kit     | All 8              | £32.95         | £110 | 70.0%        | £52         | £33.20 |
+| GROUND        | 01, 02, 03, 04, 07 | £16.35         | £55  | 61.1%        | £38         | £18.20 |
+| RITUAL ★      | 01–06, 07          | £21.55         | £85  | 72.4%        | £48         | £30.70 |
+| SOVEREIGN     | All 10             | £32.95         | £130 | 70.0%        | £58         | £33.20 |
 
-★ Full Ritual = hero product, most popular
+★ RITUAL = hero product, most popular · SOVEREIGN = Coming Soon
 
 ### Subscription Model
 
