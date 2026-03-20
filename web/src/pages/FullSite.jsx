@@ -7,6 +7,7 @@ import KitComparison from '../components/KitComparison.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import RitualSection from '../components/RitualSection.jsx';
 import SubscriptionSection from '../components/SubscriptionSection.jsx';
+import LoyaltySection from '../components/LoyaltySection.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
 import SocialProof from '../components/SocialProof.jsx';
 import FAQ from '../components/FAQ.jsx';
@@ -43,6 +44,7 @@ export default function FullSite() {
       <ProductLineup />
       <RitualSection />
       <SubscriptionSection />
+      <LoyaltySection />
       <ProvenanceSection />
       <SocialProof />
       <FAQ />
