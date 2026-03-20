@@ -582,6 +582,8 @@ function toggleRecordMode() {
     btn.textContent = '⬤ Record Mode';
     stage.style.transform = '';
     clearTimeout(timer);
+    countdownTimers.forEach(id => clearTimeout(id));
+    countdownTimers = [];
     cancelAnimationFrame(rafId);
     document.getElementById('countdown-overlay').classList.remove('active');
   }
