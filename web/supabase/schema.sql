@@ -64,6 +64,20 @@ create table if not exists orders (
 );
 
 -- ─────────────────────────────────────────
+-- EVENTS (behavioural stream)
+-- Lightweight log of customer signals for cohort analysis,
+-- churn prediction, and comms triggers.
+-- ─────────────────────────────────────────
+create table if not exists events (
+  id              uuid primary key default uuid_generate_v4(),
+  customer_id     uuid references customers(id) on delete set null,
+  stripe_event_id text unique not null,
+  event_type      text not null,   -- mirrors Stripe event type
+  data            jsonb,           -- raw payload fields we care about
+  created_at      timestamptz default now()
+);
+
+-- ─────────────────────────────────────────
 -- WAITLIST (coming soon sign-ups)
 -- ─────────────────────────────────────────
 create table if not exists waitlist (
@@ -100,3 +114,10 @@ create policy "orders: own" on orders
 -- Waitlist: anyone can insert, nobody can read via client (service role only)
 create policy "waitlist: insert only" on waitlist
   for insert with check (true);
+
+-- Events: customers can read their own events, never write (service role only)
+alter table events enable row level security;
+create policy "events: own read" on events
+  for select using (
+    customer_id in (select id from customers where id = auth.uid())
+  );
