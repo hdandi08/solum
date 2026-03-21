@@ -216,23 +216,23 @@ export default function CheckoutPage() {
             <div className="co-promise-title">Our Promise</div>
             <div className="co-trust">
               <div className="co-trust-line">
-                <span className="co-trust-check">✓</span>
+                <span className="co-trust-check">🚫</span>
                 <span>Cancel any time — no questions asked</span>
               </div>
               <div className="co-trust-line">
-                <span className="co-trust-check">✓</span>
+                <span className="co-trust-check">🔓</span>
                 <span>No minimum term — leave after your first box if you want</span>
               </div>
               <div className="co-trust-line">
-                <span className="co-trust-check">✓</span>
+                <span className="co-trust-check">⏸️</span>
                 <span>Pause or skip any month straight from your account</span>
               </div>
               <div className="co-trust-line">
-                <span className="co-trust-check">✓</span>
+                <span className="co-trust-check">📦</span>
                 <span>Your consumables arrive before you run out — tools replaced when due</span>
               </div>
               <div className="co-trust-line">
-                <span className="co-trust-check">✓</span>
+                <span className="co-trust-check">🚚</span>
                 <span>First box ships within a week · refills ship on the 1st each month</span>
               </div>
             </div>

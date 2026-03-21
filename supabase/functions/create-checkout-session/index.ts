@@ -1,5 +1,4 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -14,13 +13,40 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function alertError(message: string, context: Record<string, unknown>) {
+  console.error('SOLUM_CHECKOUT_ERROR', JSON.stringify({ message, context, ts: new Date().toISOString() }));
+
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (!resendKey) return;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'SOLUM Alerts <alerts@bysolum.com>',
+      to: 'harsha@bysolum.com',
+      subject: '🚨 [SOLUM] Checkout Error — Action Required',
+      html: `<h2 style="color:#c0392b">Checkout Error</h2>
+             <p><strong>${message}</strong></p>
+             <pre style="background:#f5f5f5;padding:12px">${JSON.stringify(context, null, 2)}</pre>
+             <p style="color:#888;font-size:12px">SOLUM · ${new Date().toISOString()}</p>`,
+    }),
+  }).catch(e => console.error('Failed to send alert email:', e));
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  try {
-    const { kit_id, email, first_name, last_name, birth_year, birth_month, success_url, cancel_url } = await req.json();
+  let kit_id: string | undefined;
+  let email: string | undefined;
 
-    const kit = KIT_PRICES[kit_id];
+  try {
+    const body = await req.json();
+    kit_id     = body.kit_id;
+    email      = body.email;
+    const { first_name, last_name, birth_year, birth_month, success_url, cancel_url } = body;
+
+    const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
 
     // Create or retrieve Stripe customer
@@ -33,19 +59,15 @@ Deno.serve(async (req) => {
           metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
         });
 
-    // Create a one-time price for the first box
+    // One-time first box price (created fresh each time — no lookup key needed)
     const firstBoxPrice = await stripe.prices.create({
       currency: 'gbp',
       unit_amount: kit.first_box_pence,
       product_data: { name: `SOLUM ${kit.name} — First Box` },
     });
 
-    // Create or retrieve a recurring price for the monthly subscription
-    const existingPrices = await stripe.prices.list({
-      active: true,
-      currency: 'gbp',
-      lookup_keys: [`solum_${kit_id}_monthly`],
-    });
+    // Recurring monthly price — reuse if already exists
+    const existingPrices = await stripe.prices.list({ active: true, currency: 'gbp', lookup_keys: [`solum_${kit_id}_monthly`] });
     const monthlyPrice = existingPrices.data.length > 0
       ? existingPrices.data[0]
       : await stripe.prices.create({
@@ -57,22 +79,26 @@ Deno.serve(async (req) => {
         });
 
     // Billing anchor: 1st of next month.
-    // If purchase is within 7 days of month end, skip to 1st of month after next
-    // so the customer isn't charged almost immediately.
+    // If within 7 days of month end, skip to the month after to avoid an
+    // almost-immediate charge after purchase.
     const now = new Date();
     const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
     const monthsAhead = daysLeftInMonth < 7 ? 2 : 1;
     const billingAnchor = Math.floor(new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1).getTime() / 1000);
 
+    // line_items: both one-time (first box) + recurring (monthly).
+    // Stripe supports mixing one-time and recurring in subscription mode (API ≥ 2022-11-15).
+    // trial_end defers the first recurring charge to the 1st of next month;
+    // the one-time first-box item is charged immediately on session completion.
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
       line_items: [
-        { price: monthlyPrice.id, quantity: 1 },
+        { price: firstBoxPrice.id,  quantity: 1 },
+        { price: monthlyPrice.id,   quantity: 1 },
       ],
       subscription_data: {
         trial_end: billingAnchor,
-        add_invoice_items: [{ price: firstBoxPrice.id, quantity: 1 }],
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
       },
       success_url,
@@ -85,10 +111,10 @@ Deno.serve(async (req) => {
     });
 
   } catch (err) {
-    console.error(err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    await alertError(err.message, { kit_id, email, stack: err.stack });
+    return new Response(
+      JSON.stringify({ error: 'Something went wrong. Please try again or contact hello@bysolum.com.' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
   }
 });
