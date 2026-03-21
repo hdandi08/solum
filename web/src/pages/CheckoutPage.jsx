@@ -138,7 +138,8 @@ export default function CheckoutPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Something went wrong. Please try again.');
+      if (!res.ok) throw new Error('Something went wrong. Please try again or contact contact@bysolum.com.');
+      if (data.error) throw new Error(data.error);
       window.location.href = data.url;
     } catch (err) {
       console.error('Checkout error:', err);
