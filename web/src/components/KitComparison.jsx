@@ -96,7 +96,7 @@ export default function KitComparison() {
             })}
           </div>
           <p className="kits-footnote">
-            First box is a one-time purchase. Subscription starts on the 1st of the following month. Cancel any time.
+            First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.
           </p>
         </div>
       </section>

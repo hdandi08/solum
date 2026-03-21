@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     // almost-immediate charge after purchase.
     const now = new Date();
     const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
-    const monthsAhead = daysLeftInMonth < 7 ? 2 : 1;
+    const monthsAhead = daysLeftInMonth < 15 ? 2 : 1;
     const billingAnchor = Math.floor(new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1).getTime() / 1000);
 
     // line_items: both one-time (first box) + recurring (monthly).
