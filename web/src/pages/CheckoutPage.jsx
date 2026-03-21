@@ -31,6 +31,12 @@ const CSS = `
 .co-secure{font-size:13px;color:var(--stone);font-weight:300;margin-top:14px;text-align:center;}
 .co-error{font-size:14px;color:#e05c5c;margin-top:14px;line-height:1.5;padding:12px 16px;border:1px solid rgba(224,92,92,0.3);background:rgba(224,92,92,0.05);}
 
+/* Stripe badge */
+.co-stripe-badge{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding:12px 16px;border:1px solid rgba(99,91,255,0.2);background:rgba(99,91,255,0.04);}
+.co-stripe-lock{font-size:13px;color:#a09bff;}
+.co-stripe-text{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.5px;}
+.co-stripe-logo{font-size:13px;font-weight:700;letter-spacing:-.5px;color:#a09bff;}
+
 /* Right — kit summary */
 .co-kit-name{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.05em;color:var(--bone);line-height:1;margin-bottom:4px;}
 .co-price-main{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--bone);letter-spacing:-1px;line-height:1;}
@@ -44,9 +50,13 @@ const CSS = `
 .co-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:22px;}
 .co-product.dimmed{opacity:.45;}
 .co-soon-note{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
-.co-trust{display:flex;flex-direction:column;gap:10px;}
-.co-trust-line{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--mist);font-weight:300;line-height:1.4;}
-.co-trust-check{color:var(--blue);font-size:14px;flex-shrink:0;margin-top:1px;}
+/* Our Promise block */
+.co-promise{border:1px solid var(--lineb);padding:20px 20px 16px;}
+.co-promise-title{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.co-trust{display:flex;flex-direction:column;gap:0;}
+.co-trust-line{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--mist);font-weight:300;line-height:1.4;padding:10px 0;border-bottom:1px solid var(--line);}
+.co-trust-line:last-child{border-bottom:none;padding-bottom:0;}
+.co-trust-check{color:var(--blue);font-size:12px;flex-shrink:0;margin-top:2px;font-weight:700;}
 .co-upgrade{border:1px solid var(--lineb);background:rgba(46,109,164,0.05);padding:20px;margin-top:24px;}
 .co-upgrade-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;}
 .co-upgrade-copy{font-size:14px;color:var(--stone);font-weight:300;line-height:1.5;margin-bottom:14px;}
@@ -160,7 +170,12 @@ export default function CheckoutPage() {
             <button type="submit" className="co-submit" disabled={loading}>
               {loading ? 'Redirecting to Stripe…' : `Go to Checkout — £${kit.firstBoxPrice} →`}
             </button>
-            <div className="co-secure">🔒 Secure checkout via Stripe · We never share your data</div>
+            <div className="co-secure">We never share your data · Cancel any time</div>
+            <div className="co-stripe-badge">
+              <span className="co-stripe-lock">🔒</span>
+              <span className="co-stripe-text">Payments secured by</span>
+              <span className="co-stripe-logo">Stripe</span>
+            </div>
           </form>
         </div>
 
@@ -191,18 +206,29 @@ export default function CheckoutPage() {
 
           <div className="co-divider" />
 
-          <div className="co-trust">
-            <div className="co-trust-line">
-              <span className="co-trust-check">✓</span>
-              <span>Cancel any time — no questions asked</span>
-            </div>
-            <div className="co-trust-line">
-              <span className="co-trust-check">✓</span>
-              <span>Tools last 6–12 months — only consumables replenish monthly</span>
-            </div>
-            <div className="co-trust-line">
-              <span className="co-trust-check">✓</span>
-              <span>Ships within 48hrs of order</span>
+          <div className="co-promise">
+            <div className="co-promise-title">Our Promise</div>
+            <div className="co-trust">
+              <div className="co-trust-line">
+                <span className="co-trust-check">✓</span>
+                <span>Cancel any time — no questions asked</span>
+              </div>
+              <div className="co-trust-line">
+                <span className="co-trust-check">✓</span>
+                <span>No minimum term — leave after your first box if you want</span>
+              </div>
+              <div className="co-trust-line">
+                <span className="co-trust-check">✓</span>
+                <span>Pause or skip any month straight from your account</span>
+              </div>
+              <div className="co-trust-line">
+                <span className="co-trust-check">✓</span>
+                <span>Tools last 6–12 months — only consumables replenish</span>
+              </div>
+              <div className="co-trust-line">
+                <span className="co-trust-check">✓</span>
+                <span>Ships within 48hrs of order</span>
+              </div>
             </div>
           </div>
 
