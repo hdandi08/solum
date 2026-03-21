@@ -10,9 +10,11 @@ const CSS = `
 .su-check{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 32px;font-size:22px;}
 .su-eyebrow{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .su-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,96px);letter-spacing:.04em;color:var(--bone);line-height:.95;margin-bottom:24px;}
-.su-kit{display:inline-block;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 16px;margin-bottom:16px;}
-.su-ref{font-size:12px;letter-spacing:2px;color:var(--stone);font-weight:300;margin-bottom:40px;}
-.su-ref span{color:var(--blit);font-weight:500;}
+.su-kit{display:inline-block;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 16px;margin-bottom:32px;}
+.su-ref-block{background:var(--char);border:1px solid var(--lineb);padding:20px 32px;margin-bottom:40px;display:inline-block;}
+.su-ref-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;margin-bottom:8px;}
+.su-ref-num{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.1em;color:var(--bone);line-height:1;}
+.su-ref-note{font-size:12px;color:var(--stone);font-weight:300;margin-top:6px;}
 .su-divider{width:100%;height:1px;background:var(--line);margin-bottom:40px;}
 
 /* What happens next */
@@ -65,7 +67,13 @@ export default function SuccessPage() {
           <div className="su-eyebrow">Order confirmed</div>
           <h1 className="su-heading">Ritual<br />Begins.</h1>
           <div className="su-kit">{kitName} Kit</div>
-          {orderRef && <div className="su-ref">Order reference: <span>#{orderRef}</span></div>}
+          {orderRef && (
+            <div className="su-ref-block">
+              <div className="su-ref-label">Order Reference</div>
+              <div className="su-ref-num">#{orderRef}</div>
+              <div className="su-ref-note">Keep this for your records</div>
+            </div>
+          )}
 
           <div className="su-divider" />
 
