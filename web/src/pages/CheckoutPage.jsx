@@ -105,7 +105,7 @@ export default function CheckoutPage() {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
         body: JSON.stringify({
           kit_id:      kit.id,
           email:       form.email.trim(),
