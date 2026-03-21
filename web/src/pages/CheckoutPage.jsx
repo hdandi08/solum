@@ -55,11 +55,13 @@ const CSS = `
 .co-trust-line{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--mist);font-weight:300;line-height:1.4;padding:10px 0;border-bottom:1px solid var(--line);}
 .co-trust-line:last-child{border-bottom:none;padding-bottom:0;}
 .co-trust-check{color:var(--blue);font-size:12px;flex-shrink:0;margin-top:2px;font-weight:700;}
-.co-upgrade{border:1px solid var(--lineb);background:rgba(46,109,164,0.05);padding:20px;margin-top:24px;}
-.co-upgrade-label{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:8px;}
-.co-upgrade-copy{font-size:14px;color:var(--stone);font-weight:300;line-height:1.5;margin-bottom:14px;}
-.co-upgrade-link{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--blit);text-decoration:none;transition:color .2s;}
-.co-upgrade-link:hover{color:var(--bone);}
+.co-upgrade{border:1px solid rgba(46,109,164,0.4);background:rgba(46,109,164,0.07);padding:20px;margin-top:24px;}
+.co-upgrade-label{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.co-upgrade-star{color:#c8a96e;font-size:14px;}
+.co-upgrade-copy{font-size:14px;color:var(--mist);font-weight:300;line-height:1.6;margin-bottom:14px;}
+.co-upgrade-copy strong{color:var(--bone);font-weight:500;}
+.co-upgrade-link{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;color:var(--bone);text-decoration:none;transition:color .2s;border-bottom:1px solid rgba(46,109,164,0.4);padding-bottom:2px;}
+.co-upgrade-link:hover{color:#fff;border-color:var(--blit);}
 
 @media(max-width:900px){
   .co-page{grid-template-columns:1fr;padding-top:64px;}
@@ -195,9 +197,12 @@ export default function CheckoutPage() {
           {kit.id === 'ground' && ritualKit && (
             <>
               <div className="co-upgrade">
-                <div className="co-upgrade-label">Most Popular</div>
+                <div className="co-upgrade-label">
+                  <span className="co-upgrade-star">★</span>
+                  Most customers choose this
+                </div>
                 <div className="co-upgrade-copy">
-                  Most customers upgrade to RITUAL. Adds argan body oil — the step that changes what your skin feels like long-term.
+                  Without RITUAL, you're leaving out the argan oil —<strong> the one step that changes what your skin actually feels like long-term.</strong> Most GROUND customers upgrade within their first 90 days.
                 </div>
                 <a className="co-upgrade-link" href="/checkout?kit=ritual">
                   Upgrade to RITUAL — £{ritualKit.firstBoxPrice} first box →
