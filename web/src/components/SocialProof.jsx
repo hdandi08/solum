@@ -2,7 +2,7 @@ const CSS = `
 .proof-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px;}
 .proof-inner{max-width:1400px;margin:0 auto;}
 .proof-header{margin-bottom:64px;}
-.proof-header .pr-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.proof-header .pr-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .proof-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;}
 .proof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);}
 .proof-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:16px;}

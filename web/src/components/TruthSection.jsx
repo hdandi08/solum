@@ -9,7 +9,7 @@ const CSS = `
 .ts-num{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--blit);line-height:1;letter-spacing:0.02em;}
 .ts-body{font-size:15px;color:var(--mist);font-weight:300;line-height:1.6;}
 .ts-body strong{color:var(--bone);font-weight:600;}
-.t-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.t-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .truth-quote{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:0.04em;color:var(--bone);line-height:1.05;margin-bottom:32px;}
 .truth-quote em{font-style:normal;color:var(--blue);}
 .truth-body{font-size:17px;font-weight:300;color:var(--mist);line-height:1.75;max-width:480px;margin-bottom:32px;}

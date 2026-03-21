@@ -6,7 +6,7 @@ const CSS = `
 @keyframes ghostIn{from{opacity:0;transform:translate(-50%,-48%) scale(.96);}to{opacity:1;transform:translate(-50%,-52%) scale(1);}}
 .hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:900px;height:700px;background:radial-gradient(ellipse,rgba(46,109,164,0.06) 0%,transparent 70%);pointer-events:none;}
 .hero-content{position:relative;z-index:1;max-width:860px;}
-.hero-eyebrow{font-size:13px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .6s both;}
+.hero-eyebrow{font-size:13px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .6s both;}
 .hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--blue);}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,9vw,136px);line-height:.92;letter-spacing:0.03em;color:var(--bone);margin-bottom:32px;animation:fadeUp .8s ease .75s both;}
 .hero-title em{font-style:normal;color:var(--blue);}
@@ -14,7 +14,7 @@ const CSS = `
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
 .hero-body{font-size:17px;font-weight:300;letter-spacing:.3px;color:var(--mist);max-width:520px;line-height:1.7;margin-bottom:20px;animation:fadeUp .8s ease .9s both;}
 .hero-scope{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--lineb);padding:9px 18px;margin-bottom:40px;animation:fadeUp .8s ease .95s both;}
-.hero-scope-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.hero-scope-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;}
 .hero-scope-divider{width:1px;height:14px;background:var(--lineb);}
 .hero-scope-note{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .hero-actions{display:flex;gap:16px;align-items:center;animation:fadeUp .8s ease 1.05s both;}

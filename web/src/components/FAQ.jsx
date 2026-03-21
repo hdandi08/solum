@@ -4,7 +4,7 @@ const CSS = `
 .faq-section{background:var(--black);padding:80px 48px;border-top:1px solid var(--line);}
 .faq-inner{max-width:900px;margin:0 auto;}
 .faq-header{margin-bottom:48px;}
-.faq-header .fq-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.faq-header .fq-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .faq-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;}
 .faq-item{border-bottom:1px solid var(--line);}
 .faq-q{display:flex;justify-content:space-between;align-items:center;padding:24px 0;cursor:pointer;font-size:16px;letter-spacing:1px;color:var(--bone);font-weight:500;background:none;border:none;width:100%;text-align:left;}

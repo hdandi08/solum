@@ -14,7 +14,7 @@ const CSS = `
 /* Left — form */
 .co-back{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;margin-bottom:48px;transition:color .2s;}
 .co-back:hover{color:var(--bone);}
-.co-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:12px;}
+.co-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:12px;}
 .co-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5vw,72px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:12px;}
 .co-subhead{font-size:16px;color:var(--stone);font-weight:300;margin-bottom:48px;line-height:1.5;}
 .co-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
@@ -44,7 +44,7 @@ const CSS = `
 .co-price-sub{font-size:16px;color:var(--mist);font-weight:300;margin-top:4px;}
 .co-price-day{font-size:14px;color:var(--stone);font-style:italic;margin-top:2px;}
 .co-divider{width:100%;height:1px;background:var(--line);margin:24px 0;}
-.co-section-label{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:14px;}
+.co-section-label{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
 .co-product-list{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;}
 .co-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
 .co-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:22px;}
@@ -52,13 +52,13 @@ const CSS = `
 .co-soon-note{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
 /* Our Promise block */
 .co-promise{border:1px solid var(--lineb);padding:20px 20px 16px;}
-.co-promise-title{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.co-promise-title{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .co-trust{display:flex;flex-direction:column;gap:0;}
 .co-trust-line{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--mist);font-weight:300;line-height:1.4;padding:10px 0;border-bottom:1px solid var(--line);}
 .co-trust-line:last-child{border-bottom:none;padding-bottom:0;}
 .co-trust-check{color:var(--blue);font-size:12px;flex-shrink:0;margin-top:2px;font-weight:700;}
 .co-upgrade{border:1px solid var(--lineb);background:rgba(46,109,164,0.05);padding:20px;margin-top:24px;}
-.co-upgrade-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;}
+.co-upgrade-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:8px;}
 .co-upgrade-copy{font-size:14px;color:var(--stone);font-weight:300;line-height:1.5;margin-bottom:14px;}
 .co-upgrade-link{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--blit);text-decoration:none;transition:color .2s;}
 .co-upgrade-link:hover{color:var(--bone);}

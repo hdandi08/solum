@@ -2,7 +2,7 @@ const CSS = `
 .loyalty-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
 .loyalty-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
 .loyalty-text{display:flex;flex-direction:column;}
-.loy-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:20px;}
+.loy-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
 .loy-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,5vw,80px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:16px;}
 .loy-title em{font-style:normal;color:var(--blit);}
 .loy-rule{font-size:15px;font-weight:600;letter-spacing:1px;color:var(--stone);text-transform:uppercase;border-left:2px solid var(--blue);padding-left:16px;margin-bottom:32px;line-height:1.6;}

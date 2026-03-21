@@ -7,10 +7,10 @@ const CSS = `
 .origin-tile:hover{background:var(--mid);}
 .origin-tile:hover::after{transform:scaleX(1);}
 .origin-flag{font-size:20px;margin-bottom:2px;}
-.origin-country{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.origin-country{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;}
 .origin-product{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.3;}
 .origin-why{font-size:14px;color:var(--stone);line-height:1.5;font-weight:300;margin-top:4px;}
-.o-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.o-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .o-sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:24px;}
 .o-sec-body{font-size:16px;color:var(--mist);font-weight:300;line-height:1.7;max-width:480px;}
 @media(max-width:768px){.origins-inner{grid-template-columns:1fr;gap:40px;}.origins-grid{grid-template-columns:1fr;}.origins{padding:60px 24px;}}

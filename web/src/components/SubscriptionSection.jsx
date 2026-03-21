@@ -2,13 +2,13 @@ const CSS = `
 .sub-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
 .sub-inner{max-width:1400px;margin:0 auto;}
 .sub-header{margin-bottom:64px;}
-.sub-header .s-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;}
+.sub-header .s-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .sub-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:16px;}
 .sub-header p{font-size:17px;color:var(--mist);font-weight:300;line-height:1.7;max-width:560px;}
 .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
 .cadence-list{display:flex;flex-direction:column;gap:1px;background:var(--line);}
 .cadence-item{background:var(--char);padding:32px 36px;}
-.cadence-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:8px;}
+.cadence-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:8px;}
 .cadence-products{font-size:16px;color:var(--bone);font-weight:500;margin-bottom:8px;line-height:1.4;}
 .cadence-note{font-size:13px;color:var(--stone);font-weight:300;margin-bottom:6px;}
 .cadence-copy{font-size:15px;color:var(--mist);font-weight:300;line-height:1.6;}
