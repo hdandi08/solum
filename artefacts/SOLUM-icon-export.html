@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SOLUM Icon Export</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 24px; font-family: sans-serif; }
+  .label { color: #fff; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+  canvas { display: block; }
+  .btn { background: #2E6DA4; color: #fff; border: none; padding: 12px 28px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 8px; }
+  .btn:hover { background: #4A8FC7; }
+  .sizes { display: flex; gap: 32px; align-items: flex-end; }
+  .size-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="label">SOLUM Square Icon — Click to download</div>
+<div class="sizes">
+  <div class="size-wrap">
+    <div class="label" style="font-size:11px">512 × 512</div>
+    <canvas id="c512" width="512" height="512"></canvas>
+    <button class="btn" onclick="download('c512', 'SOLUM-icon-512.png')">Download 512px</button>
+  </div>
+  <div class="size-wrap">
+    <div class="label" style="font-size:11px">192 × 192</div>
+    <canvas id="c192" width="192" height="192" style="width:192px;height:192px"></canvas>
+    <button class="btn" onclick="download('c192', 'SOLUM-icon-192.png')">Download 192px</button>
+  </div>
+  <div class="size-wrap">
+    <div class="label" style="font-size:11px">64 × 64</div>
+    <canvas id="c64" width="64" height="64" style="width:64px;height:64px"></canvas>
+    <button class="btn" onclick="download('c64', 'SOLUM-icon-64.png')">Download 64px</button>
+  </div>
+</div>
+
+<script>
+const SIZES = [
+  { id: 'c512', size: 512, fontSize: 88,  letterSpacing: 12, y: 292 },
+  { id: 'c192', size: 192, fontSize: 33,  letterSpacing: 4.5, y: 109 },
+  { id: 'c64',  size: 64,  fontSize: 11,  letterSpacing: 1.5, y: 36  },
+];
+
+document.fonts.load("1em 'Bebas Neue'").then(() => {
+  SIZES.forEach(({ id, size, fontSize, letterSpacing, y }) => {
+    const canvas = document.getElementById(id);
+    const ctx = canvas.getContext('2d');
+
+    // Background
+    ctx.fillStyle = '#08090B';
+    ctx.fillRect(0, 0, size, size);
+
+    // Wordmark
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = `${fontSize}px 'Bebas Neue'`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+
+    // Manual letter spacing (canvas doesn't support letter-spacing natively)
+    const text = 'SOLUM';
+    let totalWidth = 0;
+    const widths = [];
+    for (const ch of text) {
+      const w = ctx.measureText(ch).width + letterSpacing;
+      widths.push(w);
+      totalWidth += w;
+    }
+    totalWidth -= letterSpacing; // no trailing gap
+
+    let x = size / 2 - totalWidth / 2;
+    for (let i = 0; i < text.length; i++) {
+      ctx.fillText(text[i], x + widths[i] / 2 - letterSpacing / 2, y);
+      x += widths[i];
+    }
+  });
+});
+
+function download(canvasId, filename) {
+  const canvas = document.getElementById(canvasId);
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = filename;
+  a.click();
+}
+</script>
+</body>
+</html>
