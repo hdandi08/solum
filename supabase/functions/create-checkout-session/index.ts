@@ -56,16 +56,24 @@ Deno.serve(async (req) => {
           product_data: { name: `SOLUM ${kit.name} — Monthly Refill` },
         });
 
+    // Billing anchor: 1st of next month.
+    // If purchase is within 7 days of month end, skip to 1st of month after next
+    // so the customer isn't charged almost immediately.
+    const now = new Date();
+    const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
+    const monthsAhead = daysLeftInMonth < 7 ? 2 : 1;
+    const billingAnchor = Math.floor(new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1).getTime() / 1000);
+
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
       line_items: [
-        { price: firstBoxPrice.id, quantity: 1 },
-        { price: monthlyPrice.id,  quantity: 1 },
+        { price: monthlyPrice.id, quantity: 1 },
       ],
       subscription_data: {
+        trial_end: billingAnchor,
+        add_invoice_items: [{ price: firstBoxPrice.id, quantity: 1 }],
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
-        // First invoice includes one-time first box + first month
       },
       success_url,
       cancel_url,

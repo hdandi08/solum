@@ -96,7 +96,7 @@ export default function KitComparison() {
             })}
           </div>
           <p className="kits-footnote">
-            First box is a one-time purchase. Subscription starts with your second delivery. Cancel any time.
+            First box is a one-time purchase. Subscription starts on the 1st of the following month. Cancel any time.
           </p>
         </div>
       </section>

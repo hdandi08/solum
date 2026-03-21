@@ -186,7 +186,7 @@ export default function CheckoutPage() {
             <span className="co-price-main">£{kit.firstBoxPrice}</span>
             <span className="co-price-label">first box</span>
           </div>
-          <div className="co-price-sub">then £{kit.monthlyPrice}/mo</div>
+          <div className="co-price-sub">then £{kit.monthlyPrice}/mo · billed 1st of each month</div>
           <div className="co-price-day">That's £{perDay} a day</div>
 
           <div className="co-divider" />
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
               </div>
               <div className="co-trust-line">
                 <span className="co-trust-check">✓</span>
-                <span>Ships within a week of order</span>
+                <span>First box ships within a week · refills ship on the 1st each month</span>
               </div>
             </div>
           </div>
