@@ -3,6 +3,105 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
+const KIT_NAMES: Record<string, string> = {
+  ground: 'GROUND', ritual: 'RITUAL', sovereign: 'SOVEREIGN',
+};
+
+async function sendConfirmationEmail(
+  email: string,
+  firstName: string,
+  kitId: string,
+  orderRef: string,
+) {
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (!resendKey) { console.warn('RESEND_API_KEY not set — skipping email'); return; }
+
+  const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f0;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr><td style="background:#08090B;padding:40px 48px;">
+          <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:28px;font-weight:700;letter-spacing:0.15em;color:#F0ECE2;text-transform:uppercase;">SOLUM</p>
+          <p style="margin:8px 0 0;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;">Your body. Done right.</p>
+        </td></tr>
+
+        <!-- Order confirmed -->
+        <tr><td style="background:#ffffff;padding:48px 48px 32px;">
+          <p style="margin:0 0 8px;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:600;">Order Confirmed</p>
+          <h1 style="margin:0 0 24px;font-size:36px;font-weight:700;letter-spacing:0.04em;color:#08090B;text-transform:uppercase;line-height:1;">Ritual Begins,<br>${firstName}.</h1>
+          <p style="margin:0 0 32px;font-size:15px;color:#555;line-height:1.7;">Your ${kitName} Kit is confirmed. Here's everything you need to know.</p>
+
+          <!-- Order ref -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f0;border:1px solid #e0ddd6;margin-bottom:40px;">
+            <tr><td style="padding:20px 24px;">
+              <p style="margin:0 0 6px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#888;font-weight:600;">Order Reference</p>
+              <p style="margin:0 0 4px;font-size:28px;font-weight:700;letter-spacing:0.1em;color:#08090B;">#${orderRef}</p>
+              <p style="margin:0;font-size:12px;color:#888;">Keep this for your records</p>
+            </td></tr>
+          </table>
+
+          <!-- What happens next -->
+          <p style="margin:0 0 20px;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:600;">What Happens Next</p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e0ddd6;">
+            <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">1</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Confirmation email</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">That's this one. You're all set.</p></td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">First box ships within a week</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. You'll get a tracking email when it's dispatched.</p></td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Monthly refills on the 1st</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your first box lasts 4–6 weeks. Refills ship automatically on the 1st of each month — you'll never run out.</p></td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">4</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Ritual card is in the box</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Step-by-step instructions for your daily and weekly ritual. Everything in the right order.</p></td>
+              </tr></table>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#08090B;padding:32px 48px;">
+          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">Questions? Reply to this email or contact us at <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a></p>
+          <p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.com · You can cancel any time from your account.</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'SOLUM <contact@bysolum.com>',
+      to: email,
+      subject: `Order confirmed — your ${kitName} Kit is on its way`,
+      html,
+    }),
+  }).catch(e => console.error('Resend error:', e));
+}
+
 async function logEvent(
   supabase: ReturnType<typeof createClient>,
   stripe_event_id: string,
@@ -80,6 +179,12 @@ Deno.serve(async (req) => {
           amount_pence: session.amount_total ?? 0,
           status: 'paid',
         });
+
+        // Send confirmation email
+        if (email) {
+          const orderRef = session.id.slice(-8).toUpperCase();
+          await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef);
+        }
 
         break;
       }
