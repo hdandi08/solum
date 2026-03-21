@@ -113,7 +113,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     await alertError(err.message, { kit_id, email, stack: err.stack });
     return new Response(
-      JSON.stringify({ error: 'Something went wrong. Please try again or contact hello@bysolum.com.' }),
+      JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.com.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }
