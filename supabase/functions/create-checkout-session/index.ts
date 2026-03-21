@@ -1,6 +1,12 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
+
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL')!,
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+);
 
 const KIT_PRICES: Record<string, { first_box_pence: number; monthly_pence: number; name: string }> = {
   ground:    { first_box_pence: 5500,  monthly_pence: 3800, name: 'GROUND'    },
@@ -86,10 +92,6 @@ Deno.serve(async (req) => {
     const monthsAhead = daysLeftInMonth < 15 ? 2 : 1;
     const billingAnchor = Math.floor(new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1).getTime() / 1000);
 
-    // line_items: both one-time (first box) + recurring (monthly).
-    // Stripe supports mixing one-time and recurring in subscription mode (API ≥ 2022-11-15).
-    // trial_end defers the first recurring charge to the 1st of next month;
-    // the one-time first-box item is charged immediately on session completion.
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
@@ -105,6 +107,21 @@ Deno.serve(async (req) => {
       cancel_url,
       metadata: { kit_id, first_name, last_name, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
     });
+
+    // Capture lead immediately — before the customer reaches Stripe.
+    // checkout_status starts as 'initiated'; webhook updates it from here.
+    await supabase.from('leads').upsert({
+      email,
+      first_name,
+      last_name:          last_name   ?? null,
+      birth_year:         birth_year  ?? null,
+      birth_month:        birth_month ?? null,
+      kit_id,
+      stripe_session_id:  session.id,
+      stripe_customer_id: customer.id,
+      checkout_status:    'initiated',
+      updated_at:         new Date().toISOString(),
+    }, { onConflict: 'stripe_session_id' });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

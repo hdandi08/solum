@@ -28,7 +28,21 @@
       "Bash(ls:*)",
       "Read(//Users/harshamahadeva/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/subagent-driven-development/**)",
       "Bash(node:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(npm install:*)",
+      "Bash(curl -fsSL https://github.com/supabase/cli/releases/download/v2.22.6/supabase_darwin_amd64.tar.gz -o /tmp/supabase.tar.gz)",
+      "Bash(tar -xzf /tmp/supabase.tar.gz -C /tmp)",
+      "Bash(sudo mv:*)",
+      "Bash(~/bin/supabase login:*)",
+      "Bash(~/bin/supabase link:*)",
+      "Bash(~/bin/supabase functions:*)",
+      "Bash(/Users/harshamahadeva/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/scripts/start-server.sh --project-dir /Users/harshamahadeva/NewCo/solum)",
+      "Bash(xargs kill:*)",
+      "Bash(supabase functions:*)",
+      "Bash(npx supabase:*)",
+      "Bash(find /Users/harshamahadeva/NewCo/solum/web/src -name *.js -o -name *.json)",
+      "Bash(curl:*)",
+      "Bash(/Users/harshamahadeva/NewCo/solum/supabase/migrations/20260321000000_create_leads.sql:*)"
     ]
   }
 }

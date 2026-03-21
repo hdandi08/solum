@@ -180,6 +180,11 @@ Deno.serve(async (req) => {
           status: 'paid',
         });
 
+        // Mark lead as completed
+        await supabase.from('leads')
+          .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
+          .eq('stripe_session_id', session.id);
+
         // Send confirmation email
         if (email) {
           const orderRef = session.id.slice(-8).toUpperCase();
@@ -304,9 +309,30 @@ Deno.serve(async (req) => {
 
       // ── Behavioural events ──────────────────────────────────────
 
+      case 'payment_intent.payment_failed': {
+        // Card declined — capture the decline reason on the lead
+        const intent = event.data.object as Stripe.PaymentIntent;
+        const decline_reason =
+          intent.last_payment_error?.decline_code ??
+          intent.last_payment_error?.code ??
+          'unknown';
+        await supabase.from('leads')
+          .update({
+            checkout_status: 'payment_failed',
+            decline_reason,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('stripe_customer_id', intent.customer as string)
+          .eq('checkout_status', 'initiated');
+        break;
+      }
+
       case 'checkout.session.expired': {
-        // High-intent abandonment — went to checkout, didn't complete
+        // High-intent abandonment — went to Stripe, didn't complete
         const session = event.data.object as Stripe.Checkout.Session;
+        await supabase.from('leads')
+          .update({ checkout_status: 'expired', updated_at: new Date().toISOString() })
+          .eq('stripe_session_id', session.id);
         await logEvent(supabase, event.id, event.type, null, {
           kit_id: session.metadata?.kit_id,
           email: session.customer_details?.email ?? session.customer_email,
