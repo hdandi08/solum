@@ -191,20 +191,21 @@ export default function CheckoutPage() {
 
           <div className="co-divider" />
 
-          <div className="co-section-label">What's in your box</div>
-          <div className="co-product-list">
-            {products.map(p => (
-              <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
-                <span className="co-product-num">{p.num}</span>
-                <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+          {/* Upgrade nudge — GROUND only, shown before promise + product list */}
+          {kit.id === 'ground' && ritualKit && (
+            <>
+              <div className="co-upgrade">
+                <div className="co-upgrade-label">Most Popular</div>
+                <div className="co-upgrade-copy">
+                  Most customers upgrade to RITUAL. Adds argan body oil — the step that changes what your skin feels like long-term.
+                </div>
+                <a className="co-upgrade-link" href="/checkout?kit=ritual">
+                  Upgrade to RITUAL — £{ritualKit.firstBoxPrice} first box →
+                </a>
               </div>
-            ))}
-          </div>
-          {products.some(p => p.comingSoon) && (
-            <div className="co-soon-note">* Coming soon — included when available</div>
+              <div className="co-divider" />
+            </>
           )}
-
-          <div className="co-divider" />
 
           <div className="co-promise">
             <div className="co-promise-title">Our Promise</div>
@@ -232,16 +233,19 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {kit.id === 'ground' && ritualKit && (
-            <div className="co-upgrade">
-              <div className="co-upgrade-label">Most Popular</div>
-              <div className="co-upgrade-copy">
-                Most customers upgrade to RITUAL. Adds argan body oil — the step that changes what your skin feels like long-term.
+          <div className="co-divider" />
+
+          <div className="co-section-label">What's in your box</div>
+          <div className="co-product-list">
+            {products.map(p => (
+              <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
+                <span className="co-product-num">{p.num}</span>
+                <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
               </div>
-              <a className="co-upgrade-link" href={`/checkout?kit=ritual`}>
-                Upgrade to RITUAL — £{ritualKit.firstBoxPrice} first box →
-              </a>
-            </div>
+            ))}
+          </div>
+          {products.some(p => p.comingSoon) && (
+            <div className="co-soon-note">* Coming soon — included when available</div>
           )}
         </div>
 
