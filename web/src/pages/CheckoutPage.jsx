@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
@@ -33,6 +33,22 @@ const CSS = `
 .co-stripe-badge{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding:12px 16px;border:1px solid rgba(99,91,255,0.2);background:rgba(99,91,255,0.04);}
 .co-stripe-lock{font-size:13px;color:#a09bff;}
 .co-stripe-text{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.5px;}
+
+/* Loading overlay */
+.co-overlay{position:fixed;inset:0;z-index:999;background:var(--black);display:flex;align-items:center;justify-content:center;padding:24px;animation:coFadeIn .3s ease;}
+@keyframes coFadeIn{from{opacity:0}to{opacity:1}}
+.co-overlay-inner{max-width:560px;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;}
+.co-overlay-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
+.co-overlay-img{width:100%;max-width:380px;display:block;margin-bottom:32px;object-fit:cover;}
+.co-overlay-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,72px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:12px;}
+.co-overlay-title em{font-style:normal;color:var(--blit);}
+.co-overlay-rule{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:600;border-left:2px solid var(--blue);padding-left:14px;margin-bottom:28px;line-height:1.6;text-align:left;}
+.co-overlay-body{font-size:16px;font-weight:300;color:var(--mist);line-height:1.75;margin-bottom:36px;}
+.co-overlay-spinner{display:flex;align-items:center;gap:12px;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.co-overlay-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:coPulse 1.2s ease-in-out infinite;}
+.co-overlay-dot:nth-child(2){animation-delay:.2s;}
+.co-overlay-dot:nth-child(3){animation-delay:.4s;}
+@keyframes coPulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 .co-stripe-logo{font-size:13px;font-weight:700;letter-spacing:-.5px;color:#a09bff;}
 
 /* Right — kit summary */
@@ -76,6 +92,8 @@ export default function CheckoutPage() {
   const navigate    = useNavigate();
   const kitId       = params.get('kit');
   const kit         = KITS.find(k => k.id === kitId);
+
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
@@ -132,6 +150,28 @@ export default function CheckoutPage() {
   return (
     <>
       <style>{CSS}</style>
+
+      {loading && (
+        <div className="co-overlay">
+          <div className="co-overlay-inner">
+            <div className="co-overlay-tag">The 180 Club</div>
+            <img src="/solum-tshirt.jpeg" alt="SOLUM 180 Tee" className="co-overlay-img" />
+            <div className="co-overlay-title">You Can't<br />Buy <em>This.</em></div>
+            <div className="co-overlay-rule">Not for sale. Not in the shop. Only earned.</div>
+            <p className="co-overlay-body">
+              Six months of continuous subscription — that's the only qualification.<br />
+              Stay consistent. Do the ritual. At month six it ships with your box.
+            </p>
+            <div className="co-overlay-spinner">
+              <div className="co-overlay-dot" />
+              <div className="co-overlay-dot" />
+              <div className="co-overlay-dot" />
+              <span>Taking you to Stripe</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="co-page">
 
         {/* ── LEFT — FORM ── */}

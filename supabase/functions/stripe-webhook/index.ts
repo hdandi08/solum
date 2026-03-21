@@ -94,7 +94,7 @@ async function sendConfirmationEmail(
     method: 'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'SOLUM <contact@bysolum.com>',
+      from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
       to: email,
       subject: `Order confirmed — your ${kitName} Kit is on its way`,
       html,

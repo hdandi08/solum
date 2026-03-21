@@ -23,7 +23,7 @@ async function alertError(message: string, context: Record<string, unknown>) {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'SOLUM Alerts <alerts@bysolum.com>',
+      from: 'SOLUM Alerts <alert@orders.bysolum.co.uk>',
       to: 'harsha@bysolum.com',
       subject: '🚨 [SOLUM] Checkout Error — Action Required',
       html: `<h2 style="color:#c0392b">Checkout Error</h2>
