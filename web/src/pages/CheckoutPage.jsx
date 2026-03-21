@@ -115,7 +115,7 @@ export default function CheckoutPage() {
           last_name:   form.last_name.trim() || null,
           birth_year:  form.birth_year  ? parseInt(form.birth_year)  : null,
           birth_month: form.birth_month ? parseInt(form.birth_month) : null,
-          success_url: `${window.location.origin}/success?kit=${kit.id}`,
+          success_url: `${window.location.origin}/success?kit=${kit.id}&ref={CHECKOUT_SESSION_ID}`,
           cancel_url:  `${window.location.origin}/checkout?kit=${kit.id}`,
         }),
       });

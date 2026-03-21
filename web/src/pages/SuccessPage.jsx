@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 
 const CSS = `
@@ -10,7 +10,9 @@ const CSS = `
 .su-check{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 32px;font-size:22px;}
 .su-eyebrow{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .su-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,96px);letter-spacing:.04em;color:var(--bone);line-height:.95;margin-bottom:24px;}
-.su-kit{display:inline-block;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 16px;margin-bottom:40px;}
+.su-kit{display:inline-block;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 16px;margin-bottom:16px;}
+.su-ref{font-size:12px;letter-spacing:2px;color:var(--stone);font-weight:300;margin-bottom:40px;}
+.su-ref span{color:var(--blit);font-weight:500;}
 .su-divider{width:100%;height:1px;background:var(--line);margin-bottom:40px;}
 
 /* What happens next */
@@ -47,8 +49,10 @@ const CSS = `
 export default function SuccessPage() {
   const [params] = useSearchParams();
   const kitId    = params.get('kit');
+  const rawRef   = params.get('ref') ?? '';
   const kit      = KITS.find(k => k.id === kitId);
   const kitName  = kit?.name ?? 'SOLUM';
+  const orderRef = rawRef ? rawRef.slice(-8).toUpperCase() : null;
 
   return (
     <>
@@ -61,6 +65,7 @@ export default function SuccessPage() {
           <div className="su-eyebrow">Order confirmed</div>
           <h1 className="su-heading">Ritual<br />Begins.</h1>
           <div className="su-kit">{kitName} Kit</div>
+          {orderRef && <div className="su-ref">Order reference: <span>#{orderRef}</span></div>}
 
           <div className="su-divider" />
 
@@ -77,7 +82,7 @@ export default function SuccessPage() {
               <span className="su-step-num">2</span>
               <div className="su-step-body">
                 <div className="su-step-title">First box ships within a week</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched. Tracked delivery.</div>
+                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched. You'll get a separate email with your tracking link once it's on its way.</div>
               </div>
             </div>
             <div className="su-step">
@@ -110,7 +115,7 @@ export default function SuccessPage() {
 
           <div className="su-actions">
             <a href="/full#ritual" className="su-btn-primary">See Your Ritual →</a>
-            <a href="https://instagram.com/bysolum" className="su-btn-ghost" target="_blank" rel="noopener noreferrer">Follow @bysolum</a>
+            <a href="https://instagram.com/bysolum.body" className="su-btn-ghost" target="_blank" rel="noopener noreferrer">Follow @bysolum.body</a>
           </div>
 
         </div>
