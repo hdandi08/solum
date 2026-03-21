@@ -224,11 +224,11 @@ export default function CheckoutPage() {
               </div>
               <div className="co-trust-line">
                 <span className="co-trust-check">✓</span>
-                <span>Tools last 6–12 months — only consumables replenish</span>
+                <span>Your consumables arrive before you run out — tools replaced when due</span>
               </div>
               <div className="co-trust-line">
                 <span className="co-trust-check">✓</span>
-                <span>Ships within 48hrs of order</span>
+                <span>Ships within a week of order</span>
               </div>
             </div>
           </div>
