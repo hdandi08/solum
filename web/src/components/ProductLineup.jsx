@@ -10,16 +10,20 @@ const CSS = `
 .product-card{background:var(--char);padding:32px 24px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:background .25s;}
 .product-card:hover{background:var(--mid);}
 .product-card.coming-soon .prod-visual{opacity:0.45;}
-.prod-num{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:-2px;color:rgba(46,109,164,0.1);line-height:1;margin-bottom:12px;}
+.prod-num{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:-2px;color:rgba(46,109,164,0.3);line-height:1;margin-bottom:12px;}
+.prod-num.weekly{color:rgba(200,169,110,0.3);}
 .prod-origin{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;font-weight:600;}
 .prod-name{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.35;margin-bottom:16px;}
 .prod-visual{width:100%;aspect-ratio:3/4;border:1px solid var(--line);background:var(--dark);display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color .25s;}
 .prod-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(46,109,164,0.07),transparent 65%);}
+.prod-visual.weekly::before{background:radial-gradient(circle at 50% 30%,rgba(200,169,110,0.07),transparent 65%);}
 .prod-visual svg{width:65%;height:65%;opacity:.75;position:relative;z-index:1;}
 .prod-soon-badge{position:absolute;top:12px;left:12px;font-size:9px;letter-spacing:3px;text-transform:uppercase;background:var(--blue);color:var(--bone);padding:3px 8px;font-weight:700;z-index:2;}
 .prod-body-tag{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
 .pbt-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.pbt-dot.weekly{background:#c8a96e;}
 .pbt-text{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.pbt-text.weekly{color:#c8a96e;}
 .prod-desc{font-size:14px;color:var(--stone);line-height:1.6;font-weight:300;margin-top:auto;}
 @media(max-width:768px){.products-grid{grid-template-columns:repeat(2,1fr);}.products-header{grid-template-columns:1fr;gap:24px;}.products-section{padding:60px 24px;}}
 `;
@@ -55,22 +59,25 @@ export default function ProductLineup() {
           </div>
         </div>
         <div className="products-grid reveal">
-          {PRODUCTS.map(p => (
-            <div key={p.num} className={`product-card${p.comingSoon ? ' coming-soon' : ''}`}>
-              <div className="prod-num">{p.num}</div>
-              <div className="prod-origin">{p.origin}</div>
-              <div className="prod-name">{p.name}</div>
-              <div className="prod-visual">
-                {p.comingSoon && <div className="prod-soon-badge">Soon</div>}
-                {SVGS[p.num]}
+          {PRODUCTS.map(p => {
+            const isWeekly = p.tag.toLowerCase().includes('weekly');
+            return (
+              <div key={p.num} className={`product-card${p.comingSoon ? ' coming-soon' : ''}`}>
+                <div className={`prod-num${isWeekly ? ' weekly' : ''}`}>{p.num}</div>
+                <div className="prod-origin">{p.origin}</div>
+                <div className="prod-name">{p.name}</div>
+                <div className={`prod-visual${isWeekly ? ' weekly' : ''}`}>
+                  {p.comingSoon && <div className="prod-soon-badge">Soon</div>}
+                  {SVGS[p.num]}
+                </div>
+                <div className="prod-body-tag">
+                  <div className={`pbt-dot${isWeekly ? ' weekly' : ''}`} />
+                  <span className={`pbt-text${isWeekly ? ' weekly' : ''}`}>{p.tag}</span>
+                </div>
+                <div className="prod-desc">{p.desc}</div>
               </div>
-              <div className="prod-body-tag">
-                <div className="pbt-dot" />
-                <span className="pbt-text">{p.tag}</span>
-              </div>
-              <div className="prod-desc">{p.desc}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </>

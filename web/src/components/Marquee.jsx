@@ -10,7 +10,7 @@ const ITEMS = [
   'The Ritual Men Were Never Taught',
   'Ground · Ritual · Sovereign',
   '10 Minutes Daily · 18 Minutes Weekly',
-  '8 Products Live · 10 Coming',
+  '10 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
   'UK · Korea · Morocco',

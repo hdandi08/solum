@@ -610,13 +610,13 @@ const MARQUEE_ITEMS = [
   'The Ritual Men Were Never Taught',
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
-  '8 Products · One System',
+  '10 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
   'The Ritual Men Were Never Taught',
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
-  '8 Products · One System',
+  '10 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
 ];
@@ -759,7 +759,7 @@ export default function ComingSoon() {
             <div className="cs-prov-country">Turkey</div>
             <div className="cs-prov-tradition">Hamam Craft</div>
             <div className="cs-prov-body">The exfoliation step that goes further than the daily mitt. Istanbul artisans hand-weave raw silk Kese mitts for the Ottoman hamam tradition. The rougher resistance that does what softer tools can't.</div>
-            <div className="cs-prov-products">Product 08</div>
+            <div className="cs-prov-products">Products 09 · 10</div>
           </div>
         </div>
 
@@ -833,7 +833,7 @@ export default function ComingSoon() {
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">First Box</div>
               <div className="cs-sub-item-title">Your ritual starts day one</div>
-              <div className="cs-sub-item-body">All 8 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
+              <div className="cs-sub-item-body">All 10 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Monthly Refill</div>
@@ -860,7 +860,7 @@ export default function ComingSoon() {
 
         {/* 8 — Product pills */}
         <div className="cs-products-wrap">
-          <div className="cs-products-label">8 Products · The Complete System</div>
+          <div className="cs-products-label">10 Products · The Complete System</div>
           <div className="cs-products">
             {PRODUCTS.map(p => (
               <div key={p.num} className="cs-pill">

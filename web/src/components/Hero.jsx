@@ -44,7 +44,7 @@ export default function Hero() {
           <div className="hero-line" />
           <p className="hero-body">
             Not your fault. Nobody ever built men a system worth following.
-            SOLUM fixes that. 10 minutes. 8 products. Two rituals. Head to toe.
+            SOLUM fixes that. 10 minutes. 10 products. Two rituals. Head to toe.
           </p>
           <div className="hero-scope">
             <span className="hero-scope-label">Body Care</span>
