@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — Instagram Profile Picture</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+
+  body {
+    background: #111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 48px 24px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* ── PREVIEWS ── */
+  .previews {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .preview-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .preview-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* Instagram crops to circle — show both square source and circle preview */
+  .circle-preview {
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ── THE PROFILE PICTURE ── */
+  #pfp {
+    width: 320px;
+    height: 320px;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  /* Subtle radial glow behind wordmark — very faint */
+  #pfp::before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 50%;
+    background: radial-gradient(ellipse, rgba(46,109,164,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .pfp-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    position: relative;
+    z-index: 1;
+    line-height: 1;
+  }
+
+  .pfp-rule {
+    width: 48px;
+    height: 2px;
+    background: var(--steel-blue);
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pfp-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    margin-top: 9px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover { opacity: 0.8; }
+  .btn-download { background: var(--bone); color: var(--black); }
+  .btn-alt { background: var(--steel-blue); color: #fff; }
+
+  #dl-msg {
+    display: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+
+  /* ── SIZE NOTE ── */
+  .note {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    opacity: 0.4;
+    text-align: center;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">SOLUM — Instagram Profile Picture</p>
+
+<div class="previews">
+
+  <!-- Full square (source) -->
+  <div class="preview-wrap">
+    <div class="preview-label">Square source</div>
+    <div id="pfp">
+      <div class="pfp-wordmark">SOLUM</div>
+      <div class="pfp-rule"></div>
+      <div class="pfp-sub">bysolum.body</div>
+    </div>
+  </div>
+
+  <!-- Circle preview — how Instagram shows it -->
+  <div class="preview-wrap">
+    <div class="preview-label">As seen on Instagram</div>
+    <div class="circle-preview" style="width:320px;height:320px;">
+      <div style="width:320px;height:320px;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative;">
+        <div style="position:absolute;width:70%;height:50%;background:radial-gradient(ellipse,rgba(46,109,164,0.12) 0%,transparent 70%);"></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:0.15em;color:#F0ECE2;position:relative;z-index:1;line-height:1;">SOLUM</div>
+        <div style="width:48px;height:2px;background:#2E6DA4;margin-top:10px;position:relative;z-index:1;"></div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#2E6DA4;margin-top:9px;position:relative;z-index:1;">bysolum.body</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Small preview — how it looks in feed -->
+  <div class="preview-wrap">
+    <div class="preview-label">In-feed size (~40px)</div>
+    <div class="circle-preview" style="width:40px;height:40px;">
+      <div style="width:40px;height:40px;background:#08090B;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:0.12em;color:#F0ECE2;">SOLUM</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toolbar">
+  <span id="dl-msg">Generating 1080×1080px...</span>
+  <button class="btn btn-download" onclick="downloadPNG()">Download PNG · 1080×1080</button>
+</div>
+
+<p class="note">
+  Instagram displays profile pictures as circles at ~110px.<br>
+  Upload the square PNG — Instagram handles the crop.
+</p>
+
+<script>
+  function downloadPNG() {
+    const msg = document.getElementById('dl-msg');
+    msg.style.display = 'inline';
+
+    const pfp = document.getElementById('pfp');
+
+    // Scale up to 1080×1080 for download
+    pfp.style.width  = '1080px';
+    pfp.style.height = '1080px';
+    pfp.querySelector('.pfp-wordmark').style.fontSize = '240px';
+    pfp.querySelector('.pfp-rule').style.width = '160px';
+    pfp.querySelector('.pfp-rule').style.height = '6px';
+    pfp.querySelector('.pfp-rule').style.marginTop = '32px';
+    pfp.querySelector('.pfp-sub').style.fontSize = '32px';
+    pfp.querySelector('.pfp-sub').style.marginTop = '28px';
+    pfp.querySelector('.pfp-sub').style.letterSpacing = '0.32em';
+
+    html2canvas(pfp, {
+      width: 1080,
+      height: 1080,
+      scale: 1,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#08090B',
+      logging: false
+    }).then(canvas => {
+      // Restore
+      pfp.style.width  = '320px';
+      pfp.style.height = '320px';
+      pfp.querySelector('.pfp-wordmark').style.fontSize = '72px';
+      pfp.querySelector('.pfp-rule').style.width = '48px';
+      pfp.querySelector('.pfp-rule').style.height = '2px';
+      pfp.querySelector('.pfp-rule').style.marginTop = '10px';
+      pfp.querySelector('.pfp-sub').style.fontSize = '10px';
+      pfp.querySelector('.pfp-sub').style.marginTop = '9px';
+      pfp.querySelector('.pfp-sub').style.letterSpacing = '0.32em';
+      msg.style.display = 'none';
+
+      const link = document.createElement('a');
+      link.download = 'SOLUM-instagram-profile.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
+
+</body>
+</html>

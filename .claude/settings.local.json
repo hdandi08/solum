@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(cd /Users/harshamahadeva/NewCo/solum/solum-web && npm install && npm install react-router-dom 2>&1 | tail -5)",
+      "Bash(npm run:*)",
+      "Bash(node --version && nvm --version 2>/dev/null || echo \"nvm not found\")",
+      "Bash(nvm install:*)",
+      "Bash(rm -rf node_modules package-lock.json && npm install 2>&1 | tail -8)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\" && source \"$NVM_DIR/nvm.sh\" && nvm use 22.22.1 && nvm alias default 22.22.1 && node --version && npm run build 2>&1)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\" && source \"$NVM_DIR/nvm.sh\" && nvm use 22.22.1 && rm -rf node_modules package-lock.json && npm install 2>&1 | tail -5 && npm run build 2>&1)",
+      "Bash(source ~/.nvm/nvm.sh && nvm use 22.22.1 && node --version && rm -rf node_modules package-lock.json && npm install 2>&1 | tail -5 && npm run build 2>&1)",
+      "Bash(source ~/.nvm/nvm.sh && nvm use 22.22.1 && npm run build 2>&1)",
+      "Bash(aws amplify:*)",
+      "Bash(which brew:*)",
+      "Bash(brew install:*)",
+      "Bash(gh auth:*)",
+      "Bash(git init:*)",
+      "Bash(gh repo:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(curl -s \"https://aws-amplify-prod-eu-west-2-artifacts.s3.eu-west-2.amazonaws.com/d2hvr4cwnde2ba/master/0000000001/BUILD/log.txt?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEM%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMiJHMEUCIQCIBuWvTMPk07BdgpEFweSNGAJvrna6zZbq8zQvXX8g7AIgazeb%2FjzASv4bcwt4gcSx1KF7EpLeV4n6nb2%2FoCViwwoqyAMImP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAFGgw0OTk5MDExNTUyNTciDKvxedDQgCd0zGOtVyqcAwfl%2Fxmk%2ByZXCRb1vp9CRgJrGQ1l03eUV0zxMCyF%2BM41TfLvDv9TrkbQRAy5Hu6ORHfzoT96%2F5rn5hvlHLz44f9tKAQjjCp1qzb0erBF7lLTkd6u9vs4A7pHZgGZ%2BkcNMtTEJwRo%2F9Y0OLK0N2PVeQfD66Jfu5QVDILu3UaVYcNFUmfegtoR9eQzBux9pOrQvUjL1biQe5wyRwmqBJf1GLEhrL7H0oKjqr9S0LzYeHHUj%2FIXje7XQaTMLyr74rl9ISfkgv9yNfnXRBiCyklMnKikDW%2BZUZFkRchKfL5VfLcrR3c0Z%2FcHhKKieaep5rZKKJRd82N4Rqw7A1AYa8gteE%2B91C5KrNjjfIC8LRGwehI%2FJSiaqrf6Zyid7v%2FLIYcjRWTXNbJWPd2FZJ1C6R07wwAHXRpHei%2Bv3QArrTEC7CKfysHSQUZEKAYtv6op86qf2OSJq%2FMiVrg%2BxTL6qkqRzNn68duh9zCFqYs%2Fm9ulVlY4ItBstLwKMR1yTzGZbn28gUax%2FVLkRBnEXHvVtWnSExADtAzJncc99OIW0okwtKHSzQY6ngHmBHahRJEhvUNwZLAJq5ufF5%2FSmBBov1w55nFOvY24zuu1lkGXTLJNrUFeX2naERZbBfuyYOt2PeseU2uOP%2BCaSjRBfzX8lJ8fGpWoaFHf8tiLtFAWxHFB7zyJiM4HInGCCGnEmc2tWMzyqK1USwnAzykYa7vSgmEP7TQly6U%2B3nLGHs%2F7UMIvWrhv8F2bh10jtog5DjWYl9bX1Exk2g%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20260313T232049Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3599&X-Amz-Credential=ASIAXIZDOI64SD56K65T%2F20260313%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=011b4814644e60742eba11b07ade64f65a4962462d36fe41347c7633a90cd017\" | tail -40)",
+      "Bash(grep:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(node -c web/src/pages/ComingSoon.jsx)",
+      "Bash(npx eslint:*)",
+      "Bash(ls:*)",
+      "Read(//Users/harshamahadeva/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/subagent-driven-development/**)",
+      "Bash(node:*)",
+      "Bash(git:*)"
+    ]
+  }
+}

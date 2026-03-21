@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="520" height="120">
+  <!-- Transparent background, white text — for dark surfaces / silicone emboss -->
+  <text 
+    x="260" 
+    y="90" 
+    font-family="'Bebas Neue', Arial, sans-serif" 
+    font-size="90" 
+    fill="#FFFFFF" 
+    text-anchor="middle" 
+    letter-spacing="14"
+  >SOLUM</text>
+</svg>

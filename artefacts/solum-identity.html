@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Brand Identity</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:  #08090b;
+  --off:    #0c0e12;
+  --dark:   #10131a;
+  --mid:    #181c24;
+  --deep:   #1c2030;
+  --bone:   #f0ece2;
+  --stone:  #6a7380;
+  --blue:   #2e6da4;
+  --blit:   #4a8fc7;
+  --bdim:   #1a4a78;
+  --line:   rgba(240,236,226,0.055);
+  --lineb:  rgba(46,109,164,0.2);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--black); color:var(--bone); font-family:'Barlow Condensed',sans-serif; overflow-x:hidden; }
+
+/* ── SECTION SHELL ── */
+.sec { padding:80px 64px; border-bottom:1px solid var(--line); position:relative; overflow:hidden; }
+.sec-tag { font-size:9px; letter-spacing:6px; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:40px; display:flex; align-items:center; gap:12px; }
+.sec-tag::after { content:''; flex:1; height:1px; background:var(--lineb); }
+
+/* ── GRID HELPERS ── */
+.cols  { display:flex; gap:0; }
+.col   { flex:1; padding:0 32px; border-right:1px solid var(--line); }
+.col:first-child { padding-left:0; }
+.col:last-child  { border-right:none; padding-right:0; }
+
+/* ═══════════════════════════════════
+   01 · HERO — WORDMARK
+═══════════════════════════════════ */
+.hero {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  position:relative;
+  overflow:hidden;
+  padding:80px 64px;
+  border-bottom:1px solid var(--line);
+}
+
+/* Big background SOLUM letterform ghost */
+.hero-ghost {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.hero-ghost span {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(280px, 32vw, 480px);
+  letter-spacing:-0.04em;
+  color:transparent;
+  -webkit-text-stroke: 1px rgba(46,109,164,0.08);
+  line-height:1;
+  white-space:nowrap;
+  user-select:none;
+}
+
+/* Radial glow center */
+.hero::before {
+  content:'';
+  position:absolute;
+  width:800px; height:800px;
+  background:radial-gradient(circle, rgba(46,109,164,0.07) 0%, transparent 65%);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+/* Horizontal rule lines */
+.hero::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to right, transparent 0%, rgba(46,109,164,0.04) 50%, transparent 100%);
+  pointer-events:none;
+}
+
+.hero-inner {
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:28px;
+  text-align:center;
+}
+
+.hero-eyebrow {
+  font-size:9px;
+  letter-spacing:7px;
+  text-transform:uppercase;
+  color:var(--blue);
+  font-weight:600;
+}
+
+.hero-wordmark {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(96px, 14vw, 180px);
+  letter-spacing:0.15em;
+  line-height:1;
+  color:var(--bone);
+  position:relative;
+}
+/* Blue underline accent on the M */
+.hero-wordmark::after {
+  content:'';
+  position:absolute;
+  bottom:-8px; left:0; right:0;
+  height:3px;
+  background:linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+
+.hero-tagline {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--stone);
+  font-weight:400;
+  font-style:italic;
+}
+
+.hero-rule {
+  width:1px;
+  height:48px;
+  background:linear-gradient(to bottom, var(--blue), transparent);
+  margin:4px 0;
+}
+
+.hero-origin {
+  font-size:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:rgba(240,236,226,0.2);
+  font-weight:500;
+}
+
+/* ═══════════════════════════════════
+   02 · WORDMARK TREATMENTS
+═══════════════════════════════════ */
+.wm-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:2px;
+}
+.wm-tile {
+  padding:48px 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  min-height:220px;
+}
+.wm-tile .wm { font-family:'Bebas Neue',sans-serif; font-size:72px; letter-spacing:0.12em; line-height:1; }
+.wm-tile .wm-sub { font-size:8px; letter-spacing:4px; text-transform:uppercase; opacity:0.35; }
+
+/* Tile variants */
+.t1 { background:var(--bone); }
+.t1 .wm { color:var(--black); }
+.t1 .wm-sub { color:var(--black); }
+
+.t2 { background:var(--blue); }
+.t2 .wm { color:var(--bone); }
+.t2 .wm-sub { color:rgba(240,236,226,0.6); }
+
+.t3 { background:var(--black); border:1px solid var(--lineb); }
+.t3 .wm { color:var(--bone); }
+.t3 .wm-sub { color:var(--stone); }
+
+.t4 { background:var(--mid); }
+.t4 .wm { color:var(--blue); }
+.t4 .wm-sub { color:var(--stone); }
+
+.t5 { background:var(--black); }
+.t5 .wm {
+  color:transparent;
+  -webkit-text-stroke:2px var(--bone);
+}
+.t5 .wm-sub { color:var(--stone); }
+
+.t6 { background:var(--bdim); }
+.t6 .wm { color:rgba(240,236,226,0.08); font-size:88px; }
+.t6 .wm-sub { color:rgba(240,236,226,0.3); }
+/* Stacked version in t6 */
+.t6 .wm-stacked {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;
+  letter-spacing:0.35em;
+  color:var(--blit);
+  position:absolute;
+}
+
+/* ═══════════════════════════════════
+   03 · COLOUR PALETTE
+═══════════════════════════════════ */
+.palette {
+  display:flex;
+  height:280px;
+}
+.swatch {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  cursor:default;
+  transition:flex 0.4s ease;
+}
+.swatch:hover { flex:2.2; }
+.swatch-name { font-size:11px; letter-spacing:2px; text-transform:uppercase; font-weight:600; margin-bottom:4px; }
+.swatch-hex  { font-size:10px; letter-spacing:1px; opacity:0.55; font-family:monospace; }
+.swatch-role { font-size:8px; letter-spacing:3px; text-transform:uppercase; opacity:0.4; margin-top:6px; }
+
+.sw1 { background:#08090b; color:var(--bone); border-right:1px solid rgba(255,255,255,0.04); }
+.sw2 { background:#181c24; color:var(--bone); border-right:1px solid rgba(255,255,255,0.04); }
+.sw3 { background:#2e6da4; color:var(--bone); }
+.sw4 { background:#4a8fc7; color:var(--black); border-left:1px solid rgba(0,0,0,0.1); }
+.sw5 { background:#1a4a78; color:var(--bone); border-right:1px solid rgba(255,255,255,0.04); }
+.sw6 { background:#f0ece2; color:var(--black); }
+
+/* ═══════════════════════════════════
+   04 · TYPOGRAPHY
+═══════════════════════════════════ */
+.type-specimen { display:flex; flex-direction:column; gap:48px; }
+
+.type-row { display:flex; align-items:baseline; gap:32px; border-bottom:1px solid var(--line); padding-bottom:32px; }
+.type-meta { width:180px; flex-shrink:0; }
+.type-meta-name  { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--blue); font-weight:600; }
+.type-meta-info  { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--stone); margin-top:4px; }
+
+.t-display  { font-family:'Bebas Neue',sans-serif; font-size:80px; letter-spacing:0.1em; color:var(--bone); line-height:1; }
+.t-heading  { font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--bone); }
+.t-label    { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600; letter-spacing:5px; text-transform:uppercase; color:var(--blue); }
+.t-body     { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:300; letter-spacing:0.5px; color:rgba(240,236,226,0.6); line-height:1.6; max-width:600px; }
+.t-micro    { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:500; letter-spacing:4px; text-transform:uppercase; color:var(--stone); }
+
+/* ═══════════════════════════════════
+   05 · PACKAGING — BOX MOCKUP
+═══════════════════════════════════ */
+.box-stage {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:80px;
+  padding:40px 0;
+}
+
+.box-wrap { perspective:1400px; perspective-origin:50% 40%; }
+
+.box-3d {
+  position:relative;
+  transform-style:preserve-3d;
+  animation:bspin 18s ease-in-out infinite;
+}
+@keyframes bspin {
+  0%,100% { transform:rotateX(-14deg) rotateY(-30deg) translateY(0); }
+  30%     { transform:rotateX(-10deg) rotateY(-4deg)  translateY(-20px); }
+  65%     { transform:rotateX(-14deg) rotateY(18deg)  translateY(-10px); }
+}
+
+/* box sizes */
+.sz-full  { width:260px; height:320px; }
+.sz-mid   { width:200px; height:240px; }
+.sz-small { width:150px; height:180px; }
+
+.face { position:absolute; }
+
+/* FRONT faces */
+.front {
+  background:var(--mid);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(46,109,164,0.2);
+}
+.front.sz-full  { width:260px; height:320px; transform:translateZ(112px); }
+.front.sz-mid   { width:200px; height:240px; transform:translateZ(86px); }
+.front.sz-small { width:150px; height:180px; transform:translateZ(64px); }
+
+.bar-t { background:var(--blue); flex-shrink:0; }
+.bar-b { background:linear-gradient(90deg,var(--bdim),var(--blue)); flex-shrink:0; }
+.sz-full  .bar-t, .sz-full  .bar-b { height:6px; }
+.sz-mid   .bar-t, .sz-mid   .bar-b { height:5px; }
+.sz-small .bar-t, .sz-small .bar-b { height:4px; }
+
+.face-inner { flex:1; padding:18px 20px; display:flex; flex-direction:column; position:relative; }
+
+/* Subtle grid texture on face */
+.face-inner::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(46,109,164,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,109,164,0.025) 1px, transparent 1px);
+  background-size:20px 20px;
+  pointer-events:none;
+}
+
+/* Diagonal blue accent line across face */
+.face-inner::after {
+  content:'';
+  position:absolute;
+  top:0; right:0;
+  width:1px; height:100%;
+  background:linear-gradient(to bottom, transparent, rgba(46,109,164,0.3) 50%, transparent);
+  pointer-events:none;
+}
+
+.box-word {
+  font-family:'Bebas Neue',sans-serif;
+  color:var(--bone);
+  letter-spacing:0.1em;
+  line-height:1;
+  position:relative;
+  z-index:1;
+}
+.sz-full  .box-word { font-size:64px; }
+.sz-mid   .box-word { font-size:48px; }
+.sz-small .box-word { font-size:36px; }
+
+.box-tag {
+  font-size:6px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:rgba(240,236,226,0.18);
+  margin-top:6px;
+  position:relative; z-index:1;
+}
+
+/* Product number — big in corner */
+.box-num {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:120px;
+  color:rgba(46,109,164,0.07);
+  line-height:1;
+  position:absolute;
+  bottom:-20px; right:-10px;
+  letter-spacing:-4px;
+  pointer-events:none;
+}
+
+.box-origins {
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  position:relative; z-index:1;
+}
+.box-orig {
+  font-size:6px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(240,236,226,0.14);
+  display:flex; align-items:center; gap:5px;
+}
+.bdot { width:3px; height:3px; border-radius:50%; background:var(--blue); opacity:.6; flex-shrink:0; }
+
+/* Blue horizontal rule on face */
+.face-rule {
+  width:32px; height:2px;
+  background:var(--blue);
+  margin:10px 0;
+}
+
+/* SIDE faces */
+.side-r {
+  background:#0d1018;
+  border:1px solid rgba(46,109,164,0.05);
+  display:flex; align-items:center; justify-content:center;
+}
+.sz-full  .side-r { width:112px; height:320px; transform:rotateY(90deg) translateZ(112px); }
+.sz-mid   .side-r { width:86px;  height:240px; transform:rotateY(90deg) translateZ(86px); }
+.sz-small .side-r { width:64px;  height:180px; transform:rotateY(90deg) translateZ(64px); }
+
+.side-txt {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:7px; letter-spacing:4px;
+  color:rgba(240,236,226,0.05);
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  text-transform:uppercase;
+}
+
+/* TOP faces */
+.top-f {
+  background:#171b22;
+  border:1px solid rgba(46,109,164,0.04);
+}
+.sz-full  .top-f { width:260px; height:112px; transform:rotateX(90deg) translateZ(112px); top:-82px; }
+.sz-mid   .top-f { width:200px; height:86px;  transform:rotateX(90deg) translateZ(86px);  top:-62px; }
+.sz-small .top-f { width:150px; height:64px;  transform:rotateX(90deg) translateZ(64px);  top:-46px; }
+
+/* Shadow */
+.box-shadow {
+  height:20px;
+  background:radial-gradient(ellipse, rgba(46,109,164,0.14), transparent 68%);
+  position:absolute; bottom:-22px;
+  animation:bsh 18s ease-in-out infinite;
+}
+.sz-full  + .box-shadow { width:300px; }
+.sz-mid   + .box-shadow { width:240px; }
+.sz-small + .box-shadow { width:180px; }
+@keyframes bsh { 0%,100%{opacity:.5;transform:scaleX(1)} 30%{opacity:.2;transform:scaleX(.72)} }
+
+/* ── BOX LABEL BESIDE ── */
+.box-info {
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:240px;
+}
+.bi-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:0.1em; color:var(--bone); }
+.bi-row   { display:flex; flex-direction:column; gap:3px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+.bi-key   { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600; }
+.bi-val   { font-size:13px; color:rgba(240,236,226,0.5); letter-spacing:0.5px; }
+
+/* ═══════════════════════════════════
+   06 · PRODUCT LABEL STRIP
+═══════════════════════════════════ */
+.label-strip {
+  display:flex;
+  gap:2px;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+.prod-label {
+  flex-shrink:0;
+  width:140px;
+  background:var(--mid);
+  border:1px solid var(--lineb);
+  padding:16px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  position:relative;
+  overflow:hidden;
+}
+.prod-label::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  background:var(--blue);
+}
+.prod-num   { font-family:'Bebas Neue',sans-serif; font-size:32px; color:rgba(46,109,164,0.2); line-height:1; letter-spacing:-1px; }
+.prod-name  { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--bone); font-weight:600; line-height:1.3; }
+.prod-orig  { font-size:7.5px; letter-spacing:2px; text-transform:uppercase; color:var(--stone); margin-top:2px; }
+.prod-line  { width:20px; height:1px; background:var(--blue); opacity:.5; margin-top:auto; }
+
+/* ═══════════════════════════════════
+   07 · USAGE / TAGLINE BREAKDOWN
+═══════════════════════════════════ */
+.tagline-study {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:40px;
+  padding:40px 0;
+}
+.tg-main {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px, 8vw, 96px);
+  letter-spacing:0.08em;
+  color:var(--bone);
+  text-align:center;
+  line-height:1.1;
+}
+.tg-main .accent { color:var(--blue); }
+.tg-divider {
+  display:flex;
+  align-items:center;
+  gap:20px;
+  width:100%;
+  max-width:600px;
+}
+.tg-divider span { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--stone); white-space:nowrap; }
+.tg-divider::before, .tg-divider::after { content:''; flex:1; height:1px; background:var(--lineb); }
+.tg-alt { font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(--stone); text-align:center; font-style:italic; }
+
+/* ═══════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════ */
+@keyframes fadeup {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.hero-inner > * {
+  animation:fadeup 0.9s ease both;
+}
+.hero-inner > *:nth-child(1) { animation-delay:0.1s; }
+.hero-inner > *:nth-child(2) { animation-delay:0.25s; }
+.hero-inner > *:nth-child(3) { animation-delay:0.35s; }
+.hero-inner > *:nth-child(4) { animation-delay:0.45s; }
+.hero-inner > *:nth-child(5) { animation-delay:0.55s; }
+.hero-inner > *:nth-child(6) { animation-delay:0.65s; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     01 · HERO
+════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-ghost"><span>SOLUM</span></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Brand Identity System · 2025</div>
+    <div class="hero-rule"></div>
+    <div class="hero-wordmark">SOLUM</div>
+    <div class="hero-tagline">Built from the ground up.</div>
+    <div class="hero-rule"></div>
+    <div class="hero-origin">Men's Body Ritual · Global Curation · Est. 2025</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     02 · WORDMARK TREATMENTS
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-tag">02 · Wordmark Treatments</div>
+  <div class="wm-grid">
+
+    <div class="wm-tile t1">
+      <div class="wm">SOLUM</div>
+      <div class="wm-sub">Black Ground · Primary</div>
+    </div>
+
+    <div class="wm-tile t2">
+      <div class="wm">SOLUM</div>
+      <div class="wm-sub">Steel Blue Ground</div>
+    </div>
+
+    <div class="wm-tile t3">
+      <div class="wm">SOLUM</div>
+      <div class="wm-sub">Bone on Black · Dark</div>
+    </div>
+
+    <div class="wm-tile t4">
+      <div class="wm">SOLUM</div>
+      <div class="wm-sub">Blue on Charcoal</div>
+    </div>
+
+    <div class="wm-tile t5">
+      <div class="wm">SOLUM</div>
+      <div class="wm-sub">Outline · Reversed</div>
+    </div>
+
+    <!-- Stacked / lockup version -->
+    <div class="wm-tile t6" style="position:relative; overflow:hidden;">
+      <div class="wm">SOLUM</div>
+      <!-- Blue wordmark sitting over ghost -->
+      <div style="position:absolute; text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:0.35em; color:var(--blit); line-height:1;">SOLUM</div>
+        <div style="font-size:7px; letter-spacing:5px; text-transform:uppercase; color:rgba(74,143,199,0.5); margin-top:3px;">Built From The Ground Up</div>
+      </div>
+      <div class="wm-sub">Ghost + Lockup</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     03 · TAGLINE STUDY
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-tag">03 · Tagline</div>
+  <div class="tagline-study">
+
+    <!-- Primary tagline -->
+    <div class="tg-main">Built From<br>The <span class="accent">Ground</span> Up.</div>
+
+    <div class="tg-divider"><span>Alternate Options</span></div>
+
+    <!-- Alternatives -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2px; width:100%;">
+
+      <div style="background:var(--mid); padding:32px 28px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600;">Option A · Primary</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.08em; color:var(--bone); line-height:1.1;">Built From<br>The Ground Up.</div>
+        <div style="font-size:9px; color:var(--stone); margin-top:8px; line-height:1.6;">Earthy, foundational — "solum" means ground in Latin. Direct, masculine, says something real about the brand.</div>
+      </div>
+
+      <div style="background:var(--mid); padding:32px 28px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600;">Option B · Ritual</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.08em; color:var(--bone); line-height:1.1;">The Daily<br>Standard.</div>
+        <div style="font-size:9px; color:var(--stone); margin-top:8px; line-height:1.6;">Implies non-negotiable habit. Elevated without being indulgent. Positions the routine as baseline, not luxury.</div>
+      </div>
+
+      <div style="background:var(--mid); padding:32px 28px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600;">Option C · Minimal</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:0.08em; color:var(--bone); line-height:1.1;">Stripped.<br>Essential.</div>
+        <div style="font-size:9px; color:var(--stone); margin-top:8px; line-height:1.6;">Two words. Confident silence. Works best with the clean packaging system — lets the product do the talking.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     04 · COLOUR PALETTE
+════════════════════════════════════ -->
+<section class="sec" style="padding-left:0;padding-right:0;padding-bottom:0;">
+  <div class="sec-tag" style="padding:0 64px 40px;">04 · Colour System</div>
+  <div class="palette">
+    <div class="swatch sw1">
+      <div class="swatch-name">SOLUM Black</div>
+      <div class="swatch-hex">#08090B</div>
+      <div class="swatch-role">Primary Ground</div>
+    </div>
+    <div class="swatch sw2">
+      <div class="swatch-name">Charcoal</div>
+      <div class="swatch-hex">#181C24</div>
+      <div class="swatch-role">UI Surface</div>
+    </div>
+    <div class="swatch sw5">
+      <div class="swatch-name">Deep Blue</div>
+      <div class="swatch-hex">#1A4A78</div>
+      <div class="swatch-role">Dark Accent</div>
+    </div>
+    <div class="swatch sw3">
+      <div class="swatch-name">Steel Blue</div>
+      <div class="swatch-hex">#2E6DA4</div>
+      <div class="swatch-role">Primary Accent</div>
+    </div>
+    <div class="swatch sw4">
+      <div class="swatch-name">Sky</div>
+      <div class="swatch-hex">#4A8FC7</div>
+      <div class="swatch-role">Highlight</div>
+    </div>
+    <div class="swatch sw6">
+      <div class="swatch-name">Bone</div>
+      <div class="swatch-hex">#F0ECE2</div>
+      <div class="swatch-role">Primary Type</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     05 · TYPOGRAPHY
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-tag">05 · Typography</div>
+  <div class="type-specimen">
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Bebas Neue</div>
+        <div class="type-meta-info">Display · All-caps · Logo</div>
+      </div>
+      <div class="t-display">SOLUM</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Barlow Condensed</div>
+        <div class="type-meta-info">700 · Headings</div>
+      </div>
+      <div class="t-heading">Men's Body Ritual</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Barlow Condensed</div>
+        <div class="type-meta-info">600 · Labels / UI</div>
+      </div>
+      <div class="t-label">Korea · Japan · Morocco · Turkey · United Kingdom</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Barlow Condensed</div>
+        <div class="type-meta-info">300 · Body Copy</div>
+      </div>
+      <div class="t-body">Not a product. A process. Seven rituals sourced from the world's oldest grooming traditions — curated into a single daily system for the modern man.</div>
+    </div>
+
+    <div class="type-row" style="border:none;padding:0;">
+      <div class="type-meta">
+        <div class="type-meta-name">Barlow Condensed</div>
+        <div class="type-meta-info">500 · Micro / Origin tags</div>
+      </div>
+      <div class="t-micro">Made in Korea · Sourced in Morocco · Formulated in Japan · Woven in Turkey</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     06 · PACKAGING — 3 SKUs
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-tag">06 · Packaging System</div>
+  <div class="box-stage">
+
+    <!-- WORLD KIT — Large -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:48px;">
+      <div style="position:relative;">
+        <div class="box-wrap">
+          <div class="box-3d sz-full">
+
+            <div class="face front sz-full">
+              <div class="bar-t"></div>
+              <div class="face-inner">
+                <div class="box-word">SOLUM</div>
+                <div class="box-tag">Built From The Ground Up</div>
+                <div class="face-rule"></div>
+                <!-- Clean geometric accent — no figure -->
+                <div style="position:absolute; bottom:28px; right:16px; opacity:0.06; pointer-events:none;">
+                  <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
+                    <circle cx="45" cy="45" r="44" stroke="#2e6da4" stroke-width="1"/>
+                    <circle cx="45" cy="45" r="30" stroke="#2e6da4" stroke-width="1"/>
+                    <circle cx="45" cy="45" r="16" stroke="#2e6da4" stroke-width="1"/>
+                    <line x1="1" y1="45" x2="89" y2="45" stroke="#2e6da4" stroke-width="0.5"/>
+                    <line x1="45" y1="1" x2="45" y2="89" stroke="#2e6da4" stroke-width="0.5"/>
+                  </svg>
+                </div>
+                <div class="box-num">W</div>
+                <div class="box-origins">
+                  <div class="box-orig"><div class="bdot"></div>Korea · Tools</div>
+                  <div class="box-orig"><div class="bdot"></div>Japan · Body Wash</div>
+                  <div class="box-orig"><div class="bdot"></div>Morocco · Clay + Oil</div>
+                  <div class="box-orig"><div class="bdot"></div>Turkey · Kese</div>
+                </div>
+              </div>
+              <div class="bar-b"></div>
+            </div>
+            <div class="face side-r sz-full"><div class="side-txt">SOLUM · Built From The Ground Up · Men's Body Ritual</div></div>
+            <div class="face top-f sz-full"></div>
+
+          </div>
+        </div>
+        <div class="box-shadow" style="width:300px; margin:0 auto;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.1em; color:var(--bone);">World Kit</div>
+        <div style="font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--stone); margin-top:3px;">7 Products · £110</div>
+      </div>
+    </div>
+
+    <!-- FULL RITUAL — Mid -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:48px;">
+      <div style="position:relative;">
+        <div class="box-wrap">
+          <div class="box-3d sz-mid">
+
+            <div class="face front sz-mid">
+              <div class="bar-t"></div>
+              <div class="face-inner">
+                <div class="box-word">SOLUM</div>
+                <div class="box-tag">Full Ritual System</div>
+                <div class="face-rule"></div>
+                <!-- Concentric circles accent -->
+                <div style="position:absolute; bottom:20px; right:12px; opacity:0.05; pointer-events:none;">
+                  <svg width="70" height="70" viewBox="0 0 70 70" fill="none">
+                    <circle cx="35" cy="35" r="34" stroke="#2e6da4" stroke-width="1"/>
+                    <circle cx="35" cy="35" r="22" stroke="#2e6da4" stroke-width="1"/>
+                    <circle cx="35" cy="35" r="10" stroke="#2e6da4" stroke-width="1"/>
+                  </svg>
+                </div>
+                <div class="box-num" style="font-size:90px;">R</div>
+                <div class="box-origins">
+                  <div class="box-orig"><div class="bdot"></div>5 Products</div>
+                  <div class="box-orig"><div class="bdot"></div>Daily + Weekly</div>
+                </div>
+              </div>
+              <div class="bar-b"></div>
+            </div>
+            <div class="face side-r sz-mid"><div class="side-txt">SOLUM · Full Ritual System</div></div>
+            <div class="face top-f sz-mid"></div>
+
+          </div>
+        </div>
+        <div class="box-shadow" style="width:240px; margin:0 auto;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.1em; color:var(--blue);">Full Ritual · Most Popular</div>
+        <div style="font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--stone); margin-top:3px;">5 Products · £78</div>
+      </div>
+    </div>
+
+    <!-- DAILY STARTER — Small -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:48px;">
+      <div style="position:relative;">
+        <div class="box-wrap">
+          <div class="box-3d sz-small">
+
+            <div class="face front sz-small">
+              <div class="bar-t"></div>
+              <div class="face-inner">
+                <div class="box-word">SOLUM</div>
+                <div class="box-tag">Daily Starter</div>
+                <div class="box-num" style="font-size:68px;">D</div>
+              </div>
+              <div class="bar-b"></div>
+            </div>
+            <div class="face side-r sz-small"><div class="side-txt">SOLUM</div></div>
+            <div class="face top-f sz-small"></div>
+
+          </div>
+        </div>
+        <div class="box-shadow" style="width:180px; margin:0 auto;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.1em; color:var(--bone);">Daily Starter</div>
+        <div style="font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--stone); margin-top:3px;">3 Products · £42</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Box design notes -->
+  <div style="display:flex; gap:2px; margin-top:48px;">
+    <div style="flex:1; background:var(--mid); padding:20px 22px; border-left:2px solid var(--blue);">
+      <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:6px;">Material</div>
+      <div style="font-size:12px; color:rgba(240,236,226,0.45);">Rigid matte black board · Debossed SOLUM wordmark · Blue foil strip top + base</div>
+    </div>
+    <div style="flex:1; background:var(--mid); padding:20px 22px; border-left:2px solid var(--lineb);">
+      <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:6px;">Interior</div>
+      <div style="font-size:12px; color:rgba(240,236,226,0.45);">Black crêpe tissue · Blue ribbon pull · Ritual card face-up · Custom foam tray</div>
+    </div>
+    <div style="flex:1; background:var(--mid); padding:20px 22px; border-left:2px solid var(--lineb);">
+      <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:6px;">Face Design</div>
+      <div style="font-size:12px; color:rgba(240,236,226,0.45);">Wordmark + tagline only. Clean. No figures. Subtle geometric accent in corner.</div>
+    </div>
+    <div style="flex:1; background:var(--mid); padding:20px 22px; border-left:2px solid var(--lineb);">
+      <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--blue); font-weight:600; margin-bottom:6px;">Cost</div>
+      <div style="font-size:12px; color:rgba(240,236,226,0.45);">~£2.80–3.50 / unit at 500. ~£1.80 at 2,000</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     07 · PRODUCT LABEL SYSTEM
+════════════════════════════════════ -->
+<section class="sec">
+  <div class="sec-tag">07 · Product Labels</div>
+  <div class="label-strip">
+
+    <div class="prod-label">
+      <div class="prod-num">01</div>
+      <div class="prod-name">Amino Acid Body Wash</div>
+      <div class="prod-orig">🇯🇵 Japan</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">02</div>
+      <div class="prod-name">Exfoliating Mitt</div>
+      <div class="prod-orig">🇰🇷 Korea</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">03</div>
+      <div class="prod-name">Back Scrub Cloth</div>
+      <div class="prod-orig">🇰🇷 Korea</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">04</div>
+      <div class="prod-name">Silicone Scalp Massager</div>
+      <div class="prod-orig">🇰🇷 Korea</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">05</div>
+      <div class="prod-name">Rhassoul Clay Body Mask</div>
+      <div class="prod-orig">🇲🇦 Morocco</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">06</div>
+      <div class="prod-name">Organic Argan Body Oil</div>
+      <div class="prod-orig">🇲🇦 Morocco</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label">
+      <div class="prod-num">07</div>
+      <div class="prod-name">Fast-Absorb Body Lotion</div>
+      <div class="prod-orig">🇬🇧 United Kingdom</div>
+      <div class="prod-line"></div>
+    </div>
+
+    <div class="prod-label" style="border-color:rgba(46,109,164,0.08); opacity:0.5;">
+      <div class="prod-num">08</div>
+      <div class="prod-name">Artisan Kese Mitt</div>
+      <div class="prod-orig">🇹🇷 Turkey</div>
+      <div class="prod-line"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════
+     FOOTER
+════════════════════════════════════ -->
+<div style="padding:40px 64px; display:flex; align-items:center; justify-content:space-between;">
+  <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:0.15em; color:var(--bone);">SOLUM</div>
+  <div style="font-size:8px; letter-spacing:4px; text-transform:uppercase; color:var(--stone);">Built From The Ground Up · Men's Body Ritual · Est. 2025</div>
+  <div style="font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(240,236,226,0.15);">Brand Identity System v1</div>
+</div>
+
+</body>
+</html>

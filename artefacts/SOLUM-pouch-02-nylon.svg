@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="378" height="586" viewBox="0 0 378 586">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Barlow+Condensed:wght@300;400;600;700&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="378" height="586" fill="#08090B"/>
+
+  <!-- Top accent -->
+  <rect x="0" y="0" width="378" height="11" fill="#2E6DA4"/>
+
+  <!-- Product number -->
+  <text x="38" y="52" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" font-weight="600" fill="#6a7380" letter-spacing="3">PRODUCT · 02</text>
+
+  <!-- SOLUM wordmark -->
+  <text x="189" y="148" font-family="'Bebas Neue', Helvetica, sans-serif" font-size="82" font-weight="700" fill="#F0ECE2" letter-spacing="8" text-anchor="middle">SOLUM</text>
+
+  <!-- Rule under wordmark -->
+  <line x1="38" y1="162" x2="340" y2="162" stroke="#2E6DA4" stroke-width="0.8"/>
+
+  <!-- Product name -->
+  <text x="189" y="182" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" font-weight="600" fill="#6a7380" letter-spacing="3" text-anchor="middle">NYLON SCRUB CLOTH</text>
+
+  <!-- Hero line -->
+  <text x="189" y="232" font-family="'Bebas Neue', Helvetica, sans-serif" font-size="32" fill="#F0ECE2" letter-spacing="2" text-anchor="middle">DAILY.</text>
+  <text x="189" y="262" font-family="'Bebas Neue', Helvetica, sans-serif" font-size="32" fill="#F0ECE2" letter-spacing="2" text-anchor="middle">HEAD TO TOE.</text>
+
+  <!-- Frequency badge -->
+  <rect x="127" y="278" width="124" height="24" rx="4" fill="#2E6DA4"/>
+  <text x="189" y="294" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" letter-spacing="2" text-anchor="middle">● DAILY USE</text>
+
+  <!-- Specs -->
+  <text x="189" y="334" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" fill="#6a7380" letter-spacing="2" text-anchor="middle">70CM × 28CM</text>
+  <text x="189" y="352" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" fill="#6a7380" letter-spacing="2" text-anchor="middle">REPLACE EVERY 90 DAYS</text>
+  <text x="189" y="370" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="10" fill="#6a7380" letter-spacing="2" text-anchor="middle">SAFE FOR DAILY USE</text>
+
+  <!-- Rule -->
+  <line x1="38" y1="400" x2="340" y2="400" stroke="#1a2030" stroke-width="0.8"/>
+
+  <!-- Origin + URL -->
+  <text x="38" y="420" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="9" fill="#6a7380" letter-spacing="2">MADE IN CHINA</text>
+  <text x="340" y="420" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="9" fill="#6a7380" letter-spacing="2" text-anchor="end">BYSOLUM.COM</text>
+
+  <!-- Legal -->
+  <text x="189" y="444" font-family="'Barlow Condensed', Helvetica, sans-serif" font-size="8" fill="#3a4050" letter-spacing="0.5" text-anchor="middle">Use with 01 · Body Wash. Full body including back. Replace every 90 days.</text>
+
+</svg>

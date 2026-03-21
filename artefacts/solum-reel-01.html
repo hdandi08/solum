@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — Reel 01 Storyboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+  body {
+    background: #0e0e0e;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* ── REEL GRID ── */
+  .reel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 980px;
+  }
+
+  .scene-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .scene-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .scene-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    opacity: 0.8;
+  }
+
+  .scene-time {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* ── FRAME (9:16) ── */
+  .frame {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+  }
+
+  .frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* overlays — each scene different darkness */
+  .overlay-dark {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+      rgba(8,9,11,0.92) 0%,
+      rgba(8,9,11,0.65) 40%,
+      rgba(8,9,11,0.35) 100%
+    );
+  }
+
+  .overlay-mid {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+      rgba(8,9,11,0.88) 0%,
+      rgba(8,9,11,0.55) 45%,
+      rgba(8,9,11,0.20) 100%
+    );
+  }
+
+  /* Scene 4 — reel3 is bright white, crush it */
+  .overlay-crush {
+    position: absolute;
+    inset: 0;
+    background: rgba(8,9,11,0.82);
+  }
+
+  .overlay-black {
+    position: absolute;
+    inset: 0;
+    background: var(--black);
+  }
+
+  /* ── SOLUM rule ── */
+  .frame-rule {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--steel-blue);
+    z-index: 3;
+  }
+
+  /* ── FRAME TOP ── */
+  .frame-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 14px 0;
+  }
+
+  .frame-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    opacity: 0.6;
+  }
+
+  .frame-scene-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--bone);
+    opacity: 0.3;
+  }
+
+  /* ── TEXT POSITIONS ── */
+  .text-centre {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 18px;
+    text-align: center;
+  }
+
+  .text-lower {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 2;
+    padding: 0 18px 28px;
+  }
+
+  .text-lower-centre {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 2;
+    padding: 0 18px 28px;
+    text-align: center;
+  }
+
+  /* ── TEXT STYLES ── */
+  .hook-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+    color: var(--bone);
+    text-align: center;
+  }
+
+  .hook-text .accent {
+    color: var(--sky-blue);
+  }
+
+  .body-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    color: var(--bone);
+    opacity: 0.88;
+  }
+
+  .body-text strong {
+    font-weight: 600;
+    display: block;
+    font-size: 17px;
+    opacity: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    line-height: 0.98;
+    color: var(--bone);
+    text-align: center;
+  }
+
+  .eyebrow-small {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .cta-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .cta-rule {
+    width: 36px;
+    height: 2px;
+    background: var(--steel-blue);
+    margin: 0 auto 10px;
+  }
+
+  .cta-url {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+  }
+
+  .cta-tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+    opacity: 0.45;
+    margin-top: 8px;
+  }
+
+  .divider-thin {
+    width: 24px;
+    height: 2px;
+    background: var(--steel-blue);
+    margin: 8px 0;
+  }
+
+  /* ── SCENE NOTES ── */
+  .scene-note {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    opacity: 0.45;
+    line-height: 1.5;
+    padding: 0 2px;
+  }
+
+  /* ── PRODUCTION BRIEF ── */
+  .brief {
+    width: 100%;
+    max-width: 980px;
+    background: var(--charcoal);
+    border-left: 3px solid var(--steel-blue);
+    padding: 28px 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .brief-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+  }
+
+  .brief-section { display: flex; flex-direction: column; gap: 6px; }
+
+  .brief-section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    opacity: 0.75;
+  }
+
+  .brief-body {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.82;
+    white-space: pre-line;
+  }
+
+  .brief-body strong { font-weight: 600; }
+
+  /* ── CAPTION ── */
+  .caption {
+    width: 100%;
+    max-width: 980px;
+    background: rgba(26,74,120,0.1);
+    border: 1px solid rgba(46,109,164,0.2);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .caption-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    opacity: 0.8;
+  }
+
+  .caption-body {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.72;
+    color: var(--bone);
+    opacity: 0.85;
+    white-space: pre-line;
+  }
+
+  .caption-body strong { font-weight: 600; }
+
+  .hashtags {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    color: var(--steel-blue);
+    opacity: 0.65;
+    line-height: 1.9;
+  }
+
+  .warning {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.25);
+    padding: 12px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #ffb347;
+    line-height: 1.5;
+    width: 100%;
+    max-width: 980px;
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">SOLUM — Reel 01 · "You've Been Showering Wrong" · Storyboard</p>
+
+<div style="display:flex;gap:12px;align-items:center;padding:14px 20px;background:#181C24;border:1px solid rgba(46,109,164,0.25);width:100%;max-width:980px;">
+  <span style="font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#F0ECE2;opacity:0.4;flex:1;">6 scenes · 1080×1920px each</span>
+  <span id="dl-status" style="font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:11px;letter-spacing:0.15em;color:#4A8FC7;display:none;"></span>
+  <button onclick="downloadAll(this)" style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;padding:10px 24px;background:#F0ECE2;color:#08090B;border:none;cursor:pointer;">Download All Frames</button>
+</div>
+
+<div class="warning">⚠ reel3.jpg (Scene 4) is very bright/white — a heavy dark overlay has been applied. Swap for a darker image when possible. Suggested search: "shower head dark moody" on Unsplash.</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- STORYBOARD GRID                   -->
+<!-- ══════════════════════════════════ -->
+<div class="reel-grid">
+
+  <!-- SCENE 1 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 1 · Hook</span>
+      <span class="scene-time">0 – 2s</span>
+    </div>
+    <div class="frame" id="frame1">
+      <img src="reel1.jpg" alt="">
+      <div class="overlay-dark"></div>
+      <div class="frame-rule"></div>
+      <div class="frame-top">
+        <div class="frame-wordmark">SOLUM</div>
+        <div class="frame-scene-num">01</div>
+      </div>
+      <div class="text-centre">
+        <div class="hook-text">YOU'VE BEEN<br><span class="accent">SHOWERING</span><br>WRONG.</div>
+      </div>
+    </div>
+    <div class="scene-note">Full screen hook text. Dark close-up of neck + water droplets. Cut is hard and fast — 2 seconds only.</div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 2 · The Reality</span>
+      <span class="scene-time">2 – 6s</span>
+    </div>
+    <div class="frame" id="frame2">
+      <img src="img1.jpg" alt="" style="object-position: center top;">
+      <div class="overlay-mid"></div>
+      <div class="frame-rule"></div>
+      <div class="frame-top">
+        <div class="frame-wordmark">SOLUM</div>
+        <div class="frame-scene-num">02</div>
+      </div>
+      <div class="text-lower">
+        <span class="eyebrow-small">Every morning</span>
+        <div class="body-text">
+          <strong>Hot water. Generic body wash.</strong>
+          Rinse. Done.<br>
+          That's not a routine.
+        </div>
+      </div>
+    </div>
+    <div class="scene-note">Man's back in shower. Text builds line by line. Hold for 4 seconds.</div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 3 · The Gap</span>
+      <span class="scene-time">6 – 10s</span>
+    </div>
+    <div class="frame" id="frame3">
+      <img src="reel4.jpg" alt="">
+      <div class="overlay-dark"></div>
+      <div class="frame-rule"></div>
+      <div class="frame-top">
+        <div class="frame-wordmark">SOLUM</div>
+        <div class="frame-scene-num">03</div>
+      </div>
+      <div class="text-centre">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#4A8FC7;">Most men have never</span>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.04em;line-height:0.92;color:#F0ECE2;">EXFOLIATED<br>ONCE.</div>
+          <div style="width:32px;height:2px;background:#2E6DA4;"></div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:14px;letter-spacing:0.04em;color:#F0ECE2;opacity:0.75;line-height:1.5;">Dead skin builds up.<br>Hot water doesn't shift it.</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-note">Man behind frosted glass. Stat text — punchy. 4 seconds.</div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 4 · The Miss</span>
+      <span class="scene-time">10 – 14s</span>
+    </div>
+    <div class="frame" id="frame4">
+      <img src="reel3.jpg" alt="">
+      <div class="overlay-crush"></div>
+      <div class="frame-rule"></div>
+      <div class="frame-top">
+        <div class="frame-wordmark">SOLUM</div>
+        <div class="frame-scene-num">04</div>
+      </div>
+      <div class="text-centre">
+        <div>
+          <span class="eyebrow-small">And after the shower?</span>
+          <div class="stat-text">NOTHING.<br>NO MOISTURE.<br>NO SYSTEM.</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-note">⚠ Swap reel3.jpg for darker image. Text is the hero here — almost pure black frame.</div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 5 · The Truth</span>
+      <span class="scene-time">14 – 18s</span>
+    </div>
+    <div class="frame" id="frame5">
+      <div class="overlay-black"></div>
+      <div class="frame-rule"></div>
+      <div class="frame-top">
+        <div class="frame-wordmark">SOLUM</div>
+        <div class="frame-scene-num">05</div>
+      </div>
+      <div class="text-centre">
+        <div>
+          <span class="eyebrow-small">The reason</span>
+          <div class="hook-text" style="font-size:32px;">NOBODY EVER<br>BUILT YOU<br>A SYSTEM.</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:13px;color:var(--bone);opacity:0.55;margin-top:12px;letter-spacing:0.05em;">That's not on you.</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-note">Pure black frame. Text fades in. Most important moment — pause here.</div>
+  </div>
+
+  <!-- SCENE 6 -->
+  <div class="scene-block">
+    <div class="scene-meta">
+      <span class="scene-label">Scene 6 · CTA</span>
+      <span class="scene-time">18 – 22s</span>
+    </div>
+    <div class="frame" id="frame6">
+      <div class="overlay-black"></div>
+      <div class="frame-rule"></div>
+      <div class="text-centre">
+        <div style="text-align:center;">
+          <span class="eyebrow-small">The system exists now.</span>
+          <span class="cta-wordmark">SOLUM</span>
+          <div class="cta-rule"></div>
+          <div class="cta-url">WWW.BYSOLUM.CO.UK</div>
+          <div class="cta-tagline">Your body. Done right.</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-note">Hold 4 seconds. Link in bio sticker goes over the URL text.</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- CAPCUT BRIEF                       -->
+<!-- ══════════════════════════════════ -->
+<div class="brief">
+  <div class="brief-title">CapCut Production Brief</div>
+
+  <div class="brief-section">
+    <div class="brief-section-label">Format</div>
+    <div class="brief-body">9:16 vertical · 1080×1920px · 22 seconds total
+Export: MP4, 1080p minimum</div>
+  </div>
+
+  <div class="brief-section">
+    <div class="brief-section-label">Step by step in CapCut</div>
+    <div class="brief-body"><strong>1.</strong> New project → 9:16 canvas
+<strong>2.</strong> Import: reel1.jpg, img1.jpg, reel4.jpg, reel3.jpg (in order)
+<strong>3.</strong> Set durations: Scene 1 = 2s · Scene 2 = 4s · Scene 3 = 4s · Scene 4 = 4s
+<strong>4.</strong> Add 2 black frames after Scene 4: Scene 5 = 4s · Scene 6 = 4s
+<strong>5.</strong> Transitions: Hard cut between all scenes (no fades — keeps energy)
+<strong>6.</strong> Add text overlays per scene using the copy below
+<strong>7.</strong> Font: use Bebas Neue for headlines, regular sans-serif for body lines
+<strong>8.</strong> Add a 3px left-edge steel blue bar (#2E6DA4) on each scene as a brand element
+<strong>9.</strong> Add dark gradient overlay on each image (black to transparent, bottom up)
+<strong>10.</strong> Music: dark atmospheric / moody lo-fi — search "dark cinematic" in CapCut audio
+<strong>11.</strong> Add "Link in bio" sticker over Scene 6 URL</div>
+  </div>
+
+  <div class="brief-section">
+    <div class="brief-section-label">Text overlay copy — scene by scene</div>
+    <div class="brief-body"><strong>Scene 1 (0–2s):</strong> "YOU'VE BEEN SHOWERING WRONG." — Bebas Neue, large, centred
+<strong>Scene 2 (2–6s):</strong> "Hot water. Generic body wash. Rinse. Done. That's not a routine." — lower third, builds line by line
+<strong>Scene 3 (6–10s):</strong> "Most men never / EXFOLIATED ONCE." — lower, eyebrow + stat
+<strong>Scene 4 (10–14s):</strong> "NOTHING. NO MOISTURE. NO SYSTEM." — centred, all caps
+<strong>Scene 5 (14–18s):</strong> "NOBODY EVER BUILT YOU A SYSTEM. / That's not on you." — centred, Bebas Neue + small regular
+<strong>Scene 6 (18–22s):</strong> "SOLUM / WWW.BYSOLUM.CO.UK / Your body. Done right."</div>
+  </div>
+
+  <div class="brief-section">
+    <div class="brief-section-label">Music direction</div>
+    <div class="brief-body">Search in CapCut audio library: <strong>"dark cinematic"</strong> or <strong>"moody atmospheric"</strong>
+Pick something with a slow build — no beat drop, no hype energy. Should feel like the opening of a film.
+Volume: 60–70% (text is the hero, music is the mood)</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- CAPTION                           -->
+<!-- ══════════════════════════════════ -->
+<div class="caption">
+  <div class="caption-label">Caption — paste into Instagram</div>
+  <div class="caption-body"><strong>You've been showering every day since you were old enough to shower alone.</strong>
+
+Hot water. Whatever body wash was on the shelf. Done.
+
+No exfoliation. No real moisture. No system.
+
+Nobody ever taught you this stuff. That's not on you.
+
+The system exists now.
+
+<strong>Find it at the link in bio → www.bysolum.co.uk</strong></div>
+  <div class="hashtags">#mensgrooming #bodycare #skincareformen #menswellness #showertips #groomingtips #morningroutine #solum</div>
+</div>
+
+<script>
+const scenes = [
+  { id: 'frame1', filename: 'SOLUM-reel01-scene1-hook.png' },
+  { id: 'frame2', filename: 'SOLUM-reel01-scene2-reality.png' },
+  { id: 'frame3', filename: 'SOLUM-reel01-scene3-gap.png' },
+  { id: 'frame4', filename: 'SOLUM-reel01-scene4-miss.png' },
+  { id: 'frame5', filename: 'SOLUM-reel01-scene5-truth.png' },
+  { id: 'frame6', filename: 'SOLUM-reel01-scene6-cta.png' },
+];
+
+function captureFrame(id, filename) {
+  return new Promise(resolve => {
+    const el = document.getElementById(id);
+    html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#08090B',
+      logging: false
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      // Small delay so browser doesn't block multiple downloads
+      setTimeout(resolve, 800);
+    });
+  });
+}
+
+async function downloadAll(btn) {
+  const status = document.getElementById('dl-status');
+  btn.textContent = 'Downloading...';
+  btn.disabled = true;
+  status.style.display = 'inline';
+
+  for (let i = 0; i < scenes.length; i++) {
+    status.textContent = `Scene ${i + 1} of ${scenes.length}...`;
+    await captureFrame(scenes[i].id, scenes[i].filename);
+  }
+
+  status.textContent = 'All 6 frames saved ✓';
+  btn.textContent = 'Download All Frames';
+  btn.disabled = false;
+  setTimeout(() => { status.style.display = 'none'; }, 3000);
+}
+</script>
+
+</body>
+</html>

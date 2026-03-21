@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — Reel 02</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+
+  body {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Barlow Condensed', sans-serif;
+    gap: 0;
+  }
+
+  body.record-mode {
+    background: #000;
+    padding: 0;
+    justify-content: center;
+  }
+
+  body.record-mode .controls { display: none; }
+  body.record-mode .instructions { display: none; }
+
+  body.record-mode #stage {
+    transform-origin: center center;
+  }
+
+  /* ── STAGE ── */
+  #stage {
+    width: 405px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+    flex-shrink: 0;
+  }
+
+  /* ── SCENE ── */
+  .scene {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scene.active { opacity: 1; pointer-events: auto; }
+
+  /* Left brand rule */
+  .brand-rule {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--steel-blue);
+    z-index: 4;
+  }
+
+  /* Wordmark top left */
+  .scene-wordmark {
+    position: absolute;
+    top: 20px;
+    left: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    opacity: 0.6;
+    z-index: 4;
+  }
+
+  /* ── TEXT ELEMENTS ── */
+  .txt {
+    position: absolute;
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .txt.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .pos-centre {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(16px);
+    text-align: center;
+    width: 88%;
+  }
+
+  .pos-centre.visible {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  .pos-lower {
+    bottom: 52px;
+    left: 36px;
+    right: 26px;
+  }
+
+  .pos-lower-centre {
+    bottom: 52px;
+    left: 36px;
+    right: 26px;
+    text-align: center;
+  }
+
+  /* Text styles */
+  .t-hook {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 0.04em;
+    line-height: 0.93;
+    color: var(--bone);
+  }
+
+  .t-hook .accent { color: var(--sky-blue); }
+
+  .t-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .t-stat {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    letter-spacing: 0.04em;
+    line-height: 0.93;
+    color: var(--bone);
+  }
+
+  .t-body {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: var(--bone);
+  }
+
+  .t-body strong {
+    font-weight: 700;
+    display: block;
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  .t-rule {
+    width: 40px;
+    height: 3px;
+    background: var(--steel-blue);
+    margin: 16px auto;
+  }
+
+  .t-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    opacity: 0.80;
+    line-height: 1.5;
+    margin-top: 14px;
+  }
+
+  .t-step-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 260px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--steel-blue);
+    opacity: 0.07;
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .t-cta-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    display: block;
+  }
+
+  .t-cta-url {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    display: block;
+    margin-top: 8px;
+  }
+
+  .t-cta-tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+    opacity: 0.42;
+    display: block;
+    margin-top: 12px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--steel-blue);
+    width: 0%;
+    z-index: 10;
+    transition: width 0.1s linear;
+  }
+
+  /* ── PLAY OVERLAY ── */
+  #play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8,9,11,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    gap: 16px;
+    cursor: pointer;
+  }
+
+  #play-overlay:hover { background: rgba(8,9,11,0.75); }
+
+  /* ── COUNTDOWN OVERLAY ── */
+  #countdown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8,9,11,0.92);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    gap: 10px;
+  }
+
+  #countdown-overlay.active { display: flex; }
+
+  #countdown-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    line-height: 1;
+  }
+
+  #countdown-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    opacity: 0.7;
+  }
+
+  .play-icon {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--bone);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .play-icon::after {
+    content: '';
+    border-style: solid;
+    border-width: 12px 0 12px 22px;
+    border-color: transparent transparent transparent var(--bone);
+    margin-left: 4px;
+  }
+
+  .play-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.7;
+  }
+
+  .play-duration {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex;
+    gap: 10px;
+    padding: 14px 0 0;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover { opacity: 0.75; }
+  .btn-play  { background: var(--bone); color: var(--black); }
+  .btn-record { background: var(--steel-blue); color: #fff; }
+  .btn-restart { background: transparent; color: var(--bone); border: 1px solid rgba(240,236,226,0.2); opacity: 0.6; }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions {
+    max-width: 405px;
+    padding: 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .instr-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    opacity: 0.7;
+  }
+
+  .instr-steps {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--bone);
+    opacity: 0.5;
+  }
+
+  .instr-steps strong {
+    font-weight: 600;
+    color: var(--bone);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ -->
+<!-- STAGE                             -->
+<!-- ══════════════════════════════════ -->
+<div id="stage">
+
+  <!-- SCENE 1 — Hook -->
+  <div class="scene" id="s1">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <!-- Blue top + bottom bars -->
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div class="txt pos-centre" data-delay="100">
+      <div class="t-hook" style="font-size:72px;">DO YOU<br>FIND IT<br><span class="accent">HARD TO</span><br>PROPERLY<br>CLEAN YOUR<br>BACK IN<br>THE <span class="accent">SHOWER?</span></div>
+    </div>
+  </div>
+
+  <!-- SCENE 2 — The Problem -->
+  <div class="scene" id="s2">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div class="txt pos-centre" data-delay="200">
+      <span class="t-eyebrow">Most men do.</span>
+      <div class="t-stat" style="font-size:58px;line-height:1.0;">MOST <span style="color:var(--sky-blue);">TOOLS</span><br>WEREN'T<br>BUILT FOR IT.</div>
+      <div class="t-rule"></div>
+      <div class="t-sub">A loofah can't reach it.<br>Your hands can't get there.</div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 — The Solution -->
+  <div class="scene" id="s3">
+    <!-- Full blue background panel top third -->
+    <div style="position:absolute;top:0;left:0;right:0;height:220px;background:var(--steel-blue);z-index:1;"></div>
+    <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--sky-blue);z-index:4;"></div>
+    <div class="scene-wordmark" style="left:18px;color:var(--black);opacity:0.5;">SOLUM</div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div class="txt pos-centre" data-delay="200" style="z-index:5;">
+      <span class="t-eyebrow" style="color:var(--black);opacity:0.7;">The fix</span>
+      <div class="t-hook" style="font-size:62px;color:var(--black);">THE SOLUM</div>
+      <div class="t-hook" style="font-size:62px;color:var(--bone);margin-top:4px;">EXFOLIATING<br>CLOTH<br><span class="accent">IS.</span></div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 — The Method -->
+  <div class="scene" id="s4">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="t-step-number">03</div>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div class="txt pos-centre" data-delay="200">
+      <span class="t-eyebrow">How to use it</span>
+      <div class="t-stat" style="font-size:54px;line-height:1.05;"><span style="color:var(--sky-blue);">BOTH HANDS.</span><br>DRAPE OVER<br>SHOULDER.<br><span style="color:var(--sky-blue);">SAW BACK</span><br>AND FORTH.</div>
+    </div>
+  </div>
+
+  <!-- SCENE 5 — The Result -->
+  <div class="scene" id="s5">
+    <!-- Full blue background -->
+    <div style="position:absolute;inset:0;background:var(--steel-blue);z-index:1;"></div>
+    <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--sky-blue);z-index:4;"></div>
+    <div class="scene-wordmark" style="color:var(--black);opacity:0.4;">SOLUM</div>
+    <div class="txt pos-centre" data-delay="200" style="z-index:5;">
+      <span class="t-eyebrow" style="color:var(--black);opacity:0.6;">Upper. Mid. Lower back.</span>
+      <div class="t-hook" style="font-size:130px;line-height:0.85;color:var(--black);opacity:0.15;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;">60</div>
+      <div class="t-hook" style="font-size:110px;line-height:0.9;color:var(--bone);">60<br>SECS.</div>
+      <div class="t-rule" style="background:var(--black);opacity:0.3;"></div>
+      <div class="t-sub" style="font-size:20px;color:var(--black);opacity:0.6;">Every shower. Done.</div>
+    </div>
+  </div>
+
+  <!-- SCENE 6 — CTA -->
+  <div class="scene" id="s6">
+    <div class="brand-rule"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--steel-blue);z-index:4;"></div>
+    <div class="txt pos-centre" data-delay="300">
+      <span class="t-eyebrow">Step 3 of 5 · The SOLUM system</span>
+      <span class="t-cta-wordmark">SOLUM</span>
+      <div class="t-rule"></div>
+      <span class="t-cta-url">WWW.BYSOLUM.COM</span>
+      <span class="t-cta-tagline">Your body. Done right.</span>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Play overlay -->
+  <div id="play-overlay" onclick="startReel()">
+    <div class="play-icon"></div>
+    <div class="play-label">Play Reel</div>
+    <div class="play-duration">28 seconds</div>
+  </div>
+
+  <!-- Countdown overlay (record mode) -->
+  <div id="countdown-overlay">
+    <div id="countdown-number">3</div>
+    <div id="countdown-label">Start QuickTime recording now</div>
+  </div>
+
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button class="btn btn-play" onclick="startReel()">▶ Play</button>
+  <button class="btn btn-restart" onclick="restartReel()">↺ Restart</button>
+  <button class="btn btn-record" onclick="toggleRecordMode()">⬤ Record Mode</button>
+</div>
+
+<!-- Instructions -->
+<div class="instructions">
+  <div class="instr-title">How to record</div>
+  <div class="instr-steps">
+    <strong>1.</strong> Press <strong>CMD + SHIFT + 5</strong> → "Record Selected Portion" → draw selection around the reel frame<br>
+    <strong>2.</strong> Click "Record Mode" — a 3-2-1 countdown appears<br>
+    <strong>3.</strong> Hit Record in QuickTime during the countdown<br>
+    <strong>4.</strong> Reel plays automatically after countdown ends<br>
+    <strong>5.</strong> Stop QuickTime after Scene 6 fades out<br>
+    <strong>6.</strong> .mov file → upload directly to Instagram
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  { id: 's1', duration: 3500 },
+  { id: 's2', duration: 5000 },
+  { id: 's3', duration: 4500 },
+  { id: 's4', duration: 5500 },
+  { id: 's5', duration: 4500 },
+  { id: 's6', duration: 5000 },
+];
+
+const TOTAL = SCENES.reduce((a, s) => a + s.duration, 0);
+
+let currentScene = -1;
+let timer = null;
+let startTime = null;
+let rafId = null;
+let running = false;
+
+function showScene(index) {
+  SCENES.forEach(s => {
+    const el = document.getElementById(s.id);
+    el.classList.remove('active');
+    el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible'));
+  });
+
+  if (index >= SCENES.length) {
+    running = false;
+    return;
+  }
+
+  currentScene = index;
+  const el = document.getElementById(SCENES[index].id);
+  el.classList.add('active');
+
+  el.querySelectorAll('.txt').forEach((t, i) => {
+    const delay = parseInt(t.dataset.delay || 0) + i * 120;
+    setTimeout(() => t.classList.add('visible'), delay);
+  });
+
+  timer = setTimeout(() => showScene(index + 1), SCENES[index].duration);
+}
+
+function updateProgress() {
+  if (!running) return;
+  const elapsed = Date.now() - startTime;
+  const pct = Math.min((elapsed / TOTAL) * 100, 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  if (pct < 100) rafId = requestAnimationFrame(updateProgress);
+}
+
+function startReel() {
+  const overlay = document.getElementById('play-overlay');
+  const icon = overlay.querySelector('.play-icon');
+  const label = overlay.querySelector('.play-label');
+  const dur = overlay.querySelector('.play-duration');
+
+  icon.style.display = 'none';
+  dur.style.display = 'none';
+  label.style.fontSize = '18px';
+  label.style.letterSpacing = '0.1em';
+
+  let count = 10;
+  label.textContent = 'STARTING IN ' + count + '…';
+
+  const tick = setInterval(() => {
+    count--;
+    if (count > 0) {
+      label.textContent = 'STARTING IN ' + count + '…';
+    } else {
+      clearInterval(tick);
+      overlay.style.display = 'none';
+      restartReel();
+    }
+  }, 1000);
+}
+
+function restartReel() {
+  clearTimeout(timer);
+  cancelAnimationFrame(rafId);
+  running = true;
+  startTime = Date.now();
+  document.getElementById('progress-bar').style.width = '0%';
+  showScene(0);
+  rafId = requestAnimationFrame(updateProgress);
+}
+
+function toggleRecordMode() {
+  document.body.classList.toggle('record-mode');
+  const btn = document.querySelector('.btn-record');
+  const stage = document.getElementById('stage');
+
+  if (document.body.classList.contains('record-mode')) {
+    btn.textContent = '✕ Exit Record Mode';
+    document.getElementById('play-overlay').style.display = 'none';
+
+    const scale = Math.min(window.innerHeight / 720, window.innerWidth / 405);
+    stage.style.transform = `scale(${scale})`;
+
+    startCountdown();
+  } else {
+    btn.textContent = '⬤ Record Mode';
+    stage.style.transform = '';
+    clearTimeout(timer);
+    cancelAnimationFrame(rafId);
+    document.getElementById('countdown-overlay').classList.remove('active');
+  }
+}
+
+function startCountdown() {
+  SCENES.forEach(s => {
+    const el = document.getElementById(s.id);
+    el.classList.remove('active');
+    el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible'));
+  });
+  document.getElementById('progress-bar').style.width = '0%';
+
+  const overlay = document.getElementById('countdown-overlay');
+  const num = document.getElementById('countdown-number');
+  const label = document.getElementById('countdown-label');
+  overlay.classList.add('active');
+
+  let count = 30;
+  num.textContent = count;
+  label.textContent = 'Start QuickTime recording now';
+
+  const tick = setInterval(() => {
+    count--;
+    if (count === 10) {
+      label.textContent = 'Hit Record now ↑';
+    }
+    if (count > 0) {
+      num.textContent = count;
+    } else {
+      clearInterval(tick);
+      num.textContent = '▶';
+      label.textContent = 'Recording…';
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        restartReel();
+      }, 400);
+    }
+  }, 1000);
+}
+</script>
+
+</body>
+</html>

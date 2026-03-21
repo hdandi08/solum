@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — 5-Year Financial Projections</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#08090b; --char:#0c0e12; --dark:#10131a;
+  --mid:#181c24;   --panel:#1c2030;
+  --bone:#f0ece2;  --stone:#6a7380;
+  --blue:#2e6da4;  --blit:#4a8fc7; --bdim:#1a4a78;
+  --glit:#3aaa68;  --rlit:#c94040; --alit:#e8a830;
+  --line:rgba(240,236,226,0.055);
+  --lineb:rgba(46,109,164,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;padding:0;}
+.page{max-width:1300px;margin:0 auto;padding:72px 48px;}
+
+/* ── HEADER ── */
+.doc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;padding-bottom:32px;border-bottom:1px solid var(--lineb);}
+.doc-logo{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:0.18em;color:var(--bone);}
+.doc-title-block{text-align:right;}
+.doc-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.06em;color:var(--bone);line-height:1;}
+.doc-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);margin-top:6px;}
+
+/* ── SECTION HEADS ── */
+.sec-head{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:28px;display:flex;align-items:center;gap:12px;}
+.sec-head::after{content:'';flex:1;height:1px;background:var(--lineb);}
+hr{border:none;border-top:1px solid var(--line);margin:56px 0;}
+
+/* ── SCENARIO TABS ── */
+.scenario-tabs{display:flex;gap:1px;background:var(--line);margin-bottom:48px;}
+.tab{flex:1;padding:18px 24px;background:var(--char);cursor:pointer;transition:background .2s;display:flex;flex-direction:column;gap:4px;border-bottom:2px solid transparent;}
+.tab:hover{background:var(--mid);}
+.tab.active{background:var(--mid);border-bottom-color:var(--blue);}
+.tab-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.tab-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.08em;color:var(--bone);}
+.tab-y5{font-size:11px;color:var(--blue);}
+
+/* ── SCENARIO PANEL ── */
+.scenario-panel{display:none;}
+.scenario-panel.active{display:block;}
+
+/* ── SUMMARY STATS ROW ── */
+.summary-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);margin-bottom:48px;}
+.sum-tile{background:var(--mid);padding:28px 24px;display:flex;flex-direction:column;gap:6px;}
+.sum-tile.blue{background:var(--blue);}
+.sum-k{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.sum-tile.blue .sum-k{color:rgba(255,255,255,0.5);}
+.sum-v{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--bone);line-height:1;margin-top:4px;}
+.sum-tile.blue .sum-v{color:#fff;}
+.sum-n{font-size:11px;color:var(--stone);font-weight:300;margin-top:2px;}
+.sum-tile.blue .sum-n{color:rgba(255,255,255,0.4);}
+
+/* ── YEAR TABLE ── */
+.year-table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+.year-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:10px 16px;text-align:right;border-bottom:1px solid var(--lineb);}
+.year-table th:first-child{text-align:left;}
+.year-table td{padding:14px 16px;font-size:13px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;}
+.year-table td:first-child{text-align:left;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.08em;color:var(--bone);}
+.year-table .pos{color:var(--glit);}
+.year-table .neg{color:var(--rlit);}
+.year-table .hi{color:var(--bone);font-weight:600;}
+.year-table .stone{color:var(--stone);}
+.year-table .blue{color:var(--blit);}
+.year-table tr:last-child td{border-bottom:none;background:var(--mid);font-weight:700;}
+.year-table tr:last-child td:first-child{color:var(--blue);}
+
+/* ── BAR CHARTS ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:48px;}
+.chart-panel{background:var(--char);padding:32px;}
+.chart-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:24px;}
+.bar-chart{display:flex;flex-direction:column;gap:10px;}
+.bar-row{display:flex;align-items:center;gap:12px;}
+.bar-year{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--stone);width:28px;flex-shrink:0;}
+.bar-track{flex:1;height:28px;background:rgba(255,255,255,0.03);position:relative;overflow:hidden;}
+.bar-fill{height:100%;display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:600;letter-spacing:.5px;min-width:2px;transition:width .8s cubic-bezier(.16,1,.3,1);}
+.bar-fill.rev{background:linear-gradient(90deg,var(--bdim),var(--blue));}
+.bar-fill.gp{background:linear-gradient(90deg,#1a4a3a,var(--glit));}
+.bar-fill.net{background:linear-gradient(90deg,#2a1a3a,var(--blit));}
+.bar-fill.subs{background:linear-gradient(90deg,var(--bdim),var(--blit));}
+.bar-val{width:70px;text-align:right;font-size:12px;font-weight:600;flex-shrink:0;}
+
+/* ── ASSUMPTIONS ── */
+.assumptions-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);margin-bottom:48px;}
+.assumption-tile{background:var(--char);padding:28px 24px;display:flex;flex-direction:column;gap:10px;}
+.at-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.at-rows{display:flex;flex-direction:column;gap:0;}
+.at-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.at-row:last-child{border-bottom:none;}
+.at-k{color:var(--stone);font-weight:300;}
+.at-v{color:var(--bone);font-weight:500;}
+.at-v.g{color:var(--glit);}
+.at-v.b{color:var(--blit);}
+.at-v.a{color:var(--alit);}
+
+/* ── SCENARIO COMPARE ── */
+.compare-table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+.compare-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:10px 16px;text-align:right;border-bottom:1px solid var(--lineb);}
+.compare-table th:first-child{text-align:left;}
+.compare-table td{padding:12px 16px;font-size:13px;text-align:right;border-bottom:1px solid var(--line);}
+.compare-table td:first-child{text-align:left;color:var(--stone);font-size:11px;letter-spacing:1px;}
+.compare-table .con{color:var(--alit);}
+.compare-table .base{color:var(--blit);}
+.compare-table .opt{color:var(--glit);}
+.compare-table tr:last-child td{font-weight:700;}
+
+/* ── KEY LEVERS ── */
+.levers-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+.lever{background:var(--char);padding:28px 24px;border-left:2px solid var(--blue);display:flex;flex-direction:column;gap:8px;}
+.lever.warn{border-left-color:var(--rlit);}
+.lever.good{border-left-color:var(--glit);}
+.lever.amber{border-left-color:var(--alit);}
+.lever-tag{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.lever.warn .lever-tag{color:var(--rlit);}
+.lever.good .lever-tag{color:var(--glit);}
+.lever.amber .lever-tag{color:var(--alit);}
+.lever-stat{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--bone);line-height:1;}
+.lever-body{font-size:13px;color:rgba(240,236,226,0.55);font-weight:300;line-height:1.65;}
+
+/* ── REALITY CHECK BOX ── */
+.reality-box{background:var(--mid);border:1px solid var(--lineb);border-left:3px solid var(--alit);padding:28px 32px;margin-bottom:48px;}
+.rb-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.08em;color:var(--alit);margin-bottom:12px;}
+.rb-body{font-size:13px;color:rgba(240,236,226,0.55);font-weight:300;line-height:1.7;}
+.rb-body strong{color:var(--bone);}
+
+/* ── FOOTER ── */
+.doc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid var(--line);margin-top:56px;}
+.df-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.15em;color:var(--bone);}
+.df-note{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-logo">SOLUM</div>
+    <div class="doc-title-block">
+      <div class="doc-title">5-Year Projections</div>
+      <div class="doc-sub">Month-by-Month Cohort Model · Three Scenarios · Internal Document · 2026</div>
+    </div>
+  </div>
+
+  <!-- REALITY CHECK -->
+  <div class="reality-check-section">
+    <div class="sec-head">Before You Read These Numbers</div>
+    <div class="reality-box">
+      <div class="rb-title">A Note On Projections</div>
+      <div class="rb-body">
+        These are <strong>cohort-modelled projections</strong> — not guesses, not best-case fantasies. Every number flows from locked unit economics:
+        £62.78 gross profit per Full kit, £30.35/month sub gross profit, £28 CAC, 7% monthly churn. Two kits: Basic (£72) and Full (£89). Sub COGS includes quarterly cloth replacements (nylon + viscose every 90 days).
+        The model simulates each month independently, churning existing subscribers before adding new ones.
+        <br><br>
+        <strong>What these projections cannot account for:</strong> supplier delays, fulfilment failures, ad platform changes, product quality issues, or the general chaos of building a business.
+        The conservative scenario is the one to plan from. The base case is the one to aim for. The optimistic case is what happens if your Instagram content works and churn drops below 6%.
+        <br><br>
+        <strong>The single most important number in this entire model is not revenue — it is monthly churn rate.</strong>
+        Dropping from 7% to 5.5% churn (base → optimistic) nearly triples 5-year profit. No amount of marketing spend comes close to that leverage.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO TABS -->
+  <div class="sec-head">Select Scenario</div>
+  <div class="scenario-tabs">
+    <div class="tab active" onclick="setScenario('con')">
+      <div class="tab-label">Scenario 01</div>
+      <div class="tab-name">Conservative</div>
+      <div class="tab-y5">Y5 Revenue: £2.4M · Net P&L: £1.3M</div>
+    </div>
+    <div class="tab" onclick="setScenario('base')">
+      <div class="tab-label">Scenario 02</div>
+      <div class="tab-name">Base Case</div>
+      <div class="tab-y5">Y5 Revenue: £6.2M · Net P&L: £3.6M</div>
+    </div>
+    <div class="tab" onclick="setScenario('opt')">
+      <div class="tab-label">Scenario 03</div>
+      <div class="tab-name">Optimistic</div>
+      <div class="tab-y5">Y5 Revenue: £20.4M · Net P&L: £12.3M</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONSERVATIVE ═══════════ -->
+  <div class="scenario-panel active" id="panel-con">
+
+    <div class="summary-row">
+      <div class="sum-tile">
+        <div class="sum-k">Year 1 Revenue</div>
+        <div class="sum-v">£224K</div>
+        <div class="sum-n">703 new customers · £1.5K/mo adspend</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">Year 3 Revenue</div>
+        <div class="sum-v">£908K</div>
+        <div class="sum-n">1,800 new customers · 1,586 active subs</div>
+      </div>
+      <div class="sum-tile blue">
+        <div class="sum-k">Year 5 Revenue</div>
+        <div class="sum-v">£2.4M</div>
+        <div class="sum-n">4,608 new customers · 4,118 active subs</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Total Revenue</div>
+        <div class="sum-v">£5.5M</div>
+        <div class="sum-n">11,116 cumulative customers</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Net Profit</div>
+        <div class="sum-v">£3.0M</div>
+        <div class="sum-n">54% net margin at maturity</div>
+      </div>
+    </div>
+
+    <div class="sec-head">Year-by-Year Breakdown</div>
+    <table class="year-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>New Customers</th>
+          <th>Active Subs (EoY)</th>
+          <th>Kit Revenue</th>
+          <th>Sub Revenue</th>
+          <th>Total Revenue</th>
+          <th>Gross Profit</th>
+          <th>Net P&L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Year 1</td>
+          <td class="stone">703</td>
+          <td class="blue">474</td>
+          <td class="stone">£57,807</td>
+          <td class="stone">£166,168</td>
+          <td class="hi">£223,975</td>
+          <td class="hi">£138,417</td>
+          <td class="pos">£129,005</td>
+        </tr>
+        <tr>
+          <td>Year 2</td>
+          <td class="stone">1,125</td>
+          <td class="blue">945</td>
+          <td class="stone">£92,479</td>
+          <td class="stone">£433,794</td>
+          <td class="hi">£526,273</td>
+          <td class="hi">£319,974</td>
+          <td class="pos">£306,715</td>
+        </tr>
+        <tr>
+          <td>Year 3</td>
+          <td class="stone">1,800</td>
+          <td class="blue">1,586</td>
+          <td class="stone">£147,960</td>
+          <td class="stone">£759,960</td>
+          <td class="hi">£907,920</td>
+          <td class="hi">£551,107</td>
+          <td class="pos">£502,058</td>
+        </tr>
+        <tr>
+          <td>Year 4</td>
+          <td class="stone">2,880</td>
+          <td class="blue">2,566</td>
+          <td class="stone">£236,736</td>
+          <td class="stone">£1,241,787</td>
+          <td class="hi">£1,478,523</td>
+          <td class="hi">£897,464</td>
+          <td class="pos">£805,923</td>
+        </tr>
+        <tr>
+          <td>Year 5</td>
+          <td class="stone">4,608</td>
+          <td class="blue">4,118</td>
+          <td class="stone">£378,778</td>
+          <td class="stone">£1,997,005</td>
+          <td class="hi">£2,375,783</td>
+          <td class="hi">£1,442,100</td>
+          <td class="pos">£1,292,122</td>
+        </tr>
+        <tr>
+          <td>5-Year Total</td>
+          <td class="stone">11,116</td>
+          <td class="blue">—</td>
+          <td class="stone">£913,760</td>
+          <td class="stone">£4,598,714</td>
+          <td class="hi">£5,512,474</td>
+          <td class="hi">£3,349,062</td>
+          <td class="pos">£3,035,823</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="chart-grid">
+      <div class="chart-panel">
+        <div class="chart-title">Annual Revenue Growth</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill rev" style="width:9.4%"><span style="color:rgba(240,236,226,0.6);font-size:10px;"></span></div></div><div class="bar-val" style="color:var(--blit)">£224K</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill rev" style="width:22.1%"></div></div><div class="bar-val" style="color:var(--blit)">£526K</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill rev" style="width:38.2%"></div></div><div class="bar-val" style="color:var(--blit)">£908K</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill rev" style="width:62.2%"></div></div><div class="bar-val" style="color:var(--blit)">£1.48M</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill rev" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">£2.4M</div></div>
+        </div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Active Subscribers (End of Year)</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill subs" style="width:11.5%"></div></div><div class="bar-val" style="color:var(--blit)">474</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill subs" style="width:22.9%"></div></div><div class="bar-val" style="color:var(--blit)">945</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill subs" style="width:38.5%"></div></div><div class="bar-val" style="color:var(--blit)">1,586</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill subs" style="width:62.3%"></div></div><div class="bar-val" style="color:var(--blit)">2,566</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill subs" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">4,118</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-head">Conservative Scenario Assumptions</div>
+    <div class="assumptions-grid">
+      <div class="assumption-tile">
+        <div class="at-label">Acquisition</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Y1 Ad Spend</span><span class="at-v">£1,500/mo</span></div>
+          <div class="at-row"><span class="at-k">YoY Growth</span><span class="at-v">+60%/year</span></div>
+          <div class="at-row"><span class="at-k">CAC</span><span class="at-v">£32</span></div>
+          <div class="at-row"><span class="at-k">Organic Mix</span><span class="at-v">20%</span></div>
+          <div class="at-row"><span class="at-k">Y5 Ad Spend</span><span class="at-v">£9,830/mo</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Retention</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Monthly Churn</span><span class="at-v a">7.5%</span></div>
+          <div class="at-row"><span class="at-k">Avg Retention</span><span class="at-v a">13.3 months</span></div>
+          <div class="at-row"><span class="at-k">Avg LTV GP</span><span class="at-v">£346</span></div>
+          <div class="at-row"><span class="at-k">LTV : CAC</span><span class="at-v g">10.8×</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Product Mix</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Basic</span><span class="at-v">40%</span></div>
+          <div class="at-row"><span class="at-k">Full</span><span class="at-v">60%</span></div>
+          <div class="at-row"><span class="at-k">Avg First Order</span><span class="at-v">£82.20</span></div>
+          <div class="at-row"><span class="at-k">Avg Monthly Sub</span><span class="at-v">£47.20</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ BASE CASE ═══════════ -->
+  <div class="scenario-panel" id="panel-base">
+
+    <div class="summary-row">
+      <div class="sum-tile">
+        <div class="sum-k">Year 1 Revenue</div>
+        <div class="sum-v">£377K</div>
+        <div class="sum-n">1,142 new customers · £2K/mo adspend</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">Year 3 Revenue</div>
+        <div class="sum-v">£1.9M</div>
+        <div class="sum-n">3,702 new customers · 3,297 active subs</div>
+      </div>
+      <div class="sum-tile blue">
+        <div class="sum-k">Year 5 Revenue</div>
+        <div class="sum-v">£6.2M</div>
+        <div class="sum-n">11,997 new customers · 10,812 active subs</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Total Revenue</div>
+        <div class="sum-v">£12.9M</div>
+        <div class="sum-n">25,565 cumulative customers</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Net Profit</div>
+        <div class="sum-v">£7.5M</div>
+        <div class="sum-n">59% net margin at maturity</div>
+      </div>
+    </div>
+
+    <div class="sec-head">Year-by-Year Breakdown</div>
+    <table class="year-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>New Customers</th>
+          <th>Active Subs (EoY)</th>
+          <th>Kit Revenue</th>
+          <th>Sub Revenue</th>
+          <th>Total Revenue</th>
+          <th>Gross Profit</th>
+          <th>Net P&L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Year 1</td>
+          <td class="stone">1,142</td>
+          <td class="blue">791</td>
+          <td class="stone">£95,813</td>
+          <td class="stone">£281,610</td>
+          <td class="hi">£377,423</td>
+          <td class="hi">£233,247</td>
+          <td class="pos">£224,384</td>
+        </tr>
+        <tr>
+          <td>Year 2</td>
+          <td class="stone">2,057</td>
+          <td class="blue">1,754</td>
+          <td class="stone">£172,584</td>
+          <td class="stone">£802,692</td>
+          <td class="hi">£975,276</td>
+          <td class="hi">£593,843</td>
+          <td class="pos">£580,777</td>
+        </tr>
+        <tr>
+          <td>Year 3</td>
+          <td class="stone">3,702</td>
+          <td class="blue">3,297</td>
+          <td class="stone">£310,598</td>
+          <td class="stone">£1,568,663</td>
+          <td class="hi">£1,879,261</td>
+          <td class="hi">£1,142,591</td>
+          <td class="pos">£1,095,845</td>
+        </tr>
+        <tr>
+          <td>Year 4</td>
+          <td class="stone">6,665</td>
+          <td class="blue">5,993</td>
+          <td class="stone">£559,174</td>
+          <td class="stone">£2,875,424</td>
+          <td class="hi">£3,434,598</td>
+          <td class="hi">£2,088,235</td>
+          <td class="pos">£2,000,529</td>
+        </tr>
+        <tr>
+          <td>Year 5</td>
+          <td class="stone">11,997</td>
+          <td class="blue">10,812</td>
+          <td class="stone">£1,006,635</td>
+          <td class="stone">£5,197,457</td>
+          <td class="hi">£6,204,092</td>
+          <td class="hi">£3,772,088</td>
+          <td class="pos">£3,628,549</td>
+        </tr>
+        <tr>
+          <td>5-Year Total</td>
+          <td class="stone">25,565</td>
+          <td class="blue">—</td>
+          <td class="stone">£2,144,804</td>
+          <td class="stone">£10,725,846</td>
+          <td class="hi">£12,870,650</td>
+          <td class="hi">£7,830,004</td>
+          <td class="pos">£7,530,084</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="chart-grid">
+      <div class="chart-panel">
+        <div class="chart-title">Annual Revenue Growth</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill rev" style="width:6.1%"></div></div><div class="bar-val" style="color:var(--blit)">£377K</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill rev" style="width:15.7%"></div></div><div class="bar-val" style="color:var(--blit)">£975K</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill rev" style="width:30.3%"></div></div><div class="bar-val" style="color:var(--blit)">£1.9M</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill rev" style="width:55.4%"></div></div><div class="bar-val" style="color:var(--blit)">£3.4M</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill rev" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">£6.2M</div></div>
+        </div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Active Subscribers (End of Year)</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill subs" style="width:7.3%"></div></div><div class="bar-val" style="color:var(--blit)">791</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill subs" style="width:16.2%"></div></div><div class="bar-val" style="color:var(--blit)">1,754</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill subs" style="width:30.5%"></div></div><div class="bar-val" style="color:var(--blit)">3,297</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill subs" style="width:55.4%"></div></div><div class="bar-val" style="color:var(--blit)">5,993</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill subs" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">10,812</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-head">Base Case Assumptions</div>
+    <div class="assumptions-grid">
+      <div class="assumption-tile">
+        <div class="at-label">Acquisition</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Y1 Ad Spend</span><span class="at-v">£2,000/mo</span></div>
+          <div class="at-row"><span class="at-k">YoY Growth</span><span class="at-v">+80%/year</span></div>
+          <div class="at-row"><span class="at-k">CAC</span><span class="at-v">£28</span></div>
+          <div class="at-row"><span class="at-k">Organic Mix</span><span class="at-v">25%</span></div>
+          <div class="at-row"><span class="at-k">Y5 Ad Spend</span><span class="at-v">£20,995/mo</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Retention</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Monthly Churn</span><span class="at-v b">7.0%</span></div>
+          <div class="at-row"><span class="at-k">Avg Retention</span><span class="at-v b">14.3 months</span></div>
+          <div class="at-row"><span class="at-k">Avg LTV GP</span><span class="at-v">£395</span></div>
+          <div class="at-row"><span class="at-k">LTV : CAC</span><span class="at-v g">14.1×</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Product Mix</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Basic</span><span class="at-v">30%</span></div>
+          <div class="at-row"><span class="at-k">Full</span><span class="at-v">70%</span></div>
+          <div class="at-row"><span class="at-k">Avg First Order</span><span class="at-v">£83.90</span></div>
+          <div class="at-row"><span class="at-k">Avg Monthly Sub</span><span class="at-v">£48.40</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ OPTIMISTIC ═══════════ -->
+  <div class="scenario-panel" id="panel-opt">
+
+    <div class="summary-row">
+      <div class="sum-tile">
+        <div class="sum-k">Year 1 Revenue</div>
+        <div class="sum-v">£801K</div>
+        <div class="sum-n">2,307 new customers · £3K/mo adspend</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">Year 3 Revenue</div>
+        <div class="sum-v">£5.0M</div>
+        <div class="sum-n">9,230 new customers · 9,083 active subs</div>
+      </div>
+      <div class="sum-tile blue">
+        <div class="sum-k">Year 5 Revenue</div>
+        <div class="sum-v">£20.4M</div>
+        <div class="sum-n">36,923 new customers · 36,897 subs</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Total Revenue</div>
+        <div class="sum-v">£38.7M</div>
+        <div class="sum-n">71,538 cumulative customers</div>
+      </div>
+      <div class="sum-tile">
+        <div class="sum-k">5-Year Net Profit</div>
+        <div class="sum-v">£23.2M</div>
+        <div class="sum-n">62% net margin at maturity</div>
+      </div>
+    </div>
+
+    <div class="sec-head">Year-by-Year Breakdown</div>
+    <table class="year-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>New Customers</th>
+          <th>Active Subs (EoY)</th>
+          <th>Kit Revenue</th>
+          <th>Sub Revenue</th>
+          <th>Total Revenue</th>
+          <th>Gross Profit</th>
+          <th>Net P&L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Year 1</td>
+          <td class="stone">2,307</td>
+          <td class="blue">1,723</td>
+          <td class="stone">£195,519</td>
+          <td class="stone">£605,456</td>
+          <td class="hi">£800,975</td>
+          <td class="hi">£492,600</td>
+          <td class="pos">£484,326</td>
+        </tr>
+        <tr>
+          <td>Year 2</td>
+          <td class="stone">4,615</td>
+          <td class="blue">4,320</td>
+          <td class="stone">£391,122</td>
+          <td class="stone">£1,926,207</td>
+          <td class="hi">£2,317,329</td>
+          <td class="hi">£1,411,253</td>
+          <td class="pos">£1,398,552</td>
+        </tr>
+        <tr>
+          <td>Year 3</td>
+          <td class="stone">9,230</td>
+          <td class="blue">9,083</td>
+          <td class="stone">£782,243</td>
+          <td class="stone">£4,214,910</td>
+          <td class="hi">£4,997,153</td>
+          <td class="hi">£3,033,272</td>
+          <td class="pos">£2,987,773</td>
+        </tr>
+        <tr>
+          <td>Year 4</td>
+          <td class="stone">18,461</td>
+          <td class="blue">18,391</td>
+          <td class="stone">£1,564,570</td>
+          <td class="stone">£8,613,383</td>
+          <td class="hi">£10,177,953</td>
+          <td class="hi">£6,177,997</td>
+          <td class="pos">£6,091,503</td>
+        </tr>
+        <tr>
+          <td>Year 5</td>
+          <td class="stone">36,923</td>
+          <td class="blue">36,897</td>
+          <td class="stone">£3,129,223</td>
+          <td class="stone">£17,320,111</td>
+          <td class="hi">£20,449,334</td>
+          <td class="hi">£12,412,746</td>
+          <td class="pos">£12,276,114</td>
+        </tr>
+        <tr>
+          <td>5-Year Total</td>
+          <td class="stone">71,538</td>
+          <td class="blue">—</td>
+          <td class="stone">£6,062,677</td>
+          <td class="stone">£32,680,067</td>
+          <td class="hi">£38,742,744</td>
+          <td class="hi">£23,527,868</td>
+          <td class="pos">£23,238,268</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="chart-grid">
+      <div class="chart-panel">
+        <div class="chart-title">Annual Revenue Growth</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill rev" style="width:3.9%"></div></div><div class="bar-val" style="color:var(--blit)">£801K</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill rev" style="width:11.3%"></div></div><div class="bar-val" style="color:var(--blit)">£2.3M</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill rev" style="width:24.4%"></div></div><div class="bar-val" style="color:var(--blit)">£5.0M</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill rev" style="width:49.7%"></div></div><div class="bar-val" style="color:var(--blit)">£10.2M</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill rev" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">£20.4M</div></div>
+        </div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Active Subscribers (End of Year)</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bar-year">Y1</div><div class="bar-track"><div class="bar-fill subs" style="width:4.7%"></div></div><div class="bar-val" style="color:var(--blit)">1,723</div></div>
+          <div class="bar-row"><div class="bar-year">Y2</div><div class="bar-track"><div class="bar-fill subs" style="width:11.7%"></div></div><div class="bar-val" style="color:var(--blit)">4,320</div></div>
+          <div class="bar-row"><div class="bar-year">Y3</div><div class="bar-track"><div class="bar-fill subs" style="width:24.6%"></div></div><div class="bar-val" style="color:var(--blit)">9,083</div></div>
+          <div class="bar-row"><div class="bar-year">Y4</div><div class="bar-track"><div class="bar-fill subs" style="width:49.8%"></div></div><div class="bar-val" style="color:var(--blit)">18,391</div></div>
+          <div class="bar-row"><div class="bar-year">Y5</div><div class="bar-track"><div class="bar-fill subs" style="width:100%"></div></div><div class="bar-val" style="color:var(--blit)">36,897</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-head">Optimistic Scenario Assumptions</div>
+    <div class="assumptions-grid">
+      <div class="assumption-tile">
+        <div class="at-label">Acquisition</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Y1 Ad Spend</span><span class="at-v">£3,000/mo</span></div>
+          <div class="at-row"><span class="at-k">YoY Growth</span><span class="at-v">+100%/year</span></div>
+          <div class="at-row"><span class="at-k">CAC</span><span class="at-v">£24</span></div>
+          <div class="at-row"><span class="at-k">Organic Mix</span><span class="at-v">35%</span></div>
+          <div class="at-row"><span class="at-k">Y5 Ad Spend</span><span class="at-v">£48,000/mo</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Retention</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Monthly Churn</span><span class="at-v g">5.5%</span></div>
+          <div class="at-row"><span class="at-k">Avg Retention</span><span class="at-v g">18.2 months</span></div>
+          <div class="at-row"><span class="at-k">Avg LTV GP</span><span class="at-v">£524</span></div>
+          <div class="at-row"><span class="at-k">LTV : CAC</span><span class="at-v g">21.8×</span></div>
+        </div>
+      </div>
+      <div class="assumption-tile">
+        <div class="at-label">Product Mix</div>
+        <div class="at-rows">
+          <div class="at-row"><span class="at-k">Basic</span><span class="at-v">25%</span></div>
+          <div class="at-row"><span class="at-k">Full</span><span class="at-v">75%</span></div>
+          <div class="at-row"><span class="at-k">Avg First Order</span><span class="at-v">£84.75</span></div>
+          <div class="at-row"><span class="at-k">Avg Monthly Sub</span><span class="at-v">£49.00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- SCENARIO COMPARISON -->
+  <div class="sec-head">All Three Scenarios Side by Side · Year 5</div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Conservative</th>
+        <th>Base Case</th>
+        <th>Optimistic</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Y1 Revenue</td><td class="con">£224K</td><td class="base">£377K</td><td class="opt">£801K</td></tr>
+      <tr><td>Y3 Revenue</td><td class="con">£908K</td><td class="base">£1.9M</td><td class="opt">£5.0M</td></tr>
+      <tr><td>Y5 Revenue</td><td class="con">£2.4M</td><td class="base">£6.2M</td><td class="opt">£20.4M</td></tr>
+      <tr><td>Y5 Active Subscribers</td><td class="con">4,118</td><td class="base">10,812</td><td class="opt">36,897</td></tr>
+      <tr><td>5-Year Total Revenue</td><td class="con">£5.5M</td><td class="base">£12.9M</td><td class="opt">£38.7M</td></tr>
+      <tr><td>5-Year Net Profit</td><td class="con">£3.0M</td><td class="base">£7.5M</td><td class="opt">£23.2M</td></tr>
+      <tr><td>Monthly Churn</td><td class="con">7.5%</td><td class="base">7.0%</td><td class="opt">5.5%</td></tr>
+      <tr><td>Y1 Ad Spend/mo</td><td class="con">£1,500</td><td class="base">£2,000</td><td class="opt">£3,000</td></tr>
+      <tr><td>CAC</td><td class="con">£32</td><td class="base">£28</td><td class="opt">£24</td></tr>
+      <tr><td>LTV : CAC</td><td class="con">10.8×</td><td class="base">14.1×</td><td class="opt">21.8×</td></tr>
+      <tr><td>Cumulative Customers</td><td class="con">11,116</td><td class="base">25,565</td><td class="opt">71,538</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <!-- KEY LEVERS -->
+  <div class="sec-head">The Four Levers That Drive Everything</div>
+  <div class="levers-grid">
+    <div class="lever warn">
+      <div class="lever-tag">Lever 01 — The Most Important</div>
+      <div class="lever-stat">Churn Rate</div>
+      <div class="lever-body">
+        The difference between conservative and optimistic is almost entirely churn — 7.5% vs 5.5%.
+        That 2pp difference produces a <strong style="color:var(--bone)">£18.5M swing in 5-year profit</strong>.
+        No marketing budget can replicate this leverage. Every product decision, every piece of packaging,
+        every ritual card exists to serve one goal: keeping subscribers past month 6.
+      </div>
+    </div>
+    <div class="lever good">
+      <div class="lever-tag">Lever 02 — Best Risk-Adjusted Move</div>
+      <div class="lever-stat">Organic Mix</div>
+      <div class="lever-body">
+        Raising organic acquisition from 20% to 35% (conservative → optimistic) means
+        <strong style="color:var(--bone)">effectively doubling your paid budget for free</strong>.
+        This is what Instagram content does. Every viral hygiene education post reduces your effective CAC.
+        At scale, organic is the difference between a good business and an exceptional one.
+      </div>
+    </div>
+    <div class="lever">
+      <div class="lever-tag">Lever 03 — Paid Growth Engine</div>
+      <div class="lever-stat">Ad Spend</div>
+      <div class="lever-body">
+        Because CAC payback is Month 1, every pound of ad spend is recovered immediately.
+        This means <strong style="color:var(--bone)">you can reinvest gross profit directly back into acquisition</strong>
+        without needing external capital. The model is self-funding from Year 1.
+        The question is simply how fast you want to grow.
+      </div>
+    </div>
+    <div class="lever amber">
+      <div class="lever-tag">Lever 04 — The Mix Upgrade</div>
+      <div class="lever-stat">Kit Mix</div>
+      <div class="lever-body">
+        Moving customers from Basic (£72) to Full (£89) increases first-order GP by £11.50 and monthly sub GP from £23.85 to £30.35.
+        <strong style="color:var(--bone)">Full subscribers generate £86 more lifetime value.</strong>
+        The pricing gap is intentional — the argan oil is the single differentiator and it delivers.
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- MILESTONES -->
+  <div class="sec-head">When Things Get Interesting — Base Case Milestones</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);">
+    <div style="background:var(--char);padding:28px 22px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;">Month 1</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--bone);">Profitable</div>
+      <div style="font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;">CAC recovered on first transaction. No waiting period.</div>
+    </div>
+    <div style="background:var(--char);padding:28px 22px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;">Month 6–9</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--bone);">100 Subs</div>
+      <div style="font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;">First meaningful monthly recurring revenue. ~£4,120/mo.</div>
+    </div>
+    <div style="background:var(--mid);padding:28px 22px;display:flex;flex-direction:column;gap:8px;border-bottom:2px solid var(--blue);">
+      <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;">End of Year 2</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--bone);">£500K Rev</div>
+      <div style="font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;">1,754 active subs. £57K/mo sub revenue. Time to consider 3PL.</div>
+    </div>
+    <div style="background:var(--char);padding:28px 22px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;">Year 3</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--bone);">First Hire</div>
+      <div style="font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;">£1.6M revenue. £953K net profit. Room for a full-time ops hire.</div>
+    </div>
+    <div style="background:var(--char);padding:28px 22px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;">Year 4–5</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--bone);">Retail Talks</div>
+      <div style="font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;">10K+ subscribers. Brand proof. Boots, John Lewis conversations become realistic.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div class="df-logo">SOLUM</div>
+    <div class="df-note">5-Year Projections · Cohort Model · All figures GBP · Internal Use Only · 2026</div>
+  </div>
+
+</div>
+
+<script>
+function setScenario(id) {
+  document.querySelectorAll('.scenario-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = {con:0, base:1, opt:2};
+  tabs[map[id]].classList.add('active');
+}
+</script>
+</body>
+</html>

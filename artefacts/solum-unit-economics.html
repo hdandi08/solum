@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Unit Economics v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#08090b;--off:#0c0e12;--dark:#10131a;--mid:#181c24;--panel:#1c2030;
+  --bone:#f0ece2;--stone:#6a7380;--blue:#2e6da4;--blit:#4a8fc7;--bdim:#1a4a78;
+  --glit:#3aaa68;--rlit:#c94040;--alit:#e8a830;--gold:#c8a96e;
+  --line:rgba(240,236,226,0.055);--lineb:rgba(46,109,164,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;}
+.page{max-width:1200px;margin:0 auto;padding:64px 48px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:0.1em;color:var(--bone);line-height:1;}
+.page-sub{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-top:8px;font-style:italic;}
+.sec-head{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:28px;display:flex;align-items:center;gap:12px;}
+.sec-head::after{content:'';flex:1;height:1px;background:var(--lineb);}
+hr{border:none;border-top:1px solid var(--line);margin:56px 0;}
+.pos{color:var(--glit);}.neg{color:var(--rlit);}.neu{color:var(--stone);}.amber{color:var(--alit);}.bold{font-weight:700;}
+.sku-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:48px;}
+.sku-card{background:var(--mid);padding:32px 28px;}
+.sku-card.hero{background:var(--panel);border:1px solid var(--lineb);}
+.sku-tag{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-bottom:8px;}
+.sku-tag.b{color:var(--blit);}.sku-tag.g{color:var(--gold);}
+.sku-name{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:0.08em;color:var(--bone);line-height:1;margin-bottom:4px;}
+.sku-price{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--blue);line-height:1;margin-bottom:20px;}
+.sku-rows{display:flex;flex-direction:column;}
+.sku-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.sku-row:last-child{border-bottom:none;}
+.sku-row .k{color:var(--stone);}.sku-row .v{color:var(--bone);font-weight:500;}
+.sku-row .v.g{color:var(--glit);}.sku-row .v.b{color:var(--blit);}.sku-row .v.a{color:var(--alit);}
+.sku-div{height:1px;background:var(--lineb);margin:10px 0;}
+.products-list{display:flex;flex-direction:column;gap:2px;margin-top:16px;}
+.pl-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--line);}
+.pl-row:last-child{border-bottom:none;}
+.pl-num{color:var(--blue);font-weight:700;min-width:28px;}
+.pl-name{color:rgba(240,236,226,0.65);flex:1;}
+.pl-cost{color:var(--bone);font-weight:600;}
+.pl-ex{color:var(--gold);}
+.prod-table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+.prod-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:10px 14px;text-align:right;border-bottom:1px solid var(--lineb);}
+.prod-table th:first-child,.prod-table th:nth-child(2){text-align:left;}
+.prod-table td{padding:10px 14px;font-size:12px;text-align:right;border-bottom:1px solid var(--line);}
+.prod-table td:first-child{text-align:left;color:var(--blue);font-weight:700;font-size:11px;}
+.prod-table td:nth-child(2){text-align:left;color:rgba(240,236,226,0.7);}
+.tot-row td{background:var(--mid);font-weight:700;font-size:13px;color:var(--bone);}
+.kit-check{color:var(--glit);font-weight:700;}.kit-dash{color:var(--stone);}.full-only{color:var(--gold);font-weight:700;}
+.wfall{display:flex;flex-direction:column;gap:3px;}
+.wrow{display:grid;grid-template-columns:300px 110px 120px 120px 120px 1fr;align-items:center;min-height:42px;}
+.wrow.hdr .cell{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--lineb);}
+.cell{padding:9px 12px;font-size:13px;}
+.cell.lbl{font-size:13px;font-weight:500;color:var(--bone);padding-left:0;}
+.cell.lbl.i{padding-left:18px;color:rgba(240,236,226,0.6);font-size:12px;}
+.cell.lbl.ii{padding-left:32px;color:rgba(240,236,226,0.4);font-size:11px;}
+.cell.lbl.sl{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.cell.n{text-align:right;font-variant-numeric:tabular-nums;}
+.wrow.tot{background:var(--mid);}.wrow.tot .cell{font-weight:700;font-size:14px;}
+.wrow.grand{background:var(--blue);border-radius:2px;}.wrow.grand .cell{color:var(--bone)!important;font-weight:700;font-size:14px;}
+.wrow.pb .cell{color:var(--glit)!important;font-weight:700;}.wrow.pb{background:rgba(42,122,75,0.1);}
+.mtbl{width:100%;border-collapse:collapse;}
+.mtbl th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:9px 12px;text-align:right;border-bottom:1px solid var(--lineb);}
+.mtbl th:first-child{text-align:left;}
+.mtbl td{padding:9px 12px;font-size:12px;text-align:right;border-bottom:1px solid var(--line);}
+.mtbl td:first-child{text-align:left;color:var(--stone);font-size:11px;}
+.mtbl .pb td{background:rgba(42,122,75,0.12);font-weight:600;color:var(--glit)!important;}
+.mtbl .note td{background:rgba(46,109,164,0.06);color:var(--blit)!important;font-style:italic;font-size:11px;}
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.insight{background:var(--mid);padding:24px 22px;border-left:2px solid var(--blue);display:flex;flex-direction:column;gap:6px;}
+.insight.g{border-left-color:var(--glit);}.insight.w{border-left-color:var(--rlit);}.insight.a{border-left-color:var(--alit);}
+.i-tag{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.insight.g .i-tag{color:var(--glit);}.insight.w .i-tag{color:var(--rlit);}.insight.a .i-tag{color:var(--alit);}
+.i-stat{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--bone);line-height:1;margin-top:4px;}
+.i-body{font-size:13px;color:rgba(240,236,226,0.55);line-height:1.65;font-weight:300;}
+.summary{background:var(--blue);padding:32px 40px;display:grid;grid-template-columns:repeat(5,1fr);margin-top:56px;}
+.sum-item{padding:0 20px;border-right:1px solid rgba(255,255,255,0.15);}
+.sum-item:first-child{padding-left:0;}.sum-item:last-child{border-right:none;}
+.sum-k{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:600;}
+.sum-v{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#fff;line-height:1.1;margin-top:4px;}
+.sum-n{font-size:9px;color:rgba(255,255,255,0.35);margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div style="margin-bottom:48px;">
+    <div style="font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;">SOLUM · Unit Economics · v4</div>
+    <div class="page-title">The Numbers</div>
+    <div class="page-sub">8 Products · 2 Kits · Basic + Full · 2026</div>
+  </div>
+
+  <div class="sec-head">Full Product Lineup — Trade Cost &amp; Kit Allocation</div>
+  <table class="prod-table">
+    <thead>
+      <tr><th>#</th><th>Product</th><th>Origin</th><th>Size</th><th>Trade Cost</th><th>RRP</th><th>Basic</th><th>Full</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>01</td><td>Amino Acid Body Wash</td><td>🇬🇧 UK</td><td>250ml</td><td>£3.20</td><td>£20</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>02</td><td>Italy Towel Mitt</td><td>Korean Tradition</td><td>70×28cm</td><td>£0.42</td><td>£10</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>03</td><td>Back Scrub Cloth</td><td>Korean Tradition</td><td>70×20cm</td><td>£0.80</td><td>£12</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>04</td><td>Silicone Scalp Massager</td><td>🇰🇷 Korea</td><td>—</td><td>£2.00</td><td>£12</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>05</td><td>Rhassoul Clay Body Mask</td><td>🇲🇦 Morocco</td><td>200g</td><td>£3.50</td><td>£26</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>06</td><td>Organic Argan Body Oil</td><td>🇲🇦 Morocco</td><td>50ml</td><td>£5.50</td><td>£34</td><td class="kit-dash">—</td><td class="full-only">★ Full only</td></tr>
+      <tr><td>07</td><td>Fast-Absorb Body Lotion</td><td>🇬🇧 UK</td><td>400ml</td><td>£4.40</td><td>£22</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr><td>08</td><td>Bamboo Sensitive Cloth</td><td>Bamboo Fibre</td><td>—</td><td>£0.25</td><td>£10</td><td class="kit-check">✓</td><td class="kit-check">✓</td></tr>
+      <tr class="tot-row"><td colspan="4">Basic — 7 Products</td><td colspan="2">£14.57 COGS</td><td class="pos">£72 RRP · 71.2%</td><td class="kit-dash">—</td></tr>
+      <tr class="tot-row"><td colspan="4">Full — 8 Products</td><td colspan="2">£20.07 COGS</td><td class="kit-dash">—</td><td class="pos">£89 RRP · 70.5%</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="sec-head">Kit Economics — First Box</div>
+  <div class="sku-grid">
+    <div class="sku-card">
+      <div class="sku-tag b">Basic · 7 Products</div>
+      <div class="sku-name">Basic</div>
+      <div class="sku-price">£72</div>
+      <div class="sku-rows">
+        <div class="sku-row"><span class="k">Product COGS</span><span class="v">£14.57</span></div>
+        <div class="sku-row"><span class="k">Packaging</span><span class="v">£2.30</span></div>
+        <div class="sku-row"><span class="k">Royal Mail Tracked 48</span><span class="v">£3.85</span></div>
+        <div class="sku-row"><span class="k">Total Landed</span><span class="v">£20.72</span></div>
+        <div class="sku-div"></div>
+        <div class="sku-row"><span class="k">Gross Profit</span><span class="v g">£51.28</span></div>
+        <div class="sku-row"><span class="k">Kit Margin</span><span class="v g">71.2%</span></div>
+        <div class="sku-div"></div>
+        <div class="sku-row"><span class="k">Monthly Sub</span><span class="v b">£40/mo</span></div>
+        <div class="sku-row"><span class="k">Sub COGS + Fulfil</span><span class="v">£16.15</span></div>
+        <div class="sku-row"><span class="k">Sub Gross Profit</span><span class="v g">£23.85/mo (59.6%)</span></div>
+      </div>
+      <div class="products-list">
+        <div class="pl-row"><span class="pl-num">01</span><span class="pl-name">Body Wash 250ml</span><span class="pl-cost">£3.20</span></div>
+        <div class="pl-row"><span class="pl-num">02</span><span class="pl-name">Italy Towel Mitt</span><span class="pl-cost">£0.42</span></div>
+        <div class="pl-row"><span class="pl-num">03</span><span class="pl-name">Back Scrub Cloth</span><span class="pl-cost">£0.80</span></div>
+        <div class="pl-row"><span class="pl-num">04</span><span class="pl-name">Scalp Massager</span><span class="pl-cost">£2.00</span></div>
+        <div class="pl-row"><span class="pl-num">05</span><span class="pl-name">Rhassoul Clay 200g</span><span class="pl-cost">£3.50</span></div>
+        <div class="pl-row"><span class="pl-num">07</span><span class="pl-name">Body Lotion 400ml</span><span class="pl-cost">£4.40</span></div>
+        <div class="pl-row"><span class="pl-num">08</span><span class="pl-name">Bamboo Sensitive Cloth</span><span class="pl-cost">£0.25</span></div>
+      </div>
+    </div>
+    <div class="sku-card hero">
+      <div class="sku-tag g">Full · 8 Products · Hero Kit ★</div>
+      <div class="sku-name">Full</div>
+      <div class="sku-price">£89</div>
+      <div class="sku-rows">
+        <div class="sku-row"><span class="k">Product COGS</span><span class="v">£20.07</span></div>
+        <div class="sku-row"><span class="k">Packaging</span><span class="v">£2.30</span></div>
+        <div class="sku-row"><span class="k">Royal Mail Tracked 48</span><span class="v">£3.85</span></div>
+        <div class="sku-row"><span class="k">Total Landed</span><span class="v">£26.22</span></div>
+        <div class="sku-div"></div>
+        <div class="sku-row"><span class="k">Gross Profit</span><span class="v g">£62.78</span></div>
+        <div class="sku-row"><span class="k">Kit Margin</span><span class="v g">70.5%</span></div>
+        <div class="sku-div"></div>
+        <div class="sku-row"><span class="k">Monthly Sub</span><span class="v b">£52/mo</span></div>
+        <div class="sku-row"><span class="k">Sub COGS + Fulfil</span><span class="v">£21.65</span></div>
+        <div class="sku-row"><span class="k">Sub Gross Profit</span><span class="v g">£30.35/mo (58.4%)</span></div>
+      </div>
+      <div class="products-list">
+        <div class="pl-row"><span class="pl-num">01</span><span class="pl-name">Body Wash 250ml</span><span class="pl-cost">£3.20</span></div>
+        <div class="pl-row"><span class="pl-num">02</span><span class="pl-name">Italy Towel Mitt</span><span class="pl-cost">£0.42</span></div>
+        <div class="pl-row"><span class="pl-num">03</span><span class="pl-name">Back Scrub Cloth</span><span class="pl-cost">£0.80</span></div>
+        <div class="pl-row"><span class="pl-num">04</span><span class="pl-name">Scalp Massager</span><span class="pl-cost">£2.00</span></div>
+        <div class="pl-row"><span class="pl-num">05</span><span class="pl-name">Rhassoul Clay 200g</span><span class="pl-cost">£3.50</span></div>
+        <div class="pl-row"><span class="pl-num">06</span><span class="pl-name">Argan Oil 50ml</span><span class="pl-cost pl-ex">£5.50 ★</span></div>
+        <div class="pl-row"><span class="pl-num">07</span><span class="pl-name">Body Lotion 400ml</span><span class="pl-cost">£4.40</span></div>
+        <div class="pl-row"><span class="pl-num">08</span><span class="pl-name">Bamboo Sensitive Cloth</span><span class="pl-cost">£0.25</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="sec-head">Full Kit · 14-Month Customer Lifetime Value</div>
+  <div class="wfall">
+    <div class="wrow hdr">
+      <div class="cell lbl">Event</div>
+      <div class="cell n">Revenue</div><div class="cell n">COGS</div>
+      <div class="cell n">GP</div><div class="cell n">CAC</div><div class="cell n">Cumulative</div>
+    </div>
+    <div class="wrow"><div class="cell lbl sl">Month 0 — Acquisition</div></div>
+    <div class="wrow">
+      <div class="cell lbl i">Acquired via paid social</div>
+      <div class="cell n neu">—</div><div class="cell n neu">—</div>
+      <div class="cell n neu">—</div><div class="cell n neg">-£28.00</div><div class="cell n neg">-£28.00</div>
+    </div>
+    <div class="wrow"><div class="cell lbl sl">Month 1 — First Kit Ships</div></div>
+    <div class="wrow">
+      <div class="cell lbl ii">8 products + packaging + postage</div>
+      <div class="cell n neu">—</div><div class="cell n neg">-£26.22</div>
+      <div class="cell n neu">—</div><div class="cell n neu">—</div><div class="cell n neu">—</div>
+    </div>
+    <div class="wrow tot pb">
+      <div class="cell lbl i">← PAYBACK · GP covers CAC in Month 1</div>
+      <div class="cell n">£89.00</div><div class="cell n">-£26.22</div>
+      <div class="cell n">+£62.78</div><div class="cell n">-£28 CAC</div><div class="cell n">+£34.78 ✓</div>
+    </div>
+    <div class="wrow"><div class="cell lbl sl">Months 2–6 — Subscription ×5</div></div>
+    <div class="wrow">
+      <div class="cell lbl i">£52/mo · £21.65 COGS+fulfil · £30.35 GP</div>
+      <div class="cell n pos">+£260.00</div><div class="cell n neg">-£108.25</div>
+      <div class="cell n pos">+£30.35/mo</div><div class="cell n neu">—</div><div class="cell n pos">+£186.53</div>
+    </div>
+    <div class="wrow"><div class="cell lbl sl">Months 7–12 — Subscription ×6</div></div>
+    <div class="wrow">
+      <div class="cell lbl i">Sub × 6 months</div>
+      <div class="cell n pos">+£312.00</div><div class="cell n neg">-£129.90</div>
+      <div class="cell n pos">+£30.35/mo</div><div class="cell n neu">—</div><div class="cell n pos">+£368.63</div>
+    </div>
+    <div class="wrow"><div class="cell lbl sl">Months 13–14 — Final 2 Months</div></div>
+    <div class="wrow">
+      <div class="cell lbl i">Sub × 2 months</div>
+      <div class="cell n pos">+£104.00</div><div class="cell n neg">-£43.30</div>
+      <div class="cell n pos">+£60.70</div><div class="cell n neu">—</div><div class="cell n pos">+£429.33</div>
+    </div>
+    <div class="wrow grand">
+      <div class="cell lbl">14-Month Customer · Full Kit</div>
+      <div class="cell n">£765 revenue</div><div class="cell n">-£307.67 COGS</div>
+      <div class="cell n">£457.33 GP</div><div class="cell n">£28 CAC</div><div class="cell n">LTV:CAC 16.3×</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="sec-head">Month-by-Month · Full Kit</div>
+  <table class="mtbl">
+    <thead>
+      <tr><th>Mo</th><th>Event</th><th>Revenue</th><th>COGS+Fulfil</th><th>CAC</th><th>Monthly GP</th><th>Cumulative</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>Acquisition</td><td class="neg">—</td><td>—</td><td class="neg">-£28.00</td><td class="neg">-£28.00</td><td class="neg bold">-£28.00</td></tr>
+      <tr class="pb"><td>1</td><td>First kit (PAYBACK)</td><td class="pos">£89.00</td><td class="neg">-£26.22</td><td>—</td><td class="pos">+£62.78</td><td class="pos bold">+£34.78 ✓</td></tr>
+      <tr><td>2</td><td>Sub month 1</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£65.13</td></tr>
+      <tr><td>3</td><td>Sub month 2</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£95.48</td></tr>
+      <tr><td>4</td><td>Sub month 3</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£125.83</td></tr>
+      <tr><td>5</td><td>Sub month 4</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£156.18</td></tr>
+      <tr><td>6</td><td>Sub month 5</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£186.53</td></tr>
+      <tr class="note"><td colspan="7">↑ Customer cancels here? Still made £183.53 on £28 spend — 6.5× return even on a "failed" customer.</td></tr>
+      <tr><td>12</td><td>Sub month 11</td><td class="pos">£52.00</td><td class="neg">-£21.65</td><td>—</td><td class="pos">+£30.35</td><td class="pos bold">+£368.63</td></tr>
+      <tr><td>14</td><td>Avg lifetime end</td><td class="pos">£104.00</td><td class="neg">-£43.30</td><td>—</td><td class="pos">+£60.70</td><td class="pos bold">+£429.33</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="sec-head">What This Means</div>
+  <div class="insights">
+    <div class="insight g">
+      <div class="i-tag">Payback Still Month 1</div>
+      <div class="i-stat">+£34.78</div>
+      <div class="i-body">Full kit generates £62.78 gross profit against £28 CAC. In profit from the first transaction.</div>
+    </div>
+    <div class="insight a">
+      <div class="i-tag">Full vs Basic</div>
+      <div class="i-stat">+£6.50/mo</div>
+      <div class="i-body">Full subscribers generate £30.35/mo sub GP vs £23.85 for Basic. Over an average 14-month lifetime, that compounds to £86 additional lifetime value. The argan oil (£5.50 COGS, £34 RRP) is the single most margin-efficient product in the lineup.</div>
+    </div>
+    <div class="insight g">
+      <div class="i-tag">Even a Bad Customer Wins</div>
+      <div class="i-stat">6.5× on churn</div>
+      <div class="i-body">A Full customer who cancels after 6 months still delivers £183.53 profit on a £28 CAC. No losing customer exists in this model.</div>
+    </div>
+    <div class="insight w">
+      <div class="i-tag">The Only Lever That Matters</div>
+      <div class="i-stat">Churn 7→5%</div>
+      <div class="i-body">Reducing monthly churn from 7% to 5% adds approximately £95 to lifetime value per Full customer. The numbered ritual system and ritual card are churn prevention tools first.</div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="sum-item"><div class="sum-k">Full Kit Margin</div><div class="sum-v">70.5%</div><div class="sum-n">First kit</div></div>
+    <div class="sum-item"><div class="sum-k">Basic Kit Margin</div><div class="sum-v">71.2%</div><div class="sum-n">First kit</div></div>
+    <div class="sum-item"><div class="sum-k">Payback</div><div class="sum-v">Month 1</div><div class="sum-n">Both kits</div></div>
+    <div class="sum-item"><div class="sum-k">LTV @ 14mo</div><div class="sum-v">£429</div><div class="sum-n">Full kit</div></div>
+    <div class="sum-item"><div class="sum-k">LTV : CAC</div><div class="sum-v">16.3×</div><div class="sum-n">Benchmark is 3×</div></div>
+  </div>
+
+  <div style="padding-top:40px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.15em;color:var(--bone);">SOLUM</div>
+    <div style="font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);">Unit Economics v4 · 8 Products · 2 Kits · Internal · 2026</div>
+  </div>
+
+</div>
+</body>
+</html>

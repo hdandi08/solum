@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Actor Brief · Batch 01</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body {
+      padding: 0;
+      font-size: 15px;
+    }
+
+    .page {
+      max-width: 100%;
+      padding: 32px 40px 60px;
+    }
+
+    /* Prevent cards and sections breaking mid-element */
+    .reel-card,
+    .closing,
+    .setup-block,
+    .script-block,
+    .scene-block,
+    .scene-grid,
+    .tone-pair {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* Keep section headers with their content */
+    .section-label,
+    .section h2,
+    .reel-number,
+    .reel-title {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    hr {
+      margin: 32px 0;
+    }
+
+    /* Keep grids from collapsing to single column on print */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .scene-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Ensure link URLs don't appear */
+    a::after { content: none !important; }
+  }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+    --bone-dim: rgba(240,236,226,0.55);
+    --bone-faint: rgba(240,236,226,0.07);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    padding: 60px 24px 100px;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-left: 4px solid var(--steel-blue);
+    padding-left: 20px;
+    margin-bottom: 60px;
+  }
+
+  .header-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+    color: var(--sky-blue);
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+
+  .header-meta {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba(240,236,226,0.08);
+    margin: 52px 0;
+  }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 52px; }
+
+  .section-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 14px;
+  }
+
+  .section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--bone);
+    opacity: 0.88;
+    margin-bottom: 14px;
+  }
+
+  /* ── CHARACTER TABLE ── */
+  .char-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .char-table tr {
+    border-bottom: 1px solid rgba(240,236,226,0.08);
+  }
+
+  .char-table tr:last-child { border-bottom: none; }
+
+  .char-table td {
+    padding: 14px 0;
+    vertical-align: top;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .char-table td:first-child {
+    font-weight: 700;
+    color: var(--sky-blue);
+    width: 180px;
+    padding-right: 24px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-top: 16px;
+  }
+
+  .char-table td:last-child {
+    color: var(--bone);
+    opacity: 0.88;
+  }
+
+  /* ── TONE BLOCKS ── */
+  .tone-pair { margin-bottom: 28px; }
+
+  .tone-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tone-label.wrong { color: #c0392b; opacity: 0.8; }
+  .tone-label.right { color: #27ae60; opacity: 0.9; }
+
+  .tone-quote {
+    padding: 14px 20px;
+    font-size: 17px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .tone-quote.wrong {
+    background: rgba(192,57,43,0.08);
+    border-left: 3px solid rgba(192,57,43,0.4);
+    color: var(--bone);
+    opacity: 0.65;
+  }
+
+  .tone-quote.right {
+    background: rgba(39,174,96,0.08);
+    border-left: 3px solid rgba(39,174,96,0.5);
+    color: var(--bone);
+  }
+
+  /* ── REEL CARD ── */
+  .reel-card {
+    background: var(--charcoal);
+    border-left: 4px solid var(--steel-blue);
+    padding: 32px;
+    margin-bottom: 28px;
+  }
+
+  .reel-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--sky-blue);
+    margin-bottom: 6px;
+  }
+
+  .reel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 20px;
+  }
+
+  .reel-hook {
+    background: rgba(46,109,164,0.12);
+    border-left: 3px solid var(--steel-blue);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--bone);
+    line-height: 1.55;
+  }
+
+  .reel-hook .hook-label {
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ── SCRIPT BLOCK ── */
+  .script-block {
+    background: rgba(240,236,226,0.03);
+    border-left: 2px solid rgba(240,236,226,0.12);
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+
+  .script-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    margin-bottom: 16px;
+  }
+
+  .script-line {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--bone);
+    opacity: 0.9;
+    margin-bottom: 10px;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .script-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 5px;
+    height: 1px;
+    background: var(--steel-blue);
+    opacity: 0.6;
+  }
+
+  .script-line.action {
+    font-style: italic;
+    opacity: 0.55;
+    font-size: 15px;
+  }
+
+  .script-line.action::before {
+    content: '[ ]';
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--steel-blue);
+    opacity: 0.5;
+    top: 4px;
+    width: auto;
+    height: auto;
+    background: none;
+  }
+
+  .script-end {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(46,109,164,0.10);
+    border-left: 2px solid var(--steel-blue);
+    font-size: 16px;
+    font-style: italic;
+    color: var(--bone);
+  }
+
+  .script-end .end-label {
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  /* ── SCENE BLOCK ── */
+  .scene-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .scene-block {
+    padding: 16px 18px;
+    background: rgba(240,236,226,0.04);
+  }
+
+  .scene-block-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    margin-bottom: 10px;
+  }
+
+  .scene-block p {
+    font-size: 15px;
+    line-height: 1.6;
+    opacity: 0.8;
+    margin-bottom: 0;
+  }
+
+  .scene-note {
+    font-size: 14px;
+    color: var(--bone-dim);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* meta row */
+  .reel-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+  }
+
+  .meta-pill {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  .meta-pill span {
+    color: var(--bone);
+    opacity: 0.85;
+  }
+
+  .reel-donot {
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #c0392b;
+    opacity: 0.8;
+  }
+
+  /* ── GENERAL SETUP ── */
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  .setup-block {
+    background: var(--charcoal);
+    padding: 20px;
+  }
+
+  .setup-block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 12px;
+  }
+
+  .setup-block ul { list-style: none; }
+
+  .setup-block ul li {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.8;
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  .setup-block ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--steel-blue);
+  }
+
+  /* ── SPECS TABLE ── */
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .specs-table tr {
+    border-bottom: 1px solid rgba(240,236,226,0.07);
+  }
+
+  .specs-table tr:last-child { border-bottom: none; }
+
+  .specs-table td {
+    padding: 13px 0;
+    font-size: 16px;
+    vertical-align: top;
+  }
+
+  .specs-table td:first-child {
+    font-weight: 700;
+    color: var(--sky-blue);
+    width: 200px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-top: 15px;
+  }
+
+  .specs-table td:last-child {
+    color: var(--bone);
+    opacity: 0.85;
+  }
+
+  /* ── DONT LIST ── */
+  .dont-list { list-style: none; }
+
+  .dont-list li {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.85;
+    padding: 12px 0 12px 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(240,236,226,0.07);
+  }
+
+  .dont-list li:last-child { border-bottom: none; }
+
+  .dont-list li::before {
+    content: '✕';
+    position: absolute;
+    left: 0;
+    color: #c0392b;
+    opacity: 0.7;
+    font-size: 13px;
+    top: 14px;
+  }
+
+  /* ── CLOSING ── */
+  .closing {
+    background: var(--charcoal);
+    border-left: 4px solid var(--sky-blue);
+    padding: 28px;
+    margin-top: 52px;
+  }
+
+  .closing-rule {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+
+  .closing p {
+    opacity: 0.65;
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(240,236,226,0.08);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-wordmark">SOLUM</div>
+    <h1>ACTOR BRIEF<br>BATCH 01</h1>
+    <div class="header-meta">Pre-Launch &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; 3 Reels &nbsp;·&nbsp; Face to Camera</div>
+  </div>
+
+  <!-- THE BRAND -->
+  <div class="section">
+    <div class="section-label">Context</div>
+    <h2>What Is SOLUM?</h2>
+    <p>SOLUM is a men's body care system. It's launching soon. The brand is built around one truth: most men shower every day and still have rough skin, a neglected back, and a scalp they've never properly cleaned. Not because they're lazy — because nobody ever built them a system worth following.</p>
+    <p>This content exists before the product is visible. The goal is to make men feel the gap — so that when SOLUM appears, it feels like the only logical conclusion.</p>
+  </div>
+
+  <hr>
+
+  <!-- YOUR ROLE -->
+  <div class="section">
+    <div class="section-label">Your Role</div>
+    <h2>Who You Are On Camera</h2>
+    <p>You are not a spokesperson. Not an influencer. You are an everyday man who started paying attention to something most men never think about — his body routine. You're sharing what you've found, like you'd tell a mate. No script feel. No selling. No brand enthusiasm.</p>
+
+    <table class="char-table" style="margin-top: 24px;">
+      <tr>
+        <td>Who he is</td>
+        <td>Regular guy. Could be 25 or 40. Looks after himself but isn't obsessed with it.</td>
+      </tr>
+      <tr>
+        <td>Tone</td>
+        <td>Direct. Slightly wry. Never preachy. Talks like a mate, not a presenter.</td>
+      </tr>
+      <tr>
+        <td>Never does</td>
+        <td>Lecture. Hype. Use words like skincare, pamper, self-care, nourish.</td>
+      </tr>
+      <tr>
+        <td>Always does</td>
+        <td>Keep it real. One idea per video. Land on a question or an open loop.</td>
+      </tr>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- TONE GUIDE -->
+  <div class="section">
+    <div class="section-label">Tone Reference</div>
+    <h2>How It Should Sound</h2>
+
+    <div class="tone-pair">
+      <div class="tone-label wrong">✕ Wrong</div>
+      <div class="tone-quote wrong">"Hey guys, so today I want to talk about something really important for your skin health…"</div>
+    </div>
+    <div class="tone-pair">
+      <div class="tone-label right">✓ Right</div>
+      <div class="tone-quote right">"I've been showering every day for the last 15 years. Turns out I've been doing it wrong."</div>
+    </div>
+
+    <div class="tone-pair" style="margin-top: 28px;">
+      <div class="tone-label wrong">✕ Wrong</div>
+      <div class="tone-quote wrong">"Did you know that most men don't properly exfoliate?"</div>
+    </div>
+    <div class="tone-pair">
+      <div class="tone-label right">✓ Right</div>
+      <div class="tone-quote right">"Try reaching your own back right now. Go on. You can't. Nobody can."</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- THE 3 REELS -->
+  <div class="section">
+    <div class="section-label">The Content</div>
+    <h2>3 Reels to Film</h2>
+
+    <!-- REEL 1 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 01</div>
+      <div class="reel-title">15 Years. Wrong.</div>
+
+      <div class="reel-hook">
+        <span class="hook-label">Opening line — say this first, then continue</span>
+        "I've been showering every day for 15 years. Turns out I've been doing it wrong."
+      </div>
+
+      <div class="script-block">
+        <div class="script-label">Script</div>
+        <div class="script-line">Every morning — shower, cheap body wash, hot water, rinse. Done.</div>
+        <div class="script-line">Skin still rough. Back always felt neglected. Scalp — I never once thought about my scalp.</div>
+        <div class="script-line">I thought that was just... normal. Turns out it's not normal. It's just what we all do because nobody ever told us different.</div>
+        <div class="script-line">We weren't taught a routine. We were taught to just wash.</div>
+        <div class="script-end">
+          <span class="end-label">Close on</span>
+          "That's about to change. Keep an eye out."
+        </div>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-block">
+          <div class="scene-block-title">Location</div>
+          <p>Plain wall — bedroom, hallway, or kitchen. Not the bathroom. This is a reflective moment, not a shower moment. Clean background, neutral tones.</p>
+        </div>
+        <div class="scene-block">
+          <div class="scene-block-title">Wardrobe</div>
+          <p>Plain t-shirt. White, grey, or dark navy. No logos, no graphics. You're the guy watching the reel — dress like him.</p>
+        </div>
+      </div>
+
+      <div class="scene-block" style="margin-bottom: 16px;">
+        <div class="scene-block-title">Camera & Lighting</div>
+        <p>Face to camera, chest height. Natural window light to one side. Handheld or propped is fine — a slight angle feels real. No ring light.</p>
+      </div>
+
+      <div class="reel-meta">
+        <div class="meta-pill">Length &nbsp;<span>~22 seconds</span></div>
+        <div class="meta-pill">Props &nbsp;<span>None</span></div>
+      </div>
+      <div class="reel-donot">✕ Do not mention any product, brand, or solution</div>
+    </div>
+
+    <!-- REEL 2 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 02</div>
+      <div class="reel-title">Try It.</div>
+
+      <div class="reel-hook">
+        <span class="hook-label">Opening line — then immediately do it on camera</span>
+        "Try reaching your own back right now. Go on."
+      </div>
+
+      <div class="script-block">
+        <div class="script-label">Script</div>
+        <div class="script-line action">[ Attempts to reach own back — make it real, slightly awkward. That's the point. ]</div>
+        <div class="script-line">Can't do it. Nobody can. And that's the largest skin surface on your body.</div>
+        <div class="script-line">A loofah can't get there. Your hands can't cover it. So you just... rinse it and move on.</div>
+        <div class="script-line">It's not laziness. The right tool just doesn't exist in most men's bathrooms.</div>
+        <div class="script-end">
+          <span class="end-label">Close on</span>
+          "Something's coming that fixes this. Watch this space."
+        </div>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-block">
+          <div class="scene-block-title">Location</div>
+          <p>Bathroom. Clean, minimal — no clutter on surfaces. White or dark tiles preferred. The bathroom context makes the back-reach moment feel authentic.</p>
+        </div>
+        <div class="scene-block">
+          <div class="scene-block-title">Wardrobe</div>
+          <p>Shirtless is the stronger choice — the back-reach attempt reads more clearly without a shirt. Plain t-shirt also works if preferred.</p>
+        </div>
+      </div>
+
+      <div class="scene-block" style="margin-bottom: 16px;">
+        <div class="scene-block-title">Camera & Lighting</div>
+        <p>Wider frame than Reel 01 — waist up, so the back-reach moment is visible. Natural window light if available. Single lamp off to one side otherwise. No ring light.</p>
+      </div>
+
+      <div class="reel-meta">
+        <div class="meta-pill">Length &nbsp;<span>~20 seconds</span></div>
+        <div class="meta-pill">Props &nbsp;<span>None</span></div>
+      </div>
+      <div class="reel-donot">✕ Do not mention any product or solution</div>
+    </div>
+
+    <!-- REEL 3 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 03</div>
+      <div class="reel-title">Read the Label.</div>
+
+      <div class="reel-hook">
+        <span class="hook-label">Opening line — hold the bottle while saying this</span>
+        "I checked what's actually in my body wash. Here's what I found."
+      </div>
+
+      <div class="script-block">
+        <div class="script-label">Script</div>
+        <div class="script-line action">[ Holds up supermarket body wash — Lynx, Dove, or similar. Real product, not SOLUM. ]</div>
+        <div class="script-line">Right here. "Sodium Lauryl Sulphate." That's a detergent. Same family as washing-up liquid.</div>
+        <div class="script-line">And we're putting this on our skin. Every morning. For years.</div>
+        <div class="script-line">It strips your skin barrier. Your skin spends the rest of the day trying to recover.</div>
+        <div class="script-line">Most men have no idea. I didn't.</div>
+        <div class="script-end">
+          <span class="end-label">Close on</span>
+          "Someone's building something better. Keep an eye out."
+        </div>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-block">
+          <div class="scene-block-title">Location</div>
+          <p>Plain wall or bathroom. The bottle is the visual — the background just needs to stay clean and uncluttered. Neutral tones.</p>
+        </div>
+        <div class="scene-block">
+          <div class="scene-block-title">Wardrobe</div>
+          <p>Plain t-shirt — same look as Reel 01. You're a guy who picked up a bottle and started reading, not a presenter.</p>
+        </div>
+      </div>
+
+      <div class="scene-block" style="margin-bottom: 16px;">
+        <div class="scene-block-title">Camera, Lighting & Props</div>
+        <p>Prop: one standard supermarket body wash (Lynx, Dove, etc.). When reading the label, angle the bottle slightly toward camera so the text is visible. Make sure there's enough light on the bottle — the "Sodium Lauryl Sulphate" line needs to be legible on screen. Face to camera otherwise, same framing as Reel 01.</p>
+      </div>
+
+      <div class="reel-meta">
+        <div class="meta-pill">Length &nbsp;<span>~28 seconds</span></div>
+        <div class="meta-pill">Props &nbsp;<span>1 supermarket body wash</span></div>
+      </div>
+      <div class="reel-donot">✕ Do not mention SOLUM, amino acids, or any specific alternative product</div>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <!-- GENERAL SHOOT SETUP -->
+  <div class="section">
+    <div class="section-label">General Rules</div>
+    <h2>Consistent Across All Three</h2>
+    <div class="setup-grid">
+      <div class="setup-block">
+        <div class="setup-block-title">Lighting</div>
+        <ul>
+          <li>Natural window light is best — raw and real</li>
+          <li>No ring light — looks too produced for this tone</li>
+          <li>No natural light: single lamp off to one side</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Look</div>
+        <ul>
+          <li>Same outfit or consistent look across all three</li>
+          <li>Plain t-shirt — no logos, no graphics</li>
+          <li>Reels 01 + 03 stay dressed; Reel 02 shirtless preferred</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Takes</div>
+        <ul>
+          <li>3 takes minimum per reel</li>
+          <li>Take 1: exactly on script</li>
+          <li>Take 2: more casual, slightly off-script</li>
+          <li>Take 3: tighter, faster delivery</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Delivery</div>
+        <ul>
+          <li>Don't look at notes — know the idea, not the words</li>
+          <li>Direct to camera — not shifty, not intense</li>
+          <li>Slight pauses between lines feel real</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- TECHNICAL -->
+  <div class="section">
+    <div class="section-label">Technical</div>
+    <h2>How to Film</h2>
+    <table class="specs-table">
+      <tr><td>Format</td><td>Vertical 9:16</td></tr>
+      <tr><td>Resolution</td><td>4K preferred, 1080p minimum</td></tr>
+      <tr><td>Frame rate</td><td>30fps</td></tr>
+      <tr><td>Audio</td><td>Record clean — no music or background noise on set</td></tr>
+      <tr><td>Delivery</td><td>Raw .mp4 or .mov — no captions burned in, no filters applied</td></tr>
+      <tr><td>File names</td><td>SOLUM-R01-Take1.mp4, SOLUM-R02-Take2.mp4, etc.</td></tr>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- DON'T LIST -->
+  <div class="section">
+    <div class="section-label">Non-Negotiables</div>
+    <h2>What Not to Do</h2>
+    <ul class="dont-list">
+      <li>Never say: skincare, pamper, self-care, nourish, cleanse (in a soft way)</li>
+      <li>Never mention SOLUM by name in Reels 01 or 02</li>
+      <li>Never show a solution — only the problem</li>
+      <li>Never look at notes or seem scripted</li>
+      <li>Never use influencer energy — no "guys", no "amazing", no forced enthusiasm</li>
+      <li>Never compare men to women</li>
+      <li>Never attack the brands you hold up as props — just read the label</li>
+    </ul>
+  </div>
+
+  <!-- CLOSING -->
+  <div class="closing">
+    <div class="closing-rule">He never has the answer. He only has the question.</div>
+    <p>These three reels exist to make men feel what's missing — before they see what's coming. The product is the answer. It arrives at launch.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">SOLUM &nbsp;·&nbsp; bysolum.com &nbsp;·&nbsp; March 2026</div>
+
+</div>
+</body>
+</html>

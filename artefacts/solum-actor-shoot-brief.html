@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Actor Shoot Brief</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+    --bone-dim: rgba(240,236,226,0.55);
+    --blue-dim: rgba(46,109,164,0.15);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    padding: 60px 24px 100px;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-left: 4px solid var(--steel-blue);
+    padding-left: 20px;
+    margin-bottom: 56px;
+  }
+
+  .header-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+    color: var(--sky-blue);
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+
+  .header-meta {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 16px;
+  }
+
+  .section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--bone);
+    opacity: 0.88;
+    margin-bottom: 14px;
+  }
+
+  strong {
+    font-weight: 700;
+    color: var(--bone);
+    opacity: 1;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba(240,236,226,0.08);
+    margin: 48px 0;
+  }
+
+  /* ── CHARACTER TABLE ── */
+  .char-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .char-table tr {
+    border-bottom: 1px solid rgba(240,236,226,0.08);
+  }
+
+  .char-table tr:last-child { border-bottom: none; }
+
+  .char-table td {
+    padding: 14px 0;
+    vertical-align: top;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .char-table td:first-child {
+    font-weight: 700;
+    color: var(--sky-blue);
+    width: 200px;
+    padding-right: 24px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-top: 16px;
+  }
+
+  .char-table td:last-child {
+    color: var(--bone);
+    opacity: 0.88;
+  }
+
+  /* ── TONE BLOCKS ── */
+  .tone-pair {
+    margin-bottom: 28px;
+  }
+
+  .tone-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tone-label.wrong { color: #c0392b; opacity: 0.8; }
+  .tone-label.right { color: #27ae60; opacity: 0.9; }
+
+  .tone-quote {
+    padding: 14px 20px;
+    border-radius: 2px;
+    font-size: 17px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .tone-quote.wrong {
+    background: rgba(192,57,43,0.08);
+    border-left: 3px solid rgba(192,57,43,0.4);
+    color: var(--bone);
+    opacity: 0.65;
+  }
+
+  .tone-quote.right {
+    background: rgba(39,174,96,0.08);
+    border-left: 3px solid rgba(39,174,96,0.5);
+    color: var(--bone);
+  }
+
+  /* ── REEL CARDS ── */
+  .reel-card {
+    background: var(--charcoal);
+    border-left: 4px solid var(--steel-blue);
+    padding: 28px 28px 24px;
+    margin-bottom: 24px;
+  }
+
+  .reel-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--sky-blue);
+    margin-bottom: 6px;
+  }
+
+  .reel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 16px;
+  }
+
+  .reel-hook {
+    background: rgba(46,109,164,0.12);
+    border-left: 3px solid var(--steel-blue);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--bone);
+    line-height: 1.5;
+  }
+
+  .reel-hook span {
+    display: block;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 6px;
+  }
+
+  .reel-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    margin-bottom: 8px;
+    margin-top: 18px;
+  }
+
+  .reel-list {
+    list-style: none;
+    margin-bottom: 4px;
+  }
+
+  .reel-list li {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.85;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .reel-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--steel-blue);
+    font-weight: 700;
+  }
+
+  .reel-end-line {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(240,236,226,0.04);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--bone);
+    opacity: 0.7;
+    border-left: 2px solid rgba(240,236,226,0.15);
+  }
+
+  .reel-end-line span {
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .reel-donot {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #c0392b;
+    opacity: 0.75;
+  }
+
+  .reel-length {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  /* ── SETUP GRID ── */
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .setup-block {
+    background: var(--charcoal);
+    padding: 20px;
+  }
+
+  .setup-block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    margin-bottom: 12px;
+  }
+
+  .setup-block ul {
+    list-style: none;
+  }
+
+  .setup-block ul li {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.8;
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .setup-block ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--steel-blue);
+  }
+
+  /* ── SPECS TABLE ── */
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .specs-table tr {
+    border-bottom: 1px solid rgba(240,236,226,0.07);
+  }
+
+  .specs-table tr:last-child { border-bottom: none; }
+
+  .specs-table td {
+    padding: 12px 0;
+    font-size: 16px;
+    vertical-align: top;
+  }
+
+  .specs-table td:first-child {
+    font-weight: 700;
+    color: var(--sky-blue);
+    width: 200px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-top: 14px;
+  }
+
+  .specs-table td:last-child {
+    color: var(--bone);
+    opacity: 0.85;
+  }
+
+  /* ── DON'T LIST ── */
+  .dont-list {
+    list-style: none;
+  }
+
+  .dont-list li {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--bone);
+    opacity: 0.85;
+    padding: 12px 0 12px 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(240,236,226,0.07);
+  }
+
+  .dont-list li:last-child { border-bottom: none; }
+
+  .dont-list li::before {
+    content: '✕';
+    position: absolute;
+    left: 0;
+    color: #c0392b;
+    opacity: 0.7;
+    font-size: 13px;
+    top: 14px;
+  }
+
+  /* ── SCHEDULE TABLE ── */
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .schedule-table thead td {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(240,236,226,0.12);
+  }
+
+  .schedule-table tbody tr {
+    border-bottom: 1px solid rgba(240,236,226,0.07);
+  }
+
+  .schedule-table tbody tr:last-child { border-bottom: none; }
+
+  .schedule-table tbody td {
+    padding: 14px 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--bone);
+    opacity: 0.85;
+    vertical-align: top;
+  }
+
+  .schedule-table tbody td:first-child {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    opacity: 1;
+    width: 120px;
+  }
+
+  .schedule-table tbody td:nth-child(2) {
+    font-weight: 700;
+    color: var(--sky-blue);
+    opacity: 1;
+    width: 180px;
+  }
+
+  /* ── CLOSING ── */
+  .closing {
+    background: var(--charcoal);
+    border-left: 4px solid var(--sky-blue);
+    padding: 28px 28px;
+    margin-top: 48px;
+  }
+
+  .closing-rule {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    margin-bottom: 10px;
+  }
+
+  .closing p {
+    opacity: 0.65;
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(240,236,226,0.08);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-wordmark">SOLUM</div>
+    <h1>ACTOR SHOOT BRIEF</h1>
+    <div class="header-meta">Pre-Launch Content &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; One shoot day. 5 reels. 2–3 weeks of content.</div>
+  </div>
+
+  <!-- THE BRAND -->
+  <div class="section">
+    <div class="section-label">The Brand</div>
+    <h2>What is SOLUM?</h2>
+    <p>SOLUM is a men's body care system built around one truth: most men shower every day and still have rough skin, a neglected back, and a scalp they've never properly cleaned. Not because they're lazy — because nobody ever built them a system worth following. SOLUM is that system. It's launching soon. This content exists to make men feel the gap before they see the product.</p>
+  </div>
+
+  <hr>
+
+  <!-- YOUR ROLE -->
+  <div class="section">
+    <div class="section-label">Your Role</div>
+    <h2>Who You Are On Camera</h2>
+    <p>You are not a spokesperson. You are not an influencer. You are an everyday man who started paying attention to something most men never think about — his body routine. You're curious, a bit surprised by what you've found, and sharing it like you'd tell a mate.</p>
+    <p><strong>No script feel. No selling. No brand enthusiasm.</strong></p>
+    <p>You are the audience. You represent every man watching.</p>
+
+    <table class="char-table" style="margin-top: 24px;">
+      <tr>
+        <td>Who he is</td>
+        <td>Regular guy. Could be 25 or 40. Looks after himself but isn't obsessed with it.</td>
+      </tr>
+      <tr>
+        <td>His discovery</td>
+        <td>He started questioning whether his shower routine was actually doing anything. It wasn't.</td>
+      </tr>
+      <tr>
+        <td>His tone</td>
+        <td>Direct. Slightly wry. Never preachy. Talks like a mate, not a presenter.</td>
+      </tr>
+      <tr>
+        <td>Never does</td>
+        <td>Lecture. Hype. Use words like skincare, pamper, self-care, nourish.</td>
+      </tr>
+      <tr>
+        <td>Always does</td>
+        <td>Keep it real. One idea per video. Land on a question or an open loop.</td>
+      </tr>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- TONE -->
+  <div class="section">
+    <div class="section-label">Tone Reference</div>
+    <h2>How It Should Sound</h2>
+
+    <div class="tone-pair">
+      <div class="tone-label wrong">✕ Wrong</div>
+      <div class="tone-quote wrong">"Hey guys, so today I want to talk about something really important for your skin health…"</div>
+    </div>
+    <div class="tone-pair">
+      <div class="tone-label right">✓ Right</div>
+      <div class="tone-quote right">"I've been showering every day for the last 15 years. Turns out I've been doing it wrong."</div>
+    </div>
+
+    <div class="tone-pair" style="margin-top: 28px;">
+      <div class="tone-label wrong">✕ Wrong</div>
+      <div class="tone-quote wrong">"Did you know that most men don't properly exfoliate?"</div>
+    </div>
+    <div class="tone-pair">
+      <div class="tone-label right">✓ Right</div>
+      <div class="tone-quote right">"Try reaching your own back right now. Go on. You can't. Nobody can."</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- THE 5 REELS -->
+  <div class="section">
+    <div class="section-label">The Content</div>
+    <h2>5 Reels to Shoot</h2>
+
+    <!-- Reel 1 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 01 · WEEK 1</div>
+      <div class="reel-title">The Opener</div>
+      <div class="reel-hook">
+        <span>Opening line</span>
+        "I've been showering every day for 15 years. I was doing it wrong."
+      </div>
+      <div class="reel-section-title">What to cover</div>
+      <ul class="reel-list">
+        <li>He showered every day, thought that was enough</li>
+        <li>Hot water + generic body wash + rinse = not a routine</li>
+        <li>Skin still rough, back always neglected, scalp never thought about</li>
+        <li>He started asking why — nobody ever built men a proper system</li>
+      </ul>
+      <div class="reel-section-title">Delivery notes</div>
+      <ul class="reel-list">
+        <li>Intro reel — relaxed, slightly self-deprecating</li>
+        <li>Face to camera, conversational, bathroom or plain wall</li>
+      </ul>
+      <div class="reel-end-line">
+        <span>End on</span>
+        "Nobody ever taught us this. That's the problem."
+      </div>
+      <div class="reel-donot">✕ Do not mention any product, brand, or solution</div>
+      <div class="reel-length">20–30 seconds</div>
+    </div>
+
+    <!-- Reel 2 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 02 · WEEK 1</div>
+      <div class="reel-title">The Back Problem</div>
+      <div class="reel-hook">
+        <span>Opening line</span>
+        "Try reaching your own back right now. Go on."
+      </div>
+      <div class="reel-section-title">What to cover</div>
+      <ul class="reel-list">
+        <li>Physically try to reach your back on camera — make it real</li>
+        <li>A loofah can't get there. Your hands can't cover it.</li>
+        <li>The back is the largest skin surface most men never properly clean</li>
+        <li>Not laziness — the right tool doesn't exist in most men's bathrooms</li>
+      </ul>
+      <div class="reel-section-title">Delivery notes</div>
+      <ul class="reel-list">
+        <li>The awkward physical moment IS the point — keep it real</li>
+        <li>Best shot in the bathroom, shirtless if comfortable</li>
+      </ul>
+      <div class="reel-end-line">
+        <span>End on</span>
+        "There has to be a better way."
+      </div>
+      <div class="reel-donot">✕ Do not mention any product or solution</div>
+      <div class="reel-length">20–25 seconds</div>
+    </div>
+
+    <!-- Reel 3 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 03 · WEEK 2</div>
+      <div class="reel-title">The Ingredient Problem</div>
+      <div class="reel-hook">
+        <span>Opening line</span>
+        "I checked what's actually in my body wash. Here's what I found."
+      </div>
+      <div class="reel-section-title">What to cover</div>
+      <ul class="reel-list">
+        <li>Hold up any standard body wash — Lynx, Dove, etc. Real product, not SOLUM.</li>
+        <li>Read "Sodium Lauryl Sulphate" or "Sodium Laureth Sulphate" off the label</li>
+        <li>SLS is a detergent — it strips your skin barrier every single morning</li>
+        <li>Most men have no idea they're using a detergent on their skin daily</li>
+      </ul>
+      <div class="reel-section-title">Delivery notes</div>
+      <ul class="reel-list">
+        <li>Most educational reel — keep it punchy, not lecture-y</li>
+        <li>He's not attacking the brand, just reading the label</li>
+      </ul>
+      <div class="reel-end-line">
+        <span>End on</span>
+        "There's a better way to clean. Most men just don't know it exists yet."
+      </div>
+      <div class="reel-donot">✕ Do not mention SOLUM, amino acids, or any specific alternative</div>
+      <div class="reel-length">25–30 seconds</div>
+    </div>
+
+    <!-- Reel 4 -->
+    <div class="reel-card">
+      <div class="reel-number">REEL 04 · WEEK 2</div>
+      <div class="reel-title">The Scalp</div>
+      <div class="reel-hook">
+        <span>Opening line</span>
+        "Your scalp is skin. I never once treated it like that."
+      </div>
+      <div class="reel-section-title">What to cover</div>
+      <ul class="reel-list">
+        <li>The scalp gets shampooed — but never massaged or properly stimulated</li>
+        <li>Most men run shampoo through and rinse. That's it.</li>
+        <li>The scalp has more sebaceous glands than almost anywhere on the body</li>
+        <li>2–3 minutes of proper massage during shampoo — most men have never done it</li>
+      </ul>
+      <div class="reel-section-title">Delivery notes</div>
+      <ul class="reel-list">
+        <li>The most surprising insight — play into the genuine "why didn't I know this" feeling</li>
+        <li>Demonstrate on himself — hands on scalp, showing the circular motion</li>
+      </ul>
+      <div class="reel-end-line">
+        <span>End on</span>
+        "Two minutes. I can't believe I never did this."
+      </div>
+      <div class="reel-donot">✕ Do not mention the scalp massager or any SOLUM product</div>
+      <div class="reel-length">20–25 seconds</div>
+    </div>
+
+    <!-- Reel 5 -->
+    <div class="reel-card" style="border-left-color: var(--sky-blue);">
+      <div class="reel-number">REEL 05 · WEEK 3</div>
+      <div class="reel-title">The Tease</div>
+      <div class="reel-hook" style="border-left-color: var(--sky-blue);">
+        <span>Opening line</span>
+        "I've spent the last few weeks figuring out what a proper body routine for men actually looks like."
+      </div>
+      <div class="reel-section-title">What to cover</div>
+      <ul class="reel-list">
+        <li>He's been testing, researching, thinking about this</li>
+        <li>Daily: 5 steps, 10 minutes. Weekly: deeper ritual, 20 minutes.</li>
+        <li>Nobody has built this as a system for men — yet</li>
+        <li>Something is coming</li>
+      </ul>
+      <div class="reel-section-title">Delivery notes</div>
+      <ul class="reel-list">
+        <li>Pre-launch tease — first time anything beyond "the problem" is mentioned</li>
+        <li>Keep it vague — "a system", "5 steps", "coming soon" — no product details</li>
+        <li>Slightly more energy — this one has resolution coming</li>
+      </ul>
+      <div class="reel-end-line">
+        <span>End on</span>
+        "Someone finally built it. Watch this space."
+      </div>
+      <div class="reel-donot">✕ Do not show any product, packaging, or SOLUM branding on screen</div>
+      <div class="reel-length">25–30 seconds</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- SHOOT SETUP -->
+  <div class="section">
+    <div class="section-label">Shoot Setup</div>
+    <h2>Location, Wardrobe & Props</h2>
+    <div class="setup-grid">
+      <div class="setup-block">
+        <div class="setup-block-title">Location</div>
+        <ul>
+          <li>Primary: bathroom — clean, minimal, white or dark tiles</li>
+          <li>Secondary: plain wall with natural light</li>
+          <li>Avoid: busy backgrounds, bright colours, clutter</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Wardrobe</div>
+        <ul>
+          <li>Plain t-shirt or nothing — Reels 2 + 4 work well shirtless</li>
+          <li>No logos, no graphics, no bright colours</li>
+          <li>Keep consistent across all reels</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Props</div>
+        <ul>
+          <li>Reel 3 only: one supermarket body wash (Lynx, Dove, etc.)</li>
+          <li>No other props needed</li>
+          <li>No SOLUM products on camera</li>
+        </ul>
+      </div>
+      <div class="setup-block">
+        <div class="setup-block-title">Lighting</div>
+        <ul>
+          <li>Natural window light — raw and real</li>
+          <li>No ring light — looks too produced</li>
+          <li>If no natural light: single softbox, off to one side</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- TECHNICAL -->
+  <div class="section">
+    <div class="section-label">Technical Specs</div>
+    <h2>How to Film It</h2>
+    <table class="specs-table">
+      <tr><td>Format</td><td>Vertical 9:16</td></tr>
+      <tr><td>Resolution</td><td>4K if possible, 1080p minimum</td></tr>
+      <tr><td>Frame rate</td><td>30fps</td></tr>
+      <tr><td>Length</td><td>20–30 seconds per reel</td></tr>
+      <tr><td>Audio</td><td>Record clean — no background music on set</td></tr>
+      <tr><td>Delivery</td><td>Raw .mp4 or .mov files, no captions burned in</td></tr>
+      <tr><td>Takes per reel</td><td>3 minimum — one on brief, one casual, one tighter/faster</td></tr>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- DON'T LIST -->
+  <div class="section">
+    <div class="section-label">Non-Negotiables</div>
+    <h2>What Not to Do</h2>
+    <ul class="dont-list">
+      <li>Never say: skincare, pamper, self-care, nourish, cleanse (in a soft way)</li>
+      <li>Never mention SOLUM by name in Reels 1–4</li>
+      <li>Never show a solution — only the problem</li>
+      <li>Never look at notes or seem scripted</li>
+      <li>Never use influencer energy — no "guys", no "amazing", no forced enthusiasm</li>
+      <li>Never compare men to women</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- POST SCHEDULE -->
+  <div class="section">
+    <div class="section-label">Post Schedule</div>
+    <h2>3-Week Rollout</h2>
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <td>Week</td>
+          <td>Actor Reel</td>
+          <td>Theme</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Week 1</td>
+          <td>Reel 01 + Reel 02</td>
+          <td>Establish the problem — men relate, start following</td>
+        </tr>
+        <tr>
+          <td>Week 2</td>
+          <td>Reel 03 + Reel 04</td>
+          <td>Deepen the insight — build frustration and curiosity</td>
+        </tr>
+        <tr>
+          <td>Week 3</td>
+          <td>Reel 05</td>
+          <td>The tease — something is coming, products arriving</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 20px; opacity: 0.6; font-size: 15px;">Each actor reel runs alongside 1–2 text-only SOLUM brand reels per week.</p>
+  </div>
+
+  <!-- CLOSING -->
+  <div class="closing">
+    <div class="closing-rule">He never has the answer. He only has the question.</div>
+    <p>The product is the answer. It arrives at launch. Every reel builds the gap — so that when SOLUM appears, it feels like the only logical conclusion.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">SOLUM &nbsp;·&nbsp; Internal Use Only &nbsp;·&nbsp; bysolum.com &nbsp;·&nbsp; March 2026</div>
+
+</div>
+</body>
+</html>

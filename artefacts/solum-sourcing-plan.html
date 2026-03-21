@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Global Sourcing Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#08090b; --char:#0c0e12; --dark:#10131a;
+  --mid:#181c24;   --panel:#1c2030;
+  --bone:#f0ece2;  --stone:#6a7380;
+  --blue:#2e6da4;  --blit:#4a8fc7; --bdim:#1a4a78;
+  --glit:#3aaa68;  --rlit:#c94040; --alit:#e8a830;
+  --line:rgba(240,236,226,0.055);
+  --lineb:rgba(46,109,164,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;}
+.page{max-width:1300px;margin:0 auto;padding:72px 48px;}
+
+/* ── HEADER ── */
+.doc-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;padding-bottom:32px;border-bottom:1px solid var(--lineb);}
+.doc-logo{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:0.18em;color:var(--bone);}
+.doc-title-block{text-align:right;}
+.doc-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.06em;color:var(--bone);line-height:1;}
+.doc-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);margin-top:6px;}
+
+/* ── SECTION HEAD ── */
+.sec-head{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:28px;display:flex;align-items:center;gap:12px;}
+.sec-head::after{content:'';flex:1;height:1px;background:var(--lineb);}
+hr{border:none;border-top:1px solid var(--line);margin:56px 0;}
+
+/* ── OVERVIEW STRIP ── */
+.overview-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);margin-bottom:56px;}
+.ov-tile{background:var(--mid);padding:24px 20px;display:flex;flex-direction:column;gap:6px;}
+.ov-tile.blue{background:var(--blue);}
+.ov-k{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.ov-tile.blue .ov-k{color:rgba(255,255,255,0.5);}
+.ov-v{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--bone);line-height:1;}
+.ov-tile.blue .ov-v{color:#fff;}
+.ov-n{font-size:11px;color:var(--stone);font-weight:300;}
+.ov-tile.blue .ov-n{color:rgba(255,255,255,0.4);}
+
+/* ── SOURCING ORDER BOX ── */
+.order-box{background:var(--mid);border:1px solid var(--lineb);border-left:3px solid var(--alit);padding:28px 32px;margin-bottom:56px;}
+.ob-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.08em;color:var(--alit);margin-bottom:16px;}
+.ob-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--lineb);}
+.ob-step{background:var(--char);padding:20px 18px;display:flex;flex-direction:column;gap:6px;}
+.obs-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--alit);line-height:1;opacity:.4;}
+.obs-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
+.obs-body{font-size:11px;color:var(--stone);font-weight:300;line-height:1.5;}
+.obs-why{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--alit);margin-top:4px;}
+
+/* ── PRODUCT CARDS ── */
+.product-block{margin-bottom:48px;border:1px solid var(--line);}
+.pb-header{display:grid;grid-template-columns:72px 1fr auto;gap:0;background:var(--char);border-bottom:1px solid var(--line);}
+.pb-num{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:-1px;color:rgba(46,109,164,0.2);padding:20px 24px;line-height:1;border-right:1px solid var(--line);}
+.pb-title-block{padding:20px 28px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+.pb-origin{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.pb-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.06em;color:var(--bone);line-height:1;}
+.pb-tag{font-size:10px;color:var(--stone);font-weight:300;letter-spacing:1px;}
+.pb-econ{padding:20px 28px;display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:right;border-left:1px solid var(--line);}
+.pbe-cogs{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--bone);line-height:1;}
+.pbe-rrp{font-size:11px;color:var(--stone);}
+.pbe-margin{font-size:11px;color:var(--glit);font-weight:600;}
+
+.pb-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--line);}
+.pb-col{background:var(--black);padding:24px 24px;}
+.pbc-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:14px;}
+
+/* Supplier rows */
+.supplier{display:flex;flex-direction:column;gap:0;margin-bottom:12px;border:1px solid var(--line);}
+.supplier:last-child{margin-bottom:0;}
+.sup-name-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--mid);}
+.sup-name{font-size:12px;letter-spacing:1px;color:var(--bone);font-weight:600;}
+.sup-badge{font-size:8px;letter-spacing:3px;text-transform:uppercase;padding:3px 8px;background:var(--blue);color:#fff;}
+.sup-badge.alt{background:var(--mid);border:1px solid var(--lineb);color:var(--stone);}
+.sup-rows{display:flex;flex-direction:column;}
+.sup-row{display:flex;justify-content:space-between;padding:7px 14px;border-top:1px solid var(--line);font-size:11px;}
+.sup-k{color:var(--stone);font-weight:300;}
+.sup-v{color:var(--bone);font-weight:500;}
+.sup-v a{color:var(--blit);text-decoration:none;}
+.sup-v a:hover{text-decoration:underline;}
+.sup-v.g{color:var(--glit);}
+.sup-v.a{color:var(--alit);}
+.sup-v.r{color:var(--rlit);}
+
+/* Notes rows */
+.note-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;}
+.note-item:last-child{border-bottom:none;}
+.note-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px;}
+.note-dot.warn{background:var(--alit);}
+.note-dot.good{background:var(--glit);}
+
+/* Spec row */
+.spec-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.spec-row:last-child{border-bottom:none;}
+.spec-k{color:var(--stone);font-weight:300;}
+.spec-v{color:var(--bone);font-weight:500;}
+
+/* ── COMPLIANCE TABLE ── */
+.compliance-table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+.compliance-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:10px 16px;text-align:left;border-bottom:1px solid var(--lineb);}
+.compliance-table td{padding:12px 16px;font-size:12px;border-bottom:1px solid var(--line);vertical-align:top;}
+.compliance-table tr:last-child td{border-bottom:none;}
+.pill{display:inline-block;padding:3px 10px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+.pill.req{background:rgba(201,64,64,0.15);color:var(--rlit);}
+.pill.opt{background:rgba(46,109,164,0.15);color:var(--blit);}
+.pill.done{background:rgba(58,170,104,0.15);color:var(--glit);}
+
+/* ── BUDGET TABLE ── */
+.budget-table{width:100%;border-collapse:collapse;margin-bottom:48px;}
+.budget-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;padding:10px 16px;text-align:right;border-bottom:1px solid var(--lineb);}
+.budget-table th:first-child{text-align:left;}
+.budget-table td{padding:11px 16px;font-size:12px;border-bottom:1px solid var(--line);text-align:right;}
+.budget-table td:first-child{text-align:left;color:var(--stone);}
+.budget-table .total-row td{background:var(--mid);font-weight:700;color:var(--bone);}
+.budget-table .total-row td:first-child{color:var(--blue);}
+.g{color:var(--glit);}
+.a{color:var(--alit);}
+
+/* ── LEAD TIMES ── */
+.timeline{display:flex;gap:0;background:var(--line);margin-bottom:48px;}
+.tl-item{flex:1;background:var(--char);padding:20px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px;}
+.tl-item:last-child{border-right:none;}
+.tl-week{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.tl-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.06em;color:var(--bone);}
+.tl-body{font-size:10px;color:var(--stone);font-weight:300;line-height:1.5;}
+
+/* ── FOOTER ── */
+.doc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid var(--line);margin-top:56px;}
+.df-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.15em;color:var(--bone);}
+.df-note{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-logo">SOLUM</div>
+    <div class="doc-title-block">
+      <div class="doc-title">Global Sourcing Plan</div>
+      <div class="doc-sub">8 Products · 5 Countries · Suppliers · MOQs · Costs · Compliance · Internal Document · 2025</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="sec-head">At a Glance</div>
+  <div class="overview-strip">
+    <div class="ov-tile">
+      <div class="ov-k">Products</div>
+      <div class="ov-v">8</div>
+      <div class="ov-n">01 through 08 · numbered in ritual sequence</div>
+    </div>
+    <div class="ov-tile">
+      <div class="ov-k">Countries</div>
+      <div class="ov-v">5</div>
+      <div class="ov-n">Japan · Korea · Morocco · Turkey · UK</div>
+    </div>
+    <div class="ov-tile blue">
+      <div class="ov-k">Launch COGS (Full Ritual)</div>
+      <div class="ov-v">£21.55</div>
+      <div class="ov-n">72.4% gross margin on £78 kit</div>
+    </div>
+    <div class="ov-tile">
+      <div class="ov-k">Min. Launch Budget</div>
+      <div class="ov-v">£6K</div>
+      <div class="ov-n">First inventory + CPSR compliance</div>
+    </div>
+    <div class="ov-tile">
+      <div class="ov-k">Lowest Barrier Supplier</div>
+      <div class="ov-v">MOQ 12</div>
+      <div class="ov-n">Fatima's Garden · Morocco · Start here</div>
+    </div>
+  </div>
+
+  <!-- SOURCING ORDER -->
+  <div class="sec-head">Recommended Sourcing Order — Minimum Risk</div>
+  <div class="order-box">
+    <div class="ob-title">Source In This Order. De-Risk at Every Step.</div>
+    <div class="ob-steps">
+      <div class="ob-step">
+        <div class="obs-num">01</div>
+        <div class="obs-title">Morocco First</div>
+        <div class="obs-body">Fatima's Garden. MOQ 12 units. Clay + argan oil. Lowest financial barrier — validate demand before committing to larger orders.</div>
+        <div class="obs-why">~£200 to start</div>
+      </div>
+      <div class="ob-step">
+        <div class="obs-num">02</div>
+        <div class="obs-title">Korea Tools</div>
+        <div class="obs-body">Italy Towel mitt + back scrub cloth + scalp massager. ~£250 total for 200 units each. Tools don't expire — safe to over-order.</div>
+        <div class="obs-why">~£250 · MOQ 50–100</div>
+      </div>
+      <div class="ob-step">
+        <div class="obs-num">03</div>
+        <div class="obs-title">UK Lotion</div>
+        <div class="obs-body">Cosmetics Lab UK. MOQ 250 units. Start CPSR process simultaneously — takes 2–4 weeks. Budget £150–400 per product for safety cert.</div>
+        <div class="obs-why">~£1,100 + CPSR</div>
+      </div>
+      <div class="ob-step">
+        <div class="obs-num">04</div>
+        <div class="obs-title">Japan Body Wash</div>
+        <div class="obs-body">Highest MOQ (500 units). Longest lead time (8–12 weeks). Order last once revenue is flowing. Interim: source Korean amino acid alternative.</div>
+        <div class="obs-why">~£1,600 · Last step</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 01 ═══ -->
+  <div class="sec-head">Product by Product</div>
+
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">01</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇯🇵 Japan · Daily Consumable · Monthly Sub</div>
+        <div class="pb-name">Amino Acid Body Wash 250ml</div>
+        <div class="pb-tag">Sulphate-free · Skin barrier preserving · Foundation of daily ritual</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£3.20</div>
+        <div class="pbe-rrp">RRP £20</div>
+        <div class="pbe-margin">84% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Xiran Skincare</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://xiranskincare.com" target="_blank">xiranskincare.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v a">500 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£3.20</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">8–12 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v">~£1,600</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">ProCosmeticsOEM</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://procosmeticsoem.com" target="_blank">procosmeticsoem.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v">500 units</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">10–14 weeks</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Volume</span><span class="spec-v">250ml</span></div>
+        <div class="spec-row"><span class="spec-k">Format</span><span class="spec-k">Pump bottle</span></div>
+        <div class="spec-row"><span class="spec-k">Key Actives</span><span class="spec-v">Amino acid surfactants</span></div>
+        <div class="spec-row"><span class="spec-k">Free From</span><span class="spec-v">Sulphates, parabens</span></div>
+        <div class="spec-row"><span class="spec-k">Fragrance</span><span class="spec-v">Light / unscented option</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 01 · Daily · Full body</span></div>
+        <div class="spec-row"><span class="spec-k">Sub frequency</span><span class="spec-v">Monthly (lasts ~30 days)</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇯🇵 Japan — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Highest MOQ and longest lead time of all 8 products. Order last — after Morocco and Korea tools are confirmed.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>CPSR required before UK sale. Budget £150–400. Xiran may supply existing EU safety data — ask upfront.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Request amino acid (sodium cocoyl glutamate or similar) — not SLS-based. Specify no sulphates in brief.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Interim option: Korean amino acid body wash via Alibaba at lower MOQ while Japanese order is in production.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>At 500 units × £3.20 COGS, breakeven at 86 units sold. Very low risk once ordered.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 02 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">02</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇰🇷 Korea · Tool · Lasts 6–12 Months</div>
+        <div class="pb-name">Italy Towel Exfoliating Mitt</div>
+        <div class="pb-tag">Korean bathhouse standard · 60-year tradition · Visible results on first use</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£0.45</div>
+        <div class="pbe-rrp">RRP £10</div>
+        <div class="pbe-margin">95.5% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Goldsangsa</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Platform</span><span class="sup-v">Alibaba</span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">100 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£0.45</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">2–4 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v">~£45</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Modu</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Platform</span><span class="sup-v">Amazon / Alibaba</span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">50 units</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">1–3 weeks</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Material</span><span class="spec-v">Viscose Italy Towel</span></div>
+        <div class="spec-row"><span class="spec-k">Size</span><span class="spec-v">Standard mitt (fits most)</span></div>
+        <div class="spec-row"><span class="spec-k">Texture</span><span class="spec-v">Medium-coarse weave</span></div>
+        <div class="spec-row"><span class="spec-k">Colour</span><span class="spec-v">Request charcoal / dark grey</span></div>
+        <div class="spec-row"><span class="spec-k">Use</span><span class="spec-v">On damp skin, circular motion</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 02 · 3× per week · Body</span></div>
+        <div class="spec-row"><span class="spec-k">Lifespan</span><span class="spec-v">6–12 months typical</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇰🇷 Korea — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot good"></div><span>Lowest COGS of all 8 products. At £0.45/unit and MOQ 100, total outlay is £45. Lowest-risk first order possible.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>No CPSR required — non-cosmetic physical tool. No UK compliance barrier.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Request "Italy Towel" or "Korean exfoliating mitt" — this is the traditional name. Viscose construction is standard.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Order 200+ units from the start — tools don't expire and you'll need consistent supply. Safe to over-order.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 03 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">03</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇨🇳 China · Tool · Replace Every 90 Days (Subscription Item)</div>
+        <div class="pb-name">Back Scrub Cloth 70cm</div>
+        <div class="pb-tag">Viscose fiber · Full back reach · Antibacterial · 90-day replacement cycle</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£0.90</div>
+        <div class="pbe-rrp">RRP £12</div>
+        <div class="pbe-margin">92.5% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Shijiazhuang Shuqi Commodity Co., Ltd.</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Platform</span><span class="sup-v">Alibaba.com</span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">100 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£0.90</span></div>
+            <div class="sup-row"><span class="sup-k">Sample Cost</span><span class="sup-v">£1.13</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">5-day dispatch · custom sample 7 days</span></div>
+            <div class="sup-row"><span class="sup-k">Custom Design</span><span class="sup-v g">3 days</span></div>
+            <div class="sup-row"><span class="sup-k">Alibaba tenure</span><span class="sup-v">3 years</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Length</span><span class="spec-v">70cm minimum</span></div>
+        <div class="spec-row"><span class="spec-k">Material</span><span class="spec-v">100% Viscose fiber</span></div>
+        <div class="spec-row"><span class="spec-k">Texture</span><span class="spec-v">Striped / dual-texture</span></div>
+        <div class="spec-row"><span class="spec-k">Handles</span><span class="spec-v">Both ends — essential</span></div>
+        <div class="spec-row"><span class="spec-k">Feature</span><span class="spec-v">Antibacterial</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 03 · Weekly · Back</span></div>
+        <div class="spec-row"><span class="spec-k">Replacement cycle</span><span class="spec-v">Every 90 days — subscription item</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇨🇳 China — required</span></div>
+        <div class="spec-row"><span class="spec-k">Tradition reference</span><span class="spec-v">Korean bathhouse ritual (practice ref only — not Made in Korea)</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot"></div><span>No CPSR required. Non-cosmetic physical tool.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>90-day replacement cycle makes this a subscription item alongside consumables — strengthens refill model significantly.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Viscose is plant-derived but not certified biodegradable. Label as "plant-derived fibres" only — do not claim biodegradable.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Only 3 years on Alibaba — request factory audit report or ISO cert before committing to bulk order.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Confirm woven SOLUM label tag available. Confirm 70cm minimum length in order spec.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Highly differentiating product — most men have genuinely never used one. Strong hook for content.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 04 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">04</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇰🇷 Korea · Tool · Lasts 12+ Months</div>
+        <div class="pb-name">Silicone Scalp Massager</div>
+        <div class="pb-tag">Used during wash · Stimulates follicle blood flow · 60-second daily habit</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£0.90</div>
+        <div class="pbe-rrp">RRP £12</div>
+        <div class="pbe-margin">92.5% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Alibaba Korea — Silicone</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Search term</span><span class="sup-v">"silicone scalp massager private label Korea"</span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">100 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£0.90</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">2–4 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v">~£90</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Material</span><span class="spec-v">Food-grade silicone</span></div>
+        <div class="spec-row"><span class="spec-k">Pin type</span><span class="spec-v">Flexible silicone pins</span></div>
+        <div class="spec-row"><span class="spec-k">Handle</span><span class="spec-v">Non-slip grip — essential</span></div>
+        <div class="spec-row"><span class="spec-k">Colour</span><span class="spec-v">Black or charcoal</span></div>
+        <div class="spec-row"><span class="spec-k">Use</span><span class="spec-v">Wet hair, circular motion</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 04 · Daily · Scalp</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇰🇷 Korea — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot"></div><span>No CPSR required. Silicone tool — not a cosmetic product.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Easiest gift item in the kit. Highly giftable, novel, immediately understood.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Specify non-slip handle — in-shower use means grip matters. Cheap versions without grip feel discount.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Can consolidate with 02 + 03 in same Korea shipment to reduce freight cost.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 05 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">05</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇲🇦 Morocco · Weekly Consumable · Monthly Sub</div>
+        <div class="pb-name">Rhassoul Clay Body Mask</div>
+        <div class="pb-tag">Atlas mountain clay · 1,000-year hammam tradition · Weekly deep ritual anchor</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£3.50</div>
+        <div class="pbe-rrp">RRP £26</div>
+        <div class="pbe-margin">86.5% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Fatima's Garden</span><span class="sup-badge">Primary · Start Here</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://fatimasgarden.com/wholesale" target="_blank">fatimasgarden.com/wholesale</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">12 units — lowest of all</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£3.50</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">1–2 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes — at scale</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v g">~£42 — start here</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Organica Group</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://moroccanorganica.com" target="_blank">moroccanorganica.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v">50 units</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Ingredient</span><span class="spec-v">Rhassoul (Ghassoul) clay</span></div>
+        <div class="spec-row"><span class="spec-k">Origin</span><span class="spec-v">Atlas mountains, Morocco</span></div>
+        <div class="spec-row"><span class="spec-k">Format</span><span class="spec-v">Powder or pre-mixed paste</span></div>
+        <div class="spec-row"><span class="spec-k">Application</span><span class="spec-v">Body — not face</span></div>
+        <div class="spec-row"><span class="spec-k">Leave time</span><span class="spec-v">5 minutes</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 05 · Weekly deep ritual</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇲🇦 Morocco — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot warn"></div><span>CPSR required before UK sale — clay is a cosmetic product. Budget £150–400. Commission alongside UK lotion to save cost.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Fatima's Garden MOQ 12 is the lowest barrier entry point in the entire range. This is product 1 to order.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Powder format preferred — longer shelf life, lighter to ship, customer mixes with water. Paste option also valid.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Strong brand story — 1,000 years of Moroccan hammam use. Rhassoul is a specific geological designation, not generic clay.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 06 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">06</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇲🇦 Morocco · Weekly Consumable · Monthly Sub</div>
+        <div class="pb-name">Organic Argan Body Oil</div>
+        <div class="pb-tag">Cold-pressed · Organic · Applied post-kese on damp skin · Maximum absorption</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£5.50</div>
+        <div class="pbe-rrp">RRP £34</div>
+        <div class="pbe-margin">83.8% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Fatima's Garden</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://fatimasgarden.com/wholesale" target="_blank">fatimasgarden.com/wholesale</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">12 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£5.50</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">1–2 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes — at scale</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Souk Cosmetics</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://soukcosmetics.com" target="_blank">soukcosmetics.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v">25 units</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Ingredient</span><span class="spec-v">100% argan oil</span></div>
+        <div class="spec-row"><span class="spec-k">Certification</span><span class="spec-v">Organic — request cert</span></div>
+        <div class="spec-row"><span class="spec-k">Extraction</span><span class="spec-v">Cold-pressed only</span></div>
+        <div class="spec-row"><span class="spec-k">Volume</span><span class="spec-v">50–100ml (TBC)</span></div>
+        <div class="spec-row"><span class="spec-k">Format</span><span class="spec-v">Dropper or pump</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 06 · Weekly · Post-kese</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇲🇦 Morocco — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot warn"></div><span>CPSR required — oil is a cosmetic. Bundle CPSR with Product 05 (clay) to share assessment cost.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Request certification for organic status — this is a key marketing claim. Don't use the word "organic" without documentation.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Consolidate Morocco order: Products 05 + 06 from same supplier (Fatima's Garden). One relationship, one shipping cost.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Highest RRP in the range at £34. Applied sparingly once per week — bottle lasts ~6–8 weeks.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 07 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">07</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇬🇧 United Kingdom · Daily Consumable · Monthly Sub</div>
+        <div class="pb-name">Fast-Absorb Body Lotion 400ml</div>
+        <div class="pb-tag">Apply within 3 minutes of towelling · CPSR certified · British manufacture</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£4.40</div>
+        <div class="pbe-rrp">RRP £22</div>
+        <div class="pbe-margin">80.0% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Cosmetics Lab UK</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://cosmeticslab.co.uk" target="_blank">cosmeticslab.co.uk</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v a">250 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£4.40 (400ml)</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">4–6 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">CPSR included</span><span class="sup-v g">Yes — included in service</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v">~£1,100</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">AW Aromatics</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://uk.aromatics.com" target="_blank">uk.aromatics.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">100 units</span></div>
+            <div class="sup-row"><span class="sup-k">CPSR</span><span class="sup-v">Separate — budget £300</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Volume</span><span class="spec-v">400ml — confirmed</span></div>
+        <div class="spec-row"><span class="spec-k">Format</span><span class="spec-v">Squeeze tube or pump</span></div>
+        <div class="spec-row"><span class="spec-k">Absorption</span><span class="spec-v">Fast-absorbing — specify</span></div>
+        <div class="spec-row"><span class="spec-k">Application</span><span class="spec-v">Full body — not face</span></div>
+        <div class="spec-row"><span class="spec-k">Fragrance</span><span class="spec-v">Light / neutral — specify</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 07 · Daily · 3-min rule</span></div>
+        <div class="spec-row"><span class="spec-k">Duration</span><span class="spec-v">~30 days (daily full body)</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇬🇧 UK — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot warn"></div><span>CPSR is mandatory for UK sale — this is the most critical compliance item. Cosmetics Lab includes it; AW Aromatics does not.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>400ml is confirmed — do not reduce this. At 250ml customers ran out in 2–2.5 weeks. 400ml = clean 30-day monthly cycle.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>UK manufacture means shorter lead times, simpler compliance, no import duty. Strategic advantage over importing.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Specify "fast-absorbing" in formulation brief — men won't tolerate greasy skin. Key product experience requirement.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Highest-frequency sub consumable — used daily. Drives consistent monthly revenue.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCT 08 ═══ -->
+  <div class="product-block">
+    <div class="pb-header">
+      <div class="pb-num">08</div>
+      <div class="pb-title-block">
+        <div class="pb-origin">🇹🇷 Turkey · Tool · Lasts 6–12 Months</div>
+        <div class="pb-name">Artisan Kese Mitt — Raw Silk</div>
+        <div class="pb-tag">Hand-loomed · 500-year tradition · Post-clay weekly ritual · Deepest exfoliation</div>
+      </div>
+      <div class="pb-econ">
+        <div class="pbe-cogs">£4.50</div>
+        <div class="pbe-rrp">RRP £20</div>
+        <div class="pbe-margin">77.5% gross margin</div>
+      </div>
+    </div>
+    <div class="pb-body">
+      <div class="pb-col">
+        <div class="pbc-label">Primary Supplier</div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Jennifer's Hamam</span><span class="sup-badge">Primary</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://jennifershamam.com" target="_blank">jennifershamam.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v g">30–50 units</span></div>
+            <div class="sup-row"><span class="sup-k">Unit Cost</span><span class="sup-v">£4.50</span></div>
+            <div class="sup-row"><span class="sup-k">Lead Time</span><span class="sup-v">2–3 weeks</span></div>
+            <div class="sup-row"><span class="sup-k">Private Label</span><span class="sup-v g">Yes</span></div>
+            <div class="sup-row"><span class="sup-k">Min. Order Value</span><span class="sup-v">~£225</span></div>
+          </div>
+        </div>
+        <div class="supplier">
+          <div class="sup-name-row"><span class="sup-name">Dervis Natural Textile</span><span class="sup-badge alt">Backup</span></div>
+          <div class="sup-rows">
+            <div class="sup-row"><span class="sup-k">Website</span><span class="sup-v"><a href="https://dervis.com" target="_blank">dervis.com</a></span></div>
+            <div class="sup-row"><span class="sup-k">MOQ</span><span class="sup-v">50 units</span></div>
+            <div class="sup-row"><span class="sup-k">Also supplies</span><span class="sup-v">Pestemal towel</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Product Specs</div>
+        <div class="spec-row"><span class="spec-k">Material</span><span class="spec-v">Raw silk (kese standard)</span></div>
+        <div class="spec-row"><span class="spec-k">Weave</span><span class="spec-v">Hand-loomed — specify</span></div>
+        <div class="spec-row"><span class="spec-k">Texture</span><span class="spec-v">Coarser than Italy Towel</span></div>
+        <div class="spec-row"><span class="spec-k">Use</span><span class="spec-v">Post-clay rinse, damp skin</span></div>
+        <div class="spec-row"><span class="spec-k">Ritual use</span><span class="spec-v">Step 08 · Weekly deep ritual</span></div>
+        <div class="spec-row"><span class="spec-k">Origin story</span><span class="spec-v">Ottoman hammam tradition</span></div>
+        <div class="spec-row"><span class="spec-k">Country on label</span><span class="spec-v">🇹🇷 Turkey — required</span></div>
+      </div>
+      <div class="pb-col">
+        <div class="pbc-label">Notes &amp; Risks</div>
+        <div class="note-item"><div class="note-dot"></div><span>No CPSR required. Physical textile tool — not a cosmetic.</span></div>
+        <div class="note-item"><div class="note-dot good"></div><span>Strong brand story — Ottoman hammam tradition, hand-loomed, artisan-made. This is the centrepiece of the weekly ritual narrative.</span></div>
+        <div class="note-item"><div class="note-dot"></div><span>Consolidate Turkey order with Pestemal towel (upsell item) from same supplier — one relationship, one shipping cost.</span></div>
+        <div class="note-item"><div class="note-dot warn"></div><span>Request raw silk specifically — avoid synthetic "kese" alternatives. The texture difference is the product experience.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- COMPLIANCE TABLE -->
+  <div class="sec-head">UK Compliance Requirements</div>
+  <table class="compliance-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Type</th>
+        <th>CPSR Required</th>
+        <th>Estimated Cost</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">01 · Amino Acid Body Wash</td>
+        <td style="color:var(--stone);">Cosmetic · Rinse-off</td>
+        <td><span class="pill req">Required</span></td>
+        <td style="color:var(--bone);">Bundled</td>
+        <td style="color:var(--stone);font-size:11px;">Cosmiko to provide full INCI list before submission. Submit with 05, 06, 07 to same assessor.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">02 · Italy Towel Mitt</td>
+        <td style="color:var(--stone);">Physical tool</td>
+        <td><span class="pill done">Not Required</span></td>
+        <td style="color:var(--glit);">£0</td>
+        <td style="color:var(--stone);font-size:11px;">Non-cosmetic textile. No regulatory barrier.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">03 · Back Scrub Cloth</td>
+        <td style="color:var(--stone);">Physical tool</td>
+        <td><span class="pill done">Not Required</span></td>
+        <td style="color:var(--glit);">£0</td>
+        <td style="color:var(--stone);font-size:11px;">Non-cosmetic textile.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">04 · Scalp Massager</td>
+        <td style="color:var(--stone);">Physical tool</td>
+        <td><span class="pill done">Not Required</span></td>
+        <td style="color:var(--glit);">£0</td>
+        <td style="color:var(--stone);font-size:11px;">Silicone tool. No cosmetic classification.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">05 · Rhassoul Clay Mask</td>
+        <td style="color:var(--stone);">Cosmetic · Rinse-off</td>
+        <td><span class="pill req">Required</span></td>
+        <td style="color:var(--bone);">Bundled</td>
+        <td style="color:var(--stone);font-size:11px;">Moroccan Organica ECOCERT data speeds assessment. Submit with 01, 06, 07.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">06 · Argan Body Oil 50ml</td>
+        <td style="color:var(--stone);">Cosmetic · Leave-on</td>
+        <td><span class="pill req">Required</span></td>
+        <td style="color:var(--bone);">Bundled</td>
+        <td style="color:var(--stone);font-size:11px;">Simple single-ingredient formula — lower assessor workload. Submit with 01, 05, 07.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">07 · Body Lotion 400ml</td>
+        <td style="color:var(--stone);">Cosmetic · Leave-on</td>
+        <td><span class="pill req">Required</span></td>
+        <td style="color:var(--bone);">Bundled</td>
+        <td style="color:var(--stone);font-size:11px;">Cosmiko to provide INCI list before submission. Submit with 01, 05, 06.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bone);font-weight:500;">08 · Artisan Kese Mitt</td>
+        <td style="color:var(--stone);">Physical tool</td>
+        <td><span class="pill done">Not Required</span></td>
+        <td style="color:var(--glit);">£0</td>
+        <td style="color:var(--stone);font-size:11px;">Textile tool. No cosmetic classification.</td>
+      </tr>
+      <tr style="background:var(--mid);">
+        <td style="color:var(--blue);font-weight:700;">Total CPSR Budget</td>
+        <td style="color:var(--stone);font-size:11px;">All 4 submitted together · Same assessor</td>
+        <td><span class="pill req">4 Products</span></td>
+        <td style="color:var(--alit);font-weight:700;">£800–1,000</td>
+        <td style="color:var(--stone);font-size:11px;">Recommended assessors: Larchwood Consulting, Bellis Safety, Cosmetag. Submit once INCI lists confirmed from Cosmiko and Moroccan Organica. Turnaround 4–6 weeks.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- BUDGET TABLE -->
+  <div class="sec-head">Launch Inventory Budget — Full Ritual Kit (250 Units)</div>
+  <table class="budget-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Units</th>
+        <th>Unit COGS</th>
+        <th>Total Cost</th>
+        <th>CPSR</th>
+        <th>Total Outlay</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>01 · Amino Acid Body Wash</td>
+        <td>500</td>
+        <td>£3.20</td>
+        <td>£1,600</td>
+        <td class="a">£300</td>
+        <td class="g">£1,900</td>
+      </tr>
+      <tr>
+        <td>02 · Italy Towel Mitt</td>
+        <td>200</td>
+        <td>£0.45</td>
+        <td>£90</td>
+        <td class="g">—</td>
+        <td class="g">£90</td>
+      </tr>
+      <tr>
+        <td>03 · Back Scrub Cloth</td>
+        <td>200</td>
+        <td>£0.80</td>
+        <td>£160</td>
+        <td class="g">—</td>
+        <td class="g">£160</td>
+      </tr>
+      <tr>
+        <td>04 · Scalp Massager</td>
+        <td>200</td>
+        <td>£0.90</td>
+        <td>£180</td>
+        <td class="g">—</td>
+        <td class="g">£180</td>
+      </tr>
+      <tr>
+        <td>05 · Rhassoul Clay Mask</td>
+        <td>100</td>
+        <td>£3.50</td>
+        <td>£350</td>
+        <td class="a">£275</td>
+        <td class="g">£625</td>
+      </tr>
+      <tr>
+        <td>06 · Argan Body Oil</td>
+        <td>100</td>
+        <td>£5.50</td>
+        <td>£550</td>
+        <td class="a">£275</td>
+        <td class="g">£825</td>
+      </tr>
+      <tr>
+        <td>07 · Body Lotion 400ml</td>
+        <td>250</td>
+        <td>£4.40</td>
+        <td>£1,100</td>
+        <td class="g">Included</td>
+        <td class="g">£1,100</td>
+      </tr>
+      <tr>
+        <td>08 · Artisan Kese Mitt</td>
+        <td>100</td>
+        <td>£4.50</td>
+        <td>£450</td>
+        <td class="g">—</td>
+        <td class="g">£450</td>
+      </tr>
+      <tr>
+        <td>Packaging (rigid boxes, tissue, ritual card)</td>
+        <td>250</td>
+        <td>£3.20</td>
+        <td>£800</td>
+        <td class="g">—</td>
+        <td class="g">£800</td>
+      </tr>
+      <tr class="total-row">
+        <td>Total Launch Inventory</td>
+        <td>—</td>
+        <td>—</td>
+        <td>£5,280</td>
+        <td class="a">£850</td>
+        <td class="g">£6,130</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- LEAD TIME TIMELINE -->
+  <div class="sec-head">Lead Time Overview — From Order to First Box Shipped</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-week">Week 1</div>
+      <div class="tl-title">Morocco Order</div>
+      <div class="tl-body">Place Fatima's Garden order. Clay + argan. Commission CPSR assessor for all cosmetics simultaneously.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Week 1–2</div>
+      <div class="tl-title">Korea Order</div>
+      <div class="tl-body">Italy Towel + back cloth + scalp massager. Same shipment. 2–4 week lead time.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Week 2</div>
+      <div class="tl-title">UK Lotion Order</div>
+      <div class="tl-body">Cosmetics Lab UK. 4–6 week lead time. CPSR included. Place alongside Morocco order.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Week 2</div>
+      <div class="tl-title">Turkey Order</div>
+      <div class="tl-body">Jennifer's Hamam. Kese mitt + Pestemal towel. 2–3 week lead time.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Week 3</div>
+      <div class="tl-title">Japan Order</div>
+      <div class="tl-body">Xiran Skincare. 8–12 weeks. Longest lead time. Order early or source Korean interim.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Week 4–6</div>
+      <div class="tl-title">Stock Arrives</div>
+      <div class="tl-body">Morocco, Korea, Turkey delivered. UK lotion arrives. Begin pack + label.</div>
+    </div>
+    <div class="tl-item" style="background:var(--mid);border-bottom:2px solid var(--blue);">
+      <div class="tl-week">Week 5–6</div>
+      <div class="tl-title">First Box Ships</div>
+      <div class="tl-body">Target launch window. Japan body wash ships at Week 10–12 or Korean interim used for initial orders.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div class="df-logo">SOLUM</div>
+    <div class="df-note">Global Sourcing Plan · 8 Products · 5 Countries · Internal Use Only · 2025</div>
+  </div>
+
+</div>
+</body>
+</html>

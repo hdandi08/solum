@@ -62,7 +62,7 @@ Source of truth: ComingSoon.jsx (not CLAUDE.md which is outdated).
 |---|---|---|---|
 | GROUND | £55 | £18.52 | 66% |
 | RITUAL | £85 | £24.02 | 72% |
-| SOVEREIGN | £130 | £30.10 | 77% |
+| SOVEREIGN | £110 | £30.10 | 73% |
 
 *COGS assumes £1 bamboo cloth, £2 Beidi Black Soap — confirm when trade costs arrive.*
 
@@ -147,7 +147,7 @@ Flat monthly subscription price regardless of which box ships that month.
 - CLAUDE.md product lineup is **outdated** — Product 08 is Bamboo Cloth, not Kese Mitt. Update CLAUDE.md.
 - Beidi Black Soap trade cost: estimated £2, confirm when sourced.
 - Bamboo Cloth trade cost: estimated £1, confirm when sourced.
-- SOVEREIGN pricing at £130 first box / £58 monthly — set now, activates when 09+10 are ready.
+- SOVEREIGN pricing at £110 first box / £58 monthly — set now, activates when 09+10 are ready.
 
 ---
 

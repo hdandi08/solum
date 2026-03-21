@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>SOLUM — Full Ritual Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#08090B;--char:#181C24;--bone:#F0ECE2;--stone:#6a7380;
+  --blue:#2E6DA4;--blit:#4A8FC7;--gold:#C8A96E;--dim:rgba(240,236,226,0.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0d0f12;font-family:'Barlow Condensed',sans-serif;color:var(--bone);padding:48px 16px;display:flex;flex-direction:column;align-items:center;gap:48px;}
+.label{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);opacity:.35;text-align:center;margin-bottom:16px;}
+.row{display:flex;gap:0;box-shadow:0 24px 80px rgba(0,0,0,0.6);width:min(400px,calc(100vw - 32px));}
+.row.spread{width:min(820px,calc(100vw - 32px));}
+.panel{flex:1;min-width:0;min-height:540px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.panel+.panel{border-left:1px solid rgba(240,236,226,0.06);}
+.p-front{background:var(--black);}
+.p-front::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);}
+.p-daily{background:var(--char);}
+.p-daily::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);}
+.p-weekly{background:#111520;}
+.p-weekly::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);}
+.p-back{background:var(--black);}
+.p-back::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(240,236,226,0.1);}
+.f-hero{background:var(--char);padding:28px 28px 20px;border-bottom:1px solid rgba(240,236,226,0.05);flex-shrink:0;}
+.f-eyebrow{font-size:7px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.f-eyebrow::before{content:'';width:20px;height:1px;background:var(--blue);}
+.f-wordmark{font-family:'Bebas Neue',sans-serif;font-size:68px;letter-spacing:0.15em;color:var(--bone);line-height:1;margin-bottom:8px;}
+.f-headline{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:0.02em;line-height:0.93;color:var(--bone);margin-bottom:14px;}
+.f-headline em{font-style:normal;color:var(--blit);}
+.f-body{font-size:9.5px;font-weight:300;color:var(--stone);line-height:1.6;border-left:2px solid var(--blue);padding-left:11px;margin-bottom:14px;}
+.f-body strong{color:var(--bone);font-weight:500;}
+.f-scope{display:flex;align-items:center;gap:7px;}
+.f-scope-tag{font-size:6px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--blit);border:1px solid rgba(74,143,199,0.3);padding:2px 7px;}
+.f-scope-tag.g{color:var(--gold);border-color:rgba(200,169,110,0.3);}
+.f-scope-note{font-size:8px;color:var(--stone);font-weight:300;}
+.f-bottom{padding:14px 28px 18px;background:var(--black);flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+.f-tease{font-size:7px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.f-tease::after{content:'↓';color:var(--blue);font-size:9px;}
+.f-ritual-row{display:flex;gap:7px;margin-bottom:10px;}
+.rpill{flex:1;display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid;}
+.rpill.d{border-color:rgba(74,143,199,0.25);}
+.rpill.w{border-color:rgba(200,169,110,0.25);}
+.rpill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.rpill-dot.d{background:var(--blue);}
+.rpill-dot.w{background:var(--gold);}
+.rpill-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--bone);line-height:1;}
+.rpill-time{font-size:6.5px;letter-spacing:1.5px;color:var(--stone);text-transform:uppercase;margin-top:2px;}
+.chips{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;}
+.chip{font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:2px 5px;border:1px solid rgba(74,143,199,0.28);color:var(--blit);}
+.chip.g{border-color:rgba(200,169,110,0.28);color:var(--gold);}
+.f-footer{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--dim);}
+.f-footer-brand{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.15em;color:var(--bone);}
+.f-footer-tag{font-size:6.5px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);opacity:.4;}
+.inner{padding:22px 20px 14px;display:flex;flex-direction:column;flex:1;}
+.i-section{font-size:6.5px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+.i-section.gold{color:var(--gold);}
+.i-section::after{content:'';flex:1;height:1px;background:rgba(46,109,164,0.22);}
+.i-section.gold::after{background:rgba(200,169,110,0.18);}
+.i-freq{display:inline-block;font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:3px;padding:3px 10px;margin-bottom:9px;}
+.freq-d{background:var(--blue);color:#fff;}
+.freq-w{background:var(--gold);color:var(--black);}
+.i-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--bone);line-height:1;margin-bottom:2px;}
+.i-sub{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--stone);margin-bottom:10px;}
+.steps{display:flex;flex-direction:column;flex:1;}
+.step{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--dim);}
+.step:last-child{border-bottom:none;}
+.sn{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;min-width:14px;opacity:.15;flex-shrink:0;margin-top:2px;}
+.sn.b{color:var(--blit);}.sn.g{color:var(--gold);}
+.sb{flex:1;}
+.tool-tag{display:inline-flex;align-items:center;font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);border:1px solid rgba(46,109,164,0.22);padding:1px 5px;margin-bottom:3px;}
+.tool-tag.g{color:var(--gold);border-color:rgba(200,169,110,0.22);}
+.sa{font-size:9.5px;font-weight:600;color:var(--bone);line-height:1.2;margin-bottom:3px;}
+.se{font-size:8px;font-weight:300;color:var(--stone);line-height:1.5;}
+.se strong{color:var(--bone);font-weight:500;}
+.back-inner{padding:26px 24px 18px;display:flex;flex-direction:column;flex:1;}
+.b-wordmark{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.15em;color:var(--bone);margin-bottom:14px;}
+.b-section{font-size:6.5px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:9px;}
+.or{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--dim);}
+.or:first-of-type{border-top:1px solid var(--dim);}
+.on{font-size:7px;letter-spacing:2px;color:var(--stone);font-weight:600;min-width:20px;}
+.oname{font-size:9px;font-weight:500;color:var(--bone);flex:1;padding:0 7px;}
+.oname.ex{color:var(--gold);}
+.ocountry{font-size:6px;letter-spacing:1px;text-transform:uppercase;color:var(--stone);border:1px solid rgba(240,236,226,0.08);padding:2px 4px;}
+.b-note{font-size:8px;font-weight:300;color:var(--stone);line-height:1.6;padding-top:10px;border-top:1px solid var(--dim);margin-top:5px;}
+.b-note strong{color:var(--bone);font-weight:500;}
+.b-foot{display:flex;justify-content:space-between;align-items:flex-end;padding-top:12px;border-top:1px solid var(--dim);margin-top:auto;}
+.b-url{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--blue);}
+.b-tag{font-size:6.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--stone);opacity:.4;text-align:right;line-height:1.6;}
+</style>
+</head><body>
+
+<div>
+  <div class="label">Front Cover · Full Ritual</div>
+  <div class="row">
+    <div class="panel p-front">
+      <div class="f-hero">
+        <div class="f-eyebrow">The Men's Body Ritual</div>
+        <div class="f-wordmark">SOLUM</div>
+        <div class="f-headline">Your Body.<br>Finally <em>Done Right.</em></div>
+        <div class="f-body">Most men shower every day and still have <strong>rough skin, a neglected back, and a scalp they've never once properly cleaned.</strong> Not laziness. Nobody ever built them a system worth following. <strong>SOLUM fixes that.</strong></div>
+        <div class="f-scope">
+          <span class="f-scope-tag g">Full Ritual</span>
+          <span class="f-scope-note">8 Products · Daily + Weekly · The Complete System</span>
+        </div>
+      </div>
+      <div class="f-bottom">
+        <div>
+          <div class="f-tease">Your rituals are inside</div>
+          <div class="f-ritual-row">
+            <div class="rpill d"><div class="rpill-dot d"></div><div><div class="rpill-label">Daily Ritual</div><div class="rpill-time">10 Minutes</div></div></div>
+            <div class="rpill w"><div class="rpill-dot w"></div><div><div class="rpill-label">Weekly Ritual</div><div class="rpill-time">25 Minutes</div></div></div>
+          </div>
+          <div class="chips">
+            <span class="chip">01 · Body Wash</span>
+            <span class="chip">02 · Nylon Cloth</span>
+            <span class="chip">03 · Viscose Cloth</span>
+            <span class="chip">04 · Scalp Massager</span>
+            <span class="chip g">05 · Clay Mask</span>
+            <span class="chip g">06 · Argan Oil</span>
+            <span class="chip">07 · Body Lotion</span>
+            <span class="chip">09 · Intimate Cloth</span>
+          </div>
+        </div>
+        <div class="f-footer"><div class="f-footer-brand">SOLUM</div><div class="f-footer-tag">Your body. Done right.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="label">Inside Left — Daily &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Inside Right — Weekly</div>
+  <div class="row spread">
+    <div class="panel p-daily">
+      <div class="inner">
+        <div class="i-section">Daily Ritual</div>
+        <div class="i-freq freq-d">● Every Day · 10 Minutes</div>
+        <div class="i-title">THE DAILY ROUTINE.</div>
+        <div class="i-sub">Every shower — no exceptions</div>
+        <div class="steps">
+          <div class="step"><div class="sn b">1</div><div class="sb"><div class="tool-tag">04 · Scalp Massager</div><div class="sa">Scalp massage — during shampoo</div><div class="se">Place flat on scalp, work in <strong>small firm circles</strong> from hairline to back. 2–3 minutes. Most men have never done this once. You'll feel your scalp warm — that's circulation.</div></div></div>
+          <div class="step"><div class="sn b">2</div><div class="sb"><div class="tool-tag">01 · Body Wash</div><div class="sa">Full body cleanse — head to toe</div><div class="se">Apply to wet skin, head to toe including <strong>all sensitive areas.</strong> No sulphates — lifts dirt without stripping your skin's natural oils. Clean skin feels clean. Not tight. Not dry.</div></div></div>
+          <div class="step"><div class="sn b">3</div><div class="sb"><div class="tool-tag">02 · Nylon Scrub Cloth</div><div class="sa">Exfoliate — full body including back</div><div class="se">Wet cloth, add body wash. <strong>Long circular strokes</strong> on arms, chest, stomach, legs. Drape over shoulder for the back. Nylon is safe for daily use — replace every 90 days.</div></div></div>
+          <div class="step"><div class="sn b">4</div><div class="sb"><div class="tool-tag">09 · Intimate Cleansing Cloth</div><div class="sa">Separate cloth. Separate step.</div><div class="se">With body wash. <strong>Dedicated cloth for sensitive areas.</strong> The area most men ignore is the area that needs the most attention. Replace monthly.</div></div></div>
+          <div class="step"><div class="sn b">5</div><div class="sb"><div class="tool-tag">07 · Body Lotion</div><div class="sa">The 3-minute window — don't skip</div><div class="se">Apply <strong>within 3 minutes</strong> of towelling. Skin absorbs significantly more moisture while still warm. Two pumps. Press in, don't rub. Get dressed straight after.</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel p-weekly">
+      <div class="inner">
+        <div class="i-section gold">Weekly Hammam Ritual</div>
+        <div class="i-freq freq-w">● Once A Week · 25 Minutes</div>
+        <div class="i-title">THE HAMMAM SEQUENCE.</div>
+        <div class="i-sub">Replace your daily routine — once a week. Four steps. All Morocco.</div>
+        <div class="steps">
+          <div class="step"><div class="sn g">1</div><div class="sb"><div class="tool-tag g">05 · Rhassoul Clay + 06 · Argan Oil + 04 · Scalp Massager</div><div class="sa">Clay on body. Oil on scalp. Massager working simultaneously.</div><div class="se">Apply clay to <strong>damp skin neck to feet.</strong> Then 4–5 drops of argan oil on your scalp — work it in with the scalp massager. <strong>Firm slow circles, every section.</strong> The clay is pulling impurities from your skin. The oil is feeding your scalp. Both happening at once. <strong>Leave 8–10 minutes.</strong></div></div></div>
+          <div class="step"><div class="sn g">2</div><div class="sb"><div class="tool-tag g">03 · Viscose Scrub Cloth</div><div class="sa">Deep exfoliation — scrub the clay off</div><div class="se">One handle each hand. Drape over shoulder. <strong>Firm slow strokes</strong> — upper, mid, lower back. Then front. The viscose is coarser than your daily nylon — built for this moment. The clay has already loosened everything. You will see dead skin lift. That is the point.</div></div></div>
+          <div class="step"><div class="sn g">3</div><div class="sb"><div class="tool-tag g">06 · Argan Oil</div><div class="sa">Your skin is open right now. Seal it.</div><div class="se">Rinse. Towel lightly. Apply <strong>10–15 drops to damp skin immediately.</strong> Press in — don't rub. The clay opened everything. The viscose cleared it. The oil seals it. <strong>This is the step most men never take.</strong> It's why your skin will feel different.</div></div></div>
+          <div class="step"><div class="sn g">4</div><div class="sb"><div class="tool-tag">07 · Body Lotion</div><div class="sa">Finish — the 3-minute window</div><div class="se">Skin is freshly exfoliated — <strong>absorption is at its peak.</strong> Two pumps. Press in. Don't waste the window.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="label">Back Panel</div>
+  <div class="row">
+    <div class="panel p-back">
+      <div class="back-inner">
+        <div class="b-wordmark">SOLUM</div>
+        <div class="b-section">Full Ritual · 8 Products · 4 Countries</div>
+        <div class="or"><div class="on">01</div><div class="oname">Amino Acid Body Wash · 250ml</div><div class="ocountry">United Kingdom</div></div>
+        <div class="or"><div class="on">02</div><div class="oname">Nylon Scrub Cloth · 70cm · Daily</div><div class="ocountry">Replace 90 days</div></div>
+        <div class="or"><div class="on">03</div><div class="oname">Viscose Scrub Cloth · 70cm · Weekly</div><div class="ocountry">Replace 90 days</div></div>
+        <div class="or"><div class="on">04</div><div class="oname">Silicone Scalp Massager</div><div class="ocountry">South Korea</div></div>
+        <div class="or"><div class="on">05</div><div class="oname">Rhassoul Clay Body Mask · 200g</div><div class="ocountry">Morocco</div></div>
+        <div class="or"><div class="on">06</div><div class="oname oname ex">Organic Argan Body Oil · 50ml ★</div><div class="ocountry">Morocco</div></div>
+        <div class="or"><div class="on">07</div><div class="oname">Fast-Absorb Body Lotion · 400ml</div><div class="ocountry">United Kingdom</div></div>
+        <div class="or"><div class="on">09</div><div class="oname">Intimate Cleansing Cloth · Daily</div><div class="ocountry">Replace monthly</div></div>
+        <div class="b-note"><strong>The weekly hammam sequence:</strong> Clay opens the skin and draws deep. The viscose cloth scrubs it off. Argan oil seals everything in — applied to both scalp and body simultaneously while the clay works. Three steps. One tradition. Used across Moroccan bathhouses for centuries. The tradition is theirs. The system is yours.<br><br>★ Exclusive to Full Ritual.</div>
+        <div class="b-foot"><div class="b-url">BYSOLUM.COM</div><div class="b-tag">Your body.<br>Done right.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body></html>

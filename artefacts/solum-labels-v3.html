@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Label System v3 · Minimal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #08090B;
+  --bone: #F0ECE2;
+  --stone: #6a7380;
+  --blue: #2E6DA4;
+  --blit: #4A8FC7;
+  --gold: #C8A96E;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #111316;
+  font-family: 'Barlow Condensed', sans-serif;
+  padding: 60px 40px;
+  color: var(--bone);
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: var(--stone);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.page-sub {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-align: center;
+  margin-bottom: 64px;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+/* ── GRID ── */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 56px 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* ── WRAP ── */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.meta {
+  font-size: 7.5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.5;
+  align-self: flex-start;
+}
+.note {
+  font-size: 7.5px;
+  letter-spacing: 0.5px;
+  color: var(--stone);
+  font-style: italic;
+  opacity: 0.5;
+  align-self: flex-start;
+}
+
+/* ══════════════════
+   TALL BOTTLE LABEL
+   220px × 90mm
+══════════════════ */
+.tall {
+  width: 200px;
+  height: 360px;
+  background: var(--black);
+  border: 1px solid rgba(240,236,226,0.07);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 20px 18px;
+  overflow: hidden;
+}
+.tall::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.t-blue::before  { background: var(--blue); }
+.t-blit::before  { background: var(--blit); }
+.t-gold::before  { background: var(--gold); }
+
+/* ══════════════════
+   CIRCULAR JAR LABEL
+   Wrap-around strip
+══════════════════ */
+.jar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.jar-3d {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+/* Simulate circular jar top view */
+.jar-top {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--black);
+  border: 1px solid rgba(240,236,226,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.jar-top::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--bone);
+  opacity: 0.15;
+}
+.jar-ring {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(240,236,226,0.06);
+}
+/* Wrap-around label strip */
+.jar-strip {
+  width: 340px;
+  height: 100px;
+  background: var(--black);
+  border: 1px solid rgba(240,236,226,0.07);
+  border-left: 3px solid rgba(240,236,226,0.15);
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+.jar-strip::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--bone);
+  opacity: 0.2;
+}
+.js-left {
+  width: 110px;
+  min-width: 110px;
+  padding: 14px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(240,236,226,0.06);
+}
+.js-right {
+  flex: 1;
+  padding: 14px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ── SHARED ELEMENTS ── */
+.prod-num {
+  font-size: 7.5px;
+  letter-spacing: 4px;
+  color: var(--stone);
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+.wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  line-height: 1;
+}
+.wordmark.sm {
+  font-size: 20px;
+}
+.prod-name {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.div {
+  height: 1px;
+  background: rgba(240,236,226,0.07);
+  margin: 12px 0;
+}
+.div.sm { margin: 8px 0; }
+
+/* ── HERO LINE ── */
+.hero {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 21px;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  color: var(--bone);
+  margin: 10px 0 6px;
+}
+.hero.blue { color: var(--blit); }
+.hero.gold { color: var(--gold); }
+.hero.sm {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* ── DAILY / WEEKLY BADGE ── */
+.frequency {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.freq-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  padding: 4px 12px;
+}
+.freq-daily {
+  background: var(--blue);
+  color: #fff;
+}
+.freq-weekly {
+  background: var(--gold);
+  color: var(--black);
+}
+
+/* ── CLAIMS ── */
+.claims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.claim {
+  font-size: 6.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 2px 6px;
+  border: 1px solid;
+}
+.cb { border-color: rgba(74,143,199,0.4); color: var(--blit); }
+.cg { border-color: rgba(200,169,110,0.4); color: var(--gold); }
+.cw { border-color: rgba(240,236,226,0.18); color: rgba(240,236,226,0.45); }
+
+/* ── INCI ── */
+.ing-label {
+  font-size: 6.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.ing {
+  font-size: 6px;
+  color: var(--stone);
+  line-height: 1.65;
+  font-style: italic;
+  opacity: 0.6;
+  letter-spacing: 0.2px;
+}
+
+/* ── FOOTER ── */
+.foot {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(240,236,226,0.06);
+}
+.origin {
+  font-size: 7px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 600;
+}
+.vol {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  margin: 2px 0 6px;
+}
+.legal {
+  font-size: 5.8px;
+  letter-spacing: 0.2px;
+  color: var(--stone);
+  line-height: 1.65;
+  opacity: 0.55;
+}
+.legal strong { color: rgba(240,236,226,0.35); font-style: normal; }
+</style>
+</head>
+<body>
+
+<h1>SOLUM — LABEL SYSTEM · V3 · ESSENTIALS ONLY</h1>
+<div class="page-sub">Minimal · No Body Copy · Story Lives On Ritual Card · INCI Pending Where Noted</div>
+
+<div class="grid">
+
+  <!-- ══════════════════════════
+       01 — BODY WASH · TALL
+  ══════════════════════════ -->
+  <div class="wrap">
+    <div class="meta">01 · Body Wash · 250ml · Tall Bottle</div>
+    <div class="tall t-blue">
+
+      <div>
+        <div class="prod-num">PRODUCT · 01</div>
+        <div class="wordmark">SOLUM</div>
+        <div class="prod-name">Body Wash</div>
+      </div>
+
+      <div class="frequency">
+        <span class="freq-badge freq-daily">● Daily Use</span>
+      </div>
+
+      <div class="hero blue">CLEANS.<br>DOESN'T<br>STRIP.</div>
+
+      <div class="claims">
+        <span class="claim cb">Sulphate-Free</span>
+        <span class="claim cb">pH Balanced</span>
+        <span class="claim cb">Skin Barrier Safe</span>
+      </div>
+
+      <div class="div"></div>
+      <div class="ing-label">Ingredients</div>
+      <div class="ing">[INCI — pending Cosmiko]<br>
+      Aqua · Sodium Cocoyl Glutamate · Aloe Barbadensis Leaf Juice · Caprylyl Glucoside · Parfum · Preservative</div>
+
+      <div class="foot">
+        <div class="origin">Made in United Kingdom</div>
+        <div class="vol">250 ML</div>
+        <div class="legal">
+          <strong>Responsible Person:</strong> SOLUM, [Address], UK · bysolum.com<br>
+          Batch [XX] · PAO 12M ♻ · Best before: see base
+        </div>
+      </div>
+
+    </div>
+    <div class="note">⚠ INCI pending Cosmiko</div>
+  </div>
+
+  <!-- ══════════════════════════
+       07 — BODY LOTION · TALL
+  ══════════════════════════ -->
+  <div class="wrap">
+    <div class="meta">07 · Body Lotion · 400ml · Pump Bottle</div>
+    <div class="tall t-blit">
+
+      <div>
+        <div class="prod-num">PRODUCT · 07</div>
+        <div class="wordmark">SOLUM</div>
+        <div class="prod-name">Body Lotion</div>
+      </div>
+
+      <div class="frequency">
+        <span class="freq-badge freq-daily">● Daily Use</span>
+      </div>
+
+      <div class="hero">THE<br>3-MINUTE<br>WINDOW.</div>
+
+      <div class="claims">
+        <span class="claim cb">Apply Within 3 Min</span>
+        <span class="claim cb">Fast Absorbing</span>
+        <span class="claim cb">No Residue</span>
+      </div>
+
+      <div class="div"></div>
+      <div class="ing-label">Ingredients</div>
+      <div class="ing">[INCI — pending Cosmiko]<br>
+      Aqua · Helianthus Annuus Seed Oil · Olea Europaea Fruit Oil · Prunus Armeniaca Kernel Oil · Sodium Hyaluronate · Aloe Barbadensis Leaf Juice · Tocopheryl Acetate · Parfum</div>
+
+      <div class="foot">
+        <div class="origin">Made in United Kingdom</div>
+        <div class="vol">400 ML</div>
+        <div class="legal">
+          <strong>Responsible Person:</strong> SOLUM, [Address], UK · bysolum.com<br>
+          Batch [XX] · PAO 12M ♻ · Best before: see base
+        </div>
+      </div>
+
+    </div>
+    <div class="note">⚠ INCI pending Cosmiko</div>
+  </div>
+
+  <!-- ══════════════════════════
+       06 — ARGAN OIL · TALL
+  ══════════════════════════ -->
+  <div class="wrap">
+    <div class="meta">06 · Argan Body Oil · 50ml · Dark Glass Dropper</div>
+    <div class="tall t-gold">
+
+      <div>
+        <div class="prod-num">PRODUCT · 06</div>
+        <div class="wordmark">SOLUM</div>
+        <div class="prod-name">Argan Body Oil</div>
+      </div>
+
+      <div class="frequency">
+        <span class="freq-badge freq-weekly">● Weekly Use</span>
+      </div>
+
+      <div class="hero gold">YOUR SKIN.<br>FULLY<br>FED.</div>
+
+      <div class="claims">
+        <span class="claim cg">100% Pure</span>
+        <span class="claim cg">Certified Organic</span>
+        <span class="claim cg">Cold Pressed</span>
+        <span class="claim cg">No Additives</span>
+      </div>
+
+      <div class="div"></div>
+      <div class="ing-label">Ingredients</div>
+      <div class="ing">Argania Spinosa Kernel Oil*<br>*Certified Organic · 100% Pure</div>
+
+      <div class="foot">
+        <div class="origin">Made in Morocco</div>
+        <div class="vol">50 ML</div>
+        <div class="legal">
+          <strong>Responsible Person:</strong> SOLUM, [Address], UK · bysolum.com<br>
+          Batch [XX] · PAO 12M ♻ · Best before: see base
+        </div>
+      </div>
+
+    </div>
+    <div class="note">✅ INCI confirmed — ready once supplier locked</div>
+  </div>
+
+  <!-- ══════════════════════════
+       05 — RHASSOUL CLAY · JAR
+  ══════════════════════════ -->
+  <div class="wrap">
+    <div class="meta">05 · Rhassoul Clay · 200g · Circular Jar</div>
+
+    <div class="jar-wrap">
+
+      <!-- Jar lid top view -->
+      <div class="jar-top">
+        <div class="jar-ring"></div>
+        <div class="prod-num" style="text-align:center">PRODUCT · 05</div>
+        <div class="wordmark sm" style="text-align:center;letter-spacing:0.18em">SOLUM</div>
+        <div class="prod-name" style="text-align:center;font-size:7px">Rhassoul Clay</div>
+        <div style="font-size:6px;letter-spacing:1px;color:var(--stone);opacity:0.5;margin-top:4px;text-align:center">200G · MOROCCO</div>
+      </div>
+
+      <!-- Wrap-around strip label -->
+      <div>
+        <div style="font-size:7px;letter-spacing:2px;color:var(--stone);opacity:0.4;margin-bottom:6px;text-transform:uppercase">Wrap-Around Strip Label</div>
+        <div class="jar-strip">
+          <div class="js-left">
+            <div>
+              <div class="prod-num">PRODUCT · 05</div>
+              <div class="wordmark sm">SOLUM</div>
+              <div class="prod-name">Rhassoul<br>Clay Mask</div>
+            </div>
+            <div>
+              <div class="origin" style="font-size:6.5px">Made in Morocco</div>
+              <div class="vol" style="font-size:11px">200 G</div>
+            </div>
+          </div>
+
+          <div class="js-right">
+            <div>
+              <div class="hero sm">PULL OUT WHAT<br>SHOULDN'T BE THERE.</div>
+              <div class="frequency" style="margin:6px 0 4px">
+                <span class="freq-badge freq-weekly" style="font-size:9px;padding:3px 8px">● Weekly Use</span>
+              </div>
+              <div class="claims" style="margin-top:4px">
+                <span class="claim cw">Deep Cleanse</span>
+                <span class="claim cw">Mineral Rich</span>
+                <span class="claim cw">Atlas Mountains</span>
+              </div>
+            </div>
+            <div>
+              <div class="ing-label">Ingredients</div>
+              <div class="ing">[INCI pending] · Ghassoul (Lava Clay) · Aqua</div>
+              <div class="legal" style="margin-top:4px">
+                <strong>Resp. Person:</strong> SOLUM, [Address], UK · bysolum.com · Batch [XX] · PAO 24M ♻
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="note">⚠ INCI pending Moroccan Organica · Jar lid: debossed SOLUM wordmark</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       09 — INTIMATE CLOTH · TAG
+  ══════════════════════════ -->
+  <div class="wrap">
+    <div class="meta">09 · Intimate Cleansing Cloth · 20×20cm · Woven Tag</div>
+
+    <div style="width:200px;background:var(--black);border:1px solid rgba(240,236,226,0.07);padding:24px 20px;display:flex;flex-direction:column;gap:8px;">
+      <div class="prod-num">PRODUCT · 09</div>
+      <div class="wordmark sm">SOLUM</div>
+      <div class="prod-name">Daily Cleansing Cloth</div>
+      <div class="div sm"></div>
+      <div class="frequency" style="margin:0">
+        <span class="freq-badge freq-daily" style="font-size:9px;padding:3px 8px">● Daily Use</span>
+      </div>
+      <div class="claims" style="margin:0">
+        <span class="claim cb">Soft Fibre</span>
+        <span class="claim cb">Sensitive Areas</span>
+        <span class="claim cb">No Abrasion</span>
+      </div>
+      <div class="div sm"></div>
+      <div style="font-size:7.5px;color:var(--stone);line-height:1.6;font-weight:300;">Use with 01 · Body Wash.<br>Dedicated cloth — sensitive areas only.<br>Replace every 30 days.</div>
+      <div class="div sm"></div>
+      <div class="origin" style="font-size:6.5px">Made in China</div>
+    </div>
+    <div class="note">Discreet label copy — "Daily Cleansing Cloth" · Full instructions on ritual card only</div>
+  </div>
+
+</div>
+
+</body>
+</html>
