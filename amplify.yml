@@ -6,9 +6,9 @@ frontend:
         - npm --prefix web ci --include=dev
     build:
       commands:
-        - echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" >> web/.env
-        - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> web/.env
-        - echo "VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY" >> web/.env
+        - echo "VITE_SUPABASE_URL=https://gvfptmjluxpngfjendbi.supabase.co" >> web/.env
+        - echo "VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" >> web/.env
+        - echo "VITE_STRIPE_PUBLISHABLE_KEY=pk_live_51TDCN6K4aAMpJXrZFP2AUhWZncZ4Zmuz5PoU694w5LXO3gLwARwuvAWT9I1ziz8fp3ocdhrxWl7eBtt4UAx1uLfa000mP0QCFb" >> web/.env
         - npm --prefix web run build
   artifacts:
     baseDirectory: web/dist
