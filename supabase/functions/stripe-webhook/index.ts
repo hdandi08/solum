@@ -191,6 +191,25 @@ Deno.serve(async (req) => {
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef);
         }
 
+        // Store shipping address (null guard + idempotency via stripe_session_id unique index)
+        const sd = session.shipping_details;
+        if (sd?.address && customer) {
+          await supabase.from('addresses').upsert({
+            customer_id:       customer.id,
+            stripe_session_id: session.id,
+            name:              sd.name ?? '',
+            line1:             sd.address.line1 ?? '',
+            line2:             sd.address.line2 ?? null,
+            city:              sd.address.city ?? '',
+            postcode:          sd.address.postal_code ?? '',
+            country:           sd.address.country ?? 'GB',
+            is_current:        true,
+            updated_at:        new Date().toISOString(),
+          }, { onConflict: 'stripe_session_id' });
+        } else {
+          console.warn('No shipping_details on session', session.id);
+        }
+
         break;
       }
 
