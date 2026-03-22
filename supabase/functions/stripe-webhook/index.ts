@@ -155,6 +155,17 @@ Deno.serve(async (req) => {
           .select()
           .single();
 
+        // Look up any previous subscriptions for this customer to track returning customers
+        const { data: previousSubs } = await supabase
+          .from('subscriptions')
+          .select('id, subscription_number')
+          .eq('customer_id', customer.id)
+          .order('subscription_number', { ascending: false })
+          .limit(1);
+
+        const previousSub = previousSubs?.[0] ?? null;
+        const subscriptionNumber = previousSub ? previousSub.subscription_number + 1 : 1;
+
         // Upsert subscription record — idempotent so webhook replays don't crash
         const { data: sub } = await supabase
           .from('subscriptions')
@@ -164,6 +175,8 @@ Deno.serve(async (req) => {
             kit_id,
             status: 'active',
             months_active: 0,
+            subscription_number: subscriptionNumber,
+            previous_subscription_id: previousSub?.id ?? null,
           }, { onConflict: 'stripe_subscription_id' })
           .select()
           .single();

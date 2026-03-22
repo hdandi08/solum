@@ -4,5 +4,14 @@
 
 DROP INDEX IF EXISTS addresses_stripe_session_id_idx;
 
-ALTER TABLE public.addresses
-  ADD CONSTRAINT addresses_stripe_session_id_key UNIQUE (stripe_session_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'addresses_stripe_session_id_key'
+      AND conrelid = 'public.addresses'::regclass
+  ) THEN
+    ALTER TABLE public.addresses
+      ADD CONSTRAINT addresses_stripe_session_id_key UNIQUE (stripe_session_id);
+  END IF;
+END $$;
