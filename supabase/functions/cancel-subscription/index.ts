@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     .from('subscriptions')
     .select('id, stripe_subscription_id, status')
     .eq('customer_id', customer.id)
-    .in('status', ['active', 'past_due'])
+    .eq('status', 'active')
     .single();
 
   if (!sub) {

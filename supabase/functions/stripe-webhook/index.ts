@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const { kit_id, first_name, last_name, birth_year, birth_month } = session.metadata ?? {};
-        const email = session.customer_details?.email ?? session.customer_email;
+        const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
         const stripe_customer_id = session.customer as string;
         const stripe_subscription_id = session.subscription as string;
 
