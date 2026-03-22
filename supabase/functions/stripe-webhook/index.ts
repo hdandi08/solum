@@ -155,30 +155,39 @@ Deno.serve(async (req) => {
           .select()
           .single();
 
-        // Create subscription record
+        // Upsert subscription record — idempotent so webhook replays don't crash
         const { data: sub } = await supabase
           .from('subscriptions')
-          .insert({
+          .upsert({
             customer_id: customer.id,
             stripe_subscription_id,
             kit_id,
             status: 'active',
             months_active: 0,
-          })
+          }, { onConflict: 'stripe_subscription_id' })
           .select()
           .single();
 
-        // Create first_box order
-        await supabase.from('orders').insert({
-          customer_id: customer.id,
-          subscription_id: sub.id,
-          stripe_payment_id: session.payment_intent as string,
-          kit_id,
-          order_type: 'first_box',
-          box_number: null,
-          amount_pence: session.amount_total ?? 0,
-          status: 'paid',
-        });
+        // Create first_box order only if it doesn't already exist
+        const { data: existingOrder } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('subscription_id', sub?.id)
+          .eq('order_type', 'first_box')
+          .maybeSingle();
+
+        if (!existingOrder) {
+          await supabase.from('orders').insert({
+            customer_id: customer.id,
+            subscription_id: sub?.id,
+            stripe_payment_id: session.payment_intent as string,
+            kit_id,
+            order_type: 'first_box',
+            box_number: null,
+            amount_pence: session.amount_total ?? 0,
+            status: 'paid',
+          });
+        }
 
         // Mark lead as completed
         await supabase.from('leads')
@@ -192,9 +201,10 @@ Deno.serve(async (req) => {
         }
 
         // Store shipping address (null guard + idempotency via stripe_session_id unique index)
-        const sd = session.shipping_details;
+        // Stripe API 2026-02+ moved shipping_details into collected_information; fall back to top-level for older sessions
+        const sd = (session as any).collected_information?.shipping_details ?? session.shipping_details;
         if (sd?.address && customer) {
-          await supabase.from('addresses').upsert({
+          const { error: addrErr } = await supabase.from('addresses').upsert({
             customer_id:       customer.id,
             stripe_session_id: session.id,
             name:              sd.name ?? '',
@@ -206,6 +216,7 @@ Deno.serve(async (req) => {
             is_current:        true,
             updated_at:        new Date().toISOString(),
           }, { onConflict: 'stripe_session_id' });
+          if (addrErr) console.error('address_insert_error', JSON.stringify(addrErr));
         } else {
           console.warn('No shipping_details on session', session.id);
         }

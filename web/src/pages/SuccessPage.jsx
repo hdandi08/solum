@@ -123,7 +123,7 @@ export default function SuccessPage() {
 
           <div className="su-actions">
             <a href="/full#ritual" className="su-btn-primary">See Your Ritual →</a>
-            <a href="https://instagram.com/bysolum.body" className="su-btn-ghost" target="_blank" rel="noopener noreferrer">Follow @bysolum.body</a>
+            <a href="/account" className="su-btn-ghost">Manage subscription</a>
           </div>
 
         </div>

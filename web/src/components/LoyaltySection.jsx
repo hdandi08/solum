@@ -1,3 +1,5 @@
+import tshirtImg from '../assets/solum-tshirt.jpeg';
+
 const CSS = `
 .loyalty-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
 .loyalty-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
@@ -64,7 +66,7 @@ export default function LoyaltySection() {
           </div>
           <div className="loyalty-image reveal">
             <img
-              src="/solum-tshirt.jpeg"
+              src={tshirtImg}
               alt="SOLUM 180 t-shirt — Beyond Clean. Form an Orderly Queue."
               className="loyalty-img"
             />

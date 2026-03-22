@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import tshirtImg from '../assets/solum-tshirt.jpeg';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -138,6 +139,11 @@ export default function CheckoutPage() {
         }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.error === 'existing_subscriber') {
+        setError('existing_subscriber');
+        setLoading(false);
+        return;
+      }
       if (!res.ok) throw new Error('Something went wrong. Please try again or contact contact@bysolum.com.');
       if (data.error) throw new Error(data.error);
       window.location.href = data.url;
@@ -156,7 +162,7 @@ export default function CheckoutPage() {
         <div className="co-overlay">
           <div className="co-overlay-inner">
             <div className="co-overlay-tag">The 180 Club</div>
-            <img src="/solum-tshirt.jpeg" alt="SOLUM 180 Tee" className="co-overlay-img" />
+            <img src={tshirtImg} alt="SOLUM 180 Tee" className="co-overlay-img" />
             <div className="co-overlay-title">You Can't<br />Buy <em>This.</em></div>
             <div className="co-overlay-rule">Not for sale. Not in the shop. Only earned.</div>
             <p className="co-overlay-body">
@@ -208,7 +214,14 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {error && <div className="co-error">{error}</div>}
+            {error === 'existing_subscriber' ? (
+              <div className="co-error">
+                You already have a SOLUM subscription.{' '}
+                <a href="/account" style={{ color: 'inherit', textDecoration: 'underline' }}>Manage your account →</a>
+              </div>
+            ) : error ? (
+              <div className="co-error">{error}</div>
+            ) : null}
 
             <button type="submit" className="co-submit" disabled={loading}>
               {loading ? 'Redirecting to Stripe…' : `Go to Checkout — £${kit.firstBoxPrice} →`}

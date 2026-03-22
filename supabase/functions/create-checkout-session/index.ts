@@ -55,6 +55,29 @@ Deno.serve(async (req) => {
     const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
 
+    // Block duplicate subscriptions — check if this email already has an active account
+    const { data: existingCustomer } = await supabase
+      .from('customers')
+      .select('id')
+      .eq('email', email!.trim().toLowerCase())
+      .maybeSingle();
+
+    if (existingCustomer) {
+      const { data: activeSub } = await supabase
+        .from('subscriptions')
+        .select('id')
+        .eq('customer_id', existingCustomer.id)
+        .in('status', ['active', 'cancelling', 'past_due'])
+        .maybeSingle();
+
+      if (activeSub) {
+        return new Response(
+          JSON.stringify({ error: 'existing_subscriber' }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+    }
+
     // Create or retrieve Stripe customer
     const existing = await stripe.customers.list({ email, limit: 1 });
     const customer = existing.data.length > 0

@@ -17,6 +17,7 @@ const NAV_LINKS = [
   ['#products', 'Products'],
   ['#ritual', 'The Ritual'],
   ['#subscription', 'Subscription'],
+  ['/account', 'Account'],
 ];
 
 export default function Nav() {
