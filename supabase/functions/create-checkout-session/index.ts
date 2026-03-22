@@ -103,6 +103,9 @@ Deno.serve(async (req) => {
         trial_end: billingAnchor,
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
       },
+      shipping_address_collection: {
+        allowed_countries: ['GB'],
+      },
       success_url,
       cancel_url,
       metadata: { kit_id, first_name, last_name, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
