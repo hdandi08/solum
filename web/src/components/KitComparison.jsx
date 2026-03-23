@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import tshirtImg from '../assets/solum-tshirt.jpeg';
 
 const CSS = `
 .kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
@@ -34,13 +35,17 @@ const CSS = `
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
-.kits-tshirt{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:48px;padding:24px 32px;border:1px solid var(--lineb);max-width:560px;margin-left:auto;margin-right:auto;}
-.kits-tshirt-icon{font-size:24px;flex-shrink:0;}
-.kits-tshirt-text{}
-.kits-tshirt-headline{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--bone);}
-.kits-tshirt-sub{font-size:13px;color:var(--stone);font-weight:300;letter-spacing:.3px;margin-top:2px;}
-.kits-tshirt-sub span{color:var(--blit);font-weight:600;}
-@media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}.kits-tshirt{padding:20px 20px;}}
+.kits-tshirt{display:grid;grid-template-columns:280px 1fr;margin-top:64px;border:1px solid var(--lineb);overflow:hidden;max-width:900px;margin-left:auto;margin-right:auto;}
+.kits-tshirt-img-wrap{position:relative;overflow:hidden;}
+.kits-tshirt-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.88);}
+.kits-tshirt-img-label{position:absolute;bottom:12px;left:12px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:rgba(240,236,226,0.7);font-weight:600;background:rgba(8,9,11,0.72);padding:6px 10px;backdrop-filter:blur(8px);}
+.kits-tshirt-body{padding:40px 40px;display:flex;flex-direction:column;justify-content:center;background:var(--char);}
+.kits-tshirt-tag{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
+.kits-tshirt-headline{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:12px;}
+.kits-tshirt-rule{width:32px;height:2px;background:var(--blue);margin-bottom:16px;}
+.kits-tshirt-sub{font-size:15px;color:var(--mist);font-weight:300;line-height:1.65;}
+.kits-tshirt-sub strong{color:var(--bone);font-weight:600;}
+@media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}.kits-tshirt{grid-template-columns:1fr;}.kits-tshirt-img{height:240px;}}
 `;
 
 export default function KitComparison() {
@@ -105,10 +110,18 @@ export default function KitComparison() {
             First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.
           </p>
           <div className="kits-tshirt reveal">
-            <div className="kits-tshirt-icon">◻</div>
-            <div className="kits-tshirt-text">
-              <div className="kits-tshirt-headline">Stay for 6 months. Earn the tee.</div>
-              <div className="kits-tshirt-sub">The <span>SOLUM 180</span> — not for sale, not in the shop. Ships with your box at month six. Only earned.</div>
+            <div className="kits-tshirt-img-wrap">
+              <img src={tshirtImg} alt="SOLUM 180 tee" className="kits-tshirt-img" />
+              <div className="kits-tshirt-img-label">Earned. Not Bought.</div>
+            </div>
+            <div className="kits-tshirt-body">
+              <div className="kits-tshirt-tag">The SOLUM 180</div>
+              <div className="kits-tshirt-headline">You Can't<br />Buy This.</div>
+              <div className="kits-tshirt-rule" />
+              <div className="kits-tshirt-sub">
+                Not for sale. Not in the shop. Stay subscribed for six months — do the ritual — and it ships with your box.<br /><br />
+                <strong>One qualification. Six months of consistency. That's it.</strong>
+              </div>
             </div>
           </div>
         </div>
