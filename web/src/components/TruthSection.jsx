@@ -21,7 +21,7 @@ const STATS = [
   ['Week 1', "Dead skin you didn't know existed rolls off.", 'Rinsing never removes it. Friction does. Most men are carrying years of buildup.'],
   ['Week 2', 'Body odour reduces.', 'Not from sweat — dead cells feed odour bacteria. Remove the cells, cut the source.'],
   ['Week 3', 'Skin holds moisture past midday.', "No tightness by afternoon. The 3-minute lotion window actually works when skin is clean underneath."],
-  ['Day 66', "The ritual is automatic. You don't think about it.", "That's how long it takes for a habit to form. SOLUM is built around this number."],
+  ['Month 2', 'Your skin is just different.', 'Not one thing fixed. All of it — texture, moisture, clarity, smell. This is what properly maintained skin feels like.'],
 ];
 
 export default function TruthSection() {
@@ -34,13 +34,10 @@ export default function TruthSection() {
             <div className="t-sec-tag">The Reality</div>
             <div className="truth-quote">Nobody<br />Taught<br />You <em>This.</em></div>
             <p className="truth-body">
-              You were taught to shower. You weren't taught what to do in there.
-              Most men use one product on their entire body and consider it done.
-              The result: years of dead skin buildup, persistent dryness, back breakouts
-              nobody talks about, and body odour that worsens because of accumulated dead
-              cells — not just sweat.
+              You were taught to shower. Nobody told you what actually happens inside one.
+              One product on your whole body, rinsed off in 90 seconds — that's not a system.
+              That's just getting wet.
               <br /><br />
-              This isn't a grooming luxury. It's basic maintenance that was never explained.
               SOLUM is the system that should have existed twenty years ago.
             </p>
             <div className="truth-note">

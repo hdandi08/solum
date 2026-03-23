@@ -34,7 +34,13 @@ const CSS = `
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
-@media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}}
+.kits-tshirt{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:48px;padding:24px 32px;border:1px solid var(--lineb);max-width:560px;margin-left:auto;margin-right:auto;}
+.kits-tshirt-icon{font-size:24px;flex-shrink:0;}
+.kits-tshirt-text{}
+.kits-tshirt-headline{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--bone);}
+.kits-tshirt-sub{font-size:13px;color:var(--stone);font-weight:300;letter-spacing:.3px;margin-top:2px;}
+.kits-tshirt-sub span{color:var(--blit);font-weight:600;}
+@media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}.kits-tshirt{padding:20px 20px;}}
 `;
 
 export default function KitComparison() {
@@ -98,6 +104,13 @@ export default function KitComparison() {
           <p className="kits-footnote">
             First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.
           </p>
+          <div className="kits-tshirt reveal">
+            <div className="kits-tshirt-icon">◻</div>
+            <div className="kits-tshirt-text">
+              <div className="kits-tshirt-headline">Stay for 6 months. Earn the tee.</div>
+              <div className="kits-tshirt-sub">The <span>SOLUM 180</span> — not for sale, not in the shop. Ships with your box at month six. Only earned.</div>
+            </div>
+          </div>
         </div>
       </section>
     </>
