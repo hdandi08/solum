@@ -142,11 +142,47 @@ function LoginView({ phase, setPhase }) {
   );
 }
 
-function Dashboard({ session, customer, sub, address, setAddress, setSub, setPhase }) {
+function Dashboard({ session, customer, sub, address, setAddress, setSub, setCustomer, setPhase }) {
   const [editingAddress, setEditingAddress] = useState(false);
   const [addrForm, setAddrForm]             = useState({ name: '', line1: '', line2: '', city: '', postcode: '' });
   const [addrSaving, setAddrSaving]         = useState(false);
   const [addrError, setAddrError]           = useState('');
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameForm, setNameForm]       = useState({ first_name: '', last_name: '' });
+  const [nameSaving, setNameSaving]   = useState(false);
+  const [nameError, setNameError]     = useState('');
+
+  function startEditName() {
+    setNameForm({ first_name: customer?.first_name ?? '', last_name: customer?.last_name ?? '' });
+    setNameError('');
+    setEditingName(true);
+  }
+
+  async function saveName(e) {
+    e.preventDefault();
+    if (!nameForm.first_name.trim()) { setNameError('First name is required.'); return; }
+    setNameSaving(true);
+    setNameError('');
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/update-customer`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nameForm),
+      });
+      if (!res.ok) throw new Error('Failed to save name');
+      const updated = await res.json();
+      setCustomer(c => ({ ...c, first_name: updated.first_name, last_name: updated.last_name }));
+      setEditingName(false);
+    } catch (err) {
+      setNameError(err.message);
+    } finally {
+      setNameSaving(false);
+    }
+  }
   const [confirmCancel, setConfirmCancel]   = useState(false);
   const [cancelling, setCancelling]         = useState(false);
   // Initialise from sub.cancel_at so returning visitors see the correct date
@@ -235,6 +271,48 @@ function Dashboard({ session, customer, sub, address, setAddress, setSub, setPha
 
         <div className="ac-heading" style={{marginBottom:4}}>Your Account.</div>
         <div className="ac-sub" style={{marginBottom:32}}>Hello, {customer?.first_name ?? 'there'}.</div>
+
+        {/* Panel 0 — Personal Details */}
+        <div className="ac-panel">
+          <div className="ac-panel-head">
+            <span className="ac-panel-label">Personal Details</span>
+            {!editingName && (
+              <button
+                className="ac-btn-ghost"
+                style={{width:'auto',padding:'6px 16px',marginTop:0,fontSize:11,letterSpacing:3}}
+                onClick={startEditName}
+              >
+                Edit
+              </button>
+            )}
+          </div>
+          <div className="ac-panel-body">
+            {!editingName ? (
+              <>
+                <div className="ac-field-label">Name</div>
+                <div className="ac-field-value">{[customer?.first_name, customer?.last_name].filter(Boolean).join(' ') || '—'}</div>
+                <div className="ac-field-label">Email</div>
+                <div className="ac-field-value" style={{marginBottom:0}}>{customer?.email ?? '—'}</div>
+              </>
+            ) : (
+              <form onSubmit={saveName}>
+                <div className="ac-form-row">
+                  <div className="ac-form-field">
+                    <label className="ac-form-label">First name</label>
+                    <input className="ac-form-input" value={nameForm.first_name} onChange={e => setNameForm(f => ({...f, first_name: e.target.value}))} required />
+                  </div>
+                  <div className="ac-form-field">
+                    <label className="ac-form-label">Last name</label>
+                    <input className="ac-form-input" value={nameForm.last_name} onChange={e => setNameForm(f => ({...f, last_name: e.target.value}))} />
+                  </div>
+                </div>
+                {nameError && <div className="ac-err">{nameError}</div>}
+                <button className="ac-btn" type="submit" disabled={nameSaving}>{nameSaving ? 'Saving…' : 'Save'}</button>
+                <button className="ac-btn-ghost" type="button" onClick={() => setEditingName(false)}>Cancel</button>
+              </form>
+            )}
+          </div>
+        </div>
 
         {/* Panel 1 — Subscription */}
         <div className="ac-panel">
@@ -441,6 +519,7 @@ export default function AccountPage() {
       address={address}
       setAddress={setAddress}
       setSub={setSub}
+      setCustomer={setCustomer}
       setPhase={setPhase}
     />
   );
