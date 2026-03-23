@@ -8,7 +8,7 @@ const CSS = `
 .hero-content{position:relative;z-index:1;max-width:860px;}
 .hero-eyebrow{font-size:13px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp .8s ease .6s both;}
 .hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--blue);}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,9vw,136px);line-height:.92;letter-spacing:0.03em;color:var(--bone);margin-bottom:32px;animation:fadeUp .8s ease .75s both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(60px,7vw,108px);line-height:.92;letter-spacing:0.03em;color:var(--bone);margin-bottom:32px;animation:fadeUp .8s ease .75s both;}
 .hero-title em{font-style:normal;color:var(--blue);}
 .hero-line{width:100%;height:1px;background:linear-gradient(to right,var(--blue) 0%,transparent 60%);margin-bottom:28px;animation:lineIn 1s ease 1s both;transform-origin:left;}
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
@@ -26,7 +26,7 @@ const CSS = `
 .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
 @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:768px){.hero{padding:80px 24px 60px;}.hero-title{font-size:clamp(56px,14vw,96px);}}
+@media(max-width:768px){.hero{padding:80px 24px 60px;}.hero-title{font-size:clamp(48px,12vw,80px);}}
 `;
 
 export default function Hero() {
