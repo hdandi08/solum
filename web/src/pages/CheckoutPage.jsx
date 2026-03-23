@@ -115,7 +115,7 @@ export default function CheckoutPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
-    if (!form.email.trim() || !form.email.includes('@')) { setError('A valid email is required.'); return; }
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError('Please enter a valid email address.'); return; }
     if (!form.birth_year) { setError('Birth year is required.'); return; }
     if (!form.birth_month) { setError('Birth month is required.'); return; }
     if (form.birth_year < 1940 || form.birth_year > 2006) { setError('Birth year must be between 1940 and 2006.'); return; }

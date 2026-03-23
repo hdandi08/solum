@@ -105,6 +105,12 @@ function LoginView({ phase, setPhase }) {
             We've sent a login link to <strong style={{color:'var(--bone)'}}>{email.trim().toLowerCase()}</strong>.<br />
             Click it to access your account. The link expires in 1 hour.
           </div>
+          <button className="ac-btn-ghost" onClick={() => setPhase('login')} style={{marginTop:0}}>
+            ← Wrong email? Go back
+          </button>
+          <div style={{marginTop:16}}>
+            <a href="/" style={{fontSize:12,letterSpacing:3,textTransform:'uppercase',color:'var(--stone)',textDecoration:'none'}}>← Back to home</a>
+          </div>
         </div>
       </div>
     );
