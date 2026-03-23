@@ -8,6 +8,9 @@ footer.solum-footer{background:var(--black);border-top:1px solid var(--line);pad
 .footer-links{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0;}
 .footer-links a{font-size:14px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
 .footer-links a:hover{color:var(--bone);}
+.footer-ig{display:flex;align-items:center;gap:8px;}
+.footer-ig svg{flex-shrink:0;opacity:.7;transition:opacity .2s;}
+.footer-ig:hover svg{opacity:1;}
 .footer-bottom{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;font-size:13px;color:var(--stone);letter-spacing:2px;}
 @media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:32px;}.solum-footer{padding:40px 24px 24px;}.footer-bottom{flex-direction:column;gap:12px;text-align:center;}}
 `;
@@ -42,8 +45,18 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">Contact</div>
             <ul className="footer-links">
-              <li><a href="mailto:harsha@pricedab.com">harsha@pricedab.com</a></li>
+              <li><a href="mailto:contact@bysolum.com">contact@bysolum.com</a></li>
               <li><a href="https://bysolum.com">bysolum.com</a></li>
+              <li>
+                <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="footer-ig">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/>
+                  </svg>
+                  @bysolum.body
+                </a>
+              </li>
             </ul>
           </div>
         </div>
