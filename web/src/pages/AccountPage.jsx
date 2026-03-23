@@ -8,7 +8,7 @@ const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const CSS = `
 .ac-page{min-height:100vh;background:var(--black);display:flex;align-items:center;justify-content:center;padding:48px 24px;font-family:'Barlow Condensed',sans-serif;}
 .ac-wrap{width:100%;max-width:640px;}
-.ac-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.15em;color:var(--bone);margin-bottom:48px;display:block;}
+.ac-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.15em;color:var(--bone);margin-bottom:48px;display:block;text-decoration:none;}
 .ac-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,56px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:8px;}
 .ac-sub{font-size:16px;color:var(--stone);font-weight:300;margin-bottom:40px;line-height:1.5;}
 .ac-input{width:100%;background:var(--dark);border:1px solid var(--lineb);color:var(--bone);padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;transition:border-color .2s;box-sizing:border-box;}
@@ -51,7 +51,7 @@ function LoadingView() {
     <div className="ac-page">
       <style>{CSS}</style>
       <div className="ac-wrap">
-        <span className="ac-logo">SOLUM</span>
+        <a href="/" className="ac-logo">SOLUM</a>
         <div style={{color:'var(--stone)',fontSize:14,letterSpacing:2,textTransform:'uppercase'}}>Loading…</div>
       </div>
     </div>
@@ -99,7 +99,7 @@ function LoginView({ phase, setPhase }) {
       <div className="ac-page">
         <style>{CSS}</style>
         <div className="ac-wrap">
-          <span className="ac-logo">SOLUM</span>
+          <a href="/" className="ac-logo">SOLUM</a>
           <div className="ac-heading">Check Your Email.</div>
           <div className="ac-sub">
             We've sent a login link to <strong style={{color:'var(--bone)'}}>{email.trim().toLowerCase()}</strong>.<br />
@@ -265,7 +265,7 @@ function Dashboard({ session, customer, sub, address, setAddress, setSub, setCus
       <div className="ac-wrap">
 
         <div className="ac-header">
-          <span className="ac-logo" style={{marginBottom:0}}>SOLUM</span>
+          <a href="/" className="ac-logo" style={{marginBottom:0}}>SOLUM</a>
           <button className="ac-signout" onClick={() => { setPhase('login'); supabase.auth.signOut(); }}>Sign out</button>
         </div>
 

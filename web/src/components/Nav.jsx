@@ -12,7 +12,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-account svg{flex-shrink:0;transition:stroke .2s;}
 .nav-cta{font-size:11px;letter-spacing:4px;text-transform:uppercase;background:var(--bone);color:var(--black);padding:10px 24px;text-decoration:none;transition:background .2s;white-space:nowrap;}
 .nav-cta:hover{background:#fff;}
-@media(max-width:768px){.nav-links{display:none;}nav{padding:0 20px;}.nav-right{gap:16px;}.nav-account{display:none;}.nav-cta{font-size:10px;letter-spacing:3px;padding:9px 16px;}}
+@media(max-width:768px){.nav-links{display:none;}nav{padding:0 20px;}.nav-right{gap:12px;}.nav-account span{display:none;}.nav-cta{font-size:10px;letter-spacing:3px;padding:9px 16px;}}
 `;
 
 const NAV_LINKS = [
@@ -56,7 +56,7 @@ export default function Nav() {
               <circle cx="7.5" cy="5" r="2.8"/>
               <path d="M1.5 13.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/>
             </svg>
-            Account
+            <span>Account</span>
           </a>
           <a href="#kits" className="nav-cta">Choose Your Kit</a>
         </div>
