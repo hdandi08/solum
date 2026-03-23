@@ -115,14 +115,31 @@ export default function CheckoutPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError('Please enter a valid email address.'); return; }
+    const emailVal = form.email.trim();
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { setError('Please enter a valid email address.'); return; }
     if (!form.birth_year) { setError('Birth year is required.'); return; }
     if (!form.birth_month) { setError('Birth month is required.'); return; }
     if (form.birth_year < 1940 || form.birth_year > 2006) { setError('Birth year must be between 1940 and 2006.'); return; }
     if (form.birth_month < 1 || form.birth_month > 12) { setError('Birth month must be between 1 and 12.'); return; }
 
+    // DNS MX lookup — verify the email domain can receive mail
     setLoading(true);
     setError('');
+    try {
+      const domain = emailVal.split('@')[1];
+      const dnsRes = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=MX`, {
+        headers: { Accept: 'application/dns-json' },
+      });
+      const dns = await dnsRes.json();
+      // Status 3 = NXDOMAIN (domain doesn't exist). No Answer = no MX records.
+      if (dns.Status === 3 || !dns.Answer?.length) {
+        setError(`We couldn't find a mail server for ${domain}. Please double-check your email address.`);
+        setLoading(false);
+        return;
+      }
+    } catch {
+      // DNS lookup failed (network issue) — allow through rather than block a real customer
+    }
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
