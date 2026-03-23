@@ -120,7 +120,7 @@ function LoginView({ phase, setPhase }) {
     <div className="ac-page">
       <style>{CSS}</style>
       <div className="ac-wrap">
-        <span className="ac-logo">SOLUM</span>
+        <a href="/" style={{fontSize:12,letterSpacing:3,textTransform:'uppercase',color:'var(--stone)',textDecoration:'none',display:'inline-block',marginBottom:40}}>← Back to home</a>
         <div className="ac-heading">Your Account.</div>
         <div className="ac-sub">Enter your email and we'll send you a login link. No password needed.</div>
         <form onSubmit={handleSend}>
