@@ -7,11 +7,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links a{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
 .nav-links a:hover,.nav-links a.active-link{color:var(--bone);}
 .nav-right{display:flex;align-items:center;gap:24px;}
-.nav-account{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
+.nav-account{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
 .nav-account:hover{color:var(--bone);}
-.nav-cta{font-size:11px;letter-spacing:4px;text-transform:uppercase;background:var(--bone);color:var(--black);padding:10px 24px;text-decoration:none;transition:background .2s;}
+.nav-account svg{flex-shrink:0;transition:stroke .2s;}
+.nav-cta{font-size:11px;letter-spacing:4px;text-transform:uppercase;background:var(--bone);color:var(--black);padding:10px 24px;text-decoration:none;transition:background .2s;white-space:nowrap;}
 .nav-cta:hover{background:#fff;}
-@media(max-width:768px){.nav-links{display:none;}.nav{padding:0 24px;}}
+@media(max-width:768px){.nav-links{display:none;}nav{padding:0 20px;}.nav-right{gap:16px;}.nav-account{display:none;}.nav-cta{font-size:10px;letter-spacing:3px;padding:9px 16px;}}
 `;
 
 const NAV_LINKS = [
@@ -50,7 +51,13 @@ export default function Nav() {
           ))}
         </ul>
         <div className="nav-right">
-          <a href="/account" className="nav-account">Account</a>
+          <a href="/account" className="nav-account">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="7.5" cy="5" r="2.8"/>
+              <path d="M1.5 13.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/>
+            </svg>
+            Account
+          </a>
           <a href="#kits" className="nav-cta">Choose Your Kit</a>
         </div>
       </nav>

@@ -42,7 +42,13 @@
       "Bash(npx supabase:*)",
       "Bash(find /Users/harshamahadeva/NewCo/solum/web/src -name *.js -o -name *.json)",
       "Bash(curl:*)",
-      "Bash(/Users/harshamahadeva/NewCo/solum/supabase/migrations/20260321000000_create_leads.sql:*)"
+      "Bash(/Users/harshamahadeva/NewCo/solum/supabase/migrations/20260321000000_create_leads.sql:*)",
+      "Bash(find /Users/harshamahadeva/NewCo/solum/web/src -type f \\\\\\(-name *.jsx -o -name *.tsx -o -name *.js -o -name *.ts \\\\\\))",
+      "Bash(cp /Users/harshamahadeva/NewCo/solum/web/public/solum-tshirt.jpeg /Users/harshamahadeva/NewCo/solum/web/src/assets/solum-tshirt.jpeg)",
+      "Bash(rm /Users/harshamahadeva/NewCo/solum/web/public/solum-tshirt.jpeg)",
+      "Bash(supabase db:*)",
+      "Bash(supabase secrets:*)",
+      "Bash(1:*)"
     ]
   }
 }
