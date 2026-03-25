@@ -58,6 +58,7 @@ const CSS = `
 .co-price-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-left:4px;}
 .co-price-sub{font-size:16px;color:var(--mist);font-weight:300;margin-top:4px;}
 .co-price-day{font-size:14px;color:var(--stone);font-style:italic;margin-top:2px;}
+.co-price-refill{font-size:13px;color:var(--stone);font-weight:300;margin-top:3px;letter-spacing:.3px;}
 .co-divider{width:100%;height:1px;background:var(--line);margin:24px 0;}
 .co-section-label{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
 .co-product-list{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;}
@@ -88,6 +89,46 @@ const CSS = `
 }
 `;
 
+// ── Shipping date helpers ──────────────────────────────────────────────────
+
+function getNextMondayDispatch() {
+  const today = new Date();
+  const day = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const daysUntil = day === 1 ? 7 : (1 + 7 - day) % 7;
+  const next = new Date(today);
+  next.setDate(today.getDate() + daysUntil);
+  return next;
+}
+
+function getFirstBoxArrival(dispatch) {
+  const d = new Date(dispatch);
+  d.setDate(d.getDate() + 3);
+  return d;
+}
+
+function getFirstBillingDate(dispatch) {
+  if (dispatch.getDate() <= 7) {
+    return new Date(dispatch.getFullYear(), dispatch.getMonth(), 25);
+  }
+  return new Date(dispatch.getFullYear(), dispatch.getMonth() + 1, 25);
+}
+
+function getRefillShipDate(billing) {
+  return new Date(billing.getFullYear(), billing.getMonth(), 28);
+}
+
+function getRefillArrivalDate(billing) {
+  return new Date(billing.getFullYear(), billing.getMonth() + 1, 1);
+}
+
+function fmtDay(date) {
+  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function fmtDate(date) {
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 export default function CheckoutPage() {
   const [params]    = useSearchParams();
   const navigate    = useNavigate();
@@ -109,6 +150,12 @@ export default function CheckoutPage() {
   const products  = PRODUCTS.filter(p => kit.productNums.includes(p.num));
   const perDay    = (kit.monthlyPrice / 30).toFixed(2);
   const ritualKit = KITS.find(k => k.id === 'ritual');
+
+  const dispatch     = getNextMondayDispatch();
+  const arrival      = getFirstBoxArrival(dispatch);
+  const billing      = getFirstBillingDate(dispatch);
+  const refillShip   = getRefillShipDate(billing);
+  const refillArrive = getRefillArrivalDate(billing);
 
   function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -259,7 +306,11 @@ export default function CheckoutPage() {
             <span className="co-price-main">£{kit.firstBoxPrice}</span>
             <span className="co-price-label">first box</span>
           </div>
-          <div className="co-price-sub">then £{kit.monthlyPrice}/mo · ships 1st of each month</div>
+          <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives by {fmtDay(arrival)}</div>
+          <div style={{ marginTop: 14 }}>
+            <span className="co-price-sub">then £{kit.monthlyPrice}/mo</span>
+          </div>
+          <div className="co-price-refill">Charged {fmtDate(billing)} · Ships {fmtDate(refillShip)} · Arrives by {fmtDate(refillArrive)}</div>
           <div className="co-price-day">That's £{perDay} a day</div>
 
           <div className="co-divider" />
