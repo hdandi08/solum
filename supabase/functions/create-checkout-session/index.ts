@@ -154,17 +154,14 @@ Deno.serve(async (req) => {
       product_data: { name: `SOLUM ${kit.name} — First Box` },
     });
 
-    // Recurring monthly price — reuse if already exists
-    const existingPrices = await stripe.prices.list({ active: true, currency: 'gbp', lookup_keys: [`solum_${kit_id}_monthly`] });
-    const monthlyPrice = existingPrices.data.length > 0
-      ? existingPrices.data[0]
-      : await stripe.prices.create({
-          currency: 'gbp',
-          unit_amount: kit.monthly_pence,
-          recurring: { interval: 'month' },
-          lookup_key: `solum_${kit_id}_monthly`,
-          product_data: { name: `SOLUM ${kit.name} — Monthly Refill` },
-        });
+    // Recurring monthly price — created fresh each session so the product name
+    // can include the specific billing start date shown on the Stripe checkout page.
+    const monthlyPrice = await stripe.prices.create({
+      currency: 'gbp',
+      unit_amount: kit.monthly_pence,
+      recurring: { interval: 'month' },
+      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · from ${fmtDate(billing)}` },
+    });
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
@@ -179,11 +176,6 @@ Deno.serve(async (req) => {
       },
       shipping_address_collection: {
         allowed_countries: ['GB'],
-      },
-      custom_text: {
-        submit: {
-          message: `First box ships ${fmtDay(dispatch)} · arrives by ${fmtDay(arrival)} · Refill charged ${fmtDate(billing)} · arrives by ${fmtDate(refillArrive)}`,
-        },
       },
       success_url,
       cancel_url,
