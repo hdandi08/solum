@@ -92,6 +92,7 @@ export default function SubscriptionSection() {
               <div className="sub-footnote">
                 First box is a one-time purchase. Subscription starts with your second delivery.
                 Cancel any time — no penalty, no phone calls.
+                First box ships the next Monday after you order — refills are charged on the 25th and arrive by the 1st of each month.
               </div>
             </div>
           </div>
