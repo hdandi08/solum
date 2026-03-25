@@ -151,10 +151,7 @@ Deno.serve(async (req) => {
     const firstBoxPrice = await stripe.prices.create({
       currency: 'gbp',
       unit_amount: kit.first_box_pence,
-      product_data: {
-        name: `SOLUM ${kit.name} — First Box`,
-        description: `Ships ${fmtDay(dispatch)} · Arrives by ${fmtDay(arrival)}`,
-      },
+      product_data: { name: `SOLUM ${kit.name} — First Box` },
     });
 
     // Recurring monthly price — reuse if already exists
@@ -177,8 +174,7 @@ Deno.serve(async (req) => {
         { price: monthlyPrice.id,   quantity: 1 },
       ],
       subscription_data: {
-        billing_cycle_anchor: Math.floor(billing.getTime() / 1000),
-        proration_behavior: 'none',
+        trial_end: Math.floor(billing.getTime() / 1000),
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
       },
       shipping_address_collection: {
@@ -186,7 +182,7 @@ Deno.serve(async (req) => {
       },
       custom_text: {
         submit: {
-          message: `First refill charged ${fmtDate(billing)} · ships ${fmtDate(refillShip)} · arrives by ${fmtDate(refillArrive)}`,
+          message: `First box ships ${fmtDay(dispatch)} · arrives by ${fmtDay(arrival)} · Refill charged ${fmtDate(billing)} · arrives by ${fmtDate(refillArrive)}`,
         },
       },
       success_url,
