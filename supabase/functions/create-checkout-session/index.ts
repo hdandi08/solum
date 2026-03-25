@@ -19,6 +19,58 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ── Shipping date helpers ──────────────────────────────────────────────────
+
+/** Next Monday from today. If today is Monday, returns next week's Monday. */
+function nextMondayDispatch(): Date {
+  const today = new Date();
+  const day = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const daysUntil = day === 1 ? 7 : (1 + 7 - day) % 7;
+  const next = new Date(today);
+  next.setDate(today.getDate() + daysUntil);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
+/** First box arrives ~3 days after dispatch. */
+function firstBoxArrival(dispatch: Date): Date {
+  const d = new Date(dispatch);
+  d.setDate(d.getDate() + 3);
+  return d;
+}
+
+/**
+ * First subscription billing date (25th).
+ * If dispatch falls on or before the 7th → same month's 25th.
+ * Otherwise → next month's 25th.
+ */
+function firstBillingDate(dispatch: Date): Date {
+  if (dispatch.getDate() <= 7) {
+    return new Date(dispatch.getFullYear(), dispatch.getMonth(), 25);
+  }
+  return new Date(dispatch.getFullYear(), dispatch.getMonth() + 1, 25);
+}
+
+/** Refill ships on the 28th of the billing month. */
+function refillShipDate(billing: Date): Date {
+  return new Date(billing.getFullYear(), billing.getMonth(), 28);
+}
+
+/** Refill arrives by the 1st of the month after billing. */
+function refillArrivalDate(billing: Date): Date {
+  return new Date(billing.getFullYear(), billing.getMonth() + 1, 1);
+}
+
+/** "Mon 6 Apr" format for dispatch/arrival. */
+function fmtDay(date: Date): string {
+  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+/** "25 Apr" format for charge/ship/arrive dates. */
+function fmtDate(date: Date): string {
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 async function alertError(message: string, context: Record<string, unknown>) {
   console.error('SOLUM_CHECKOUT_ERROR', JSON.stringify({ message, context, ts: new Date().toISOString() }));
 
@@ -54,6 +106,13 @@ Deno.serve(async (req) => {
 
     const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
+
+    // Shipping & billing schedule
+    const dispatch     = nextMondayDispatch();
+    const arrival      = firstBoxArrival(dispatch);
+    const billing      = firstBillingDate(dispatch);
+    const refillShip   = refillShipDate(billing);
+    const refillArrive = refillArrivalDate(billing);
 
     // Block duplicate subscriptions — check if this email already has an active account
     const { data: existingCustomer } = await supabase
@@ -92,7 +151,10 @@ Deno.serve(async (req) => {
     const firstBoxPrice = await stripe.prices.create({
       currency: 'gbp',
       unit_amount: kit.first_box_pence,
-      product_data: { name: `SOLUM ${kit.name} — First Box` },
+      product_data: {
+        name: `SOLUM ${kit.name} — First Box`,
+        description: `Ships ${fmtDay(dispatch)} · Arrives by ${fmtDay(arrival)}`,
+      },
     });
 
     // Recurring monthly price — reuse if already exists
@@ -107,14 +169,6 @@ Deno.serve(async (req) => {
           product_data: { name: `SOLUM ${kit.name} — Monthly Refill` },
         });
 
-    // Billing anchor: 1st of next month.
-    // If within 7 days of month end, skip to the month after to avoid an
-    // almost-immediate charge after purchase.
-    const now = new Date();
-    const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
-    const monthsAhead = daysLeftInMonth < 15 ? 2 : 1;
-    const billingAnchor = Math.floor(new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1).getTime() / 1000);
-
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
@@ -123,11 +177,17 @@ Deno.serve(async (req) => {
         { price: monthlyPrice.id,   quantity: 1 },
       ],
       subscription_data: {
-        trial_end: billingAnchor,
+        billing_cycle_anchor: Math.floor(billing.getTime() / 1000),
+        proration_behavior: 'none',
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
       },
       shipping_address_collection: {
         allowed_countries: ['GB'],
+      },
+      custom_text: {
+        submit: {
+          message: `First refill charged ${fmtDate(billing)} · ships ${fmtDate(refillShip)} · arrives by ${fmtDate(refillArrive)}`,
+        },
       },
       success_url,
       cancel_url,
