@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import Layout from './components/Layout'
-import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import InventoryPage from './pages/InventoryPage'
 import ReplenishmentPage from './pages/ReplenishmentPage'
@@ -12,29 +11,11 @@ import EventsPage from './pages/EventsPage'
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
 
 function ProtectedRoute({ session, children }) {
-  const location = useLocation()
-
-  if (!session) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+  const email = session?.user?.email
+  if (!session || !ADMIN_EMAILS.includes(email)) {
+    window.location.replace('/')
+    return null
   }
-
-  const email = session.user?.email
-  if (!ADMIN_EMAILS.includes(email)) {
-    return (
-      <div className="access-denied">
-        <h1>ACCESS DENIED</h1>
-        <p>Your account ({email}) is not authorised to access this panel.</p>
-        <button
-          className="btn btn-secondary"
-          style={{ marginTop: '8px' }}
-          onClick={() => supabase.auth.signOut()}
-        >
-          Sign Out
-        </button>
-      </div>
-    )
-  }
-
   return children
 }
 
@@ -65,7 +46,6 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage session={session} />} />
       <Route
         path="/"
         element={
