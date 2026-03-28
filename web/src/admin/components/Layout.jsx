@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { supabase } from '../../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },

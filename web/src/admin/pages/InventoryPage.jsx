@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import RiskBadge from '../components/RiskBadge'
 
 function getRiskLevel(runway, stock) {
