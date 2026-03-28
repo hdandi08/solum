@@ -7,6 +7,56 @@ const KIT_NAMES: Record<string, string> = {
   ground: 'GROUND', ritual: 'RITUAL', sovereign: 'SOVEREIGN',
 };
 
+// Deduct inventory for a kit order. order_type: 'first_box' | 'refill'
+async function deductInventory(
+  db: ReturnType<typeof createClient>,
+  kit_id: string,
+  order_type: 'first_box' | 'refill',
+  reference_id: string,
+) {
+  try {
+    const qtyField = order_type === 'first_box' ? 'first_box_qty' : 'refill_qty';
+
+    const { data: kitProducts } = await db
+      .from('kit_products')
+      .select(`product_id, ${qtyField}`)
+      .eq('kit_id', kit_id)
+      .gt(qtyField, 0);
+
+    if (!kitProducts?.length) return;
+
+    for (const kp of kitProducts) {
+      const qty = kp[qtyField] as number;
+
+      // Decrement stock (floor at 0 — never go negative)
+      const { data: product } = await db
+        .from('products')
+        .select('current_stock')
+        .eq('id', kp.product_id)
+        .single();
+
+      const newStock = Math.max(0, (product?.current_stock ?? 0) - qty);
+
+      await db.from('products')
+        .update({ current_stock: newStock })
+        .eq('id', kp.product_id);
+
+      await db.from('inventory_transactions').insert({
+        product_id: kp.product_id,
+        transaction_type: 'outbound_order',
+        quantity: -qty,
+        reference_type: 'order',
+        reference_id,
+        notes: `${order_type === 'first_box' ? 'First box' : 'Refill'} — ${KIT_NAMES[kit_id] ?? kit_id} kit`,
+        created_by: 'system',
+      });
+    }
+  } catch (err) {
+    // Never let inventory errors block order processing
+    console.error('inventory_deduction_error', err);
+  }
+}
+
 async function sendConfirmationEmail(
   email: string,
   firstName: string,
@@ -202,6 +252,11 @@ Deno.serve(async (req) => {
           });
         }
 
+        // Deduct first-box inventory
+        if (kit_id && sub?.id) {
+          await deductInventory(supabase, kit_id, 'first_box', sub.id);
+        }
+
         // Mark lead as completed
         await supabase.from('leads')
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
@@ -264,7 +319,7 @@ Deno.serve(async (req) => {
           })
           .eq('id', sub.id);
 
-        await supabase.from('orders').insert({
+        const { data: refillOrder } = await supabase.from('orders').insert({
           customer_id: sub.customer_id,
           subscription_id: sub.id,
           stripe_payment_id: invoice.payment_intent as string,
@@ -273,7 +328,12 @@ Deno.serve(async (req) => {
           box_number: months_active,
           amount_pence: invoice.amount_paid,
           status: 'paid',
-        });
+        }).select().single();
+
+        // Deduct refill inventory
+        if (sub.kit_id && refillOrder?.id) {
+          await deductInventory(supabase, sub.kit_id, 'refill', refillOrder.id);
+        }
 
         break;
       }

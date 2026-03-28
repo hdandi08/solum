@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — Reel 09 — Routine Hasn't Changed Since 14</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --black: #08090B; --charcoal: #181C24; --steel-blue: #2E6DA4; --sky-blue: #4A8FC7; --bone: #F0ECE2; }
+
+  body { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Barlow Condensed', sans-serif; gap: 0; }
+  body.record-mode { background: #000; padding: 0; justify-content: center; }
+  body.record-mode .controls { display: none; }
+  body.record-mode .instructions { display: none; }
+  body.record-mode #stage { transform-origin: center center; }
+
+  #stage { width: 405px; height: 720px; position: relative; overflow: hidden; background: var(--black); flex-shrink: 0; }
+
+  .scene { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: var(--black); display: flex; align-items: center; justify-content: center; }
+  .scene.active { opacity: 1; pointer-events: auto; }
+
+  #s1 { background: radial-gradient(ellipse 80% 40% at 50% 80%, rgba(46,109,164,0.10) 0%, transparent 65%), var(--black); }
+  #s2 { background: var(--black); }
+  #s3 { background: #060A0F; }
+  #s4 { background: var(--black); }
+  #s5 { background: radial-gradient(ellipse 70% 40% at 50% 55%, rgba(46,109,164,0.16) 0%, transparent 65%), var(--black); }
+
+  .brand-rule { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--steel-blue); z-index: 4; }
+  .scene-wordmark { position: absolute; top: 20px; left: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.15em; color: var(--bone); opacity: 0.6; z-index: 4; }
+
+  .txt { position: absolute; z-index: 5; opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .txt.visible { opacity: 1; transform: translateY(0); }
+  .pos-centre { top: 50%; left: 50%; transform: translate(-50%, -50%) translateY(16px); text-align: center; width: 88%; }
+  .pos-centre.visible { transform: translate(-50%, -50%) translateY(0); }
+
+  .t-hook { font-family: 'Bebas Neue', sans-serif; font-size: 80px; letter-spacing: 0.04em; line-height: 0.90; color: var(--bone); }
+  .t-hook .accent { color: var(--sky-blue); }
+  .t-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sky-blue); display: block; margin-bottom: 16px; }
+  .t-rule { width: 40px; height: 3px; background: var(--steel-blue); margin: 16px auto; }
+  .t-cta-wordmark { font-family: 'Bebas Neue', sans-serif; font-size: 80px; letter-spacing: 0.15em; color: var(--bone); display: block; }
+  .t-cta-sub { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sky-blue); display: block; margin-top: 8px; }
+  .t-cta-hero { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.06em; line-height: 0.95; color: var(--bone); display: block; margin-top: 6px; }
+  .t-cta-url { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel-blue); display: block; margin-top: 12px; }
+  .t-cta-tagline { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 18px; letter-spacing: 0.06em; color: var(--bone); opacity: 0.7; display: block; margin-top: 8px; }
+
+  /* ── S3 — The 14-year-old routine exposed ── */
+  #s3 .txt { text-align: left; padding-left: 16px; }
+
+  .s3-item {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 12px 0; border-bottom: 1px solid rgba(46,109,164,0.15);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .s3-item:last-child { border-bottom: none; }
+  .s3-item-1 { transition-delay: 0s; }
+  .s3-item-2 { transition-delay: 1.4s; }
+  .s3-item-3 { transition-delay: 2.8s; }
+  .s3-item-4 { transition-delay: 4.3s; }
+  #s3 .txt.visible .s3-item { opacity: 1; transform: translateY(0); }
+
+  .s3-label {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+  .s3-truth {
+    font-family: 'Bebas Neue', sans-serif; font-size: 34px;
+    letter-spacing: 0.03em; line-height: 1; color: var(--bone); opacity: 0.65;
+  }
+  .s3-item-4 .s3-label { color: rgba(240,236,226,0.4); }
+  .s3-item-4 .s3-truth { font-size: 38px; opacity: 1; color: var(--bone); }
+
+  /* ── S4 staggered ── */
+  #s4 .s4-line2 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.04em; line-height: 0.90; color: var(--sky-blue); opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s; margin-top: 18px; display: block; }
+  #s4 .txt.visible .s4-line2 { opacity: 1; transform: translateY(0); }
+
+  /* ── PROGRESS / OVERLAYS ── */
+  #progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--steel-blue); width: 0%; z-index: 10; transition: width 0.1s linear; }
+  #play-overlay { position: absolute; inset: 0; background: rgba(8,9,11,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; gap: 16px; cursor: pointer; }
+  #play-overlay:hover { background: rgba(8,9,11,0.75); }
+  #countdown-overlay { position: absolute; inset: 0; background: rgba(8,9,11,0.92); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; gap: 10px; }
+  #countdown-overlay.active { display: flex; }
+  #countdown-number { font-family: 'Bebas Neue', sans-serif; font-size: 120px; letter-spacing: 0.04em; color: var(--bone); line-height: 1; }
+  #countdown-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--sky-blue); opacity: 0.7; }
+  .play-icon { width: 64px; height: 64px; border: 2px solid var(--bone); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .play-icon::after { content: ''; border-style: solid; border-width: 12px 0 12px 22px; border-color: transparent transparent transparent var(--bone); margin-left: 4px; }
+  .play-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--bone); opacity: 0.7; }
+  .play-duration { font-family: 'Barlow Condensed', sans-serif; font-weight: 300; font-size: 12px; letter-spacing: 0.12em; color: var(--bone); opacity: 0.35; }
+  .controls { display: flex; gap: 10px; padding: 14px 0 0; align-items: center; }
+  .btn { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; padding: 9px 18px; border: none; cursor: pointer; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.75; }
+  .btn-play { background: var(--bone); color: var(--black); }
+  .btn-record { background: var(--steel-blue); color: #fff; }
+  .btn-restart { background: transparent; color: var(--bone); border: 1px solid rgba(240,236,226,0.2); opacity: 0.6; }
+  .instructions { max-width: 405px; padding: 16px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .instr-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--sky-blue); opacity: 0.7; }
+  .instr-steps { font-family: 'Barlow Condensed', sans-serif; font-weight: 300; font-size: 13px; line-height: 1.7; color: var(--bone); opacity: 0.5; }
+  .instr-steps strong { font-weight: 600; color: var(--bone); opacity: 1; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- S1 — Hook -->
+  <div class="scene" id="s1">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="txt pos-centre" data-delay="100">
+      <div class="t-hook" style="font-size:72px; line-height:0.92;">YOUR SHOWER<br>ROUTINE<br>HASN'T<br>CHANGED<br>SINCE <span class="accent">14.</span></div>
+    </div>
+  </div>
+
+  <!-- S2 — Setup -->
+  <div class="scene" id="s2">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="txt pos-centre" data-delay="150">
+      <div class="t-hook" style="font-size:60px; line-height:0.94;">SAME PRODUCTS.<br>SAME TECHNIQUE.<br>YOUR BODY<br>ISN'T 14<br>ANYMORE.</div>
+    </div>
+  </div>
+
+  <!-- S3 — The routine exposed -->
+  <div class="scene" id="s3">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="txt pos-centre" data-delay="200">
+      <div class="s3-item s3-item-1">
+        <span class="s3-label">Body Wash</span>
+        <span class="s3-truth">Whatever was in the bathroom.</span>
+      </div>
+      <div class="s3-item s3-item-2">
+        <span class="s3-label">Back</span>
+        <span class="s3-truth">Hands can't reach it. Never did.</span>
+      </div>
+      <div class="s3-item s3-item-3">
+        <span class="s3-label">Scalp</span>
+        <span class="s3-truth">Shampoo. No technique. Just rinse.</span>
+      </div>
+      <div class="s3-item s3-item-4">
+        <span class="s3-label">After</span>
+        <span class="s3-truth">Towel dry. Done. Every single day.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 — Damage -->
+  <div class="scene" id="s4">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="txt pos-centre" data-delay="150">
+      <div class="t-hook" style="font-size:66px; line-height:0.92;">YEARS OF THE<br>WRONG ROUTINE.</div>
+      <div class="s4-line2">YOUR SKIN<br>PAID FOR IT.</div>
+    </div>
+  </div>
+
+  <!-- S5 — CTA -->
+  <div class="scene" id="s5">
+    <div class="brand-rule"></div>
+    <div class="scene-wordmark">SOLUM</div>
+    <div class="txt pos-centre" data-delay="300">
+      <span class="t-cta-wordmark">SOLUM</span>
+      <div class="t-rule"></div>
+      <span class="t-cta-sub">The System Your Body Actually Needs</span>
+      <span class="t-cta-hero">YOUR BODY.<br>DONE RIGHT.</span>
+      <span class="t-cta-url">COMING SOON · BYSOLUM.COM</span>
+      <span class="t-cta-tagline">Your body. Done right.</span>
+    </div>
+  </div>
+
+  <div id="progress-bar"></div>
+  <div id="play-overlay" onclick="startReel()">
+    <div class="play-icon"></div>
+    <div class="play-label">Play Reel</div>
+    <div class="play-duration">20.5 seconds</div>
+  </div>
+  <div id="countdown-overlay">
+    <div id="countdown-number">30</div>
+    <div id="countdown-label">Start QuickTime recording now</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-play" onclick="startReel()">▶ Play</button>
+  <button class="btn btn-restart" onclick="restartReel()">↺ Restart</button>
+  <button class="btn btn-record" onclick="toggleRecordMode()">⬤ Record Mode</button>
+</div>
+<div class="instructions">
+  <div class="instr-title">How to record</div>
+  <div class="instr-steps">
+    <strong>1.</strong> CMD + SHIFT + 5 → Record Selected Portion → draw around stage<br>
+    <strong>2.</strong> Record Mode → countdown → hit Record in QuickTime<br>
+    <strong>3.</strong> Reel plays automatically → stop after S5 fades<br>
+    <strong>4.</strong> .mov → upload to Instagram Reels
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  { id: 's1', duration: 2500 },
+  { id: 's2', duration: 3000 },
+  { id: 's3', duration: 7000 },
+  { id: 's4', duration: 4000 },
+  { id: 's5', duration: 4000 },
+];
+const TOTAL = SCENES.reduce((a, s) => a + s.duration, 0);
+let currentScene = -1, timer = null, startTime = null, rafId = null, running = false;
+
+function showScene(index) {
+  SCENES.forEach(s => { const el = document.getElementById(s.id); el.classList.remove('active'); el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible')); });
+  if (index >= SCENES.length) { running = false; return; }
+  currentScene = index;
+  const el = document.getElementById(SCENES[index].id);
+  el.classList.add('active');
+  el.querySelectorAll('.txt').forEach((t, i) => { const delay = parseInt(t.dataset.delay || 0) + i * 120; setTimeout(() => t.classList.add('visible'), delay); });
+  timer = setTimeout(() => showScene(index + 1), SCENES[index].duration);
+}
+
+function updateProgress() {
+  if (!running) return;
+  const pct = Math.min(((Date.now() - startTime) / TOTAL) * 100, 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  if (pct < 100) rafId = requestAnimationFrame(updateProgress);
+}
+
+function startReel() {
+  const overlay = document.getElementById('play-overlay');
+  const icon = overlay.querySelector('.play-icon');
+  const label = overlay.querySelector('.play-label');
+  const dur = overlay.querySelector('.play-duration');
+  icon.style.display = 'none'; dur.style.display = 'none';
+  label.style.fontSize = '18px'; label.style.letterSpacing = '0.1em';
+  let count = 10; label.textContent = 'STARTING IN ' + count + '…';
+  const tick = setInterval(() => { count--; if (count > 0) { label.textContent = 'STARTING IN ' + count + '…'; } else { clearInterval(tick); overlay.style.display = 'none'; restartReel(); } }, 1000);
+}
+
+function restartReel() {
+  clearTimeout(timer); cancelAnimationFrame(rafId); running = true; startTime = Date.now();
+  document.getElementById('progress-bar').style.width = '0%';
+  showScene(0); rafId = requestAnimationFrame(updateProgress);
+}
+
+function toggleRecordMode() {
+  document.body.classList.toggle('record-mode');
+  const btn = document.querySelector('.btn-record');
+  const stage = document.getElementById('stage');
+  if (document.body.classList.contains('record-mode')) {
+    btn.textContent = '✕ Exit Record Mode';
+    document.getElementById('play-overlay').style.display = 'none';
+    stage.style.transform = `scale(${Math.min(window.innerHeight / 720, window.innerWidth / 405)})`;
+    startCountdown();
+  } else {
+    btn.textContent = '⬤ Record Mode'; stage.style.transform = '';
+    clearTimeout(timer); cancelAnimationFrame(rafId);
+    document.getElementById('countdown-overlay').classList.remove('active');
+  }
+}
+
+function startCountdown() {
+  SCENES.forEach(s => { const el = document.getElementById(s.id); el.classList.remove('active'); el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible')); });
+  document.getElementById('progress-bar').style.width = '0%';
+  const overlay = document.getElementById('countdown-overlay');
+  const num = document.getElementById('countdown-number');
+  const label = document.getElementById('countdown-label');
+  overlay.classList.add('active');
+  let count = 30; num.textContent = count; label.textContent = 'Start QuickTime recording now';
+  const tick = setInterval(() => {
+    count--;
+    if (count === 10) label.textContent = 'Hit Record now ↑';
+    if (count > 0) { num.textContent = count; } else {
+      clearInterval(tick); num.textContent = '▶'; label.textContent = 'Recording…';
+      setTimeout(() => { overlay.classList.remove('active'); restartReel(); }, 400);
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

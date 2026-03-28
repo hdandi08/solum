@@ -80,6 +80,17 @@ const CSS = `
 .co-upgrade-copy strong{color:var(--bone);font-weight:500;}
 .co-upgrade-link{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;color:var(--bone);text-decoration:none;transition:color .2s;border-bottom:1px solid rgba(46,109,164,0.4);padding-bottom:2px;}
 .co-upgrade-link:hover{color:#fff;border-color:var(--blit);}
+.co-waitlist-block{border:1px solid rgba(46,109,164,0.35);background:rgba(46,109,164,0.05);padding:28px 28px 24px;}
+.co-waitlist-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#e05c5c;font-weight:600;margin-bottom:12px;}
+.co-waitlist-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:10px;}
+.co-waitlist-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:28px;}
+.co-waitlist-submit{width:100%;background:var(--blue);color:#fff;border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;padding:16px;cursor:pointer;transition:background .2s;margin-top:4px;}
+.co-waitlist-submit:hover:not(:disabled){background:var(--blit);}
+.co-waitlist-submit:disabled{opacity:.6;cursor:wait;}
+.co-waitlist-done{text-align:center;padding:40px 28px;}
+.co-waitlist-done-tick{font-size:36px;margin-bottom:16px;}
+.co-waitlist-done-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.04em;color:var(--bone);margin-bottom:10px;}
+.co-waitlist-done-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
 
 @media(max-width:900px){
   .co-page{grid-template-columns:1fr;padding-top:64px;}
@@ -137,9 +148,47 @@ export default function CheckoutPage() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
-  const [form, setForm]       = useState({ first_name: '', last_name: '', email: '', birth_year: '', birth_month: '' });
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState('');
+  const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', birth_year: '', birth_month: '' });
+  const [inventoryAvailable, setInventoryAvailable] = useState(null); // null=checking, true=ok, false=sold out
+  const [waitlistForm, setWaitlistForm] = useState({ first_name: '', last_name: '', email: '' });
+  const [waitlistState, setWaitlistState] = useState('idle'); // idle | submitting | done | error
+
+  useEffect(() => {
+    fetch(`${SUPABASE_URL}/functions/v1/get-inventory-status`, {
+      headers: { 'apikey': ANON_KEY },
+    })
+      .then(r => r.json())
+      .then(data => {
+        const available = data?.kits?.[kit.id];
+        setInventoryAvailable(available !== false); // undefined (no data) = allow through
+      })
+      .catch(() => setInventoryAvailable(true)); // network error — allow through
+  }, [kit.id]); // eslint-disable-line
+
+  async function handleWaitlist(e) {
+    e.preventDefault();
+    const emailVal = waitlistForm.email.trim();
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
+    setWaitlistState('submitting');
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
+        body: JSON.stringify({
+          email: emailVal,
+          first_name: waitlistForm.first_name.trim() || null,
+          last_name: waitlistForm.last_name.trim() || null,
+          kit_id: kit.id,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      setWaitlistState('done');
+    } catch {
+      setWaitlistState('error');
+    }
+  }
 
   // Invalid kit — redirect to kits section
   if (!kit || kit.comingSoon) {
@@ -249,10 +298,57 @@ export default function CheckoutPage() {
         <div className="co-left">
           <a className="co-back" href="/full#kits">← Choose a different kit</a>
           <div className="co-eyebrow">{kit.name} · £{kit.firstBoxPrice} first box</div>
-          <div className="co-heading">Start Your Ritual.</div>
-          <div className="co-subhead">Takes 30 seconds. You'll be at Stripe in a moment.</div>
+          {inventoryAvailable !== false && <>
+            <div className="co-heading">Start Your Ritual.</div>
+            <div className="co-subhead">Takes 30 seconds. You'll be at Stripe in a moment.</div>
+          </>}
 
-          <form onSubmit={handleSubmit} noValidate>
+          {inventoryAvailable === false ? (
+            <div className="co-waitlist-block">
+              {waitlistState === 'done' ? (
+                <div className="co-waitlist-done">
+                  <div className="co-waitlist-done-tick">✓</div>
+                  <div className="co-waitlist-done-title">You're on the list.</div>
+                  <div className="co-waitlist-done-body">
+                    We'll email you the moment {kit.name} is back in stock.<br />
+                    Usually within a week.
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="co-waitlist-eyebrow">Sold Out</div>
+                  <div className="co-waitlist-title">Get notified<br />when it's back.</div>
+                  <div className="co-waitlist-body">
+                    {kit.name} is temporarily out of stock. Leave your details and we'll email you the moment it's available — no spam, one email.
+                  </div>
+                  <form onSubmit={handleWaitlist} noValidate>
+                    <div className="co-row">
+                      <div className="co-field">
+                        <label className="co-label">First Name</label>
+                        <input className="co-input" value={waitlistForm.first_name} onChange={e => setWaitlistForm(f => ({ ...f, first_name: e.target.value }))} placeholder="James" />
+                      </div>
+                      <div className="co-field">
+                        <label className="co-label">Last Name</label>
+                        <input className="co-input" value={waitlistForm.last_name} onChange={e => setWaitlistForm(f => ({ ...f, last_name: e.target.value }))} placeholder="Smith" />
+                      </div>
+                    </div>
+                    <div className="co-field">
+                      <label className="co-label">Email</label>
+                      <input className="co-input" type="email" value={waitlistForm.email} onChange={e => setWaitlistForm(f => ({ ...f, email: e.target.value }))} placeholder="james@example.com" required />
+                    </div>
+                    {waitlistState === 'error' && (
+                      <div className="co-error">Something went wrong — please try again.</div>
+                    )}
+                    <button type="submit" className="co-waitlist-submit" disabled={waitlistState === 'submitting'}>
+                      {waitlistState === 'submitting' ? 'Saving…' : 'Notify Me When Available →'}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          ) : null}
+
+          {inventoryAvailable !== false && <form onSubmit={handleSubmit} noValidate>
             <div className="co-row">
               <div className="co-field">
                 <label className="co-label">First Name</label>
@@ -296,12 +392,17 @@ export default function CheckoutPage() {
               <span className="co-stripe-text">Payments secured by</span>
               <span className="co-stripe-logo">Stripe</span>
             </div>
-          </form>
+          </form>}
         </div>
 
         {/* ── RIGHT — KIT SUMMARY ── */}
         <div className="co-right">
-          <div className="co-kit-name">{kit.name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <div className="co-kit-name">{kit.name}</div>
+            {inventoryAvailable === false && (
+              <span style={{ fontSize: 11, letterSpacing: '3px', textTransform: 'uppercase', color: '#e05c5c', fontWeight: 600, border: '1px solid rgba(224,92,92,0.4)', padding: '3px 8px' }}>Sold Out</span>
+            )}
+          </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
             <span className="co-price-main">£{kit.firstBoxPrice}</span>
             <span className="co-price-label">first box</span>
