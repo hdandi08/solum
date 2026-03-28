@@ -18,6 +18,9 @@ frontend:
     paths:
       - web/node_modules/**/*
   customRules:
+    - source: /admin
+      target: /admin/
+      status: '301'
     - source: /admin/<*>
       target: /admin/index.html
       status: '200'

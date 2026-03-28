@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 const CSS = `
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(8,9,11,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--lineb);}
@@ -10,6 +11,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-account{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
 .nav-account:hover{color:var(--bone);}
 .nav-account svg{flex-shrink:0;transition:stroke .2s;}
+.nav-account.logged-in{color:var(--bone);}
+.nav-account.logged-in svg{stroke:var(--blue);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;}
 .nav-cta{font-size:11px;letter-spacing:4px;text-transform:uppercase;background:var(--bone);color:var(--black);padding:10px 24px;text-decoration:none;transition:background .2s;white-space:nowrap;}
 .nav-cta:hover{background:#fff;}
 @media(max-width:768px){.nav-links{display:none;}nav{padding:0 20px;}.nav-right{gap:12px;}.nav-account span{display:none;}.nav-cta{font-size:10px;letter-spacing:3px;padding:9px 16px;}}
@@ -25,6 +29,13 @@ const NAV_LINKS = [
 
 export default function Nav() {
   const [activeNav, setActiveNav] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handler = () => {
@@ -51,12 +62,19 @@ export default function Nav() {
           ))}
         </ul>
         <div className="nav-right">
-          <a href="/account" className="nav-account">
+          <a href="/account" className={`nav-account${user ? ' logged-in' : ''}`}>
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="7.5" cy="5" r="2.8"/>
               <path d="M1.5 13.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/>
             </svg>
-            <span>Account</span>
+            {user ? (
+              <>
+                <span>{user.user_metadata?.first_name || user.email?.split('@')[0]}</span>
+                <div className="nav-dot" />
+              </>
+            ) : (
+              <span>Account</span>
+            )}
           </a>
           <a href="#kits" className="nav-cta">Choose Your Kit</a>
         </div>
