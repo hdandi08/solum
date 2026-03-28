@@ -21,7 +21,7 @@ const ORIGINS = [
     flag: '🇬🇧',
     country: 'United Kingdom',
     product: 'Body Wash · Body Lotion',
-    why: 'Cosmetics manufactured to UK Responsible Person standard. Amino acid surfactants formulated by Cosmiko.',
+    why: 'Cosmetics manufactured to UK Responsible Person standard. Amino acid surfactants, sulphate-free and pH balanced.',
   },
   {
     flag: '🇰🇷',
