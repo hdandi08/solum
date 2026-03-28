@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 
 const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', end: true },
+  { to: '/admin/orders', label: 'Orders' },
   { to: '/admin/inventory', label: 'Inventory' },
   { to: '/admin/replenishment', label: 'Replenishment' },
   { to: '/admin/projections', label: 'Projections' },

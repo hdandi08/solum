@@ -7,6 +7,7 @@ import InventoryPage from './pages/InventoryPage'
 import ReplenishmentPage from './pages/ReplenishmentPage'
 import ProjectionsPage from './pages/ProjectionsPage'
 import EventsPage from './pages/EventsPage'
+import OrdersPage from './pages/OrdersPage'
 import './admin.css'
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
@@ -39,6 +40,7 @@ export default function AdminApp() {
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="replenishment" element={<ReplenishmentPage />} />
         <Route path="projections" element={<ProjectionsPage />} />
+        <Route path="orders" element={<OrdersPage />} />
         <Route path="events" element={<EventsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin" replace />} />
