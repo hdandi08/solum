@@ -21,7 +21,7 @@ const ORIGINS = [
     flag: '🇬🇧',
     country: 'United Kingdom',
     product: 'Body Wash · Body Lotion',
-    why: 'Cosmetics manufactured to UK Responsible Person standard. Amino acid surfactants, sulphate-free and pH balanced.',
+    why: 'Formulated and manufactured to UK Cosmetics Regulation standards — independently safety assessed, GMP certified, UK Responsible Person registered.',
   },
   {
     flag: '🇰🇷',
