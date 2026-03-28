@@ -2,11 +2,41 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const PAGE_SIZE = 25
-const ROYAL_MAIL_URL = 'https://www.royalmail.com/track-your-item#/tracking-results/'
+
+const CARRIERS = [
+  { value: 'royal-mail',  label: 'Royal Mail',   url: (t) => `https://www.royalmail.com/track-your-item#/tracking-results/${t}` },
+  { value: 'evri',        label: 'Evri',          url: (t) => `https://www.evri.com/track-a-parcel/results?trackingNumber=${t}` },
+  { value: 'dpd',         label: 'DPD',           url: (t) => `https://www.dpd.co.uk/service/parcel-tracking/?parcelNumber=${t}` },
+  { value: 'dhl',         label: 'DHL',           url: (t) => `https://www.dhl.com/en/express/tracking.html?AWB=${t}` },
+  { value: 'parcelforce', label: 'ParcelForce',   url: (t) => `https://www.parcelforce.com/track-trace?trackNum=${t}` },
+  { value: 'other',       label: 'Other',         url: null },
+]
+
+const BOX_PRODUCT = {
+  first_box: 'box-first-kit',
+  refill:    'box-monthly-refill',
+}
+
+function getCarrier(value) {
+  return CARRIERS.find(c => c.value === value) || CARRIERS[0]
+}
+
+function TrackingLink({ carrier, tracking }) {
+  const c = getCarrier(carrier)
+  const url = c.url ? c.url(tracking) : null
+  return url ? (
+    <a href={url} target="_blank" rel="noopener noreferrer"
+      style={{ fontSize: '12px', color: 'var(--sky)', fontFamily: 'monospace' }}>
+      {tracking}
+    </a>
+  ) : (
+    <span style={{ fontSize: '12px', fontFamily: 'monospace', color: 'var(--bone-dim)' }}>{tracking}</span>
+  )
+}
 
 function DispatchBadge({ status }) {
-  const map = { pending: 'low', dispatched: 'ok', delivered: 'ok' }
-  return <span className={`risk-badge ${map[status] || 'no-data'}`}>{status}</span>
+  const cls = { pending: 'low', dispatched: 'ok', delivered: 'ok' }
+  return <span className={`risk-badge ${cls[status] || 'no-data'}`}>{status}</span>
 }
 
 function OrderTypeBadge({ type }) {
@@ -17,37 +47,35 @@ function OrderTypeBadge({ type }) {
   )
 }
 
-function formatDateTime(d) {
+function fmt(d) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [page, setPage] = useState(0)
-  const [total, setTotal] = useState(0)
+  const [orders, setOrders]           = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [error, setError]             = useState('')
+  const [page, setPage]               = useState(0)
+  const [total, setTotal]             = useState(0)
   const [statusFilter, setStatusFilter] = useState('')
 
-  // Tracking input state per order
-  const [trackingInputs, setTrackingInputs] = useState({})
-  const [saving, setSaving] = useState(null)
+  // Per-row dispatch inputs
+  const [inputs, setInputs] = useState({}) // { [orderId]: { tracking, carrier } }
+  const [saving, setSaving]     = useState(null)
   const [saveError, setSaveError] = useState('')
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      let query = supabase
+      let q = supabase
         .from('orders')
         .select('*, customers(first_name, last_name, email)', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-
-      if (statusFilter) query = query.eq('dispatch_status', statusFilter)
-
-      const { data, count, error: err } = await query
+      if (statusFilter) q = q.eq('dispatch_status', statusFilter)
+      const { data, count, error: err } = await q
       if (err) throw err
       setOrders(data || [])
       setTotal(count || 0)
@@ -60,8 +88,37 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
-  const handleDispatch = async (order) => {
-    const tracking = trackingInputs[order.id]?.trim() || null
+  function getInput(orderId) {
+    return inputs[orderId] || { tracking: '', carrier: 'royal-mail' }
+  }
+
+  function setInput(orderId, key, val) {
+    setInputs(p => ({ ...p, [orderId]: { ...getInput(orderId), [key]: val } }))
+  }
+
+  async function deductBox(orderType) {
+    const productId = BOX_PRODUCT[orderType]
+    if (!productId) return
+    const { data: product } = await supabase
+      .from('products')
+      .select('current_stock')
+      .eq('id', productId)
+      .single()
+    if (!product) return
+    const newStock = Math.max(0, (product.current_stock ?? 0) - 1)
+    await supabase.from('products').update({ current_stock: newStock }).eq('id', productId)
+    await supabase.from('inventory_transactions').insert({
+      product_id: productId,
+      transaction_type: 'outbound_order',
+      quantity: -1,
+      reference_type: 'dispatch',
+      notes: `Dispatched ${orderType === 'first_box' ? 'first kit box' : 'refill mailer'}`,
+      created_by: 'admin',
+    })
+  }
+
+  async function handleDispatch(order) {
+    const { tracking, carrier } = getInput(order.id)
     setSaving(order.id)
     setSaveError('')
     try {
@@ -69,11 +126,13 @@ export default function OrdersPage() {
         .from('orders')
         .update({
           dispatch_status: 'dispatched',
-          tracking_number: tracking,
+          tracking_number: tracking.trim() || null,
+          carrier: carrier,
           dispatched_at: new Date().toISOString(),
         })
         .eq('id', order.id)
       if (err) throw err
+      await deductBox(order.order_type)
       await fetchOrders()
     } catch (err) {
       setSaveError(err.message)
@@ -82,7 +141,7 @@ export default function OrdersPage() {
     }
   }
 
-  const handleMarkDelivered = async (orderId) => {
+  async function handleMarkDelivered(orderId) {
     setSaving(orderId)
     setSaveError('')
     try {
@@ -105,11 +164,11 @@ export default function OrdersPage() {
     <div>
       <h1 className="page-title">Orders</h1>
 
-      {/* Filters */}
       <div className="filters-bar" style={{ marginBottom: '24px' }}>
         <div className="form-group">
-          <label className="form-label">Dispatch Status</label>
-          <select className="select" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(0) }}>
+          <label className="form-label">Status</label>
+          <select className="select" value={statusFilter}
+            onChange={e => { setStatusFilter(e.target.value); setPage(0) }}>
             <option value="">All Orders</option>
             <option value="pending">Pending Dispatch</option>
             <option value="dispatched">Dispatched</option>
@@ -138,83 +197,98 @@ export default function OrdersPage() {
                     <th>Customer</th>
                     <th>Kit</th>
                     <th>Type</th>
-                    <th>Box</th>
+                    <th>Box #</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Tracking</th>
+                    <th>Carrier + Tracking</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.length === 0 ? (
                     <tr><td colSpan={9} className="no-data">No orders found.</td></tr>
-                  ) : orders.map(order => (
-                    <tr key={order.id}>
-                      <td style={{ fontSize: '13px', color: 'var(--bone-dim)', whiteSpace: 'nowrap' }}>
-                        {formatDateTime(order.created_at)}
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 500 }}>
-                          {[order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || '—'}
-                        </div>
-                        <div style={{ fontSize: '12px', color: 'var(--bone-dim)' }}>{order.customers?.email}</div>
-                      </td>
-                      <td style={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '13px' }}>
-                        {order.kit_id || '—'}
-                      </td>
-                      <td><OrderTypeBadge type={order.order_type} /></td>
-                      <td style={{ color: 'var(--bone-dim)', fontSize: '13px' }}>
-                        {order.box_number ?? '—'}
-                      </td>
-                      <td style={{ fontVariantNumeric: 'tabular-nums' }}>
-                        £{((order.amount_pence || 0) / 100).toFixed(2)}
-                      </td>
-                      <td><DispatchBadge status={order.dispatch_status} /></td>
-                      <td>
-                        {order.tracking_number ? (
-                          <a
-                            href={`${ROYAL_MAIL_URL}${order.tracking_number}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ fontSize: '12px', color: 'var(--sky)', fontFamily: 'monospace' }}
-                          >
-                            {order.tracking_number}
-                          </a>
-                        ) : order.dispatch_status === 'pending' ? (
-                          <input
-                            className="input"
-                            style={{ fontSize: '12px', padding: '6px 10px', width: '140px' }}
-                            placeholder="RM tracking..."
-                            value={trackingInputs[order.id] || ''}
-                            onChange={e => setTrackingInputs(p => ({ ...p, [order.id]: e.target.value }))}
-                          />
-                        ) : '—'}
-                      </td>
-                      <td style={{ whiteSpace: 'nowrap' }}>
-                        {order.dispatch_status === 'pending' && (
-                          <button
-                            className="btn btn-sm btn-primary"
-                            onClick={() => handleDispatch(order)}
-                            disabled={saving === order.id}
-                          >
-                            {saving === order.id ? '...' : 'Mark Dispatched'}
-                          </button>
-                        )}
-                        {order.dispatch_status === 'dispatched' && (
-                          <button
-                            className="btn btn-sm btn-secondary"
-                            onClick={() => handleMarkDelivered(order.id)}
-                            disabled={saving === order.id}
-                          >
-                            {saving === order.id ? '...' : 'Mark Delivered'}
-                          </button>
-                        )}
-                        {order.dispatch_status === 'delivered' && (
-                          <span style={{ fontSize: '12px', color: 'var(--bone-muted)' }}>Delivered {formatDateTime(order.dispatched_at)}</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  ) : orders.map(order => {
+                    const inp = getInput(order.id)
+                    return (
+                      <tr key={order.id}>
+                        <td style={{ fontSize: '13px', color: 'var(--bone-dim)', whiteSpace: 'nowrap' }}>
+                          {fmt(order.created_at)}
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 500 }}>
+                            {[order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || '—'}
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--bone-dim)' }}>{order.customers?.email}</div>
+                        </td>
+                        <td style={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '13px' }}>
+                          {order.kit_id || '—'}
+                        </td>
+                        <td><OrderTypeBadge type={order.order_type} /></td>
+                        <td style={{ color: 'var(--bone-dim)', fontSize: '13px' }}>{order.box_number ?? '—'}</td>
+                        <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                          £{((order.amount_pence || 0) / 100).toFixed(2)}
+                        </td>
+                        <td><DispatchBadge status={order.dispatch_status} /></td>
+                        <td>
+                          {order.dispatch_status === 'pending' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <select
+                                className="select"
+                                style={{ fontSize: '12px', padding: '5px 8px' }}
+                                value={inp.carrier}
+                                onChange={e => setInput(order.id, 'carrier', e.target.value)}
+                              >
+                                {CARRIERS.map(c => (
+                                  <option key={c.value} value={c.value}>{c.label}</option>
+                                ))}
+                              </select>
+                              <input
+                                className="input"
+                                style={{ fontSize: '12px', padding: '5px 8px', width: '140px' }}
+                                placeholder="Tracking number..."
+                                value={inp.tracking}
+                                onChange={e => setInput(order.id, 'tracking', e.target.value)}
+                              />
+                            </div>
+                          ) : order.tracking_number ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '11px', color: 'var(--bone-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {getCarrier(order.carrier).label}
+                              </span>
+                              <TrackingLink carrier={order.carrier} tracking={order.tracking_number} />
+                            </div>
+                          ) : (
+                            <span style={{ fontSize: '12px', color: 'var(--bone-muted)' }}>No tracking</span>
+                          )}
+                        </td>
+                        <td style={{ whiteSpace: 'nowrap' }}>
+                          {order.dispatch_status === 'pending' && (
+                            <button
+                              className="btn btn-sm btn-primary"
+                              onClick={() => handleDispatch(order)}
+                              disabled={saving === order.id}
+                            >
+                              {saving === order.id ? '...' : 'Dispatch'}
+                            </button>
+                          )}
+                          {order.dispatch_status === 'dispatched' && (
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => handleMarkDelivered(order.id)}
+                              disabled={saving === order.id}
+                            >
+                              {saving === order.id ? '...' : 'Mark Delivered'}
+                            </button>
+                          )}
+                          {order.dispatch_status === 'delivered' && (
+                            <span style={{ fontSize: '12px', color: 'var(--bone-muted)' }}>
+                              {fmt(order.dispatched_at)}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
