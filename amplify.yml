@@ -18,15 +18,6 @@ frontend:
     paths:
       - web/node_modules/**/*
   customRules:
-    - source: /admin
-      target: /admin/
-      status: '301'
-    - source: /admin/
-      target: /admin/index.html
-      status: '200'
-    - source: /admin/<*>
-      target: /admin/index.html
-      status: '200'
-    - source: '</^(?!admin)[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>'
+    - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>'
       target: /index.html
       status: '200'
