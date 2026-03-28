@@ -50,42 +50,26 @@ export default function ReplenishmentPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession()
 
-      // Fetch supplier orders
-      const [ordersRes, dashRes] = await Promise.all([
-        fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-supplier-orders`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`,
-              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({ action: 'list' }),
-          }
-        ),
-        fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`,
-              'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({}),
-          }
-        ),
-      ])
+      // Fetch supplier orders directly from Supabase
+      const { data: ordersData } = await supabase
+        .from('supplier_orders')
+        .select('*, products(name, sku)')
+        .order('order_date', { ascending: false })
+      setOrders((ordersData || []).map(o => ({ ...o, product_name: o.products?.name || o.product_id })))
 
-      if (ordersRes.ok) {
-        const ordersJson = await ordersRes.json()
-        setOrders(ordersJson.orders || ordersJson || [])
-      } else {
-        // Graceful degradation: show empty if endpoint not deployed yet
-        setOrders([])
-      }
-
+      // Fetch products list from admin-dashboard
+      const dashRes = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({}),
+        }
+      )
       if (dashRes.ok) {
         const dashJson = await dashRes.json()
         setProducts(dashJson.products || [])
