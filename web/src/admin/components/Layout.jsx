@@ -2,11 +2,11 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/inventory', label: 'Inventory' },
-  { to: '/replenishment', label: 'Replenishment' },
-  { to: '/projections', label: 'Projections' },
-  { to: '/events', label: 'Events' },
+  { to: '/admin', label: 'Dashboard', end: true },
+  { to: '/admin/inventory', label: 'Inventory' },
+  { to: '/admin/replenishment', label: 'Replenishment' },
+  { to: '/admin/projections', label: 'Projections' },
+  { to: '/admin/events', label: 'Events' },
 ]
 
 export default function Layout({ session }) {

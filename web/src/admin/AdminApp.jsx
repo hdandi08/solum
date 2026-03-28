@@ -42,6 +42,7 @@ export default function AdminApp() {
         <Route path="events" element={<EventsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin" replace />} />
+
     </Routes>
   )
 }
