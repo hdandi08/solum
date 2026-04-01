@@ -1,86 +1,58 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Layout from './components/Layout'
-import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import InventoryPage from './pages/InventoryPage'
 import ReplenishmentPage from './pages/ReplenishmentPage'
 import ProjectionsPage from './pages/ProjectionsPage'
 import EventsPage from './pages/EventsPage'
+import OrdersPage from './pages/OrdersPage'
+import CostsPage from './pages/CostsPage'
+import LoginPage from './pages/LoginPage'
+import './admin.css'
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
-
-function ProtectedRoute({ session, children }) {
-  const location = useLocation()
-
-  if (!session) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-
-  const email = session.user?.email
-  if (!ADMIN_EMAILS.includes(email)) {
-    return (
-      <div className="access-denied">
-        <h1>ACCESS DENIED</h1>
-        <p>Your account ({email}) is not authorised to access this panel.</p>
-        <button
-          className="btn btn-secondary"
-          style={{ marginTop: '8px' }}
-          onClick={() => supabase.auth.signOut()}
-        >
-          Sign Out
-        </button>
-      </div>
-    )
-  }
-
-  return children
-}
 
 export default function App() {
   const [session, setSession] = useState(undefined)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== 'INITIAL_SESSION') setSession(session)
     })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
     return () => subscription.unsubscribe()
   }, [])
 
-  // Still loading initial session
-  if (session === undefined) {
+  if (session === undefined) return null
+
+  const isAdmin = session && ADMIN_EMAILS.includes(session.user?.email)
+
+  if (!isAdmin) {
     return (
-      <div className="loading-state">
-        <div className="loading-spinner" />
-        Loading...
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="*" element={<LoginPage />} />
+        </Routes>
+      </BrowserRouter>
     )
   }
 
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage session={session} />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute session={session}>
-            <Layout session={session} />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<DashboardPage />} />
-        <Route path="inventory" element={<InventoryPage />} />
-        <Route path="replenishment" element={<ReplenishmentPage />} />
-        <Route path="projections" element={<ProjectionsPage />} />
-        <Route path="events" element={<EventsPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout session={session} />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="replenishment" element={<ReplenishmentPage />} />
+          <Route path="costs" element={<CostsPage />} />
+          <Route path="projections" element={<ProjectionsPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="events" element={<EventsPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
