@@ -7,6 +7,11 @@ const corsHeaders = {
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
 
+function toPence(pounds: number | null | undefined): number {
+  if (pounds == null || isNaN(pounds)) return 0
+  return Math.round(pounds * 100)
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -30,7 +35,18 @@ Deno.serve(async (req) => {
     )
 
     const body = await req.json()
-    const { supplier_name, product_id, quantity, unit_cost_pence, order_date, expected_delivery_date, notes } = body
+    const {
+      supplier_name,
+      product_id,
+      quantity,
+      unit_cost,        // pounds (float)
+      vat,              // total VAT on order, pounds (float), optional
+      customs_duty,     // total customs duty, pounds (float), optional
+      shipping_cost,    // total shipping/freight, pounds (float), optional
+      order_date,
+      expected_delivery_date,
+      notes,
+    } = body
 
     if (!supplier_name || !product_id || !quantity || quantity <= 0) {
       return new Response(JSON.stringify({ error: 'supplier_name, product_id, and quantity are required' }), {
@@ -44,11 +60,14 @@ Deno.serve(async (req) => {
         supplier_name,
         product_id,
         quantity,
-        unit_cost_pence: unit_cost_pence ?? 0,
-        order_date: order_date ?? new Date().toISOString().split('T')[0],
-        expected_delivery_date: expected_delivery_date ?? null,
-        status: 'pending',
-        notes: notes ?? null,
+        unit_cost_pence:           toPence(unit_cost),
+        vat_pence:                 toPence(vat),
+        customs_duty_pence:        toPence(customs_duty),
+        shipping_cost_pence:       toPence(shipping_cost),
+        order_date:                order_date ?? new Date().toISOString().split('T')[0],
+        expected_delivery_date:    expected_delivery_date ?? null,
+        status:                    'pending',
+        notes:                     notes ?? null,
       })
       .select()
       .single()

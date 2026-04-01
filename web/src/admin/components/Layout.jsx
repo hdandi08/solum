@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/admin/orders', label: 'Orders' },
   { to: '/admin/inventory', label: 'Inventory' },
   { to: '/admin/replenishment', label: 'Replenishment' },
+  { to: '/admin/costs', label: 'Costs' },
   { to: '/admin/projections', label: 'Projections' },
   { to: '/admin/events', label: 'Events' },
 ]

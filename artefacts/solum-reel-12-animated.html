@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SOLUM — Reel 10 — Rich Men Don't Smell Better Because of Their Cologne</title>
+<title>SOLUM — Reel 12 — Dead Skin Building Up On Your Back</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,68 +33,86 @@
   .pos-centre { top: 50%; left: 50%; transform: translate(-50%, -50%) translateY(16px); text-align: center; width: 78%; }
   .pos-centre.visible { transform: translate(-50%, -50%) translateY(0); }
 
-  .t-hook { font-family: 'Bebas Neue', sans-serif; font-size: 80px; letter-spacing: 0.04em; line-height: 0.90; color: var(--bone); }
+  .t-hook { font-family: 'Bebas Neue', sans-serif; font-size: 78px; letter-spacing: 0.04em; line-height: 0.90; color: var(--bone); }
   .t-hook .accent { color: var(--sky-blue); }
-  .t-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sky-blue); display: block; margin-bottom: 16px; }
   .t-rule { width: 40px; height: 3px; background: var(--steel-blue); margin: 16px auto; }
   .t-cta-wordmark { font-family: 'Bebas Neue', sans-serif; font-size: 80px; letter-spacing: 0.15em; color: var(--bone); display: block; }
   .t-cta-sub { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sky-blue); display: block; margin-top: 8px; }
   .t-cta-hero { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.06em; line-height: 0.95; color: var(--bone); display: block; margin-top: 6px; }
   .t-cta-url { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel-blue); display: block; margin-top: 12px; }
-  .t-cta-tagline { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 18px; letter-spacing: 0.06em; color: var(--bone); opacity: 0.7; display: block; margin-top: 8px; }
+  .t-cta-tagline { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 18px; letter-spacing: 0.06em; color: var(--bone); opacity: 0.70; display: block; margin-top: 8px; }
 
-  /* ── S3 — What clean skin actually does ── */
-  #s3 .txt { text-align: left; }
+  /* ── S3 — accumulation list (left-aligned, evidence feel) ── */
+  #s3 .list-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 28px 0 32px;
+    z-index: 5;
+  }
 
-  .s3-item {
-    display: flex; flex-direction: column; gap: 4px;
-    padding: 13px 0; border-bottom: 1px solid rgba(46,109,164,0.15);
-    opacity: 0; transform: translateY(10px);
+  #s3 .acc-list {
+    width: 78%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .acc-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(46,109,164,0.15);
+    opacity: 0;
+    transform: translateY(10px);
     transition: opacity 0.45s ease, transform 0.45s ease;
   }
-  .s3-item:last-child { border-bottom: none; }
-  .s3-item-1 { transition-delay: 0s; }
-  .s3-item-2 { transition-delay: 1.5s; }
-  .s3-item-3 { transition-delay: 3.0s; }
-  .s3-item-4 { transition-delay: 4.6s; }
-  #s3 .txt.visible .s3-item { opacity: 1; transform: translateY(0); }
+  .acc-item:last-child { border-bottom: none; }
+  .acc-item-1 { transition-delay: 0.0s; }
+  .acc-item-2 { transition-delay: 1.6s; }
+  .acc-item-3 { transition-delay: 3.2s; }
+  .acc-item-4 { transition-delay: 4.8s; }
+  #s3.items-visible .acc-item { opacity: 1; transform: translateY(0); }
 
-  .s3-trigger {
-    font-family: 'Bebas Neue', sans-serif; font-size: 36px;
-    letter-spacing: 0.04em; line-height: 1; color: var(--bone);
-  }
-  .s3-effect {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
-    font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--sky-blue);
-  }
+  .acc-trigger { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; line-height: 1; color: var(--bone); }
+  .acc-effect { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sky-blue); }
 
-  /* Last item — the payoff — different treatment */
-  .s3-item-4 .s3-trigger { font-size: 30px; color: var(--bone); opacity: 0.5; }
-  .s3-item-4 .s3-effect { color: var(--bone); font-size: 20px; font-weight: 700; opacity: 0.9; letter-spacing: 0.06em; text-transform: none; }
+  /* Payoff item */
+  .acc-item-4 .acc-trigger { font-size: 28px; color: var(--bone); opacity: 0.50; }
+  .acc-item-4 .acc-effect { color: var(--bone); font-size: 20px; font-weight: 700; opacity: 0.90; text-transform: none; letter-spacing: 0.04em; }
 
-  /* ── S4 staggered ── */
+  /* ── S4 staggered statement ── */
   #s4 .s4-line2 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.04em; line-height: 0.90; color: var(--sky-blue); opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s; margin-top: 18px; display: block; }
   #s4 .txt.visible .s4-line2 { opacity: 1; transform: translateY(0); }
 
-  /* ── PROGRESS / OVERLAYS ── */
+  /* ── PROGRESS BAR ── */
   #progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--steel-blue); width: 0%; z-index: 10; transition: width 0.1s linear; }
+
+  /* ── PLAY OVERLAY ── */
   #play-overlay { position: absolute; inset: 0; background: rgba(8,9,11,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; gap: 16px; cursor: pointer; }
   #play-overlay:hover { background: rgba(8,9,11,0.75); }
+
+  /* ── COUNTDOWN OVERLAY ── */
   #countdown-overlay { position: absolute; inset: 0; background: rgba(8,9,11,0.92); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 30; gap: 10px; }
   #countdown-overlay.active { display: flex; }
   #countdown-number { font-family: 'Bebas Neue', sans-serif; font-size: 120px; letter-spacing: 0.04em; color: var(--bone); line-height: 1; }
   #countdown-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--sky-blue); opacity: 0.7; }
+
   .play-icon { width: 64px; height: 64px; border: 2px solid var(--bone); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .play-icon::after { content: ''; border-style: solid; border-width: 12px 0 12px 22px; border-color: transparent transparent transparent var(--bone); margin-left: 4px; }
   .play-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--bone); opacity: 0.7; }
   .play-duration { font-family: 'Barlow Condensed', sans-serif; font-weight: 300; font-size: 12px; letter-spacing: 0.12em; color: var(--bone); opacity: 0.35; }
+
   .controls { display: flex; gap: 10px; padding: 14px 0 0; align-items: center; }
   .btn { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; padding: 9px 18px; border: none; cursor: pointer; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.75; }
   .btn-play { background: var(--bone); color: var(--black); }
   .btn-record { background: var(--steel-blue); color: #fff; }
   .btn-restart { background: transparent; color: var(--bone); border: 1px solid rgba(240,236,226,0.2); opacity: 0.6; }
+
   .instructions { max-width: 405px; padding: 16px 0 0; display: flex; flex-direction: column; gap: 8px; }
   .instr-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--sky-blue); opacity: 0.7; }
   .instr-steps { font-family: 'Barlow Condensed', sans-serif; font-weight: 300; font-size: 13px; line-height: 1.7; color: var(--bone); opacity: 0.5; }
@@ -109,39 +127,41 @@
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="100">
-      <div class="t-hook" style="font-size:68px; line-height:0.92;">RICH MEN<br>DON'T SMELL<br>BETTER<br>BECAUSE OF<br><span class="accent">THEIR COLOGNE.</span></div>
+      <div class="t-hook">DEAD SKIN<br>IS BUILDING<br>UP ON YOUR<br>BACK<br><span class="accent">RIGHT NOW.</span></div>
     </div>
   </div>
 
-  <!-- S2 — The reveal setup -->
+  <!-- S2 — Setup -->
   <div class="scene" id="s2">
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="150">
-      <div class="t-hook" style="font-size:80px; line-height:0.92;">IT'S THE<br>SKIN<br><span class="accent">UNDERNEATH.</span></div>
+      <div class="t-hook" style="font-size:64px; line-height:0.92;">YOU SHOWER<br>EVERY DAY.<br>YOUR BACK<br>DOESN'T<br>BENEFIT.</div>
     </div>
   </div>
 
-  <!-- S3 — What clean skin actually does -->
+  <!-- S3 — Accumulation reveal -->
   <div class="scene" id="s3">
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
-    <div class="txt pos-centre" data-delay="200">
-      <div class="s3-item s3-item-1">
-        <span class="s3-trigger">Clean skin base</span>
-        <span class="s3-effect">Fragrance lasts 3× longer</span>
-      </div>
-      <div class="s3-item s3-item-2">
-        <span class="s3-trigger">No body odour competing</span>
-        <span class="s3-effect">Scent stays clean and pure</span>
-      </div>
-      <div class="s3-item s3-item-3">
-        <span class="s3-trigger">Hydrated, maintained skin</span>
-        <span class="s3-effect">Nothing to mask. Nothing to hide.</span>
-      </div>
-      <div class="s3-item s3-item-4">
-        <span class="s3-trigger">The difference isn't money.</span>
-        <span class="s3-effect">It's a routine most men don't have.</span>
+    <div class="list-wrap">
+      <div class="acc-list">
+        <div class="acc-item acc-item-1">
+          <span class="acc-trigger">Dead skin cells</span>
+          <span class="acc-effect">Shed every 24 hours. Never cleared from your back.</span>
+        </div>
+        <div class="acc-item acc-item-2">
+          <span class="acc-trigger">Sebum — body oil</span>
+          <span class="acc-effect">Feeds bacteria. Builds up overnight.</span>
+        </div>
+        <div class="acc-item acc-item-3">
+          <span class="acc-trigger">Bacteria + sweat residue</span>
+          <span class="acc-effect">Odour. Breakouts. Inflammation.</span>
+        </div>
+        <div class="acc-item acc-item-4">
+          <span class="acc-trigger">It's not poor hygiene.</span>
+          <span class="acc-effect">Nobody ever gave you a tool that reaches it.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -151,8 +171,8 @@
     <div class="brand-rule"></div>
     <div class="scene-wordmark">SOLUM</div>
     <div class="txt pos-centre" data-delay="150">
-      <div class="t-hook" style="font-size:66px; line-height:0.92;">ANYONE CAN<br>SMELL LIKE THAT.</div>
-      <div class="s4-line2">MOST MEN JUST<br>DON'T KNOW HOW.</div>
+      <div class="t-hook" style="font-size:62px; line-height:0.92;">YOUR BACK<br>HAS NEVER<br>BEEN PROPERLY<br>CLEANED.</div>
+      <div class="s4-line2">UNTIL NOW.</div>
     </div>
   </div>
 
@@ -163,8 +183,8 @@
     <div class="txt pos-centre" data-delay="300">
       <span class="t-cta-wordmark">SOLUM</span>
       <div class="t-rule"></div>
-      <span class="t-cta-sub">Men's Body Care System</span>
-      <span class="t-cta-hero">YOUR BODY.<br>DONE RIGHT.</span>
+      <span class="t-cta-sub">Back Scrub Cloth</span>
+      <span class="t-cta-hero">THE ONLY TOOL<br>THAT REACHES IT.</span>
       <span class="t-cta-url">COMING SOON · BYSOLUM.COM</span>
       <span class="t-cta-tagline">Your body. Done right.</span>
     </div>
@@ -209,12 +229,22 @@ const TOTAL = SCENES.reduce((a, s) => a + s.duration, 0);
 let currentScene = -1, timer = null, startTime = null, rafId = null, running = false;
 
 function showScene(index) {
-  SCENES.forEach(s => { const el = document.getElementById(s.id); el.classList.remove('active'); el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible')); });
+  SCENES.forEach(s => {
+    const el = document.getElementById(s.id);
+    el.classList.remove('active', 'items-visible');
+    el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible'));
+  });
   if (index >= SCENES.length) { running = false; return; }
   currentScene = index;
   const el = document.getElementById(SCENES[index].id);
   el.classList.add('active');
-  el.querySelectorAll('.txt').forEach((t, i) => { const delay = parseInt(t.dataset.delay || 0) + i * 120; setTimeout(() => t.classList.add('visible'), delay); });
+  el.querySelectorAll('.txt').forEach((t, i) => {
+    const delay = parseInt(t.dataset.delay || 0) + i * 120;
+    setTimeout(() => t.classList.add('visible'), delay);
+  });
+  if (SCENES[index].id === 's3') {
+    setTimeout(() => el.classList.add('items-visible'), 200);
+  }
   timer = setTimeout(() => showScene(index + 1), SCENES[index].duration);
 }
 
@@ -227,11 +257,17 @@ function updateProgress() {
 
 function startReel() {
   const overlay = document.getElementById('play-overlay');
-  const icon = overlay.querySelector('.play-icon'); const label = overlay.querySelector('.play-label'); const dur = overlay.querySelector('.play-duration');
+  const icon = overlay.querySelector('.play-icon');
+  const label = overlay.querySelector('.play-label');
+  const dur = overlay.querySelector('.play-duration');
   icon.style.display = 'none'; dur.style.display = 'none';
   label.style.fontSize = '18px'; label.style.letterSpacing = '0.1em';
   let count = 10; label.textContent = 'STARTING IN ' + count + '…';
-  const tick = setInterval(() => { count--; if (count > 0) { label.textContent = 'STARTING IN ' + count + '…'; } else { clearInterval(tick); overlay.style.display = 'none'; restartReel(); } }, 1000);
+  const tick = setInterval(() => {
+    count--;
+    if (count > 0) { label.textContent = 'STARTING IN ' + count + '…'; }
+    else { clearInterval(tick); overlay.style.display = 'none'; restartReel(); }
+  }, 1000);
 }
 
 function restartReel() {
@@ -242,7 +278,8 @@ function restartReel() {
 
 function toggleRecordMode() {
   document.body.classList.toggle('record-mode');
-  const btn = document.querySelector('.btn-record'); const stage = document.getElementById('stage');
+  const btn = document.querySelector('.btn-record');
+  const stage = document.getElementById('stage');
   if (document.body.classList.contains('record-mode')) {
     btn.textContent = '✕ Exit Record Mode';
     document.getElementById('play-overlay').style.display = 'none';
@@ -256,14 +293,23 @@ function toggleRecordMode() {
 }
 
 function startCountdown() {
-  SCENES.forEach(s => { const el = document.getElementById(s.id); el.classList.remove('active'); el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible')); });
+  SCENES.forEach(s => {
+    const el = document.getElementById(s.id);
+    el.classList.remove('active', 'items-visible');
+    el.querySelectorAll('.txt').forEach(t => t.classList.remove('visible'));
+  });
   document.getElementById('progress-bar').style.width = '0%';
-  const overlay = document.getElementById('countdown-overlay'); const num = document.getElementById('countdown-number'); const label = document.getElementById('countdown-label');
-  overlay.classList.add('active'); let count = 30; num.textContent = count; label.textContent = 'Start QuickTime recording now';
+  const overlay = document.getElementById('countdown-overlay');
+  const num = document.getElementById('countdown-number');
+  const label = document.getElementById('countdown-label');
+  overlay.classList.add('active');
+  let count = 30; num.textContent = count;
+  label.textContent = 'Start QuickTime recording now';
   const tick = setInterval(() => {
     count--;
     if (count === 10) label.textContent = 'Hit Record now ↑';
-    if (count > 0) { num.textContent = count; } else {
+    if (count > 0) { num.textContent = count; }
+    else {
       clearInterval(tick); num.textContent = '▶'; label.textContent = 'Recording…';
       setTimeout(() => { overlay.classList.remove('active'); restartReel(); }, 400);
     }

@@ -8,6 +8,7 @@ import ReplenishmentPage from './pages/ReplenishmentPage'
 import ProjectionsPage from './pages/ProjectionsPage'
 import EventsPage from './pages/EventsPage'
 import OrdersPage from './pages/OrdersPage'
+import CostsPage from './pages/CostsPage'
 import './admin.css'
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
@@ -23,10 +24,8 @@ export default function AdminApp() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Still loading
   if (session === undefined) return null
 
-  // Not logged in or not whitelisted — redirect silently to home
   const email = session?.user?.email
   if (!session || !ADMIN_EMAILS.includes(email)) {
     window.location.replace('/')
@@ -39,12 +38,12 @@ export default function AdminApp() {
         <Route index element={<DashboardPage />} />
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="replenishment" element={<ReplenishmentPage />} />
+        <Route path="costs" element={<CostsPage />} />
         <Route path="projections" element={<ProjectionsPage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="events" element={<EventsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin" replace />} />
-
     </Routes>
   )
 }

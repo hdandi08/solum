@@ -14,7 +14,6 @@
   --blue:#2e6da4;  --blit:#4a8fc7; --bdim:#1a4a78;
   --line:rgba(240,236,226,0.055);
   --lineb:rgba(46,109,164,0.18);
-  --glit:#3aaa68;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -240,7 +239,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .proof-inner{max-width:1400px;margin:0 auto;}
 .proof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);margin-top:64px;}
 .proof-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:16px;}
-.proof-stars{display:flex;gap:4px;color:var(--blue);font-size:14px;letter-spacing:2px;}
+.proof-stars{display:flex;gap:4px;color:#C9A84C;font-size:14px;letter-spacing:2px;}
 .proof-quote{font-size:14px;font-weight:300;color:var(--mist);line-height:1.7;font-style:italic;}
 .proof-author{display:flex;flex-direction:column;gap:3px;margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
 .proof-name{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
@@ -282,6 +281,14 @@ footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48p
 .footer-links a{font-size:12px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
 .footer-links a:hover{color:var(--bone);}
 .footer-bottom{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;font-size:10px;color:var(--stone);letter-spacing:2px;}
+
+/* ────────── RITUAL TABS ────────── */
+.ritual-tabs{display:flex;gap:0;margin-bottom:32px;border:1px solid var(--lineb);}
+.ritual-tab-btn{flex:1;padding:12px 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:var(--stone);background:none;border:none;cursor:pointer;transition:color .2s,background .2s;}
+.ritual-tab-btn+.ritual-tab-btn{border-left:1px solid var(--lineb);}
+.ritual-tab-btn.active{color:var(--bone);background:rgba(46,109,164,0.1);}
+.ritual-steps-panel{display:none;flex-direction:column;gap:0;}
+.ritual-steps-panel.active{display:flex;}
 
 /* ────────── REVEAL ANIMATIONS ────────── */
 .reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
@@ -662,61 +669,100 @@ footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48p
   <div class="ritual-inner">
     <div class="reveal-left">
       <div class="sec-tag">The Ritual</div>
-      <h2 class="sec-title">10 Minutes.<br>Every Day.</h2>
-      <p class="sec-body" style="margin-bottom:40px;">
-        All five steps happen in the shower you're already taking.
-        The sequence is not arbitrary — each step builds on the last.
-        Follow the numbers.
-      </p>
-      <div class="ritual-steps">
-        <div class="ritual-step active" data-step="1" data-num="01" data-name="Body Wash" data-time="1 min · Daily" data-zone="Full Body">
+      <h2 class="sec-title" id="ritualTitle">10 Minutes.<br>Every Day.</h2>
+      <p class="sec-body" id="ritualBody" style="margin-bottom:32px;">All five steps happen in the shower you're already taking. The sequence is not arbitrary — each step builds on the last. Follow the numbers.</p>
+      <div class="ritual-tabs">
+        <button class="ritual-tab-btn active" data-ritual="daily">Daily · 10 min</button>
+        <button class="ritual-tab-btn" data-ritual="weekly">Weekly Deep · 22 min</button>
+      </div>
+
+      <!-- DAILY -->
+      <div class="ritual-steps-panel active" id="dailySteps">
+        <div class="ritual-step active" data-num="04" data-name="Scalp Massage" data-time="2-3 min · Daily" data-zone="Scalp">
+          <div class="step-num">04</div>
+          <div class="step-info">
+            <div class="step-title">Scalp Massage</div>
+            <div class="step-time">2–3 Minutes · Daily · Scalp</div>
+            <div class="step-desc">Silicone pins. Small firm circles from hairline to back. Stimulates circulation. Distributes product.</div>
+          </div>
+        </div>
+        <div class="ritual-step" data-num="01" data-name="Body Wash" data-time="1 min · Daily" data-zone="Full Body">
           <div class="step-num">01</div>
           <div class="step-info">
             <div class="step-title">Amino Acid Body Wash</div>
             <div class="step-time">1 Minute · Daily · Full Body</div>
-            <div class="step-desc">Apply from neck to feet. Let the amino acids work. No stripping. No residue.</div>
+            <div class="step-desc">Apply from neck to feet. Amino acid surfactants lift dirt without stripping natural oils.</div>
           </div>
         </div>
-        <div class="ritual-step" data-step="2" data-num="02" data-name="Exfoliate" data-time="2 min · Daily" data-zone="Arms + Legs + Back + Torso">
+        <div class="ritual-step" data-num="02" data-name="Exfoliating Mitt" data-time="2 min · Daily" data-zone="Arms + Torso + Legs">
           <div class="step-num">02</div>
           <div class="step-info">
-            <div class="step-title">Daily Body Scrub</div>
-            <div class="step-time">1 Minute · 3× Per Week · Body</div>
-            <div class="step-desc">Damp skin. Circular motion. Arms, legs, torso. You will see years of buildup on first use.</div>
+            <div class="step-title">Exfoliating Mitt</div>
+            <div class="step-time">2 Minutes · Daily · Arms, Torso, Legs</div>
+            <div class="step-desc">Damp mitt, add body wash. Long circular strokes. Korean bathhouse technique. You will see buildup on first use.</div>
           </div>
         </div>
-        <div class="ritual-step" data-step="3" data-num="03" data-name="Back Scrub" data-time="1 min · Weekly" data-zone="Back">
+        <div class="ritual-step" data-num="03" data-name="Back Scrub" data-time="1 min · Daily" data-zone="Back">
           <div class="step-num">03</div>
           <div class="step-info">
             <div class="step-title">Back Scrub Cloth</div>
-            <div class="step-time">1 Minute · Weekly · Back</div>
-            <div class="step-desc">Both handles. Full 70cm reach. Your back has never been properly cleaned. This fixes that.</div>
+            <div class="step-time">1 Minute · Daily · Back</div>
+            <div class="step-desc">Both handles. Drape over shoulder. Saw back and forth — upper, mid, lower. The only tool that properly cleans the back.</div>
           </div>
         </div>
-        <div class="ritual-step" data-step="4" data-num="04" data-name="Scalp Massage" data-time="During wash · Daily" data-zone="Scalp">
-          <div class="step-num">04</div>
-          <div class="step-info">
-            <div class="step-title">Scalp Massage</div>
-            <div class="step-time">During Wash · Daily · Scalp</div>
-            <div class="step-desc">Silicone pins. Press and rotate. Stimulates circulation. Distributes product. 60 seconds.</div>
-          </div>
-        </div>
-        <div class="ritual-step" data-step="5" data-num="07" data-name="Body Lotion" data-time="Within 3 min · Daily" data-zone="Full Body">
+        <div class="ritual-step" data-num="07" data-name="Body Lotion" data-time="Within 3 min · Daily" data-zone="Full Body">
           <div class="step-num">07</div>
           <div class="step-info">
             <div class="step-title">Body Lotion — The 3 Minute Rule</div>
             <div class="step-time">Within 3 Minutes of Towelling · Daily</div>
-            <div class="step-desc">This window is when skin absorbs moisture most efficiently. 400ml. Full body. Every day. Non-negotiable.</div>
+            <div class="step-desc">Skin absorbs 70% more moisture while still warm. Two pumps. Press in, don't rub.</div>
           </div>
         </div>
       </div>
+
+      <!-- WEEKLY -->
+      <div class="ritual-steps-panel" id="weeklySteps">
+        <div class="ritual-step active" data-num="04" data-name="Deep Scalp" data-time="5 min · Weekly" data-zone="Scalp">
+          <div class="step-num">04</div>
+          <div class="step-info">
+            <div class="step-title">Deep Scalp Massage</div>
+            <div class="step-time">5 Minutes · Weekly · Scalp</div>
+            <div class="step-desc">More time, more pressure than daily. Full scalp coverage. Let the product work into follicles.</div>
+          </div>
+        </div>
+        <div class="ritual-step" data-num="05" data-name="Clay Mask" data-time="8-10 min · Weekly" data-zone="Head to Toe">
+          <div class="step-num">05</div>
+          <div class="step-info">
+            <div class="step-title">Rhassoul Clay Mask</div>
+            <div class="step-time">8–10 Minutes · Weekly · Head to Toe</div>
+            <div class="step-desc">Apply to damp skin. Leave 8–10 minutes. Atlas Mountain clay draws out what soap never reaches.</div>
+          </div>
+        </div>
+        <div class="ritual-step" data-num="08" data-name="Kese + Back Cloth" data-time="2 min · Weekly" data-zone="Full Body">
+          <div class="step-num">08</div>
+          <div class="step-info">
+            <div class="step-title">Kese Mitt + Back Cloth</div>
+            <div class="step-time">2 Minutes · Weekly · Full Body</div>
+            <div class="step-desc">Firm slow strokes top to bottom. Dead skin rolls off. The oldest body exfoliation tradition on earth.</div>
+          </div>
+        </div>
+        <div class="ritual-step" data-num="06" data-name="Argan Oil" data-time="Post-rinse · Weekly" data-zone="Full Body">
+          <div class="step-num">06</div>
+          <div class="step-info">
+            <div class="step-title">Argan Oil — Press, Don't Rub</div>
+            <div class="step-time">Post-Rinse · Weekly · Full Body</div>
+            <div class="step-desc">Towel lightly — stay damp. 10–15 drops pressed into skin. No lotion needed today.</div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="ritual-visual reveal">
       <div class="ritual-canvas" id="ritualCanvas">
-        <div class="ritual-big-num" id="ritualNum">01</div>
-        <div class="ritual-zone" id="ritualZone">FULL BODY</div>
-        <div class="ritual-step-name" id="ritualName">BODY WASH</div>
-        <div class="ritual-timer" id="ritualTime">1 MIN · DAILY</div>
+        <div class="ritual-big-num" id="ritualNum">04</div>
+        <div class="ritual-zone" id="ritualZone">SCALP</div>
+        <div class="ritual-step-name" id="ritualName">SCALP MASSAGE</div>
+        <div class="ritual-timer" id="ritualTime">2-3 MIN · DAILY</div>
       </div>
     </div>
   </div>
@@ -1130,28 +1176,60 @@ const obs = new IntersectionObserver((entries) => {
 },{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
 reveals.forEach(el=>obs.observe(el));
 
-// ── RITUAL STEP INTERACTION ──
-const steps = document.querySelectorAll('.ritual-step');
+// ── RITUAL TAB + STEP INTERACTION ──
 const ritualNum  = document.getElementById('ritualNum');
 const ritualName = document.getElementById('ritualName');
 const ritualTime = document.getElementById('ritualTime');
 const ritualZone = document.getElementById('ritualZone');
+const ritualTitleEl = document.getElementById('ritualTitle');
+const ritualBodyEl  = document.getElementById('ritualBody');
+
+const ritualMeta = {
+  daily:  { title:'10 Minutes.<br>Every Day.',   body:'All five steps happen in the shower you\'re already taking. The sequence is not arbitrary — each step builds on the last. Follow the numbers.' },
+  weekly: { title:'22 Minutes.<br>Once a Week.', body:'Replaces the daily ritual. Let the clay work for ten minutes, then exfoliate deeper than any daily scrub can reach. End with oil, not lotion.' }
+};
+
+let autoInterval;
 
 function setStep(s){
-  steps.forEach(x=>x.classList.remove('active'));
+  s.closest('.ritual-steps-panel').querySelectorAll('.ritual-step').forEach(x=>x.classList.remove('active'));
   s.classList.add('active');
   ritualNum.textContent  = s.dataset.num;
   ritualName.textContent = s.dataset.name.toUpperCase();
   ritualTime.textContent = s.dataset.time.toUpperCase();
   ritualZone.textContent = s.dataset.zone.toUpperCase();
 }
-steps.forEach(s=>s.addEventListener('click',()=>setStep(s)));
 
-let cur=0;
-setInterval(()=>{
-  cur=(cur+1)%steps.length;
-  setStep(steps[cur]);
-},3200);
+function startAutoAdvance(){
+  clearInterval(autoInterval);
+  const panel = document.querySelector('.ritual-steps-panel.active');
+  const panelSteps = panel.querySelectorAll('.ritual-step');
+  let cur = Array.from(panelSteps).findIndex(s=>s.classList.contains('active'));
+  autoInterval = setInterval(()=>{
+    cur = (cur+1) % panelSteps.length;
+    setStep(panelSteps[cur]);
+  },3200);
+}
+
+document.querySelectorAll('.ritual-tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.ritual-tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const ritual = btn.dataset.ritual;
+    document.querySelectorAll('.ritual-steps-panel').forEach(p=>p.classList.remove('active'));
+    const panel = document.getElementById(ritual+'Steps');
+    panel.classList.add('active');
+    ritualTitleEl.innerHTML = ritualMeta[ritual].title;
+    ritualBodyEl.textContent = ritualMeta[ritual].body;
+    setStep(panel.querySelector('.ritual-step'));
+    startAutoAdvance();
+  });
+});
+
+document.querySelectorAll('.ritual-step').forEach(s=>s.addEventListener('click',()=>{ setStep(s); startAutoAdvance(); }));
+
+setStep(document.querySelector('#dailySteps .ritual-step.active'));
+startAutoAdvance();
 
 // ── FAQ ──
 document.querySelectorAll('.faq-q').forEach(q=>{

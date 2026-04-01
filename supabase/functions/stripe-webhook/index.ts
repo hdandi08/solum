@@ -262,8 +262,8 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_session_id', session.id);
 
-        // Send confirmation email
-        if (email) {
+        // Send confirmation email — only on first processing, not on webhook retries
+        if (email && !existingOrder) {
           const orderRef = session.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef);
         }

@@ -7,10 +7,13 @@ import InventoryPage from './pages/InventoryPage'
 import ReplenishmentPage from './pages/ReplenishmentPage'
 import ProjectionsPage from './pages/ProjectionsPage'
 import EventsPage from './pages/EventsPage'
+import CostsPage from './pages/CostsPage'
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
+const DEV_BYPASS = import.meta.env.DEV
 
 function ProtectedRoute({ session, children }) {
+  if (DEV_BYPASS) return children
   const email = session?.user?.email
   if (!session || !ADMIN_EMAILS.includes(email)) {
     window.location.replace('/')
@@ -59,6 +62,7 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="replenishment" element={<ReplenishmentPage />} />
+        <Route path="costs" element={<CostsPage />} />
         <Route path="projections" element={<ProjectionsPage />} />
         <Route path="events" element={<EventsPage />} />
       </Route>

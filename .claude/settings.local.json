@@ -48,7 +48,15 @@
       "Bash(rm /Users/harshamahadeva/NewCo/solum/web/public/solum-tshirt.jpeg)",
       "Bash(supabase db:*)",
       "Bash(supabase secrets:*)",
-      "Bash(1:*)"
+      "Bash(1:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/harshamahadeva/NewCo/solum/**)",
+      "Bash(done)",
+      "Bash(open:*)",
+      "Bash(find /Users/harshamahadeva/NewCo/solum/docs -type f -name *.md)",
+      "Bash(supabase projects:*)",
+      "Bash(xargs sed:*)"
     ]
   }
 }

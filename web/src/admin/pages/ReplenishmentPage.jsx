@@ -34,8 +34,11 @@ export default function ReplenishmentPage() {
   const [orderForm, setOrderForm] = useState({
     supplier_name: '',
     product_id: '',
-    quantity_ordered: '',
+    quantity: '',
     unit_cost: '',
+    vat: '',
+    customs_duty: '',
+    shipping_cost: '',
     order_date: todayISO(),
     expected_delivery_date: '',
     notes: '',
@@ -136,8 +139,11 @@ export default function ReplenishmentPage() {
           body: JSON.stringify({
             supplier_name: orderForm.supplier_name,
             product_id: orderForm.product_id,
-            quantity_ordered: parseInt(orderForm.quantity_ordered, 10),
+            quantity: parseInt(orderForm.quantity, 10),
             unit_cost: parseFloat(orderForm.unit_cost),
+            vat: orderForm.vat ? parseFloat(orderForm.vat) : null,
+            customs_duty: orderForm.customs_duty ? parseFloat(orderForm.customs_duty) : null,
+            shipping_cost: orderForm.shipping_cost ? parseFloat(orderForm.shipping_cost) : null,
             order_date: orderForm.order_date,
             expected_delivery_date: orderForm.expected_delivery_date || null,
             notes: orderForm.notes || null,
@@ -153,8 +159,11 @@ export default function ReplenishmentPage() {
       setOrderForm({
         supplier_name: '',
         product_id: '',
-        quantity_ordered: '',
+        quantity: '',
         unit_cost: '',
+        vat: '',
+        customs_duty: '',
+        shipping_cost: '',
         order_date: todayISO(),
         expected_delivery_date: '',
         notes: '',
@@ -323,8 +332,8 @@ export default function ReplenishmentPage() {
                   className="input"
                   placeholder="250"
                   min="1"
-                  value={orderForm.quantity_ordered}
-                  onChange={(e) => setOrderForm({ ...orderForm, quantity_ordered: e.target.value })}
+                  value={orderForm.quantity}
+                  onChange={(e) => setOrderForm({ ...orderForm, quantity: e.target.value })}
                   required
                 />
               </div>
@@ -340,6 +349,45 @@ export default function ReplenishmentPage() {
                   value={orderForm.unit_cost}
                   onChange={(e) => setOrderForm({ ...orderForm, unit_cost: e.target.value })}
                   required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">VAT (£) <span style={{ color: 'var(--bone-muted)', fontWeight: 400 }}>optional</span></label>
+                <input
+                  type="number"
+                  className="input"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  value={orderForm.vat}
+                  onChange={(e) => setOrderForm({ ...orderForm, vat: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Customs Duty (£) <span style={{ color: 'var(--bone-muted)', fontWeight: 400 }}>optional</span></label>
+                <input
+                  type="number"
+                  className="input"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  value={orderForm.customs_duty}
+                  onChange={(e) => setOrderForm({ ...orderForm, customs_duty: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Shipping / Freight (£) <span style={{ color: 'var(--bone-muted)', fontWeight: 400 }}>optional</span></label>
+                <input
+                  type="number"
+                  className="input"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  value={orderForm.shipping_cost}
+                  onChange={(e) => setOrderForm({ ...orderForm, shipping_cost: e.target.value })}
                 />
               </div>
 
