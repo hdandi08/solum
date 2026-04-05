@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ritual — SOLUM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:  #08090B;
+  --char:   #181C24;
+  --dark:   #10131A;
+  --mid:    #1C2030;
+  --panel:  #1c2030;
+  --bone:   #F0ECE2;
+  --stone:  #6A7380;
+  --mist:   rgba(240,236,226,0.55);
+  --blue:   #2E6DA4;
+  --blit:   #4A8FC7;
+  --bdim:   #1A4A78;
+  --gold:   #C9A84C;
+  --line:   rgba(240,236,226,0.055);
+  --lineb:  rgba(46,109,164,0.18);
+  --lineg:  rgba(201,168,76,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:var(--blue);}
+
+/* ─── SHARED SECTION UTILS ─── */
+.sec-tag{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.sec-tag::before{content:'';width:32px;height:1px;background:var(--blue);}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5vw,72px);letter-spacing:0.04em;color:var(--bone);line-height:1;margin-bottom:16px;}
+.sec-body{font-size:15px;font-weight:300;color:var(--mist);line-height:1.7;}
+section{padding:96px 48px;}
+@media(max-width:768px){section{padding:64px 20px;}}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(8,9,11,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.18em;color:var(--bone);text-decoration:none;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--bone);}
+.nav-links a.active{color:var(--bone);}
+.nav-cta{font-size:9px;letter-spacing:4px;text-transform:uppercase;background:var(--blue);color:var(--bone);padding:10px 24px;text-decoration:none;transition:background .2s;}
+.nav-cta:hover{background:var(--blit);}
+.nav-ig{display:flex;align-items:center;gap:8px;color:var(--bone);text-decoration:none;transition:opacity .2s;margin-right:4px;border:1px solid rgba(46,109,164,0.4);padding:7px 14px;}
+.nav-ig:hover{opacity:0.75;}
+.nav-ig svg{width:17px;height:17px;color:var(--blit);}
+.nav-ig-handle{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .nav-ig{display:none;}
+}
+
+/* ─── HERO ─── */
+.page-hero{padding-top:64px;min-height:52vh;display:flex;align-items:flex-end;position:relative;overflow:hidden;background:var(--black);}
+.page-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(46,109,164,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.03) 1px,transparent 1px);background-size:80px 80px;}
+.hero-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(120px,18vw,280px);letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.06);pointer-events:none;user-select:none;white-space:nowrap;}
+.hero-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(46,109,164,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero-content{position:relative;z-index:1;padding:0 48px 64px;max-width:1400px;width:100%;}
+.hero-eyebrow{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--blue);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,7vw,110px);letter-spacing:0.04em;line-height:0.92;color:var(--bone);margin-bottom:28px;}
+.hero-title em{font-style:normal;color:var(--blue);}
+.hero-meta{display:flex;gap:32px;align-items:center;flex-wrap:wrap;}
+.hero-pill{display:flex;align-items:center;gap:10px;border:1px solid var(--lineb);padding:10px 20px;}
+.hp-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+.hp-dot.gold{background:var(--gold);}
+.hp-text{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);}
+.hp-text strong{color:var(--bone);}
+@media(max-width:768px){.hero-content{padding:0 20px 48px;}}
+
+/* ─── TAB BAR ─── */
+.tab-bar-outer{position:sticky;top:64px;z-index:90;background:var(--char);border-bottom:1px solid var(--line);}
+.tab-bar-inner{max-width:1400px;margin:0 auto;display:flex;padding:0 48px;}
+.tab-btn{padding:18px 0 16px;margin-right:48px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.14em;color:var(--stone);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s,border-color .2s;display:flex;align-items:baseline;gap:12px;}
+.tab-btn-sub{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:500;}
+.tab-btn.active-daily{color:var(--bone);border-bottom-color:var(--blue);}
+.tab-btn.active-daily .tab-btn-sub{color:var(--blue);}
+.tab-btn.active-weekly{color:var(--bone);border-bottom-color:var(--gold);}
+.tab-btn.active-weekly .tab-btn-sub{color:var(--gold);}
+@media(max-width:768px){
+  .tab-bar-inner{padding:0 20px;}
+  .tab-btn{margin-right:32px;font-size:15px;}
+}
+
+/* ─── PANEL ─── */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ─── RITUAL SUMMARY BAR ─── */
+.ritual-summary{padding:32px 48px;border-bottom:1px solid var(--line);}
+.ritual-summary-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+.rs-left{}
+.rs-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.08em;color:var(--bone);margin-bottom:4px;}
+.rs-desc{font-size:13px;font-weight:300;color:var(--mist);max-width:600px;line-height:1.6;}
+.rs-pills{display:flex;gap:12px;flex-wrap:wrap;}
+.rs-pill{font-size:8px;letter-spacing:4px;text-transform:uppercase;padding:7px 16px;border:1px solid var(--lineb);color:var(--stone);}
+.rs-pill.blue{border-color:rgba(46,109,164,0.4);color:var(--blue);}
+.rs-pill.gold{border-color:rgba(201,168,76,0.35);color:var(--gold);}
+@media(max-width:768px){.ritual-summary{padding:24px 20px;}}
+
+/* ─── STEP PROGRESS ─── */
+.step-progress{padding:0 48px;border-bottom:1px solid var(--line);background:var(--char);}
+.step-progress-inner{max-width:1400px;margin:0 auto;display:flex;gap:0;}
+.sp-item{flex:1;padding:12px 0 10px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line);padding-right:20px;padding-left:4px;opacity:0.4;cursor:pointer;transition:opacity .2s;}
+.sp-item:first-child{padding-left:0;}
+.sp-item:last-child{border-right:none;}
+.sp-item.active,.sp-item:hover{opacity:1;}
+.sp-bar{height:2px;background:var(--line);width:100%;margin-bottom:4px;}
+.sp-bar.blue{background:var(--blue);}
+.sp-bar.gold{background:var(--gold);}
+.sp-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.05em;color:var(--stone);}
+.sp-num.blue{color:var(--blue);}
+.sp-num.gold{color:var(--gold);}
+.sp-name{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sp-time{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);}
+@media(max-width:768px){.step-progress{display:none;}}
+
+/* ─── STEPS AREA ─── */
+.steps-area{padding:0 48px 80px;background:var(--black);}
+.steps-inner{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:40px;padding-top:48px;}
+@media(max-width:768px){.steps-area{padding:0 20px 60px;}}
+
+/* ─── STEP CARD ─── */
+.step-card{background:var(--char);border:1px solid var(--line);overflow:hidden;}
+.step-card-header{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:24px 32px 22px;border-bottom:1px solid var(--line);}
+.sc-badge{width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;flex-shrink:0;}
+.sc-badge.blue{background:var(--blue);color:#fff;}
+.sc-badge.gold{background:var(--gold);color:var(--black);}
+.sc-header-text{}
+.sc-product{font-size:8px;letter-spacing:4px;text-transform:uppercase;margin-bottom:3px;}
+.sc-product.blue{color:var(--blue);}
+.sc-product.gold{color:var(--gold);}
+.sc-name{font-size:15px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone);font-weight:600;}
+.sc-duration{text-align:right;}
+.sc-duration-num{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;letter-spacing:-.5px;}
+.sc-duration-num.blue{color:var(--blue);}
+.sc-duration-num.gold{color:var(--gold);}
+.sc-duration-unit{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+@media(max-width:600px){
+  .step-card-header{padding:16px 20px 14px;gap:14px;}
+  .sc-badge{width:40px;height:40px;font-size:18px;}
+  .sc-duration-num{font-size:28px;}
+}
+
+/* ─── CARD BODY: two columns on desktop ─── */
+.step-card-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+@media(max-width:900px){.step-card-body{grid-template-columns:1fr;}}
+
+/* ─── VIDEO ─── */
+.step-video{position:relative;background:var(--dark);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden;border-right:1px solid var(--line);}
+.step-video.no-border{border-right:none;}
+.step-video::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(46,109,164,0.1),transparent 65%);}
+.step-video.weekly-glow::before{background:radial-gradient(circle at 50% 50%,rgba(201,168,76,0.08),transparent 65%);}
+.video-ghost{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:110px;letter-spacing:-2px;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.07);user-select:none;pointer-events:none;}
+.video-ghost.gold{-webkit-text-stroke-color:rgba(201,168,76,0.06);}
+.play-btn{position:relative;z-index:1;width:64px;height:64px;border:2px solid rgba(46,109,164,0.45);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(46,109,164,0.1);transition:background .2s,border-color .2s;flex-shrink:0;}
+.play-btn.gold-b{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);}
+.play-btn:hover{background:rgba(46,109,164,0.22);border-color:var(--blue);}
+.play-btn.gold-b:hover{background:rgba(201,168,76,0.18);border-color:var(--gold);}
+.play-icon{width:0;height:0;border-style:solid;border-width:11px 0 11px 20px;border-color:transparent transparent transparent var(--blue);margin-left:5px;}
+.play-icon.gold{border-color:transparent transparent transparent var(--gold);}
+.video-coming-tag{position:absolute;top:14px;left:16px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);background:rgba(8,9,11,0.65);padding:5px 10px;backdrop-filter:blur(4px);}
+.video-dur-tag{position:absolute;bottom:14px;right:16px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+@media(max-width:900px){
+  .step-video{border-right:none;border-bottom:1px solid var(--line);aspect-ratio:16/9;}
+}
+
+/* ─── INSTRUCTIONS PANEL ─── */
+.step-instructions{padding:28px 32px;overflow:auto;}
+.instr-section-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.instr-section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+.instr-list{display:flex;flex-direction:column;gap:0;margin-bottom:20px;}
+.instr-row{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+.instr-row:last-child{border-bottom:none;}
+.instr-n{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--stone);line-height:1.3;}
+.instr-t{font-size:13px;font-weight:300;color:var(--mist);line-height:1.6;}
+.instr-t strong{color:var(--bone);font-weight:600;}
+.instr-t .hl-blue{color:var(--blit);font-weight:600;}
+.instr-t .hl-gold{color:var(--gold);font-weight:600;}
+@media(max-width:900px){.step-instructions{padding:20px;}}
+@media(max-width:600px){.instr-t{font-size:13px;}}
+
+/* ─── TIP ─── */
+.step-tip{margin:4px 32px 24px;border-left:2px solid var(--blue);background:rgba(46,109,164,0.05);padding:14px 18px;}
+.step-tip.gold{border-left-color:var(--gold);background:rgba(201,168,76,0.05);}
+.tip-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:5px;}
+.tip-label.gold{color:var(--gold);}
+.tip-body{font-size:12px;font-weight:300;color:var(--mist);line-height:1.65;}
+@media(max-width:900px){.step-tip{margin:4px 20px 20px;}}
+
+/* ─── INTERSTITIAL CTA ─── */
+.ritual-cta-bar{background:var(--char);border-top:1px solid var(--lineb);border-bottom:1px solid var(--lineb);padding:32px 48px;}
+.ritual-cta-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.rca-text{}
+.rca-eyebrow{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
+.rca-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--bone);}
+.btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--blue);color:var(--bone);padding:16px 40px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;white-space:nowrap;}
+.btn-primary:hover{background:var(--blit);transform:translateY(-1px);}
+.btn-ghost{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;}
+.btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
+@media(max-width:768px){.ritual-cta-bar{padding:24px 20px;}}
+
+/* ─── SUPPLY ORIGIN STRIP ─── */
+.origin-strip{padding:40px 48px;background:var(--mid);border-top:1px solid var(--line);}
+.origin-strip-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--line);}
+.origin-cell{background:var(--char);padding:20px 22px;display:flex;flex-direction:column;gap:4px;}
+.oc-flag{font-size:18px;margin-bottom:2px;}
+.oc-country{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.oc-product{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone);font-weight:600;line-height:1.3;}
+@media(max-width:768px){.origin-strip{padding:24px 20px;}}
+
+/* ─── FOOTER ─── */
+footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48px 32px;}
+.footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.18em;color:var(--bone);margin-bottom:10px;display:block;text-decoration:none;}
+.footer-tagline{font-size:10px;color:var(--stone);letter-spacing:2px;font-style:italic;margin-bottom:8px;}
+.footer-scope{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;}
+.footer-ig{display:inline-flex;align-items:center;gap:12px;margin-top:24px;color:var(--bone);text-decoration:none;transition:border-color .2s,opacity .2s;border:1px solid rgba(46,109,164,0.5);padding:14px 18px;background:rgba(46,109,164,0.07);}
+.footer-ig:hover{border-color:var(--blit);opacity:0.85;}
+.footer-ig svg{width:22px;height:22px;color:var(--blit);flex-shrink:0;}
+.footer-ig-text{display:flex;flex-direction:column;gap:3px;}
+.footer-ig-cta{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:600;}
+.footer-ig-handle{font-size:16px;letter-spacing:1px;color:var(--bone);font-weight:600;}
+.footer-col-title{font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:20px;}
+.footer-links{display:flex;flex-direction:column;gap:10px;list-style:none;}
+.footer-links a{font-size:12px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
+.footer-links a:hover{color:var(--bone);}
+.footer-bottom{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;font-size:10px;color:var(--stone);letter-spacing:2px;flex-wrap:wrap;gap:12px;}
+@media(max-width:900px){
+  .footer-inner{grid-template-columns:1fr 1fr;gap:32px;}
+  footer{padding:40px 20px 24px;}
+}
+@media(max-width:500px){
+  .footer-inner{grid-template-columns:1fr;}
+}
+
+/* ─── REVEAL ─── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="solum-website.html" class="nav-logo">SOLUM</a>
+  <ul class="nav-links">
+    <li><a href="solum-website.html#truth">Why SOLUM</a></li>
+    <li><a href="solum-website.html#products">Products</a></li>
+    <li><a href="solum-ritual-page.html" class="active">The Ritual</a></li>
+    <li><a href="solum-website.html#pricing">Pricing</a></li>
+  </ul>
+  <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener" class="nav-ig">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4.5"/>
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+    <span class="nav-ig-handle">@bysolum.body</span>
+  </a>
+  <a href="solum-website.html#pricing" class="nav-cta">Start Your Ritual</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-ghost">RITUAL</div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">The System</div>
+    <h1 class="hero-title">Your Body.<br><em>Done Right.</em></h1>
+    <div class="hero-meta">
+      <div class="hero-pill">
+        <div class="hp-dot"></div>
+        <div class="hp-text"><strong>Daily</strong> · 10 Min · 5 Steps</div>
+      </div>
+      <div class="hero-pill">
+        <div class="hp-dot gold"></div>
+        <div class="hp-text"><strong>Weekly</strong> · 22 Min · 4 Steps</div>
+      </div>
+      <div class="hero-pill">
+        <div class="hp-dot" style="background:var(--stone);"></div>
+        <div class="hp-text">Replaces your existing shower routine</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar-outer">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active-daily" id="tab-daily" onclick="switchTab('daily')">
+      Daily Ritual
+      <span class="tab-btn-sub">10 min · every morning</span>
+    </button>
+    <button class="tab-btn" id="tab-weekly" onclick="switchTab('weekly')">
+      Weekly Deep Ritual
+      <span class="tab-btn-sub">22 min · replaces daily</span>
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════════ DAILY PANEL ═══════════════ -->
+<div class="panel active" id="panel-daily">
+
+  <div class="ritual-summary" style="background:var(--char);">
+    <div class="ritual-summary-inner">
+      <div class="rs-left">
+        <div class="rs-title">The Daily Ritual — 10 Minutes</div>
+        <div class="rs-desc">Five steps. All happen in the shower you're already taking. The sequence is not arbitrary — each step builds on the last. Follow the numbers every morning.</div>
+      </div>
+      <div class="rs-pills">
+        <div class="rs-pill blue">Step 01 · Scalp Massage · 2-3 min</div>
+        <div class="rs-pill blue">Step 02 · Body Wash · 1 min</div>
+        <div class="rs-pill blue">Step 03 · Exfoliating Mitt · 3 min</div>
+        <div class="rs-pill blue">Step 04 · Back Scrub · 2 min</div>
+        <div class="rs-pill blue">Step 05 · Body Lotion · 2 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-progress" id="daily-progress">
+    <div class="step-progress-inner">
+      <div class="sp-item active" data-target="daily-s1" onclick="scrollToStep('daily-s1')">
+        <div class="sp-bar blue"></div>
+        <div class="sp-num blue">01</div>
+        <div class="sp-name">Scalp Massage</div>
+        <div class="sp-time">2–3 min</div>
+      </div>
+      <div class="sp-item" data-target="daily-s2" onclick="scrollToStep('daily-s2')">
+        <div class="sp-bar blue"></div>
+        <div class="sp-num blue">02</div>
+        <div class="sp-name">Body Wash</div>
+        <div class="sp-time">1 min</div>
+      </div>
+      <div class="sp-item" data-target="daily-s3" onclick="scrollToStep('daily-s3')">
+        <div class="sp-bar blue"></div>
+        <div class="sp-num blue">03</div>
+        <div class="sp-name">Exfoliating Mitt</div>
+        <div class="sp-time">3 min</div>
+      </div>
+      <div class="sp-item" data-target="daily-s4" onclick="scrollToStep('daily-s4')">
+        <div class="sp-bar blue"></div>
+        <div class="sp-num blue">04</div>
+        <div class="sp-name">Back Scrub</div>
+        <div class="sp-time">2 min</div>
+      </div>
+      <div class="sp-item" data-target="daily-s5" onclick="scrollToStep('daily-s5')">
+        <div class="sp-bar blue"></div>
+        <div class="sp-num blue">05</div>
+        <div class="sp-name">Body Lotion</div>
+        <div class="sp-time">within 3 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-area">
+    <div class="steps-inner">
+
+      <!-- DAILY S1: SCALP MASSAGER -->
+      <div class="step-card reveal" id="daily-s1">
+        <div class="step-card-header">
+          <div class="sc-badge blue">01</div>
+          <div class="sc-header-text">
+            <div class="sc-product blue">Product 04 · Scalp Massager · Daily</div>
+            <div class="sc-name">Scalp Massage</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num blue">2–3</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video">
+            <div class="video-ghost">04</div>
+            <div class="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~45 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Wet your hair fully before you begin. The massager works on saturated hair, not dry.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Apply your shampoo to your hair as normal.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Place the massager <strong>flat against your scalp</strong> — all pins touching — starting at the front hairline.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t"><strong>Small, firm circles.</strong> Work from the front hairline back to the nape of the neck methodically.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Cover the full scalp in 2 minutes. Your fingernails never reach this deep into the follicle.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">Rinse the massager clean under the shower before you finish.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip">
+          <div class="tip-label">Why this works</div>
+          <div class="tip-body">The silicone pins break up sebum and product buildup that fingernails never reach. Consistent daily use reduces scalp oil and improves follicle health within two weeks.</div>
+        </div>
+      </div>
+
+      <!-- DAILY S2: BODY WASH -->
+      <div class="step-card reveal" id="daily-s2">
+        <div class="step-card-header">
+          <div class="sc-badge blue">02</div>
+          <div class="sc-header-text">
+            <div class="sc-product blue">Product 01 · Body Wash · Daily</div>
+            <div class="sc-name">Amino Acid Body Wash</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num blue">1</div>
+            <div class="sc-duration-unit">Minute</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video">
+            <div class="video-ghost">01</div>
+            <div class="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~30 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Pump <strong>3–4 times</strong> directly onto your wet exfoliating mitt (next step). No need to apply to hands first.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">If using hands only: apply to wet skin starting at the chest, work downward.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">The amino acid formula produces <strong>low foam</strong> — that's intentional. Low foam means it's not stripping your skin barrier.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t">Rinse completely with warm water. No residue.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip">
+          <div class="tip-label">What's different</div>
+          <div class="tip-body">Sulphate-free. pH balanced. Skin barrier safe. Standard shower gels strip the acid mantle — this one doesn't. Your skin stays clean and protected rather than clean and dry.</div>
+        </div>
+      </div>
+
+      <!-- DAILY S3: EXFOLIATING MITT -->
+      <div class="step-card reveal" id="daily-s3">
+        <div class="step-card-header">
+          <div class="sc-badge blue">03</div>
+          <div class="sc-header-text">
+            <div class="sc-product blue">Product 02 · Exfoliating Mitt · Daily</div>
+            <div class="sc-name">Exfoliating Mitt — Korean Technique</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num blue">3</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video">
+            <div class="video-ghost">02</div>
+            <div class="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~60 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Slip the mitt over your hand and <strong>wet it fully</strong> — a saturated mitt glides, a dry one scratches.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Add <strong>2 pumps</strong> of body wash directly onto the mitt surface.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t"><strong>Arms:</strong> long upward strokes from wrist to shoulder. Rotate the arm to cover all sides.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t"><strong>Chest and stomach:</strong> wide circular strokes with medium pressure.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t"><strong>Legs:</strong> long upward strokes from ankle to thigh, covering the full leg on each pass.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">Pressure: <strong>firm but no discomfort</strong> — feel resistance, not pain. Never use on the face.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">7</div>
+                <div class="instr-t">After use: rinse the mitt thoroughly and hang flat to air dry.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip">
+          <div class="tip-label">Korean bathhouse technique</div>
+          <div class="tip-body">The Italy Towel is the most effective exfoliation tool in the world. Long strokes — not scrubbing — lift dead skin without damaging the live layer beneath. You may see buildup on first use. This is normal and will reduce week by week.</div>
+        </div>
+      </div>
+
+      <!-- DAILY S4: BACK SCRUB -->
+      <div class="step-card reveal" id="daily-s4">
+        <div class="step-card-header">
+          <div class="sc-badge blue">04</div>
+          <div class="sc-header-text">
+            <div class="sc-product blue">Product 03 · Back Scrub Cloth · Daily</div>
+            <div class="sc-name">Back Scrub Cloth</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num blue">2</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video">
+            <div class="video-ghost">03</div>
+            <div class="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~45 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Hold <strong>one handle in each hand</strong>. Wet the cloth fully — it needs to be saturated.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Add one pump of body wash to the centre of the cloth.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Throw the cloth over one shoulder so it <strong>hangs flat against your back</strong>.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t"><strong>Alternate pulling each handle</strong> in a sawing motion — like drying your back with a towel, but deliberate and firm.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Work in <strong>three zones:</strong> upper back (20 sec), mid back (20 sec), lower back (20 sec). Repeat.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">Rinse cloth thoroughly. Hang to dry with both handles free and cloth fully extended.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip">
+          <div class="tip-label">The only tool that reaches</div>
+          <div class="tip-body">Your back is the largest surface on your body and the most neglected. Hands don't reach. This cloth does. Every pass covers skin that's been ignored for years.</div>
+        </div>
+      </div>
+
+      <!-- DAILY S5: BODY LOTION -->
+      <div class="step-card reveal" id="daily-s5">
+        <div class="step-card-header">
+          <div class="sc-badge blue">05</div>
+          <div class="sc-header-text">
+            <div class="sc-product blue">Product 07 · Body Lotion · Daily</div>
+            <div class="sc-name">Body Lotion — The 3-Minute Window</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num blue">2</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video">
+            <div class="video-ghost">07</div>
+            <div class="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~45 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Step out of the shower. Towel off lightly — remove dripping water but your skin should remain <strong>warm and slightly damp</strong>.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t"><span class="hl-blue">You have 3 minutes.</span> Warm, slightly damp skin absorbs 70% more moisture than dry skin. Do not wait.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Pump <strong>twice</strong> into your palm. Start at the calves and work upward.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t"><strong>Press, don't rub.</strong> Both palms flat into the skin, hold 2 seconds, move up and repeat.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Work upward: thighs → stomach → chest → arms. Add a second pump for the top half.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">No additional moisturiser needed. The ritual is complete.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip">
+          <div class="tip-label">The 3-minute window</div>
+          <div class="tip-body">This is not a slogan. The hydration gradient between warm post-shower skin and the lotion is what drives absorption. Let that window close and you've left the most important step half-done.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /panel-daily -->
+
+
+<!-- ═══════════════ WEEKLY PANEL ═══════════════ -->
+<div class="panel" id="panel-weekly">
+
+  <div class="ritual-summary" style="background:rgba(201,168,76,0.04);border-bottom:1px solid var(--lineg);">
+    <div class="ritual-summary-inner">
+      <div class="rs-left">
+        <div class="rs-title">The Weekly Deep Ritual — 22 Minutes</div>
+        <div class="rs-desc">Four steps. Replaces the daily ritual entirely. Let the clay work for ten minutes, then exfoliate deeper than any daily scrub can reach. End with oil, not lotion. This is when real change happens.</div>
+      </div>
+      <div class="rs-pills">
+        <div class="rs-pill gold">Step 01 · Scalp Deep · 5 min</div>
+        <div class="rs-pill gold">Step 02 · Clay Mask · 10 min</div>
+        <div class="rs-pill gold">Step 03 · Kese + Back Cloth · 5 min</div>
+        <div class="rs-pill gold">Step 04 · Argan Oil · 2 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-progress" id="weekly-progress">
+    <div class="step-progress-inner">
+      <div class="sp-item active" data-target="weekly-s1" onclick="scrollToStep('weekly-s1')">
+        <div class="sp-bar gold"></div>
+        <div class="sp-num gold">01</div>
+        <div class="sp-name">Deep Scalp Massage</div>
+        <div class="sp-time">5 min</div>
+      </div>
+      <div class="sp-item" data-target="weekly-s2" onclick="scrollToStep('weekly-s2')">
+        <div class="sp-bar gold"></div>
+        <div class="sp-num gold">02</div>
+        <div class="sp-name">Rhassoul Clay Mask</div>
+        <div class="sp-time">10 min</div>
+      </div>
+      <div class="sp-item" data-target="weekly-s3" onclick="scrollToStep('weekly-s3')">
+        <div class="sp-bar gold"></div>
+        <div class="sp-num gold">03</div>
+        <div class="sp-name">Kese + Back Cloth</div>
+        <div class="sp-time">5 min</div>
+      </div>
+      <div class="sp-item" data-target="weekly-s4" onclick="scrollToStep('weekly-s4')">
+        <div class="sp-bar gold"></div>
+        <div class="sp-num gold">04</div>
+        <div class="sp-name">Argan Body Oil</div>
+        <div class="sp-time">2 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-area">
+    <div class="steps-inner">
+
+      <!-- WEEKLY S1: DEEP SCALP -->
+      <div class="step-card reveal" id="weekly-s1">
+        <div class="step-card-header">
+          <div class="sc-badge gold">01</div>
+          <div class="sc-header-text">
+            <div class="sc-product gold">Product 04 · Scalp Massager · Weekly Deep</div>
+            <div class="sc-name">Deep Scalp Massage</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num gold">5</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video weekly-glow">
+            <div class="video-ghost gold">04</div>
+            <div class="play-btn gold-b">
+              <div class="play-icon gold"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~60 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Wet hair fully and apply shampoo. Place the massager flat at the front hairline.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t"><strong>5 full minutes today</strong> — more than double the daily session. Set a timer.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Divide the scalp into <strong>five zones:</strong> front hairline, crown, left side, right side, nape. 60 seconds each.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t"><strong>More pressure than daily.</strong> You should feel the pins working into the scalp — firm and deliberate, not painful.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Keep the massager stationary in each zone and rotate — do not slide across the scalp.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">Rinse massager clean. Move immediately to the clay step.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip gold">
+          <div class="tip-label gold">Why longer on weekly</div>
+          <div class="tip-body">5 minutes stimulates scalp circulation beyond the daily maintenance level. Consistent weekly deep sessions reduce sebum buildup and improve scalp health within 4–6 weeks.</div>
+        </div>
+      </div>
+
+      <!-- WEEKLY S2: CLAY MASK -->
+      <div class="step-card reveal" id="weekly-s2">
+        <div class="step-card-header">
+          <div class="sc-badge gold">02</div>
+          <div class="sc-header-text">
+            <div class="sc-product gold">Product 05 · Rhassoul Clay · Weekly Deep</div>
+            <div class="sc-name">Rhassoul Clay Body Mask</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num gold">10</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video weekly-glow">
+            <div class="video-ghost gold">05</div>
+            <div class="play-btn gold-b">
+              <div class="play-icon gold"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~90 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">Mixing the clay — do this before you shower</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Scoop <strong>2–3 tablespoons</strong> of clay into a bowl before getting in the shower.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Add <strong>warm water slowly</strong> — a small amount at a time. Stir between each addition.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Target consistency: <span class="hl-gold">thick yoghurt</span> — spreadable but holds its shape. If it runs off a spoon it's too thin; add more clay.</div>
+              </div>
+            </div>
+            <div class="instr-section-label" style="margin-top:16px;">Applying the clay</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t">Enter the shower and warm your body — <strong>but do not rinse yet.</strong> Warm, barely damp skin, not wet skin.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Apply clay with your hands from neck to feet — chest, stomach, arms, legs. Use the exfoliating mitt to reach your back.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t"><strong>Leave for 8–10 minutes.</strong> You will feel it tighten as it works — that means the clay is drawing impurities out.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">7</div>
+                <div class="instr-t">Do not let it dry out fully — if it cracks and goes white, <strong>mist with warm water</strong> from the shower head.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">8</div>
+                <div class="instr-t">Rinse thoroughly with warm water. Move immediately to the Kese Mitt step — your skin is now fully prepared.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip gold">
+          <div class="tip-label gold">Atlas Mountain clay</div>
+          <div class="tip-body">Rhassoul clay has one of the highest ion exchange capacities of any clay mineral — it binds to excess oil, impurities and dead cells and pulls them out as it dries. 8 minutes is the minimum for this process to complete fully.</div>
+        </div>
+      </div>
+
+      <!-- WEEKLY S3: KESE + BACK CLOTH -->
+      <div class="step-card reveal" id="weekly-s3">
+        <div class="step-card-header">
+          <div class="sc-badge gold">03</div>
+          <div class="sc-header-text">
+            <div class="sc-product gold">Products 08 + 03 · Kese Mitt &amp; Back Cloth · Weekly Deep</div>
+            <div class="sc-name">Full Body Exfoliation</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num gold">5</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video weekly-glow">
+            <div class="video-ghost gold">08</div>
+            <div class="play-btn gold-b">
+              <div class="play-icon gold"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~90 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t"><strong>Immediately after rinsing the clay.</strong> Your skin is fully prepped — warmed, pores open, dead layer ready to release.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Wet the <strong>Kese Mitt</strong> fully. Slip it on. Start at the shoulder — <span class="hl-gold">long, slow, firm strokes</span> from top to bottom.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">You may see <strong>grey rolls forming on the skin</strong> — this is dead skin detaching. This is exactly what should happen.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t">Work the <strong>Back Cloth simultaneously</strong> — throw it over one shoulder and saw back and forth while the mitt covers the front.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">Full coverage: arms, chest, stomach, legs, back. Every surface. <strong>Slow passes — do not rush.</strong></div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t">Pressure: <strong>firmer than the daily mitt</strong> — the Kese is a rougher weave by design. You should feel real friction.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">7</div>
+                <div class="instr-t">Rinse completely. Rinse the mitt and cloth and hang to dry.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip gold">
+          <div class="tip-label gold">Why the Kese is different</div>
+          <div class="tip-body">Hand-woven Turkish raw silk creates more friction than viscose. The clay has already lifted the dead layer — the Kese removes it completely. The combination of clay + Kese is the foundation of the Turkish hammam tradition, unchanged for centuries.</div>
+        </div>
+      </div>
+
+      <!-- WEEKLY S4: ARGAN OIL -->
+      <div class="step-card reveal" id="weekly-s4">
+        <div class="step-card-header">
+          <div class="sc-badge gold">04</div>
+          <div class="sc-header-text">
+            <div class="sc-product gold">Product 06 · Argan Body Oil · Weekly Deep</div>
+            <div class="sc-name">Argan Body Oil — Press, Don't Rub</div>
+          </div>
+          <div class="sc-duration">
+            <div class="sc-duration-num gold">2</div>
+            <div class="sc-duration-unit">Minutes</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <div class="step-video weekly-glow">
+            <div class="video-ghost gold">06</div>
+            <div class="play-btn gold-b">
+              <div class="play-icon gold"></div>
+            </div>
+            <div class="video-coming-tag">Video coming soon</div>
+            <div class="video-dur-tag">~45 sec</div>
+          </div>
+          <div class="step-instructions">
+            <div class="instr-section-label">How to do it</div>
+            <div class="instr-list">
+              <div class="instr-row">
+                <div class="instr-n">1</div>
+                <div class="instr-t">Step out of the shower. <strong>Towel off lightly — stay damp.</strong> Do not dry completely.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">2</div>
+                <div class="instr-t">Pour <strong>10–15 drops</strong> into your palm — not onto your skin directly. Warm the oil between both palms for 5 seconds.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">3</div>
+                <div class="instr-t">Start at the legs. <strong>Press both palms flat into the skin and hold</strong> — do not rub. Press, release, move up.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">4</div>
+                <div class="instr-t">Work upward: thighs → stomach → chest → arms. Add a few more drops as needed.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">5</div>
+                <div class="instr-t">The oil absorbs within 60 seconds on freshly exfoliated skin. If it feels greasy, you've used too much.</div>
+              </div>
+              <div class="instr-row">
+                <div class="instr-n">6</div>
+                <div class="instr-t"><strong>No body lotion today.</strong> The argan oil is your complete moisture barrier. The weekly ritual is complete.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-tip gold">
+          <div class="tip-label gold">Your skin. Fully fed.</div>
+          <div class="tip-body">100% pure, certified organic, cold-pressed Argania Spinosa. No additives, no carriers. Applied on freshly exfoliated skin it penetrates at a depth no daily lotion achieves — you're feeding the new skin layer directly.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /panel-weekly -->
+
+
+<!-- CTA BAR -->
+<div class="ritual-cta-bar">
+  <div class="ritual-cta-inner">
+    <div class="rca-text">
+      <div class="rca-eyebrow">Ready to start</div>
+      <div class="rca-title">Get the Full Kit. Start Monday.</div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a href="solum-website.html#pricing" class="btn-primary">View Kits &amp; Pricing</a>
+      <a href="solum-website.html" class="btn-ghost">Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- ORIGIN STRIP -->
+<div class="origin-strip">
+  <div style="font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);margin-bottom:20px;max-width:1400px;margin-left:auto;margin-right:auto;">Global Sourcing · Every Product Traced</div>
+  <div class="origin-strip-inner">
+    <div class="origin-cell">
+      <div class="oc-flag">🇬🇧</div>
+      <div class="oc-country">United Kingdom</div>
+      <div class="oc-product">Body Wash · Body Lotion</div>
+    </div>
+    <div class="origin-cell">
+      <div class="oc-flag">🇰🇷</div>
+      <div class="oc-country">South Korea</div>
+      <div class="oc-product">Scalp Massager</div>
+    </div>
+    <div class="origin-cell">
+      <div class="oc-flag">🇨🇳</div>
+      <div class="oc-country">China (Korean tradition)</div>
+      <div class="oc-product">Exfoliating Mitt · Back Cloth</div>
+    </div>
+    <div class="origin-cell">
+      <div class="oc-flag">🇲🇦</div>
+      <div class="oc-country">Morocco</div>
+      <div class="oc-product">Rhassoul Clay · Argan Oil</div>
+    </div>
+    <div class="origin-cell">
+      <div class="oc-flag">🇹🇷</div>
+      <div class="oc-country">Turkey</div>
+      <div class="oc-product">Artisan Kese Mitt</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <a href="solum-website.html" class="footer-logo">SOLUM</a>
+      <div class="footer-tagline">Your body. Done right.</div>
+      <div class="footer-scope">Men's Body Care · UK</div>
+      <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener" class="footer-ig">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4.5"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="footer-ig-text">
+          <span class="footer-ig-cta">Follow us</span>
+          <span class="footer-ig-handle">@bysolum.body</span>
+        </div>
+      </a>
+    </div>
+    <div>
+      <div class="footer-col-title">The System</div>
+      <ul class="footer-links">
+        <li><a href="solum-website.html#products">The Products</a></li>
+        <li><a href="solum-ritual-page.html">The Ritual</a></li>
+        <li><a href="solum-website.html#sourcing">Global Sourcing</a></li>
+        <li><a href="solum-website.html#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Account</div>
+      <ul class="footer-links">
+        <li><a href="solum-website.html#pricing">Start Subscription</a></li>
+        <li><a href="#">Manage Subscription</a></li>
+        <li><a href="#">Gift a Kit</a></li>
+        <li><a href="#">Track Order</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About SOLUM</a></li>
+        <li><a href="#">Sourcing Standards</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 SOLUM. All rights reserved.</span>
+    <span>Body Care · Men's Grooming · UK</span>
+    <span style="font-family:'Bebas Neue',sans-serif;letter-spacing:.15em;font-size:13px;">BUILT FROM THE GROUND UP</span>
+  </div>
+</footer>
+
+<script>
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  document.getElementById('panel-daily').classList.remove('active');
+  document.getElementById('panel-weekly').classList.remove('active');
+  document.getElementById('tab-daily').className = 'tab-btn';
+  document.getElementById('tab-weekly').className = 'tab-btn';
+
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add(tab === 'daily' ? 'active-daily' : 'active-weekly');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Trigger reveals on newly visible cards
+  setTimeout(triggerReveals, 100);
+}
+
+// ── STEP PROGRESS NAV ──
+function scrollToStep(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const offset = 64 + 52 + 44; // nav + tab bar + progress bar
+  const top = el.getBoundingClientRect().top + window.scrollY - offset - 16;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// ── SCROLL REVEALS ──
+function triggerReveals() {
+  const reveals = document.querySelectorAll('.panel.active .reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 100);
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => obs.observe(el));
+}
+triggerReveals();
+
+// ── ACTIVE STEP HIGHLIGHT IN PROGRESS BAR ──
+function updateProgressBar() {
+  const panel = document.querySelector('.panel.active');
+  if (!panel) return;
+  const cards = panel.querySelectorAll('.step-card[id]');
+  const spItems = panel.querySelectorAll ? null : null;
+  const progressEl = panel.querySelector ? null : null;
+
+  // Find which card is most visible
+  let bestId = null;
+  let bestTop = Infinity;
+  cards.forEach(card => {
+    const rect = card.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.6 && rect.bottom > 0) {
+      if (Math.abs(rect.top) < bestTop) {
+        bestTop = Math.abs(rect.top);
+        bestId = card.id;
+      }
+    }
+  });
+
+  if (bestId) {
+    const allSpItems = document.querySelectorAll('.sp-item');
+    allSpItems.forEach(item => {
+      item.classList.toggle('active', item.dataset.target === bestId);
+    });
+  }
+}
+
+window.addEventListener('scroll', updateProgressBar, { passive: true });
+</script>
+
+</body>
+</html>
