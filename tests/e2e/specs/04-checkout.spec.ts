@@ -8,21 +8,21 @@ test.describe('Checkout', () => {
     await expect(page.getByText(/ritual/i).first()).toBeVisible();
   });
 
-  test('form validation — empty submit shows errors', async ({ page }) => {
+  test('form validation — empty submit shows error message', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: /continue|pay|order/i }).click();
-    // At least one required field error should appear
-    await expect(page.locator('input:invalid').first()).toBeAttached();
+    // The form uses custom JS validation — clicking submit with empty fields shows an error div
+    await page.locator('button.co-submit').click();
+    await expect(page.locator('.co-error').first()).toBeVisible({ timeout: 5000 });
   });
 
-  test('form validation — invalid email rejected', async ({ page }) => {
+  test('form validation — invalid email shows error', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    await page.getByLabel(/first name/i).fill('Test');
-    await page.getByLabel(/email/i).fill('notanemail');
-    await page.getByRole('button', { name: /continue|pay|order/i }).click();
-    await expect(page.locator('input[type="email"]:invalid')).toBeAttached();
+    await page.locator('input[placeholder="James"]').first().fill('Test');
+    await page.locator('input[type="email"]').first().fill('notanemail');
+    await page.locator('button.co-submit').click();
+    await expect(page.locator('.co-error').first()).toBeVisible({ timeout: 5000 });
   });
 
   test('sold-out kit shows waitlist form', async ({ page }) => {
@@ -38,16 +38,14 @@ test.describe('Checkout', () => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
 
-    await page.getByLabel(/first name/i).fill('Harsha');
-    await page.getByLabel(/last name/i).fill('Test');
-    await page.getByLabel(/email/i).fill(process.env.TEST_USER_EMAIL!);
+    const email = process.env.TEST_USER_EMAIL ?? 'harsha@bysolum.com';
+    await page.locator('input[placeholder="James"]').first().fill('Harsha');
+    await page.locator('input[placeholder="Smith"]').fill('Test');
+    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[placeholder="1990"]').fill('1990');
+    await page.locator('input[placeholder="1–12"]').fill('6');
 
-    const yearSelect = page.locator('select').first();
-    const monthSelect = page.locator('select').last();
-    await yearSelect.selectOption('1990');
-    await monthSelect.selectOption('6');
-
-    await page.getByRole('button', { name: /continue|pay|order/i }).click();
+    await page.locator('button.co-submit').click();
     await expect(page).toHaveURL(/checkout\.stripe\.com/, { timeout: 20_000 });
   });
 
@@ -55,12 +53,13 @@ test.describe('Checkout', () => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
 
-    await page.getByLabel(/first name/i).fill('Harsha');
-    await page.getByLabel(/last name/i).fill('Test');
-    await page.getByLabel(/email/i).fill(process.env.TEST_USER_EMAIL!);
-    await page.locator('select').first().selectOption('1990');
-    await page.locator('select').last().selectOption('6');
-    await page.getByRole('button', { name: /continue|pay|order/i }).click();
+    const email = process.env.TEST_USER_EMAIL ?? 'harsha@bysolum.com';
+    await page.locator('input[placeholder="James"]').first().fill('Harsha');
+    await page.locator('input[placeholder="Smith"]').fill('Test');
+    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[placeholder="1990"]').fill('1990');
+    await page.locator('input[placeholder="1–12"]').fill('6');
+    await page.locator('button.co-submit').click();
 
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000 });
 

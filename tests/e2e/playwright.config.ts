@@ -1,4 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+// Load .env.test if present (local dev only — CI gets vars from SSM/env)
+const envTestPath = path.join(__dirname, '.env.test');
+if (fs.existsSync(envTestPath)) dotenv.config({ path: envTestPath });
 
 export default defineConfig({
   testDir: './specs',
@@ -25,6 +32,7 @@ export default defineConfig({
       name: 'public',
       testMatch: /specs\/(0[1-4])-.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
     },
     {
       name: 'authenticated',

@@ -18,7 +18,7 @@ test.describe('Navigation', () => {
 
   test('"The Ritual" nav link goes to /ritual page', async ({ page }) => {
     await page.goto('/full');
-    await page.getByRole('link', { name: 'The Ritual', exact: true }).click();
+    await page.getByRole('navigation').getByRole('link', { name: 'The Ritual', exact: true }).click();
     await expect(page).toHaveURL(/\/ritual/);
   });
 
@@ -34,7 +34,7 @@ test.describe('Navigation', () => {
 
   test('SOLUM logo on /ritual goes to /full', async ({ page }) => {
     await page.goto('/ritual');
-    await page.getByRole('link', { name: 'SOLUM' }).click();
+    await page.getByRole('navigation').locator('.nav-logo').click();
     await expect(page).toHaveURL(/\/full/);
   });
 
