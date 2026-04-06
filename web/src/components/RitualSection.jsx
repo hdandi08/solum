@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { DAILY_STEPS, WEEKLY_STEPS } from '../data/rituals.js';
 
 const CSS = `
-.ritual-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px;}
+.ritual-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px 56px;}
+.ritual-footer{margin-top:48px;padding-top:32px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.ritual-footer-copy{font-size:13px;color:var(--stone);font-weight:300;letter-spacing:.5px;}
+.ritual-full-link{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s;}
+.ritual-full-link:hover{color:var(--bone);}
+.ritual-full-link svg{transition:transform .2s;}
+.ritual-full-link:hover svg{transform:translateX(3px);}
 .ritual-inner{max-width:1400px;margin:0 auto;}
 .ritual-tabs{display:flex;gap:0;margin-bottom:48px;border-bottom:1px solid var(--lineb);}
 .ritual-tab{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);padding:12px 24px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;background:none;border-top:none;border-left:none;border-right:none;}
@@ -135,6 +141,15 @@ export default function RitualSection() {
                 <div className={`ritual-timer ${activeTab}`}>{step.time}</div>
               </div>
             </div>
+          </div>
+          <div className="ritual-footer">
+            <span className="ritual-footer-copy">Step-by-step execution guide for every product.</span>
+            <a href="/ritual" className="ritual-full-link">
+              Full Instructions
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 7h10M8 3l4 4-4 4"/>
+              </svg>
+            </a>
           </div>
         </div>
       </section>

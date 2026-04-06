@@ -23,7 +23,7 @@ const NAV_LINKS = [
   ['#truth', 'Why SOLUM'],
   ['#kits', 'Kits'],
   ['#products', 'Products'],
-  ['#ritual', 'The Ritual'],
+  ['/ritual', 'The Ritual'],
   ['#subscription', 'Subscription'],
 ];
 

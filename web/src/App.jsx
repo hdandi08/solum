@@ -6,6 +6,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import SuccessPage from './pages/SuccessPage';
 import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
+import RitualPage from './pages/RitualPage';
 import './styles/global.css';
 
 // If Supabase drops auth tokens on the wrong page (e.g. site root instead of /account),
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/ritual" element={<RitualPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
