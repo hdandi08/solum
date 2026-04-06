@@ -8,8 +8,12 @@ db-push-prod:
 
 db-push-dev:
 	@[ -n "$(DEV_PROJECT_REF)" ] || (echo "Error: DEV_PROJECT_REF not set in .env.supabase" && exit 1)
-	@echo "→ Pushing migrations to DEV ($(DEV_PROJECT_REF))"
-	supabase db push --project-ref $(DEV_PROJECT_REF)
+	@echo "→ Linking to DEV ($(DEV_PROJECT_REF))"
+	supabase link --project-ref $(DEV_PROJECT_REF)
+	@echo "→ Pushing migrations to DEV"
+	supabase db push --yes
+	@echo "→ Re-linking to PROD ($(PROD_PROJECT_REF))"
+	supabase link --project-ref $(PROD_PROJECT_REF)
 
 # ─── EDGE FUNCTIONS ────────────────────────────────────────────────────────────
 
