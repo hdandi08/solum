@@ -1,0 +1,44 @@
+version: 0.2
+
+env:
+  parameter-store:
+    TEST_USER_EMAIL:           /solum/test/user-email
+    SUPABASE_URL:              /solum/test/supabase-url
+    SUPABASE_SERVICE_ROLE_KEY: /solum/test/supabase-service-role-key
+    DEV_BASE_URL:              /solum/test/dev-base-url
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - cd tests/e2e
+      - npm ci
+      - npx playwright install --with-deps chromium
+
+  build:
+    commands:
+      - cd tests/e2e
+      - npx playwright test --reporter=list,html
+      - echo "BUILD_EXIT=$?" >> $CODEBUILD_SRC_DIR/build-result.env
+
+  post_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - |
+        REPORT_DATE=$(date +%Y-%m-%d)
+        aws s3 sync tests/e2e/playwright-report \
+          s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet
+        echo "Report: https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/reports/$REPORT_DATE/index.html"
+      - |
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
+          aws sns publish \
+            --topic-arn $SNS_TOPIC_ARN \
+            --subject "SOLUM E2E Tests FAILED — $(date +%Y-%m-%d)" \
+            --message "Nightly e2e tests failed on dev. Check the report: https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/reports/$(date +%Y-%m-%d)/index.html"
+        fi
+
+artifacts:
+  files:
+    - tests/e2e/playwright-report/**/*
+  discard-paths: no

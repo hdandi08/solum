@@ -10,6 +10,7 @@ Format: date · what changed · where · done?
 
 | Date | Change | Where | Synced to prod? |
 |------|--------|-------|----------------|
+| 2026-04-06 | Dev site URL confirmed: https://dev.d3pa095gzazg3c.amplifyapp.com/ — no custom domain mapped yet | Amplify | N/A |
 
 ---
 
