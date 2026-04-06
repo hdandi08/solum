@@ -16,6 +16,16 @@ import SolumFooter from '../components/SolumFooter.jsx';
 
 export default function FullSite() {
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e, i) => {
         if (e.isIntersecting) {
