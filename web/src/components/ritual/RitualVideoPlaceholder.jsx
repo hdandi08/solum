@@ -8,8 +8,8 @@ const CSS = `
 .rvp-play.weekly{border-color:rgba(200,169,110,0.4);background:rgba(200,169,110,0.08);}
 .rvp-triangle{width:0;height:0;border-style:solid;border-width:11px 0 11px 20px;border-color:transparent transparent transparent var(--blue);margin-left:5px;}
 .rvp-triangle.weekly{border-color:transparent transparent transparent #c8a96e;}
-.rvp-tag{position:absolute;top:14px;left:16px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);background:rgba(8,9,11,0.7);padding:5px 10px;backdrop-filter:blur(4px);}
-.rvp-dur{position:absolute;bottom:14px;right:16px;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.rvp-tag{position:absolute;top:14px;left:16px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);background:rgba(8,9,11,0.7);padding:5px 10px;backdrop-filter:blur(4px);}
+.rvp-dur{position:absolute;bottom:14px;right:16px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);}
 @media(max-width:900px){.rvp{border-right:none;border-bottom:1px solid var(--line);}}
 `;
 
