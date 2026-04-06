@@ -1,8 +1,8 @@
 import RitualStepCard from './RitualStepCard';
 
 const CSS = `
-.rp-steps{max-width:1400px;margin:0 auto;padding:0 48px 80px;}
-@media(max-width:768px){.rp-steps{padding:0 24px 60px;}}
+.rp-steps{max-width:1400px;margin:0 auto;padding:40px 48px 80px;}
+@media(max-width:768px){.rp-steps{padding:24px 20px 60px;}}
 `;
 
 export default function RitualStepList({ steps, details, variant }) {

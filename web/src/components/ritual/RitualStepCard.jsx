@@ -1,59 +1,103 @@
+import RitualVideoPlaceholder from './RitualVideoPlaceholder';
+
 const CSS = `
-.rp-step{display:grid;grid-template-columns:120px 1fr;gap:48px;padding:48px 0;border-bottom:1px solid var(--line);}
-.rp-step:last-child{border-bottom:none;}
-.rp-step-left{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-top:4px;}
-.rp-step-num{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:.03em;line-height:1;}
-.rp-step-num.daily{color:var(--blue);}
-.rp-step-num.weekly{color:#c8a96e;}
-.rp-step-badge{font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600;padding:5px 10px;border:1px solid;}
-.rp-step-badge.daily{color:var(--blit);border-color:rgba(74,143,199,0.3);background:rgba(74,143,199,0.06);}
-.rp-step-badge.weekly{color:#c8a96e;border-color:rgba(200,169,110,0.3);background:rgba(200,169,110,0.06);}
-.rp-step-right{display:flex;flex-direction:column;gap:20px;}
-.rp-step-name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.08em;color:var(--bone);}
-.rp-step-chips{display:flex;gap:12px;flex-wrap:wrap;}
-.rp-step-chip{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);background:var(--mid);padding:5px 12px;}
-.rp-step-label{font-size:10px;letter-spacing:5px;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
-.rp-step-label.how.daily{color:var(--blit);}
-.rp-step-label.how.weekly{color:#c8a96e;}
-.rp-step-label.why{color:var(--stone);margin-top:16px;}
-.rp-step-how{font-size:16px;color:var(--bone);font-weight:300;line-height:1.65;}
-.rp-step-why{font-size:14px;color:var(--stone);font-weight:300;line-height:1.6;}
-@media(max-width:768px){
-  .rp-step{grid-template-columns:1fr;gap:16px;}
-  .rp-step-left{flex-direction:row;align-items:center;}
-  .rp-step-num{font-size:52px;}
+.rsc{background:var(--char);border:1px solid var(--line);overflow:hidden;margin-bottom:24px;}
+.rsc:last-child{margin-bottom:0;}
+.rsc-header{display:grid;grid-template-columns:56px 1fr auto;gap:20px;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);}
+.rsc-badge{width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;flex-shrink:0;}
+.rsc-badge.daily{background:var(--blue);color:#fff;}
+.rsc-badge.weekly{background:#c8a96e;color:var(--black);}
+.rsc-meta{}
+.rsc-product{font-size:9px;letter-spacing:4px;text-transform:uppercase;margin-bottom:3px;}
+.rsc-product.daily{color:var(--blit);}
+.rsc-product.weekly{color:#c8a96e;}
+.rsc-name{font-size:15px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone);font-weight:600;}
+.rsc-time-block{text-align:right;}
+.rsc-time-num{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;letter-spacing:-.5px;}
+.rsc-time-num.daily{color:var(--blue);}
+.rsc-time-num.weekly{color:#c8a96e;}
+.rsc-time-unit{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.rsc-body{display:grid;grid-template-columns:1fr 1fr;}
+.rsc-instructions{padding:24px 28px;overflow:auto;}
+.rsc-section-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.rsc-section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+.rsc-steps{display:flex;flex-direction:column;margin-bottom:20px;}
+.rsc-step-row{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+.rsc-step-row:last-child{border-bottom:none;}
+.rsc-step-n{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--stone);line-height:1.4;}
+.rsc-step-t{font-size:13px;font-weight:300;color:rgba(240,236,226,0.75);line-height:1.6;}
+.rsc-tip{margin-bottom:20px;border-left:2px solid var(--blue);background:rgba(46,109,164,0.05);padding:12px 16px;}
+.rsc-tip.weekly{border-left-color:#c8a96e;background:rgba(200,169,110,0.05);}
+.rsc-tip-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.rsc-tip-label.daily{color:var(--blit);}
+.rsc-tip-label.weekly{color:#c8a96e;}
+.rsc-tip-body{font-size:13px;font-weight:300;color:rgba(240,236,226,0.7);line-height:1.6;}
+.rsc-why{font-size:13px;font-weight:300;color:var(--stone);line-height:1.6;}
+@media(max-width:900px){
+  .rsc-body{grid-template-columns:1fr;}
+  .rsc-header{padding:16px 20px;gap:14px;}
+  .rsc-badge{width:40px;height:40px;font-size:18px;}
+  .rsc-time-num{font-size:28px;}
+  .rsc-instructions{padding:20px;}
 }
 `;
 
+function parseTime(time) {
+  const parts = time.split(' ');
+  return { num: parts[0], unit: parts[1] || 'MIN' };
+}
+
 export default function RitualStepCard({ position, step, detail, variant }) {
+  const { num, unit } = parseTime(step.time);
+
   return (
     <>
       <style>{CSS}</style>
-      <div className="rp-step">
-        <div className="rp-step-left">
-          <div className={`rp-step-num ${variant}`}>{String(position).padStart(2, '0')}</div>
-          <div className={`rp-step-badge ${variant}`}>Product {step.num}</div>
-        </div>
-        <div className="rp-step-right">
-          <div>
-            <div className="rp-step-name">{step.name}</div>
-            <div className="rp-step-chips">
-              <div className="rp-step-chip">{step.time}</div>
-              <div className="rp-step-chip">{step.zone}</div>
-            </div>
+      <div className="rsc">
+        <div className="rsc-header">
+          <div className={`rsc-badge ${variant}`}>{String(position).padStart(2, '0')}</div>
+          <div className="rsc-meta">
+            <div className={`rsc-product ${variant}`}>Product {step.num}</div>
+            <div className="rsc-name">{step.name}</div>
           </div>
-          {detail?.how && (
-            <div>
-              <div className={`rp-step-label how ${variant}`}>How</div>
-              <div className="rp-step-how">{detail.how}</div>
-            </div>
-          )}
-          {detail?.why && (
-            <div>
-              <div className="rp-step-label why">Why it matters</div>
-              <div className="rp-step-why">{detail.why}</div>
-            </div>
-          )}
+          <div className="rsc-time-block">
+            <div className={`rsc-time-num ${variant}`}>{num}</div>
+            <div className="rsc-time-unit">{unit} · {step.zone}</div>
+          </div>
+        </div>
+
+        <div className="rsc-body">
+          <RitualVideoPlaceholder productNum={step.num} time={step.time} variant={variant} />
+
+          <div className="rsc-instructions">
+            {detail?.steps?.length > 0 && (
+              <>
+                <div className="rsc-section-label">How to use</div>
+                <div className="rsc-steps">
+                  {detail.steps.map((s, i) => (
+                    <div className="rsc-step-row" key={i}>
+                      <div className="rsc-step-n">{i + 1}</div>
+                      <div className="rsc-step-t">{s}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {detail?.tip && (
+              <div className={`rsc-tip ${variant}`}>
+                <div className={`rsc-tip-label ${variant}`}>Tip</div>
+                <div className="rsc-tip-body">{detail.tip}</div>
+              </div>
+            )}
+
+            {detail?.why && (
+              <>
+                <div className="rsc-section-label">Why it matters</div>
+                <div className="rsc-why">{detail.why}</div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>
