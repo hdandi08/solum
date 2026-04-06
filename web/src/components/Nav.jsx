@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const CSS = `
@@ -30,6 +31,10 @@ const NAV_LINKS = [
 export default function Nav() {
   const [activeNav, setActiveNav] = useState('');
   const [user, setUser] = useState(null);
+  const { pathname } = useLocation();
+  const onFullSite = pathname === '/full';
+
+  const resolve = (href) => href.startsWith('#') && !onFullSite ? `/full${href}` : href;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
@@ -53,11 +58,11 @@ export default function Nav() {
     <>
       <style>{CSS}</style>
       <nav>
-        <a href="#home" className="nav-logo">SOLUM</a>
+        <a href={resolve('#home')} className="nav-logo">SOLUM</a>
         <ul className="nav-links">
           {NAV_LINKS.map(([href, label]) => (
             <li key={href}>
-              <a href={href} className={activeNav === href.slice(1) ? 'active-link' : ''}>{label}</a>
+              <a href={resolve(href)} className={activeNav === href.slice(1) ? 'active-link' : ''}>{label}</a>
             </li>
           ))}
         </ul>
@@ -76,7 +81,7 @@ export default function Nav() {
               <span>Account</span>
             )}
           </a>
-          <a href="#kits" className="nav-cta">Choose Your Kit</a>
+          <a href={resolve('#kits')} className="nav-cta">Choose Your Kit</a>
         </div>
       </nav>
     </>
