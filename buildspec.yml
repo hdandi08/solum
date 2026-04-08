@@ -4,7 +4,7 @@ env:
   parameter-store:
     TEST_USER_EMAIL:           /solum/test/user-email
     SUPABASE_URL:              /solum/test/supabase-url
-    SUPABASE_SERVICE_ROLE_KEY: /solum/test/supabase-service-role-key
+    SUPABASE_SERVICE_ROLE_KEY: /solum/test/supabase-svc-key
     DEV_BASE_URL:              /solum/test/dev-base-url
 
 phases:
