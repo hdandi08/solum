@@ -34,6 +34,7 @@ export default defineConfig({
       testMatch: /specs\/(0[1-4])-.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
+      teardown: 'teardown',
     },
     {
       name: 'authenticated',
@@ -43,6 +44,11 @@ export default defineConfig({
         storageState: '.auth/user.json',
       },
       dependencies: ['setup'],
+    },
+    {
+      name: 'teardown',
+      testDir: './setup',
+      testMatch: /teardown\.ts/,
     },
   ],
 });

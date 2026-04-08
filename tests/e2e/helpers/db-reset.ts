@@ -1,6 +1,6 @@
 import { getAdminClient } from './supabase-admin';
 
-const RITUAL_PRODUCTS = [
+export const RITUAL_PRODUCTS = [
   'product-01', 'product-02', 'product-03', 'product-04',
   'product-05', 'product-06', 'product-07', 'product-08',
 ];
