@@ -12,13 +12,13 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
-      - cd tests/e2e
+      - cd $CODEBUILD_SRC_DIR/tests/e2e
       - npm ci
       - npx playwright install --with-deps chromium
 
   build:
     commands:
-      - cd tests/e2e
+      - cd $CODEBUILD_SRC_DIR/tests/e2e
       - npx playwright test --reporter=list,html
       - echo "BUILD_EXIT=$?" >> $CODEBUILD_SRC_DIR/build-result.env
 
