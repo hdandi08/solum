@@ -36,6 +36,7 @@ async function hasMxRecords(domain: string): Promise<boolean> {
   }
 }
 
+
 function buildConfirmEmail(email: string, firstName: string | null, token: string, position: number): string {
   const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.com'
   const confirmUrl = `${siteUrl}/confirm?token=${token}`
