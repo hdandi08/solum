@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Post 04</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 64px;
+    font-family: 'Barlow Condensed', sans-serif;
+    gap: 20px;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--charcoal);
+    border: 1px solid rgba(46,109,164,0.25);
+    width: 100%;
+    max-width: 540px;
+  }
+  .toolbar-label {
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.4;
+    flex: 1;
+  }
+  .btn {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.8; }
+  .btn-export   { background: var(--steel-blue); color: #fff; }
+  .btn-download { background: var(--bone); color: var(--black); }
+
+  #post {
+    width: 540px;
+    height: 540px;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .rule-left {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--steel-blue);
+    z-index: 3;
+  }
+
+  .noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .post-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 26px 0;
+  }
+  .wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    opacity: 0.9;
+  }
+  .pill {
+    background: rgba(46,109,164,0.18);
+    border: 1px solid rgba(46,109,164,0.45);
+    padding: 5px 12px;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+
+  .post-middle {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 28px;
+    gap: 20px;
+  }
+
+  .eyebrow {
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+
+  .headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 86px;
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    color: var(--bone);
+  }
+  .headline .accent { color: var(--sky-blue); }
+
+  /* Step list */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .step {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    color: var(--steel-blue);
+    min-width: 18px;
+  }
+  .step-text {
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.72;
+  }
+
+  .post-footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 26px 22px;
+  }
+  .tagline {
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.28;
+  }
+  .url {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    opacity: 0.85;
+  }
+
+  .caption {
+    width: 100%;
+    max-width: 540px;
+    background: var(--charcoal);
+    border-left: 3px solid var(--steel-blue);
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .caption-label {
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    opacity: 0.7;
+  }
+  .caption-body {
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--bone);
+    opacity: 0.85;
+    white-space: pre-line;
+  }
+  .caption-body strong { font-weight: 600; }
+  .hashtags {
+    font-size: 13px;
+    color: var(--steel-blue);
+    opacity: 0.65;
+    line-height: 1.9;
+  }
+
+  body.export-mode {
+    background: #000;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  body.export-mode .toolbar,
+  body.export-mode .caption { display: none; }
+  body.export-mode #post { width: 100vmin; height: 100vmin; }
+
+  #dl-msg {
+    display: none;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="toolbar-label">Post 04 · 10-Minute Routine</span>
+  <span id="dl-msg">Generating...</span>
+  <button class="btn btn-export" onclick="toggleExport()">Export Mode</button>
+  <button class="btn btn-download" onclick="downloadPNG()">Download PNG</button>
+</div>
+
+<div id="post">
+  <div class="rule-left"></div>
+  <div class="noise"></div>
+
+  <div class="post-top">
+    <div class="wordmark">SOLUM</div>
+    <div class="pill">The Fix</div>
+  </div>
+
+  <div class="post-middle">
+    <div class="eyebrow">10 minutes. Every shower.</div>
+    <div class="headline">
+      A routine that<br>
+      actually <span class="accent">cleans</span><br>
+      you.
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div class="step-text">Scalp massage — 2 min</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-text">Body wash — amino acid, no sulphates</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-text">Exfoliate — dead skin actually removed</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-text">Back cloth — reach what you can't</div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-text">Lotion — within 3 minutes of towelling</div></div>
+    </div>
+  </div>
+
+  <div class="post-footer">
+    <div class="tagline">Your body. Done right.</div>
+    <div class="url">bysolum.com</div>
+  </div>
+</div>
+
+<div class="caption">
+  <div class="caption-label">Caption — paste into Instagram</div>
+  <div class="caption-body"><strong>10 minutes. A guided shower that actually cleans you.</strong>
+
+Most men shower for 8 minutes and wash nothing properly.
+
+Here's the routine that changes that:
+
+01 — Scalp massage (2 min). Firm circles, hairline to back. Your scalp is skin too.
+02 — Body wash. Amino acid formula. Cleans without stripping your skin barrier.
+03 — Exfoliate. Dead skin rolls off. You'll see it. First time, every time.
+04 — Back cloth. Both hands, over the shoulder. The only part of your body you never actually clean.
+05 — Lotion within 3 minutes of towelling. Skin absorbs 70% more moisture while still warm.
+
+<strong>That's it. 10 minutes. Get the full system → link in bio.</strong></div>
+  <div class="hashtags">#mensgrooming #bodycare #skincareformen #menswellness #showerroutine #groomingtips #mensbodycare</div>
+</div>
+
+<script>
+  function toggleExport() {
+    document.body.classList.toggle('export-mode');
+    const btn = document.querySelector('.btn-export');
+    btn.textContent = document.body.classList.contains('export-mode') ? 'Exit Export' : 'Export Mode';
+  }
+
+  function downloadPNG() {
+    const msg = document.getElementById('dl-msg');
+    msg.style.display = 'inline';
+    html2canvas(document.getElementById('post'), {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#08090B',
+      logging: false
+    }).then(canvas => {
+      msg.style.display = 'none';
+      const link = document.createElement('a');
+      link.download = 'SOLUM-post-04.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Instagram Highlights + Profile Picture</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    font-family: 'Barlow Condensed', sans-serif;
+    gap: 48px;
+  }
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+    align-self: flex-start;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  /* ── PROFILE PICTURE ── */
+  .pfp-row {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .preview-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .preview-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+  #pfp {
+    width: 320px;
+    height: 320px;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  #pfp::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 60%;
+    background: radial-gradient(ellipse, rgba(46,109,164,0.1) 0%, transparent 70%);
+  }
+  .pfp-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+    position: relative;
+    z-index: 1;
+    line-height: 1;
+  }
+  .pfp-rule {
+    width: 40px;
+    height: 3px;
+    background: var(--steel-blue);
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .circle-preview {
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ── HIGHLIGHT COVERS ── */
+  .covers-grid {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 960px;
+    width: 100%;
+  }
+  .cover-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .cover-name {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.35;
+  }
+
+  /* The square cover — steel blue fill, single white letter */
+  .cover {
+    width: 200px;
+    height: 200px;
+    background: var(--steel-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+  /* Subtle dark vignette for depth */
+  .cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(8,9,11,0.35) 100%);
+    pointer-events: none;
+  }
+  .cover-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 110px;
+    letter-spacing: 0.02em;
+    color: #fff;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .cover-word {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Circle preview */
+  .circle-preview-label {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.25;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--charcoal);
+    border: 1px solid rgba(46,109,164,0.25);
+    width: 100%;
+    max-width: 960px;
+  }
+  .toolbar-label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.4;
+    flex: 1;
+  }
+  .btn {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.8; }
+  .btn-blue { background: var(--steel-blue); color: #fff; }
+  .btn-bone { background: var(--bone); color: var(--black); }
+  #dl-msg {
+    display: none;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+  .note {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--bone);
+    opacity: 0.4;
+    text-align: center;
+    line-height: 1.7;
+    max-width: 540px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PROFILE PICTURE ── -->
+<p class="section-title">Profile Picture</p>
+<div class="pfp-row">
+  <div class="preview-wrap">
+    <div class="preview-label">Square (upload this)</div>
+    <div id="pfp">
+      <div class="pfp-wordmark">SOLUM</div>
+      <div class="pfp-rule"></div>
+    </div>
+  </div>
+  <div class="preview-wrap">
+    <div class="preview-label">As seen on Instagram (~110px)</div>
+    <div class="circle-preview" style="width:110px;height:110px;">
+      <div style="width:110px;height:110px;background:#08090B;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:0.12em;color:#F0ECE2;line-height:1;">SOLUM</span>
+        <div style="width:14px;height:2px;background:#2E6DA4;margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="preview-wrap">
+    <div class="preview-label">In-feed avatar (~40px)</div>
+    <div class="circle-preview" style="width:40px;height:40px;">
+      <div style="width:40px;height:40px;background:#08090B;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:0.1em;color:#F0ECE2;">SLM</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <span class="toolbar-label">Profile Picture</span>
+  <span id="dl-msg">Generating...</span>
+  <button class="btn btn-bone" onclick="downloadPFP()">Download 1080×1080</button>
+</div>
+
+<!-- ── HIGHLIGHT COVERS ── -->
+<p class="section-title">Highlight Covers — steel blue fill · single letter · word below</p>
+
+<div class="covers-grid">
+
+  <!-- P — PROBLEM -->
+  <div class="cover-wrap">
+    <div class="cover-name">1 · Problem</div>
+    <div class="cover" id="cover-problem">
+      <div class="cover-letter">P</div>
+      <div class="cover-word">Problem</div>
+    </div>
+    <div class="circle-preview-label">As circle on Instagram</div>
+    <div class="circle-preview" style="width:80px;height:80px;background:#2E6DA4;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#2E6DA4,#1a4a78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:0.02em;color:#fff;line-height:1;">P</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.55);">Problem</span>
+      </div>
+    </div>
+    <button class="btn btn-blue" onclick="downloadCover('cover-problem','SOLUM-highlight-problem')">Download</button>
+  </div>
+
+  <!-- R — RITUAL -->
+  <div class="cover-wrap">
+    <div class="cover-name">2 · Ritual</div>
+    <div class="cover" id="cover-ritual">
+      <div class="cover-letter">R</div>
+      <div class="cover-word">Ritual</div>
+    </div>
+    <div class="circle-preview-label">As circle on Instagram</div>
+    <div class="circle-preview" style="width:80px;height:80px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#2E6DA4,#1a4a78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:0.02em;color:#fff;line-height:1;">R</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.55);">Ritual</span>
+      </div>
+    </div>
+    <button class="btn btn-blue" onclick="downloadCover('cover-ritual','SOLUM-highlight-ritual')">Download</button>
+  </div>
+
+  <!-- F — FOUNDING -->
+  <div class="cover-wrap">
+    <div class="cover-name">3 · Founding</div>
+    <div class="cover" id="cover-founding" style="background:#1a4a78;">
+      <div class="cover-letter" style="color:#4A8FC7;">F</div>
+      <div class="cover-word" style="color:rgba(74,143,199,0.7);">Founding</div>
+    </div>
+    <div class="circle-preview-label">As circle on Instagram</div>
+    <div class="circle-preview" style="width:80px;height:80px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#1a4a78,#0d2d4a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:0.02em;color:#4A8FC7;line-height:1;">F</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,143,199,0.6);">Founding</span>
+      </div>
+    </div>
+    <button class="btn btn-blue" onclick="downloadCover('cover-founding','SOLUM-highlight-founding')">Download</button>
+  </div>
+
+  <!-- R — RESULTS -->
+  <div class="cover-wrap">
+    <div class="cover-name">4 · Results</div>
+    <div class="cover" id="cover-results">
+      <div class="cover-letter">✓</div>
+      <div class="cover-word">Results</div>
+    </div>
+    <div class="circle-preview-label">As circle on Instagram</div>
+    <div class="circle-preview" style="width:80px;height:80px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#2E6DA4,#1a4a78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:0.02em;color:#fff;line-height:1;">✓</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.55);">Results</span>
+      </div>
+    </div>
+    <button class="btn btn-blue" onclick="downloadCover('cover-results','SOLUM-highlight-results')">Download</button>
+  </div>
+
+</div>
+
+<p class="note">
+  Upload each as a square image when editing the highlight cover.<br>
+  Instagram crops to circle — the previews show exactly what people see.
+</p>
+
+<script>
+  async function downloadPFP() {
+    const msg = document.getElementById('dl-msg');
+    msg.style.display = 'inline';
+    const pfp = document.getElementById('pfp');
+
+    pfp.style.width  = '1080px';
+    pfp.style.height = '1080px';
+    pfp.querySelector('.pfp-wordmark').style.fontSize = '340px';
+    pfp.querySelector('.pfp-rule').style.width = '140px';
+    pfp.querySelector('.pfp-rule').style.height = '8px';
+    pfp.querySelector('.pfp-rule').style.marginTop = '40px';
+
+    const canvas = await html2canvas(pfp, { width:1080, height:1080, scale:1, useCORS:true, backgroundColor:'#08090B', logging:false });
+
+    pfp.style.width  = '320px';
+    pfp.style.height = '320px';
+    pfp.querySelector('.pfp-wordmark').style.fontSize = '100px';
+    pfp.querySelector('.pfp-rule').style.width = '40px';
+    pfp.querySelector('.pfp-rule').style.height = '3px';
+    pfp.querySelector('.pfp-rule').style.marginTop = '12px';
+    msg.style.display = 'none';
+
+    const link = document.createElement('a');
+    link.download = 'SOLUM-profile-picture.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  async function downloadCover(id, filename) {
+    const el = document.getElementById(id);
+    const letter = el.querySelector('.cover-letter');
+    const word   = el.querySelector('.cover-word');
+
+    el.style.width  = '1080px';
+    el.style.height = '1080px';
+    letter.style.fontSize = '590px';
+    letter.style.marginBottom = '0px';
+    word.style.fontSize = '58px';
+    word.style.letterSpacing = '0.28em';
+    word.style.marginTop = '20px';
+
+    const canvas = await html2canvas(el, { width:1080, height:1080, scale:1, useCORS:true, backgroundColor:null, logging:false });
+
+    el.style.width  = '200px';
+    el.style.height = '200px';
+    letter.style.fontSize = '110px';
+    letter.style.marginBottom = '';
+    word.style.fontSize = '11px';
+    word.style.letterSpacing = '';
+    word.style.marginTop = '';
+
+    const link = document.createElement('a');
+    link.download = filename + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+</script>
+</body>
+</html>
