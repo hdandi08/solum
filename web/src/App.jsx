@@ -6,6 +6,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import SuccessPage from './pages/SuccessPage';
 import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ConfirmPage from './pages/ConfirmPage';
 import RitualPage from './pages/RitualPage';
 import './styles/global.css';
 
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/ritual" element={<RitualPage />} />
+        <Route path="/confirm" element={<ConfirmPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

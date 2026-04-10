@@ -1,4 +1,67 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+
+// Common domains — used to suggest corrections for typos
+const COMMON_DOMAINS = [
+  'gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com',
+  'me.com','live.com','aol.com','protonmail.com','googlemail.com',
+  'yahoo.co.uk','hotmail.co.uk','live.co.uk','btinternet.com',
+  'sky.com','talktalk.net','virgin.net','virginmedia.com',
+];
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function suggestEmail(email) {
+  const at = email.lastIndexOf('@');
+  if (at < 1) return null;
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1).toLowerCase();
+  if (!domain.includes('.')) return null;
+  for (const correct of COMMON_DOMAINS) {
+    if (domain === correct) return null; // already correct
+    if (levenshtein(domain, correct) <= 2) return `${local}@${correct}`;
+  }
+  return null;
+}
+
+// Launch date: 8 weeks from 10 April 2026
+const LAUNCH_DATE = new Date('2026-06-05T08:00:00Z');
+const FOUNDING_LIMIT = 100;
+
+function detectSource() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source');
+    if (utmSource) return { source: utmSource.toLowerCase(), medium: params.get('utm_medium') || null, campaign: params.get('utm_campaign') || null };
+    const ref = document.referrer;
+    if (!ref) return { source: 'direct', medium: null, campaign: null };
+    const hostname = new URL(ref).hostname;
+    if (hostname.includes('instagram.com')) return { source: 'instagram', medium: 'social', campaign: null };
+    if (hostname.includes('google.')) return { source: 'google', medium: 'search', campaign: null };
+    if (hostname.includes('facebook.com')) return { source: 'facebook', medium: 'social', campaign: null };
+    if (hostname.includes('tiktok.com')) return { source: 'tiktok', medium: 'social', campaign: null };
+    return { source: 'referral', medium: null, campaign: null };
+  } catch {
+    return { source: 'direct', medium: null, campaign: null };
+  }
+}
+
+function getTimeLeft() {
+  const diff = LAUNCH_DATE - Date.now();
+  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  return { days, hours, minutes, seconds };
+}
 
 const styles = `
   .cs-wrap {
@@ -95,6 +158,103 @@ const styles = `
     margin-bottom: 48px;
   }
 
+  /* Countdown */
+  .cs-countdown-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 48px;
+    gap: 12px;
+  }
+  .cs-countdown-label {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(240,236,226,0.5);
+    font-weight: 600;
+  }
+  .cs-countdown {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(46,109,164,0.25);
+  }
+  .cs-cd-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px;
+    border-right: 1px solid rgba(46,109,164,0.15);
+    min-width: 72px;
+  }
+  .cs-cd-unit:last-child { border-right: none; }
+  .cs-cd-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.05em;
+    color: #4a8fc7;
+    line-height: 1;
+  }
+  .cs-cd-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(240,236,226,0.45);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* Founding scarcity bar */
+  .cs-founding-bar {
+    width: 100%;
+    max-width: 540px;
+    background: rgba(26,74,120,0.12);
+    border: 1px solid rgba(46,109,164,0.35);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cs-founding-bar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cs-founding-bar-label {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #4a8fc7;
+    font-weight: 600;
+  }
+  .cs-founding-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: #f0ece2;
+  }
+  .cs-founding-count em { color: #4a8fc7; font-style: normal; }
+  .cs-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(46,109,164,0.18);
+    position: relative;
+  }
+  .cs-progress-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    background: #4a8fc7;
+    transition: width 0.6s ease;
+  }
+  .cs-founding-bar-note {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(240,236,226,0.88);
+    letter-spacing: 0.3px;
+  }
+  .cs-founding-bar-note strong { color: #f0ece2; font-weight: 600; }
+
   /* Stats intro */
   .cs-stats-intro {
     font-size: 15px;
@@ -163,33 +323,7 @@ const styles = `
   }
   .cs-offer-bar strong { color: #4a8fc7; }
 
-  /* Mailchimp overrides */
-  #mc_embed_signup { background: transparent !important; font-family: 'Barlow Condensed', sans-serif !important; width: 100%; }
-  #mc_embed_signup form { padding: 0 !important; }
-  #mc_embed_signup .mc-field-group { width: 100% !important; padding-bottom: 0 !important; }
-  #mc_embed_signup input.email {
-    width: 100% !important; background: rgba(24,28,36,0.8) !important;
-    border: 1px solid rgba(46,109,164,0.35) !important; border-bottom: none !important;
-    color: #f0ece2 !important; font-family: 'Barlow Condensed', sans-serif !important;
-    font-size: 15px !important; letter-spacing: 1px !important; padding: 16px 20px !important;
-    outline: none !important; border-radius: 0 !important; height: auto !important;
-  }
-  #mc_embed_signup input.email::placeholder { color: rgba(240,236,226,0.3) !important; }
-  #mc_embed_signup input.email:focus { border-color: rgba(74,143,199,0.6) !important; }
-  #mc_embed_signup .button {
-    width: 100% !important; background: #2e6da4 !important; color: #f0ece2 !important;
-    font-family: 'Bebas Neue', sans-serif !important; font-size: 18px !important;
-    letter-spacing: 3px !important; padding: 16px 32px !important; border: none !important;
-    border-radius: 0 !important; cursor: crosshair !important; transition: background 0.2s !important;
-    height: auto !important; line-height: 1 !important; margin: 0 !important;
-  }
-  #mc_embed_signup .button:hover { background: #4a8fc7 !important; }
-  #mc_embed_signup div#mce-responses { padding: 0 !important; margin: 0 !important; float: none !important; width: 100% !important; }
-  #mc_embed_signup #mce-error-response,
-  #mc_embed_signup #mce-success-response { font-size: 13px !important; letter-spacing: 1px !important; padding: 10px 0 0 !important; margin: 0 !important; }
-  #mc_embed_signup #mce-success-response { color: #3aaa68 !important; }
-
-  /* Fallback form */
+  /* Form inputs */
   .cs-form-placeholder { display: flex; flex-direction: column; gap: 0; }
   .cs-input {
     background: rgba(24,28,36,0.8);
@@ -202,6 +336,7 @@ const styles = `
     padding: 16px 20px;
     outline: none;
     width: 100%;
+    box-sizing: border-box;
   }
   .cs-input::placeholder { color: rgba(240,236,226,0.3); }
   .cs-input:focus { border-color: rgba(74,143,199,0.6); }
@@ -217,8 +352,37 @@ const styles = `
     cursor: crosshair;
     transition: background 0.2s;
   }
-  .cs-submit:hover { background: #4a8fc7; }
+  .cs-submit:hover:not(:disabled) { background: #4a8fc7; }
+  .cs-submit:disabled { background: #1a4a78; cursor: default; opacity: 0.8; }
   .cs-submit.sent { background: #1a4a78; cursor: default; }
+  .cs-typo-suggest {
+    background: rgba(74,143,199,0.08);
+    border: 1px solid rgba(74,143,199,0.3);
+    border-top: none;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: rgba(240,236,226,0.85);
+    letter-spacing: 0.3px;
+  }
+  .cs-typo-btn {
+    background: none;
+    border: none;
+    color: #4a8fc7;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+  .cs-typo-btn:hover { color: #f0ece2; }
+  .cs-form-error {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #e55a5a;
+    margin-top: 8px;
+  }
   .cs-privacy {
     font-size: 13px;
     letter-spacing: 1.5px;
@@ -226,6 +390,123 @@ const styles = `
     text-transform: uppercase;
     margin-top: 12px;
   }
+
+  /* Success state */
+  .cs-success {
+    background: rgba(46,109,164,0.08);
+    border: 1px solid rgba(46,109,164,0.35);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+  }
+  .cs-success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    color: #f0ece2;
+  }
+  .cs-success-num {
+    color: #4a8fc7;
+    font-style: normal;
+  }
+  .cs-success-body {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.82);
+    line-height: 1.6;
+  }
+
+  /* Founding member section */
+  .cs-founding {
+    position: relative;
+    z-index: 1;
+    padding: 72px 48px;
+    border-top: 1px solid rgba(240,236,226,0.055);
+    border-bottom: 1px solid rgba(240,236,226,0.055);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(26,74,120,0.04);
+  }
+  .cs-founding-eyebrow {
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #4a8fc7;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .cs-founding-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5.5vw, 68px);
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .cs-founding-title em { color: #4a8fc7; font-style: normal; }
+  .cs-founding-sub {
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 300;
+    color: rgba(240,236,226,0.85);
+    max-width: 580px;
+    line-height: 1.6;
+    margin-bottom: 52px;
+  }
+  .cs-founding-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    max-width: 860px;
+    width: 100%;
+    border: 1px solid rgba(240,236,226,0.07);
+    margin-bottom: 48px;
+  }
+  .cs-founding-item {
+    padding: 32px 28px;
+    border-right: 1px solid rgba(240,236,226,0.07);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cs-founding-item:last-child { border-right: none; }
+  .cs-founding-icon {
+    font-size: 24px;
+    line-height: 1;
+  }
+  .cs-founding-item-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #4a8fc7;
+    font-weight: 600;
+  }
+  .cs-founding-item-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    line-height: 1;
+  }
+  .cs-founding-item-body {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.82);
+    line-height: 1.6;
+  }
+  .cs-founding-note {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(240,236,226,0.6);
+    letter-spacing: 0.5px;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+  .cs-founding-note strong { color: rgba(240,236,226,0.88); font-weight: 600; }
 
   /* Provenance */
   .cs-provenance {
@@ -576,12 +857,19 @@ const styles = `
     .cs-main { padding: 100px 20px 60px; }
     .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
     .cs-subhead { font-size: 17px; }
+    .cs-countdown { flex-wrap: wrap; }
+    .cs-cd-unit { min-width: 60px; padding: 12px 16px; }
+    .cs-cd-num { font-size: 34px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
     .cs-stat:last-child { border-bottom: none; }
     .cs-stat-num { font-size: 44px; }
     .cs-stat-label { font-size: 14px; }
+    .cs-founding { padding: 52px 24px; }
+    .cs-founding-grid { grid-template-columns: 1fr; }
+    .cs-founding-item { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
+    .cs-founding-item:last-child { border-bottom: none; }
     .cs-provenance { grid-template-columns: 1fr 1fr; }
     .cs-prov-item { padding: 28px 20px; }
     .cs-prov-item:nth-child(2) { border-right: none; }
@@ -632,48 +920,214 @@ const PRODUCTS = [
   { num: '08', name: 'Bamboo Cloth' },
 ];
 
-const MC_ACTION = 'https://bysolum.us5.list-manage.com/subscribe/post?u=45c32693942e5a8c9e6828488&id=31f70ffa8e&f_id=0099c2e1f0';
-const MC_HONEYPOT = 'b_45c32693942e5a8c9e6828488_31f70ffa8e';
+function pad(n) {
+  return String(n).padStart(2, '0');
+}
 
-function MailchimpForm({ label = 'Claim Early Access' }) {
-  const [submitted, setSubmitted] = useState(false);
+function Countdown() {
+  const [time, setTime] = useState(getTimeLeft());
 
-  const handleSubmit = () => {
-    // Delay success state so form POST completes before unmounting
-    setTimeout(() => setSubmitted(true), 800);
-  };
+  useEffect(() => {
+    const id = setInterval(() => setTime(getTimeLeft()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="cs-countdown-wrap">
+      <div className="cs-countdown-label">Launching in</div>
+      <div className="cs-countdown">
+        {[
+          { val: time.days, label: 'Days' },
+          { val: time.hours, label: 'Hours' },
+          { val: time.minutes, label: 'Min' },
+          { val: time.seconds, label: 'Sec' },
+        ].map(({ val, label }) => (
+          <div key={label} className="cs-cd-unit">
+            <div className="cs-cd-num">{pad(val)}</div>
+            <div className="cs-cd-label">{label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [suggestion, setSuggestion] = useState(null);
+  const [position, setPosition] = useState(null);
+
+  function handleEmailChange(e) {
+    const val = e.target.value;
+    setEmail(val);
+    setError('');
+    // Only suggest once user has typed a full-looking email
+    if (val.includes('@') && val.includes('.')) {
+      setSuggestion(suggestEmail(val));
+    } else {
+      setSuggestion(null);
+    }
+  }
+
+  function applySuggestion() {
+    setEmail(suggestion);
+    setSuggestion(null);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError('');
+    setSuggestion(null);
+    setLoading(true);
+
+    const { source, medium, campaign } = detectSource();
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+
+    try {
+      const res = await fetch(`${supabaseUrl}/functions/v1/join-waitlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          first_name: firstName.trim() || null,
+          source,
+          utm_medium: medium,
+          utm_campaign: campaign,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong. Try again.');
+        return;
+      }
+
+      setPosition(data.position);
+      onSuccess && onSuccess();
+    } catch (err) {
+      console.error(err);
+      setError('Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (position !== null) {
+    const isFounder = position <= FOUNDING_LIMIT;
+    return (
+      <div className="cs-success">
+        <div className="cs-success-title">
+          {isFounder ? (
+            <>{firstName ? `${firstName}, you're` : "You're"} Founding Member <em className="cs-success-num">#{position}</em></>
+          ) : (
+            <>{firstName ? `${firstName}, you're` : "You're"} on the waitlist — <em className="cs-success-num">#{position}</em></>
+          )}
+        </div>
+        <div className="cs-success-body">
+          {isFounder
+            ? "Founding Member spot locked. You'll get first access, permanent pricing, and input on what we build next. One email when we launch."
+            : "You're on the list. We'll email you the moment launch kits go live."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cs-form-placeholder">
-      {/* iframe always in DOM so it exists when form submits */}
-      <iframe name="mc_iframe" style={{ display: 'none' }} title="mc" />
-      {!submitted ? (
-        <form
-          action={MC_ACTION}
-          method="post"
-          target="mc_iframe"
-          onSubmit={handleSubmit}
-        >
-          <input
-            className="cs-input"
-            type="email"
-            name="EMAIL"
-            placeholder="Enter your email address"
-            required
-          />
-          {/* Mailchimp honeypot — do not remove */}
-          <input type="text" name={MC_HONEYPOT} style={{ position: 'absolute', left: '-5000px' }} tabIndex="-1" defaultValue="" />
-          <button type="submit" className="cs-submit">{label}</button>
-        </form>
-      ) : (
-        <button className="cs-submit sent">✓ You're on the list</button>
-      )}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <input
+          className="cs-input"
+          type="text"
+          value={firstName}
+          onChange={e => setFirstName(e.target.value)}
+          placeholder="First name (optional)"
+          autoComplete="given-name"
+        />
+        <input
+          className="cs-input"
+          style={{ borderTop: 'none' }}
+          type="email"
+          value={email}
+          onChange={handleEmailChange}
+          placeholder="Your email address"
+          required
+          autoComplete="email"
+        />
+        {suggestion && (
+          <div className="cs-typo-suggest">
+            Did you mean <button type="button" className="cs-typo-btn" onClick={applySuggestion}>{suggestion}</button>?
+          </div>
+        )}
+        <button type="submit" className="cs-submit" disabled={loading}>
+          {loading ? 'Checking & securing your spot...' : label}
+        </button>
+      </form>
+      {error && <div className="cs-form-error">{error}</div>}
+    </div>
+  );
+}
+
+function FoundingBar({ count }) {
+  const spots = Math.max(0, FOUNDING_LIMIT - (count || 0));
+  const filled = Math.min(100, ((count || 0) / FOUNDING_LIMIT) * 100);
+  const isFull = spots === 0;
+
+  return (
+    <div className="cs-founding-bar">
+      <div className="cs-founding-bar-top">
+        <div className="cs-founding-bar-label">Founding Members</div>
+        <div className="cs-founding-count">
+          {isFull
+            ? <><em>100 / 100</em> — Sold Out</>
+            : <><em>{count || 0}</em> / {FOUNDING_LIMIT} spots taken</>}
+        </div>
+      </div>
+      <div className="cs-progress-track">
+        <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
+      </div>
+      <div className="cs-founding-bar-note">
+        {isFull
+          ? 'All founding spots are gone. You can still join the waitlist for launch access.'
+          : <><strong>{spots} spot{spots !== 1 ? 's' : ''} remaining.</strong> Only 100 people get the product at launch — and permanent Founding Member benefits.</>}
+      </div>
     </div>
   );
 }
 
 export default function ComingSoon() {
-  useEffect(() => {}, []);
+  const [waitlistCount, setWaitlistCount] = useState(null);
+
+  useEffect(() => {
+    async function fetchCount() {
+      try {
+        const { count } = await supabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('checkout_status', 'waitlist');
+        setWaitlistCount(count || 0);
+      } catch {
+        // Silent fail — count just won't show
+      }
+    }
+    fetchCount();
+  }, []);
+
+  function handleSuccess() {
+    // Refresh count after signup
+    supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('checkout_status', 'waitlist')
+      .then(({ count }) => setWaitlistCount(count || 0));
+  }
 
   return (
     <>
@@ -699,7 +1153,74 @@ export default function ComingSoon() {
             <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. In 10 minutes a day, your body gets properly clean for the first time.</strong>
           </p>
 
-          {/* 2 — Stats */}
+          {/* Countdown */}
+          <Countdown />
+
+          {/* Founding member scarcity bar */}
+          <FoundingBar count={waitlistCount} />
+
+          {/* CTA first */}
+          <div className="cs-form-wrap">
+            <div className="cs-offer">100 Launch Kits · First Come, First Served</div>
+            <div className="cs-offer-bar">
+              Founding Members get <strong>first access + locked pricing</strong> — forever
+            </div>
+            <WaitlistForm label="Claim My Founding Member Spot" onSuccess={handleSuccess} />
+            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+          </div>
+        </main>
+
+        {/* 2 — Founding Member benefits */}
+        <div className="cs-founding">
+          <div className="cs-founding-eyebrow">Founding Members Only</div>
+          <h2 className="cs-founding-title">
+            The First <em>100</em> Get<br />Something Nobody Else Does
+          </h2>
+          <p className="cs-founding-sub">
+            SOLUM is building something permanent. The people who show up at the start
+            shape what it becomes — and get rewarded for it. Forever.
+          </p>
+
+          <div className="cs-founding-grid">
+            <div className="cs-founding-item">
+              <div className="cs-founding-icon">🔒</div>
+              <div className="cs-founding-item-label">Locked In</div>
+              <div className="cs-founding-item-title">Founding Price. Forever.</div>
+              <div className="cs-founding-item-body">
+                Whatever you pay at launch is your price permanently. As the range grows
+                and prices rise, you never pay more. Your subscription never increases.
+              </div>
+            </div>
+            <div className="cs-founding-item">
+              <div className="cs-founding-icon">📦</div>
+              <div className="cs-founding-item-label">Free Upgrades</div>
+              <div className="cs-founding-item-title">Every New Product. Automatically.</div>
+              <div className="cs-founding-item-body">
+                When we add a new product to the lineup — a new tool, a new formula,
+                a new supplier — Founding Members get it in their next box. Before
+                anyone else. No extra charge.
+              </div>
+            </div>
+            <div className="cs-founding-item">
+              <div className="cs-founding-icon">🎯</div>
+              <div className="cs-founding-item-label">Direct Input</div>
+              <div className="cs-founding-item-title">You Help Build What's Next.</div>
+              <div className="cs-founding-item-body">
+                Fragrance selection. Formula testing. New product decisions. Founding
+                Members get asked first — your feedback directly shapes the next
+                iteration of SOLUM.
+              </div>
+            </div>
+          </div>
+
+          <div className="cs-founding-note">
+            <strong>This is not a discount code.</strong> Founding Member status is permanent —
+            tied to your account, not a campaign. Once the 100 spots are gone, this tier closes. It will not reopen.
+          </div>
+        </div>
+
+        {/* 3 — Stats */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 24px', borderBottom: '1px solid rgba(240,236,226,0.055)' }}>
           <div className="cs-stats-intro">Here's what actually happens when you do it right:</div>
           <div className="cs-stats">
             <div className="cs-stat">
@@ -719,17 +1240,7 @@ export default function ComingSoon() {
               <div className="cs-stat-label">the ritual is automatic.<br />you don't think about it.</div>
             </div>
           </div>
-
-          {/* 3 — CTA first */}
-          <div className="cs-form-wrap">
-            <div className="cs-offer">Early Access — Limited Spots</div>
-            <div className="cs-offer-bar">
-              Sign up now → get <strong>20% off your first kit</strong> at launch
-            </div>
-            <MailchimpForm label="Claim Early Access" />
-            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
-          </div>
-        </main>
+        </div>
 
         {/* 4 — Provenance */}
         <div className="cs-provenance">
@@ -850,10 +1361,14 @@ export default function ComingSoon() {
 
         {/* 7 — CTA second */}
         <div className="cs-cta2">
-          <div className="cs-cta2-headline">Start the ritual. See the difference by week one.</div>
-          <div className="cs-cta2-sub">Sign up for early access — 20% off your first kit at launch.</div>
+          <div className="cs-cta2-headline">100 Founding Members. That's the limit.</div>
+          <div className="cs-cta2-sub">
+            Locked pricing. Free product upgrades. Direct input into what we build next.<br />
+            This tier closes permanently when it fills.
+          </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
-            <MailchimpForm label="Join the Waitlist" />
+            <FoundingBar count={waitlistCount} />
+            <WaitlistForm label="Claim My Founding Member Spot" onSuccess={handleSuccess} />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
         </div>
