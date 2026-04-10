@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Carousel · Founding Members</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 80px;
+    font-family: 'Barlow Condensed', sans-serif;
+    gap: 20px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--charcoal);
+    border: 1px solid rgba(46,109,164,0.25);
+    width: 100%;
+    max-width: 580px;
+    flex-wrap: wrap;
+  }
+  .toolbar-label { font-weight: 500; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone); opacity: 0.4; flex: 1; min-width: 140px; }
+  .btn { font-weight: 600; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 9px 16px; border: none; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+  .btn:hover { opacity: 0.8; }
+  .btn-blue { background: var(--steel-blue); color: #fff; }
+  .btn-bone { background: var(--bone); color: var(--black); }
+  #dl-msg { font-weight: 500; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sky-blue); display: none; }
+
+  /* ── SLIDE NAVIGATOR ── */
+  .nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(240,236,226,0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nav-dot.active { background: var(--sky-blue); }
+  .nav-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--bone);
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 0 6px;
+    transition: opacity 0.2s;
+  }
+  .nav-btn:hover { opacity: 1; }
+
+  /* ── SLIDE WRAPPER ── */
+  .slide-outer {
+    width: 540px;
+    height: 540px;
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  /* All slides sit in a row, we translate */
+  .slides-track {
+    display: flex;
+    width: calc(540px * 5);
+    height: 540px;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ── INDIVIDUAL SLIDE ── */
+  .slide {
+    width: 540px;
+    height: 540px;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .rule-left {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--steel-blue);
+    z-index: 3;
+  }
+
+  /* Slide counter top-right */
+  .slide-counter {
+    position: absolute;
+    top: 24px; right: 26px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgba(240,236,226,0.25);
+    font-weight: 600;
+    z-index: 4;
+  }
+
+  .post-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 26px 0;
+  }
+  .wordmark { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.15em; color: var(--bone); opacity: 0.9; }
+  .pill { background: rgba(46,109,164,0.18); border: 1px solid rgba(46,109,164,0.45); padding: 5px 12px; font-weight: 600; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--sky-blue); }
+
+  .post-middle {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 28px;
+    gap: 20px;
+  }
+
+  .post-footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 26px 22px;
+  }
+  .tagline { font-weight: 600; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone); opacity: 0.28; }
+  .url { font-weight: 600; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel-blue); opacity: 0.85; }
+
+  /* ── SLIDE 1 — HOOK ── */
+  .s1-eyebrow { font-weight: 600; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sky-blue); }
+  .s1-headline { font-family: 'Bebas Neue', sans-serif; font-size: 96px; line-height: 0.88; letter-spacing: 0.02em; color: var(--bone); }
+  .s1-headline .num { color: var(--sky-blue); }
+  .s1-headline .dim { opacity: 0.28; }
+  .s1-sub { font-size: 17px; font-weight: 400; color: rgba(240,236,226,0.7); line-height: 1.5; max-width: 360px; letter-spacing: 0.02em; }
+  .s1-sub strong { color: var(--bone); font-weight: 600; }
+
+  /* ── SLIDES 2/3/4 — BENEFITS ── */
+  .benefit-num-large {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+    color: var(--steel-blue);
+  }
+  .benefit-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    color: var(--bone);
+  }
+  .benefit-rule {
+    width: 40px;
+    height: 2px;
+    background: var(--steel-blue);
+  }
+  .benefit-body {
+    font-size: 18px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.82);
+    line-height: 1.6;
+    max-width: 400px;
+  }
+  .benefit-body strong { color: var(--bone); font-weight: 600; }
+
+  /* ── SLIDE 5 — CTA ── */
+  .cta-eyebrow { font-weight: 600; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sky-blue); }
+  .cta-headline { font-family: 'Bebas Neue', sans-serif; font-size: 80px; line-height: 0.9; letter-spacing: 0.02em; color: var(--bone); }
+  .cta-headline .accent { color: var(--sky-blue); }
+  .cta-box {
+    border: 1px solid rgba(46,109,164,0.35);
+    background: rgba(46,109,164,0.08);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 380px;
+  }
+  .cta-box-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sky-blue); font-weight: 600; }
+  .cta-box-text { font-size: 15px; font-weight: 400; color: rgba(240,236,226,0.85); line-height: 1.5; }
+  .cta-box-text strong { color: var(--bone); font-weight: 600; }
+
+  /* ── CAPTION ── */
+  .caption {
+    width: 100%;
+    max-width: 580px;
+    background: var(--charcoal);
+    border-left: 3px solid var(--steel-blue);
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .caption-label { font-weight: 600; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--steel-blue); opacity: 0.7; }
+  .caption-body { font-weight: 300; font-size: 15px; line-height: 1.7; color: var(--bone); opacity: 0.85; white-space: pre-line; }
+  .caption-body strong { font-weight: 600; }
+  .hashtags { font-size: 13px; color: var(--steel-blue); opacity: 0.65; line-height: 1.9; }
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <span class="toolbar-label">Carousel · Founding Members · 5 slides</span>
+  <span id="dl-msg">Downloading...</span>
+  <button class="btn btn-blue" onclick="prevSlide()">← Prev</button>
+  <div class="nav" id="dots"></div>
+  <button class="btn btn-blue" onclick="nextSlide()">Next →</button>
+  <button class="btn btn-bone" onclick="downloadAll()">Download All 5</button>
+</div>
+
+<!-- SLIDE VIEWPORT -->
+<div class="slide-outer">
+  <div class="slides-track" id="track">
+
+    <!-- ── SLIDE 1 — HOOK ── -->
+    <div class="slide" id="slide-1">
+      <div class="rule-left"></div>
+      <div class="slide-counter">1 / 5</div>
+      <div class="post-top">
+        <div class="wordmark">SOLUM</div>
+        <div class="pill">Founding Members</div>
+      </div>
+      <div class="post-middle">
+        <div class="s1-eyebrow">Launching June 2026</div>
+        <div class="s1-headline">
+          <div class="dim">Only</div>
+          <div><span class="num">100</span> people</div>
+          <div>get it first.</div>
+        </div>
+        <div class="s1-sub">
+          The first 100 get something <strong>nobody else ever will.</strong> Swipe to see what.
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="tagline">Your body. Done right.</div>
+        <div class="url">bysolum.com</div>
+      </div>
+    </div>
+
+    <!-- ── SLIDE 2 — BENEFIT 01 ── -->
+    <div class="slide" id="slide-2">
+      <div class="rule-left"></div>
+      <div class="slide-counter">2 / 5</div>
+      <div class="post-top">
+        <div class="wordmark">SOLUM</div>
+        <div class="pill">Founding · 01 of 03</div>
+      </div>
+      <div class="post-middle">
+        <div class="benefit-num-large">01</div>
+        <div class="benefit-headline">Locked<br>pricing.<br>Forever.</div>
+        <div class="benefit-rule"></div>
+        <div class="benefit-body">
+          Whatever you pay at launch is your price <strong>permanently.</strong> As the range grows and prices rise — yours never does. Not a promo. Not a code. Locked to your account.
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="tagline">Your body. Done right.</div>
+        <div class="url">bysolum.com</div>
+      </div>
+    </div>
+
+    <!-- ── SLIDE 3 — BENEFIT 02 ── -->
+    <div class="slide" id="slide-3">
+      <div class="rule-left"></div>
+      <div class="slide-counter">3 / 5</div>
+      <div class="post-top">
+        <div class="wordmark">SOLUM</div>
+        <div class="pill">Founding · 02 of 03</div>
+      </div>
+      <div class="post-middle">
+        <div class="benefit-num-large">02</div>
+        <div class="benefit-headline">Every new<br>product.<br>Free.</div>
+        <div class="benefit-rule"></div>
+        <div class="benefit-body">
+          When we add something new — a new tool, a new formula, a new supplier — it goes <strong>automatically in your next box.</strong> Before it's available to anyone else. No extra charge.
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="tagline">Your body. Done right.</div>
+        <div class="url">bysolum.com</div>
+      </div>
+    </div>
+
+    <!-- ── SLIDE 4 — BENEFIT 03 ── -->
+    <div class="slide" id="slide-4">
+      <div class="rule-left"></div>
+      <div class="slide-counter">4 / 5</div>
+      <div class="post-top">
+        <div class="wordmark">SOLUM</div>
+        <div class="pill">Founding · 03 of 03</div>
+      </div>
+      <div class="post-middle">
+        <div class="benefit-num-large">03</div>
+        <div class="benefit-headline">You help<br>build<br>what's next.</div>
+        <div class="benefit-rule"></div>
+        <div class="benefit-body">
+          Fragrance. Formula. New products. <strong>Founding Members get asked first.</strong> Your feedback directly shapes the next version of SOLUM. This is not a survey — it's a seat at the table.
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="tagline">Your body. Done right.</div>
+        <div class="url">bysolum.com</div>
+      </div>
+    </div>
+
+    <!-- ── SLIDE 5 — CTA ── -->
+    <div class="slide" id="slide-5">
+      <div class="rule-left"></div>
+      <div class="slide-counter">5 / 5</div>
+      <div class="post-top">
+        <div class="wordmark">SOLUM</div>
+        <div class="pill">Founding Members</div>
+      </div>
+      <div class="post-middle">
+        <div class="cta-eyebrow">This tier closes permanently at 100</div>
+        <div class="cta-headline">
+          Your spot<br>is still<br><span class="accent">open.</span>
+        </div>
+        <div class="cta-box">
+          <div class="cta-box-label">What you get</div>
+          <div class="cta-box-text">
+            <strong>Locked pricing forever</strong> · <strong>Free product upgrades</strong> · <strong>Input on what we build next</strong>
+          </div>
+        </div>
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--sky-blue);">
+          Link in bio → bysolum.com
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="tagline">Your body. Done right.</div>
+        <div class="url">bysolum.com</div>
+      </div>
+    </div>
+
+  </div><!-- /slides-track -->
+</div><!-- /slide-outer -->
+
+<!-- CAPTION -->
+<div class="caption">
+  <div class="caption-label">Caption — paste into Instagram</div>
+  <div class="caption-body"><strong>Only 100 people get SOLUM first. Swipe to see what they get that nobody else ever will. →</strong>
+
+01 — Locked pricing forever. Your launch price never increases. Ever.
+02 — Every new product, free. Automatically in your next box before anyone else.
+03 — A say in what we build next. Fragrance. Formula. New products. You get asked first.
+
+This tier closes permanently at 100. No second chance, no reopening.
+
+<strong>Claim your spot → link in bio.</strong></div>
+  <div class="hashtags">#mensgrooming #bodycare #skincareformen #menswellness #mensbodycare #founding #launch</div>
+</div>
+
+<script>
+  let current = 0;
+  const total = 5;
+  const track = document.getElementById('track');
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(i) {
+    current = i;
+    track.style.transform = `translateX(-${540 * i}px)`;
+    document.querySelectorAll('.nav-dot').forEach((d, idx) => {
+      d.classList.toggle('active', idx === i);
+    });
+  }
+  function nextSlide() { goTo(Math.min(current + 1, total - 1)); }
+  function prevSlide() { goTo(Math.max(current - 1, 0)); }
+
+  // Download all 5 slides individually
+  async function downloadAll() {
+    const msg = document.getElementById('dl-msg');
+    msg.style.display = 'inline';
+    for (let i = 0; i < total; i++) {
+      goTo(i);
+      await new Promise(r => setTimeout(r, 400));
+      const el = document.getElementById(`slide-${i + 1}`);
+      const canvas = await html2canvas(el, {
+        scale: 2, useCORS: true, allowTaint: true,
+        backgroundColor: '#08090B', logging: false,
+        width: 540, height: 540,
+      });
+      const link = document.createElement('a');
+      link.download = `SOLUM-founding-carousel-${String(i + 1).padStart(2,'0')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      await new Promise(r => setTimeout(r, 600));
+    }
+    msg.style.display = 'none';
+  }
+</script>
+</body>
+</html>
