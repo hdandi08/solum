@@ -36,10 +36,11 @@ test.describe('Checkout — with stock', () => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
 
-    const email = process.env.TEST_USER_EMAIL ?? 'harsha@bysolum.com';
-    await page.locator('input[placeholder="James"]').first().fill('Harsha');
+    // Use a dedicated email that is never seeded as a customer — avoids the
+    // "You already have a subscription" block that TEST_USER_EMAIL would trigger.
+    await page.locator('input[placeholder="James"]').first().fill('Stripe');
     await page.locator('input[placeholder="Smith"]').fill('Test');
-    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[type="email"]').first().fill('stripe-test@bysolum.com');
     await page.locator('input[placeholder="1990"]').fill('1990');
     await page.locator('input[placeholder="1–12"]').fill('6');
 
@@ -51,10 +52,9 @@ test.describe('Checkout — with stock', () => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
 
-    const email = process.env.TEST_USER_EMAIL ?? 'harsha@bysolum.com';
-    await page.locator('input[placeholder="James"]').first().fill('Harsha');
+    await page.locator('input[placeholder="James"]').first().fill('Stripe');
     await page.locator('input[placeholder="Smith"]').fill('Test');
-    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[type="email"]').first().fill('stripe-test@bysolum.com');
     await page.locator('input[placeholder="1990"]').fill('1990');
     await page.locator('input[placeholder="1–12"]').fill('6');
     await page.locator('button.co-submit').click();

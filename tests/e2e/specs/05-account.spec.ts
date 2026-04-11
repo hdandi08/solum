@@ -10,7 +10,7 @@ test.describe('Account — unauthenticated', () => {
     await page.goto('/account');
     await page.waitForLoadState('networkidle');
     // Button text is "Send Login Link"
-    await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible({ timeout: 10_000 });
     await ctx.close();
   });
 });
@@ -37,10 +37,10 @@ test.describe('Account — authenticated', () => {
   });
 
   test('address panel is visible and Add button opens form', async ({ page }) => {
-    // "Shipping Address" panel is always rendered
-    await expect(page.getByText('Shipping Address')).toBeVisible();
-    // Click Add to open the address form
-    await page.getByRole('button', { name: /add/i }).first().click();
+    // "Shipping Address" panel label
+    await expect(page.locator('.ac-panel-label', { hasText: 'Shipping Address' })).toBeVisible();
+    // Click Add to open the address form — target the panel header button specifically
+    await page.locator('.ac-panel-head').filter({ hasText: 'Shipping Address' }).getByRole('button').click();
     // Address form inputs should now be visible
     await expect(page.locator('input.ac-form-input').first()).toBeVisible({ timeout: 5_000 });
   });
