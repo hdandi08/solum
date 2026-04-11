@@ -40,7 +40,11 @@ const CSS = `
   align-items: start;
 }
 
-.privacy-toc { position: sticky; top: 84px; }
+.privacy-toc {
+  position: sticky; top: 96px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
 .privacy-toc-label {
   font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
   color: var(--blit); font-weight: 600; opacity: 0.7;

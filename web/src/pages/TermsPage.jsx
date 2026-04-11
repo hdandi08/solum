@@ -45,7 +45,9 @@ const CSS = `
 
 /* Sidebar TOC */
 .terms-toc {
-  position: sticky; top: 84px;
+  position: sticky; top: 96px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 .terms-toc-label {
   font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
