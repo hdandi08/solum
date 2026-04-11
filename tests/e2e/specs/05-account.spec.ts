@@ -8,9 +8,10 @@ test.describe('Account — unauthenticated', () => {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
     await page.goto('/account');
-    await page.waitForLoadState('networkidle');
-    // Button text is "Send Login Link"
-    await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible({ timeout: 10_000 });
+    // Wait for React to settle out of the initial "Loading…" phase —
+    // networkidle isn't sufficient because Supabase fires INITIAL_SESSION async
+    await page.waitForSelector('button.ac-btn, button.ac-signout', { timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible();
     await ctx.close();
   });
 });
