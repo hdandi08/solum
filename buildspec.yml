@@ -30,12 +30,11 @@ phases:
         REPORT_KEY="reports/$REPORT_DATE/index.html"
         aws s3 sync tests/e2e/playwright-report \
           s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet
-        # Pre-signed URL — valid 7 days, no public bucket access needed
-        REPORT_URL=$(aws s3 presign s3://$REPORT_BUCKET/$REPORT_KEY \
-          --expires-in 604800 --region eu-west-2)
+        # Plain public URL — reports/ prefix is publicly readable via bucket policy
+        REPORT_URL="https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/$REPORT_KEY"
         echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
-          MSG=$(printf 'SOLUM E2E tests FAILED on dev (%s).\n\nOpen the report (link valid 7 days):\n%s\n\nBuild ID: %s' \
+          MSG=$(printf 'SOLUM E2E tests FAILED on dev (%s).\n\nOpen the report:\n%s\n\nBuild ID: %s' \
             "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
