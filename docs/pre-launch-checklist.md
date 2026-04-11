@@ -91,4 +91,23 @@
 
 ---
 
+---
+
+## 🚀 Post-Launch Checklist
+
+> Do these after you have paying customers. Not blockers — do in order of priority.
+
+- [ ] **Register SOLUM trademark — Class 3 (cosmetics)** — search first at trademarks.ipo.gov.uk, then file at gov.uk/apply-for-a-trademark. £170. Do within first 3 months of trading.
+- [ ] **Add Class 35 (retail/subscription) to trademark** — £50 extra on top of Class 3. File at the same time.
+- [ ] **Register with the ICO as Data Controller** — ico.org.uk/registration. ~£40/year. Required once collecting customer data at scale.
+- [ ] **Add company number + registered office to T&Cs and Privacy Policy** — replace sole trader references with Bysolum Limited details
+- [ ] **Build shipping confirmation email** — with Royal Mail tracking number. Leads table ready, email flow not yet built.
+- [ ] **Build abandoned checkout email flow** — leads table captures every initiated checkout. Email sequence not yet built.
+- [ ] **Set up Google Search Console** — submit bysolum.com/sitemap.xml, monitor keyword rankings
+- [ ] **Register Google Business Profile** for bysolum.com
+- [ ] **Product photography** — proper product shots for website cards
+- [ ] **Add more Guide articles** — content cluster compounds over time. Next topics: "Italian vs Korean exfoliating mitt", "How argan oil is made", "What is a hammam?"
+
+---
+
 *Last updated: 11 April 2026*
