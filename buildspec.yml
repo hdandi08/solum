@@ -40,6 +40,13 @@ phases:
             --topic-arn $SNS_TOPIC_ARN \
             --subject "SOLUM E2E Tests FAILED — $REPORT_DATE" \
             --message "$MSG"
+        else
+          MSG=$(printf 'SOLUM E2E tests passed on dev (%s).\n\nFull report:\n%s\n\nBuild ID: %s' \
+            "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
+          aws sns publish \
+            --topic-arn $SNS_TOPIC_ARN \
+            --subject "SOLUM E2E Tests passed — $REPORT_DATE" \
+            --message "$MSG"
         fi
 
 artifacts:
