@@ -66,6 +66,8 @@ export default function SolumFooter() {
           <span style={{display:'flex',gap:'20px',alignItems:'center'}}>
             <a href="/terms" style={{color:'inherit',textDecoration:'none',letterSpacing:'2px',fontSize:'12px'}}>Terms &amp; Conditions</a>
             <span>·</span>
+            <a href="/privacy" style={{color:'inherit',textDecoration:'none',letterSpacing:'2px',fontSize:'12px'}}>Privacy Policy</a>
+            <span>·</span>
             <span>Body Care · Not Face. Not Hair.</span>
           </span>
         </div>

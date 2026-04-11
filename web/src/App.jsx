@@ -11,6 +11,7 @@ import RitualPage from './pages/RitualPage';
 import GuidePage from './pages/GuidePage';
 import GuideArticle from './pages/GuideArticle';
 import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import './styles/global.css';
 
 // If Supabase drops auth tokens on the wrong page (e.g. site root instead of /account),
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/guide" element={<GuidePage />} />
         <Route path="/guide/:slug" element={<GuideArticle />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/confirm" element={<ConfirmPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
