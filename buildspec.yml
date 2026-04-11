@@ -35,15 +35,11 @@ phases:
           --expires-in 604800 --region eu-west-2)
         echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
+          MSG="Nightly e2e tests failed on dev.\n\nReport (link valid 7 days):\n$REPORT_URL\n\nBuild: $CODEBUILD_BUILD_ID"
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
             --subject "SOLUM E2E Tests FAILED — $REPORT_DATE" \
-            --message "Nightly e2e tests failed on dev.
-
-    Report (link valid 7 days):
-    $REPORT_URL
-
-    Build: $CODEBUILD_BUILD_ID"
+            --message "$MSG"
         fi
 
 artifacts:
