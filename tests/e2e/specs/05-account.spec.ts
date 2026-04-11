@@ -4,13 +4,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Account — unauthenticated', () => {
   test('shows login form without a session', async ({ browser }) => {
-    // Use a fresh context with no auth state
-    const ctx = await browser.newContext();
+    // browser.newContext() inherits the project-level storageState from playwright.config.ts
+    // unless explicitly overridden — pass empty state to get a truly unauthenticated context.
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });
     const page = await ctx.newPage();
     await page.goto('/account');
-    // Wait for React to settle out of the initial "Loading…" phase —
-    // networkidle isn't sufficient because Supabase fires INITIAL_SESSION async
-    await page.waitForSelector('button.ac-btn, button.ac-signout', { timeout: 15_000 });
+    // Wait for the login email input — unique to LoginView, confirms we're not on the dashboard
+    await expect(page.locator('input[placeholder="your@email.com"]')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible();
     await ctx.close();
   });
