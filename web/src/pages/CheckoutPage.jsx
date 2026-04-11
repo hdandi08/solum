@@ -386,7 +386,13 @@ export default function CheckoutPage() {
             <button type="submit" className="co-submit" disabled={loading}>
               {loading ? 'Redirecting to Stripe…' : `Go to Checkout — £${kit.firstBoxPrice} →`}
             </button>
-            <div className="co-secure">We never share your data · Cancel any time</div>
+            <div className="co-secure">
+              By placing an order you agree to our{' '}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" style={{color:'var(--stone)',textDecoration:'underline'}}>Terms &amp; Conditions</a>
+              {' '}and{' '}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{color:'var(--stone)',textDecoration:'underline'}}>Privacy Policy</a>
+            </div>
+            <div className="co-secure" style={{marginTop:4}}>We never share your data · Cancel any time</div>
             <div className="co-stripe-badge">
               <span className="co-stripe-lock">🔒</span>
               <span className="co-stripe-text">Payments secured by</span>

@@ -9,7 +9,8 @@
 
 - [ ] **Add business address to Terms & Conditions** — appears in 4 places in `/terms` marked `[Business address — to be completed on registration]`
 - [ ] **Add business address to Privacy Policy** — appears in 2 places in `/privacy` marked `[Business address — to be completed]`
-- [ ] **Register SOLUM as LTD company** — currently sole trader. Update T&Cs and Privacy Policy once registered (company number, registered office)
+- [x] **Register Bysolum Limited** ✅ — footer updated to "© 2026 Bysolum Limited"
+- [ ] **Add company number + registered office to T&Cs and Privacy Policy** — replace sole trader references with LTD details (company number, registered office address)
 - [ ] **Register as Data Controller with the ICO** — required before collecting personal data. Register at ico.org.uk/registration (~£40/year). Add ICO registration number to Privacy Policy *(can do post-launch)*
 - [ ] **Update VAT status** — T&Cs note "not currently VAT registered". Update if/when VAT registered
 
