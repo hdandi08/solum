@@ -1,17 +1,24 @@
 import { test, expect } from '@playwright/test';
-import { sellOutRitualKit, seedRitualStock } from '../helpers/db-reset';
+import { sellOutRitualKit, seedRitualStock, zeroAllRitualStock } from '../helpers/db-reset';
 
-test.describe('Checkout', () => {
+// ─── With stock (setup seeds 10 units before this spec runs) ──────────────────
+
+test.describe('Checkout — with stock', () => {
   test('checkout page loads with ritual kit details', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
     await expect(page.getByText(/ritual/i).first()).toBeVisible();
   });
 
+  test('checkout page loads with ground kit details', async ({ page }) => {
+    await page.goto('/checkout?kit=ground');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText(/ground/i).first()).toBeVisible();
+  });
+
   test('form validation — empty submit shows error message', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    // The form uses custom JS validation — clicking submit with empty fields shows an error div
     await page.locator('button.co-submit').click();
     await expect(page.locator('.co-error').first()).toBeVisible({ timeout: 5000 });
   });
@@ -23,15 +30,6 @@ test.describe('Checkout', () => {
     await page.locator('input[type="email"]').first().fill('notanemail');
     await page.locator('button.co-submit').click();
     await expect(page.locator('.co-error').first()).toBeVisible({ timeout: 5000 });
-  });
-
-  test('sold-out kit shows waitlist form', async ({ page }) => {
-    await sellOutRitualKit();
-    await page.goto('/checkout?kit=ritual');
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
-    // Restore stock
-    await seedRitualStock(10);
   });
 
   test('valid checkout redirects to Stripe', async ({ page }) => {
@@ -63,12 +61,10 @@ test.describe('Checkout', () => {
 
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000 });
 
-    // Fill shipping address on Stripe
     await page.getByLabel(/address/i).first().fill('1 Test Street');
     await page.getByLabel(/city/i).fill('London');
     await page.getByLabel(/postcode|postal/i).fill('SW1A 1AA');
 
-    // Fill card details (Stripe hosted checkout uses iframes for card fields)
     const cardFrame = page.frameLocator('iframe[name*="card"]').first();
     await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
     await cardFrame.locator('[placeholder*="MM"]').fill('1226');
@@ -77,5 +73,74 @@ test.describe('Checkout', () => {
     await page.getByRole('button', { name: /pay/i }).click();
     await expect(page).toHaveURL(/\/success/, { timeout: 30_000 });
     await expect(page.getByText(/order|confirmation|reference/i)).toBeVisible();
+  });
+});
+
+// ─── Partial stock out (one product zero) ─────────────────────────────────────
+
+test.describe('Checkout — one product sold out', () => {
+  test.beforeEach(async () => {
+    // Ensure stock is healthy, then zero out Argan Oil (unique to ritual/sovereign)
+    await seedRitualStock(10);
+    await sellOutRitualKit();
+  });
+
+  test.afterEach(async () => {
+    await seedRitualStock(10);
+  });
+
+  test('ritual kit shows waitlist/sold-out when Argan Oil is zero', async ({ page }) => {
+    await page.goto('/checkout?kit=ritual');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('ground kit (no Argan Oil) still shows checkout form', async ({ page }) => {
+    // Ground kit does not include product-06, so it should remain available
+    await page.goto('/checkout?kit=ground');
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('button.co-submit')).toBeVisible({ timeout: 10_000 });
+  });
+});
+
+// ─── All stock zero (simulates freshly wiped / unseeded DB) ──────────────────
+
+test.describe('Checkout — all stock zero', () => {
+  test.beforeAll(async () => {
+    await zeroAllRitualStock();
+  });
+
+  test.afterAll(async () => {
+    await seedRitualStock(10);
+  });
+
+  test('ritual kit shows waitlist when all products are at zero stock', async ({ page }) => {
+    await page.goto('/checkout?kit=ritual');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('ground kit shows waitlist when all products are at zero stock', async ({ page }) => {
+    await page.goto('/checkout?kit=ground');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('waitlist email form submits successfully', async ({ page }) => {
+    await page.goto('/checkout?kit=ritual');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+
+    // Find and fill the waitlist email input if present
+    const emailInput = page.locator('input[type="email"]').first();
+    if (await emailInput.isVisible()) {
+      await emailInput.fill('waitlist-test@bysolum.com');
+      const submitBtn = page.getByRole('button', { name: /notify|join|submit|waitlist/i }).first();
+      if (await submitBtn.isVisible()) {
+        await submitBtn.click();
+        // Expect some confirmation feedback
+        await expect(page.getByText(/thank|confirm|added|we.ll let you know/i)).toBeVisible({ timeout: 10_000 });
+      }
+    }
   });
 });

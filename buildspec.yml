@@ -27,15 +27,23 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - |
         REPORT_DATE=$(date +%Y-%m-%d)
+        REPORT_KEY="reports/$REPORT_DATE/index.html"
         aws s3 sync tests/e2e/playwright-report \
           s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet
-        echo "Report: https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/reports/$REPORT_DATE/index.html"
-      - |
+        # Pre-signed URL — valid 7 days, no public bucket access needed
+        REPORT_URL=$(aws s3 presign s3://$REPORT_BUCKET/$REPORT_KEY \
+          --expires-in 604800 --region eu-west-2)
+        echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
-            --subject "SOLUM E2E Tests FAILED — $(date +%Y-%m-%d)" \
-            --message "Nightly e2e tests failed on dev. Check the report: https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/reports/$(date +%Y-%m-%d)/index.html"
+            --subject "SOLUM E2E Tests FAILED — $REPORT_DATE" \
+            --message "Nightly e2e tests failed on dev.
+
+    Report (link valid 7 days):
+    $REPORT_URL
+
+    Build: $CODEBUILD_BUILD_ID"
         fi
 
 artifacts:
