@@ -68,3 +68,39 @@ export async function sellOutRitualKit() {
     .update({ current_stock: 0 })
     .eq('id', 'product-06');
 }
+
+/**
+ * Upsert a bare customer record for the test user.
+ * Call after magic link auth so get-account can find the customer and render the dashboard.
+ * Returns the customer UUID.
+ */
+export async function seedTestCustomer(supabaseUserId: string): Promise<string> {
+  const db = getAdminClient();
+  const email = process.env.TEST_USER_EMAIL!;
+  const { data } = await db
+    .from('customers')
+    .upsert(
+      { email, first_name: 'Test', last_name: 'User', supabase_user_id: supabaseUserId },
+      { onConflict: 'email' },
+    )
+    .select('id')
+    .single();
+  return data!.id;
+}
+
+/**
+ * Seed an active subscription for the test customer.
+ * Required for cancel-subscription tests.
+ */
+export async function seedTestSubscription(customerId: string): Promise<void> {
+  const db = getAdminClient();
+  await db.from('subscriptions').delete().eq('customer_id', customerId);
+  await db.from('subscriptions').insert({
+    customer_id: customerId,
+    kit_id: 'ritual',
+    status: 'active',
+    months_active: 2,
+    current_period_start: new Date().toISOString(),
+    current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  });
+}

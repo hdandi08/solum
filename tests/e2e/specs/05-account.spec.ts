@@ -9,7 +9,8 @@ test.describe('Account — unauthenticated', () => {
     const page = await ctx.newPage();
     await page.goto('/account');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('button', { name: /send link|sign in|magic link/i })).toBeVisible();
+    // Button text is "Send Login Link"
+    await expect(page.getByRole('button', { name: /send.*link/i })).toBeVisible();
     await ctx.close();
   });
 });
@@ -18,28 +19,38 @@ test.describe('Account — authenticated', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/account');
     await page.waitForLoadState('networkidle');
+    // Wait for dashboard to load (not the login/loading view)
+    await expect(page.locator('.ac-heading')).toBeVisible({ timeout: 10_000 });
   });
 
   test('dashboard loads with user info', async ({ page }) => {
-    // Should not show login form
-    await expect(page.getByRole('button', { name: /send link|sign in/i })).not.toBeVisible();
-    // Should show account content
-    await expect(page.getByText(/harsha|bysolum/i)).toBeVisible();
+    // Heading shows "Your Account." and greeting shows seeded first name
+    await expect(page.getByText(/your account/i)).toBeVisible();
+    await expect(page.getByText(/hello.*test/i)).toBeVisible();
   });
 
-  test('address form is present', async ({ page }) => {
-    await expect(page.getByLabel(/address|street/i).first()).toBeVisible();
+  test('subscription panel is visible with active status', async ({ page }) => {
+    // Subscription panel label is always rendered
+    await expect(page.getByText('Subscription').first()).toBeVisible();
+    // Setup seeds an active ritual subscription
+    await expect(page.locator('.ac-badge-active')).toBeVisible();
   });
 
-  test('subscription section is visible', async ({ page }) => {
-    await expect(page.getByText(/subscription|plan|kit/i).first()).toBeVisible();
+  test('address panel is visible and Add button opens form', async ({ page }) => {
+    // "Shipping Address" panel is always rendered
+    await expect(page.getByText('Shipping Address')).toBeVisible();
+    // Click Add to open the address form
+    await page.getByRole('button', { name: /add/i }).first().click();
+    // Address form inputs should now be visible
+    await expect(page.locator('input.ac-form-input').first()).toBeVisible({ timeout: 5_000 });
   });
 
-  test('cancel subscription button exists', async ({ page }) => {
-    const cancelBtn = page.getByRole('button', { name: /cancel/i });
+  test('cancel subscription button opens confirmation', async ({ page }) => {
+    // Setup seeds an active subscription so this panel renders
+    const cancelBtn = page.getByRole('button', { name: /cancel subscription/i });
     await expect(cancelBtn).toBeVisible();
-    // Click to open confirmation — do NOT confirm (we don't want to cancel)
     await cancelBtn.click();
-    await expect(page.getByText(/are you sure|confirm|cancel your/i)).toBeVisible();
+    // Confirmation box appears with the "Yes, cancel" danger button
+    await expect(page.getByRole('button', { name: /yes.*cancel/i })).toBeVisible();
   });
 });

@@ -1,6 +1,6 @@
 import { test as setup, expect } from '@playwright/test';
 import { getAdminClient } from '../helpers/supabase-admin';
-import { resetTestUserData, seedRitualStock } from '../helpers/db-reset';
+import { resetTestUserData, seedRitualStock, seedTestCustomer, seedTestSubscription } from '../helpers/db-reset';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -32,7 +32,14 @@ setup('global setup — reset DB, seed stock, authenticate', async ({ page }) =>
   await page.waitForURL(/\/account/, { timeout: 20_000 });
   await expect(page.locator('body')).not.toContainText('error', { ignoreCase: true, timeout: 5_000 }).catch(() => {});
 
-  // 5. Save session for authenticated tests
+  // 5. Seed customer + subscription so authenticated account tests have data to work with
+  //    (get-account falls back to login view if no customer row exists)
+  const supabaseUserId = data.user?.id;
+  if (!supabaseUserId) throw new Error('No user ID returned from generateLink');
+  const customerId = await seedTestCustomer(supabaseUserId);
+  await seedTestSubscription(customerId);
+
+  // 6. Save session for authenticated tests
   fs.mkdirSync(path.dirname(authFile), { recursive: true });
   await page.context().storageState({ path: authFile });
 });

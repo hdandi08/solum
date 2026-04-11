@@ -61,9 +61,10 @@ test.describe('Checkout — with stock', () => {
 
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 20_000 });
 
-    await page.getByLabel(/address/i).first().fill('1 Test Street');
-    await page.getByLabel(/city/i).fill('London');
-    await page.getByLabel(/postcode|postal/i).fill('SW1A 1AA');
+    // Stripe hosted checkout — use autocomplete attributes to target specific inputs
+    await page.locator('input[autocomplete="shipping address-line1"], input[autocomplete="address-line1"]').fill('1 Test Street');
+    await page.locator('input[autocomplete="shipping address-level2"], input[autocomplete="address-level2"]').fill('London');
+    await page.locator('input[autocomplete="shipping postal-code"], input[autocomplete="postal-code"]').fill('SW1A 1AA');
 
     const cardFrame = page.frameLocator('iframe[name*="card"]').first();
     await cardFrame.locator('[placeholder*="1234"]').fill('4242424242424242');
@@ -92,7 +93,7 @@ test.describe('Checkout — one product sold out', () => {
   test('ritual kit shows waitlist/sold-out when Argan Oil is zero', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('.co-waitlist-eyebrow').first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('ground kit (no Argan Oil) still shows checkout form', async ({ page }) => {
@@ -117,19 +118,19 @@ test.describe('Checkout — all stock zero', () => {
   test('ritual kit shows waitlist when all products are at zero stock', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('.co-waitlist-eyebrow').first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('ground kit shows waitlist when all products are at zero stock', async ({ page }) => {
     await page.goto('/checkout?kit=ground');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('.co-waitlist-eyebrow').first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('waitlist email form submits successfully', async ({ page }) => {
     await page.goto('/checkout?kit=ritual');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText(/waitlist|sold out|notify/i)).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('.co-waitlist-eyebrow').first()).toBeVisible({ timeout: 10_000 });
 
     // Find and fill the waitlist email input if present
     const emailInput = page.locator('input[type="email"]').first();
@@ -139,7 +140,7 @@ test.describe('Checkout — all stock zero', () => {
       if (await submitBtn.isVisible()) {
         await submitBtn.click();
         // Expect some confirmation feedback
-        await expect(page.getByText(/thank|confirm|added|we.ll let you know/i)).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByText(/thank|we.ll.*email|we.ll.*notify|you.re on/i)).toBeVisible({ timeout: 10_000 });
       }
     }
   });
