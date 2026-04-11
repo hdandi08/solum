@@ -13,6 +13,13 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Legal -->
+  <url>
+    <loc>https://bysolum.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
   <!-- Guide — listing -->
   <url>
     <loc>https://bysolum.com/guide</loc>
