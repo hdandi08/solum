@@ -27,30 +27,28 @@
 
 ---
 
-## 💳 Payments — Stripe Live Mode
+## 💳 Payments — Stripe Live Mode ✅
 
-- [ ] **Register live Stripe webhook** with all 18 events at `https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/stripe-webhook`
-- [ ] **Copy live `whsec_...`** → update `STRIPE_WEBHOOK_SECRET` in Supabase secrets
-- [ ] **Swap `STRIPE_SECRET_KEY`** in Supabase to `sk_live_...`
-- [ ] **Swap `VITE_STRIPE_PUBLISHABLE_KEY`** in `amplify.yml` to `pk_live_...`
+- [x] **Register live Stripe webhook** with all 18 events
+- [x] **`STRIPE_WEBHOOK_SECRET`** updated in Supabase secrets
+- [x] **`STRIPE_SECRET_KEY`** in Supabase set to `sk_live_...`
+- [x] **`VITE_STRIPE_PUBLISHABLE_KEY`** in `amplify.yml` set to `pk_live_...`
 - [ ] **Do one live test order** with a real card — confirm row in `customers` table, confirmation email arrives, lead marked `completed`
 
 ---
 
-## 📧 Email
+## 📧 Email ✅
 
-- [ ] **Verify `orders.bysolum.co.uk` domain in Resend** — must show green before live emails can send
-- [ ] **Test confirmation email** — check formatting, order ref, 4-step timeline renders correctly
+- [x] **`orders.bysolum.co.uk` domain verified in Resend**
+- [x] **Confirmation email working**
 - [ ] **Build shipping confirmation email** with tracking number (not yet built)
 
 ---
 
-## 🌐 Domain & Infrastructure
+## 🌐 Domain & Infrastructure ✅
 
-- [ ] **Register bysolum.com domain** — currently not confirmed as owned
-- [ ] **Set up Supabase auth URL configuration** (one-time manual step):
-  - Authentication → URL Configuration → Site URL: `https://bysolum.com`
-  - Redirect URLs: add `https://bysolum.com/account`
+- [x] **bysolum.com domain registered**
+- [x] **Supabase auth URL configuration set**
 
 ---
 
