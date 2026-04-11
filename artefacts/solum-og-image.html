@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — OG Image 1200×630</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+  }
+
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 60px;
+    font-family: 'Barlow Condensed', sans-serif;
+    gap: 20px;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--charcoal);
+    border: 1px solid rgba(46,109,164,0.25);
+    width: 100%;
+    max-width: 1200px;
+  }
+  .toolbar-label { font-weight: 500; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone); opacity: 0.4; flex: 1; }
+  .btn { font-weight: 600; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 9px 20px; border: none; cursor: pointer; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.8; }
+  .btn-bone { background: var(--bone); color: var(--black); }
+  #dl-msg { font-weight: 500; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sky-blue); display: none; }
+
+  /* ── CANVAS ── */
+  #og {
+    width: 1200px;
+    height: 630px;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* Background radial accent */
+  #og::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 70% at 72% 50%, rgba(46,109,164,0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 30% 40% at 15% 80%, rgba(26,74,120,0.08) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  /* Left rule */
+  .rule-left {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--steel-blue);
+    z-index: 2;
+  }
+
+  /* Top rule */
+  .rule-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: rgba(46,109,164,0.25);
+    z-index: 2;
+  }
+
+  /* Bottom rule */
+  .rule-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: rgba(46,109,164,0.18);
+    z-index: 2;
+  }
+
+  /* Left column */
+  .col-left {
+    position: absolute;
+    left: 80px;
+    top: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 3;
+    width: 580px;
+  }
+
+  .eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 180px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+    line-height: 0.85;
+    display: block;
+  }
+
+  .divider {
+    width: 56px;
+    height: 3px;
+    background: var(--steel-blue);
+    margin: 32px 0;
+  }
+
+  .descriptor {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.9;
+    line-height: 1.4;
+  }
+
+  .tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--bone);
+    opacity: 0.45;
+    margin-top: 14px;
+    font-style: italic;
+  }
+
+  /* Right column — product pills */
+  .col-right {
+    position: absolute;
+    right: 72px;
+    top: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    z-index: 3;
+    width: 340px;
+  }
+
+  .product-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    border: 1px solid rgba(46,109,164,0.20);
+    background: rgba(46,109,164,0.05);
+  }
+
+  .p-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    color: var(--steel-blue);
+    opacity: 0.7;
+    flex-shrink: 0;
+    width: 28px;
+  }
+
+  .p-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.75;
+  }
+
+  /* Vertical separator */
+  .sep {
+    position: absolute;
+    left: 710px;
+    top: 60px; bottom: 60px;
+    width: 1px;
+    background: rgba(46,109,164,0.14);
+    z-index: 3;
+  }
+
+  /* URL bottom left */
+  .url {
+    position: absolute;
+    bottom: 28px;
+    left: 80px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    opacity: 0.7;
+    z-index: 3;
+  }
+
+  /* Kit count bottom right */
+  .kit-line {
+    position: absolute;
+    bottom: 28px;
+    right: 72px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bone);
+    opacity: 0.22;
+    z-index: 3;
+  }
+
+  /* Instructions */
+  .instructions {
+    width: 100%;
+    max-width: 1200px;
+    background: var(--charcoal);
+    border-left: 3px solid var(--steel-blue);
+    padding: 20px 24px;
+  }
+  .instr-title {
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+  .instr-body {
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--bone);
+    opacity: 0.55;
+  }
+  .instr-body strong { font-weight: 600; opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="toolbar-label">OG Image · 1200 × 630px · Save as og-image.jpg → /web/public/</span>
+  <span id="dl-msg">Downloading...</span>
+  <button class="btn btn-bone" onclick="download()">Download PNG</button>
+</div>
+
+<div id="og">
+  <div class="rule-left"></div>
+  <div class="rule-top"></div>
+  <div class="rule-bottom"></div>
+  <div class="sep"></div>
+
+  <!-- Left -->
+  <div class="col-left">
+    <span class="eyebrow">Men's Body Care · UK</span>
+    <span class="wordmark">SOLUM</span>
+    <div class="divider"></div>
+    <div class="descriptor">8 Products. Two Rituals.<br>Head to Toe.</div>
+    <div class="tagline">Your body. Done right.</div>
+  </div>
+
+  <!-- Right — products -->
+  <div class="col-right">
+    <div class="product-row"><span class="p-num">01</span><span class="p-name">Amino Acid Body Wash</span></div>
+    <div class="product-row"><span class="p-num">02</span><span class="p-name">Exfoliating Mitt</span></div>
+    <div class="product-row"><span class="p-num">03</span><span class="p-name">Back Scrub Cloth</span></div>
+    <div class="product-row"><span class="p-num">04</span><span class="p-name">Scalp Massager</span></div>
+    <div class="product-row"><span class="p-num">05</span><span class="p-name">Rhassoul Clay Mask</span></div>
+    <div class="product-row"><span class="p-num">06</span><span class="p-name">Argan Body Oil</span></div>
+    <div class="product-row"><span class="p-num">07</span><span class="p-name">Body Lotion</span></div>
+    <div class="product-row"><span class="p-num">08</span><span class="p-name">Bamboo Cloth</span></div>
+  </div>
+
+  <div class="url">bysolum.com</div>
+  <div class="kit-line">Ground · Ritual · Sovereign</div>
+</div>
+
+<div class="instructions">
+  <div class="instr-title">How to use</div>
+  <div class="instr-body">
+    <strong>1.</strong> Click "Download PNG" — saves as <strong>SOLUM-og-image.png</strong><br>
+    <strong>2.</strong> Convert to JPG if needed (Preview → Export, or squoosh.app)<br>
+    <strong>3.</strong> Save as <strong>og-image.jpg</strong> and drop into <strong>/web/public/og-image.jpg</strong><br>
+    <strong>4.</strong> Deploy — link previews on Instagram DMs, WhatsApp, iMessage will use this image automatically
+  </div>
+</div>
+
+<script>
+async function download() {
+  const msg = document.getElementById('dl-msg');
+  msg.style.display = 'inline';
+  const el = document.getElementById('og');
+  const canvas = await html2canvas(el, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#08090B',
+    logging: false,
+    width: 1200,
+    height: 630,
+  });
+  const link = document.createElement('a');
+  link.download = 'SOLUM-og-image.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  msg.style.display = 'none';
+}
+</script>
+
+</body>
+</html>
