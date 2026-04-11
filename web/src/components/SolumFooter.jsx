@@ -40,6 +40,7 @@ export default function SolumFooter() {
             <ul className="footer-links">
               <li><a href="#truth">Why SOLUM</a></li>
               <li><a href="#origins">Where It's From</a></li>
+              <li><a href="/guide">The Guide</a></li>
             </ul>
           </div>
           <div>

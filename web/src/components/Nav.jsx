@@ -25,6 +25,7 @@ const NAV_LINKS = [
   ['#kits', 'Kits'],
   ['#products', 'Products'],
   ['/ritual', 'The Ritual'],
+  ['/guide', 'Guide'],
   ['#subscription', 'Subscription'],
 ];
 
