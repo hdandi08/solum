@@ -14,6 +14,10 @@ const KIT_PRICES: Record<string, { first_box_pence: number; monthly_pence: numbe
   sovereign: { first_box_pence: 11000, monthly_pence: 5800, name: 'SOVEREIGN' },
 };
 
+const ADDONS: Record<string, { pence: number; name: string }> = {
+  mixing_bowl: { pence: 1500, name: 'SOLUM Silicone Mixing Bowl' },
+};
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -102,7 +106,8 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id     = body.kit_id;
     email      = body.email;
-    const { first_name, last_name, birth_year, birth_month, success_url, cancel_url } = body;
+    const { first_name, last_name, birth_year, birth_month, success_url, cancel_url, addons } = body;
+    const selectedAddons: string[] = Array.isArray(addons) ? addons : [];
 
     const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
@@ -147,21 +152,33 @@ Deno.serve(async (req) => {
           metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
         });
 
-    // One-time first box price (created fresh each time — no lookup key needed)
+    // One-time first box price — name includes dispatch date so it's clear on the Stripe form
     const firstBoxPrice = await stripe.prices.create({
       currency: 'gbp',
       unit_amount: kit.first_box_pence,
-      product_data: { name: `SOLUM ${kit.name} — First Box` },
+      product_data: { name: `SOLUM ${kit.name} — First Box · ships ${fmtDay(dispatch)}, arrives ${fmtDay(arrival)}` },
     });
 
-    // Recurring monthly price — created fresh each session so the product name
-    // can include the specific billing start date shown on the Stripe checkout page.
+    // Recurring monthly price — name includes first charge date and refill schedule
     const monthlyPrice = await stripe.prices.create({
       currency: 'gbp',
       unit_amount: kit.monthly_pence,
       recurring: { interval: 'month' },
-      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · from ${fmtDate(billing)}` },
+      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · first charged ${fmtDate(billing)}, ships ${fmtDate(refillShip)}, arrives ${fmtDate(refillArrive)}` },
     });
+
+    // Build add-on line items (one-time, charged with first box)
+    const addonLineItems: { price: string; quantity: number }[] = [];
+    for (const addonKey of selectedAddons) {
+      const addon = ADDONS[addonKey];
+      if (!addon) continue;
+      const addonPrice = await stripe.prices.create({
+        currency: 'gbp',
+        unit_amount: addon.pence,
+        product_data: { name: addon.name },
+      });
+      addonLineItems.push({ price: addonPrice.id, quantity: 1 });
+    }
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
@@ -169,10 +186,19 @@ Deno.serve(async (req) => {
       line_items: [
         { price: firstBoxPrice.id,  quantity: 1 },
         { price: monthlyPrice.id,   quantity: 1 },
+        ...addonLineItems,
       ],
       subscription_data: {
         trial_end: Math.floor(billing.getTime() / 1000),
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
+      },
+      custom_text: {
+        submit: {
+          message: `Your first box ships ${fmtDay(dispatch)} and arrives by ${fmtDay(arrival)} — no action needed. Your monthly refill subscription starts ${fmtDate(billing)}: charged that day, ships ${fmtDate(refillShip)}, arrives by ${fmtDate(refillArrive)}.`,
+        },
+        after_submit: {
+          message: `Cancel any time from your account — no questions asked.`,
+        },
       },
       shipping_address_collection: {
         allowed_countries: ['GB'],
