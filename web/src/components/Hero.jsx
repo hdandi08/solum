@@ -44,12 +44,13 @@ export default function Hero() {
           <div className="hero-line" />
           <p className="hero-body">
             Not your fault. Nobody ever built men a system worth following.
-            SOLUM fixes that. 10 minutes. 10 products. Two rituals. Head to toe.
+            There's a difference between being washed and being clean. Most men have never felt it.
+            SOLUM fixes that. A few weeks and it's muscle memory. After that, you just do it.
           </p>
           <div className="hero-scope">
-            <span className="hero-scope-label">Body Care</span>
+            <span className="hero-scope-label">Real Results</span>
             <span className="hero-scope-divider" />
-            <span className="hero-scope-note">Not Face. Not Hair. Your Body — Head to Toe.</span>
+            <span className="hero-scope-note">Your Body — Head to Toe.</span>
           </div>
           <div className="hero-actions">
             <a href="#kits" className="btn-primary">Choose Your Kit</a>
