@@ -9,13 +9,13 @@ const supabase = createClient(
 );
 
 const KIT_PRICES: Record<string, { first_box_pence: number; monthly_pence: number; name: string }> = {
-  ground:    { first_box_pence: 5500,  monthly_pence: 3800, name: 'GROUND'    },
+  ground:    { first_box_pence: 6500,  monthly_pence: 3800, name: 'GROUND'    },
   ritual:    { first_box_pence: 8500,  monthly_pence: 4800, name: 'RITUAL'    },
   sovereign: { first_box_pence: 11000, monthly_pence: 5800, name: 'SOVEREIGN' },
 };
 
 const ADDONS: Record<string, { pence: number; name: string }> = {
-  mixing_bowl: { pence: 1500, name: 'SOLUM Silicone Mixing Bowl' },
+  mixing_bowl: { pence: 1000, name: 'SOLUM Silicone Mixing Bowl' },
 };
 
 const corsHeaders = {

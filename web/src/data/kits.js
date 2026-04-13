@@ -3,7 +3,7 @@ export const KITS = [
   {
     id: 'ground',
     name: 'GROUND',
-    firstBoxPrice: 55,
+    firstBoxPrice: 65,
     monthlyPrice: 38,
     productNums: ['01','02','03','04','05','07','08'],
     tagline: 'Daily ritual. Weekly exfoliation. Your body clean for the first time.',

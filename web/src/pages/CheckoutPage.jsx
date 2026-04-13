@@ -354,11 +354,11 @@ export default function CheckoutPage() {
                 <div className="co-addon-step-name">Silicone Mixing Bowl</div>
                 <div className="co-addon-step-desc">Mix your clay mask in the shower without making a mess. Keeps the clay off the tile. Rinses clean in seconds. One use, every week.</div>
               </div>
-              <div className="co-addon-step-price">£15</div>
+              <div className="co-addon-step-price">£10</div>
             </div>
             <div className="co-step-actions">
               <button className="co-step-yes" onClick={() => callStripe('ground', ['mixing_bowl'])}>
-                Yes, add it — £{kit.firstBoxPrice + 15} total →
+                Yes, add it — £{kit.firstBoxPrice + 10} total →
               </button>
               <button className="co-step-no" onClick={() => callStripe('ground', [])}>
                 No thanks, continue to checkout
