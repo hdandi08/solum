@@ -863,15 +863,16 @@ const styles = `
 
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
-    .cs-main { padding: 80px 20px 48px; }
-    .cs-eyebrow { font-size: 12px; letter-spacing: 3px; margin-bottom: 14px; }
-    .cs-headline { font-size: clamp(40px, 10vw, 56px); margin-bottom: 16px; }
-    .cs-subhead { font-size: 15px; line-height: 1.55; margin-bottom: 24px; }
-    .cs-founding-bar { padding: 14px 16px; gap: 8px; }
+    .cs-main { padding: 84px 24px 48px; }
+    .cs-eyebrow { font-size: 13px; letter-spacing: 3px; margin-bottom: 16px; }
+    .cs-headline { font-size: 44px; line-height: 0.95; margin-bottom: 18px; }
+    .cs-subhead { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+    .cs-founding-bar { padding: 12px 16px; gap: 8px; }
     .cs-founding-bar-note { display: none; }
-    .cs-privacy { font-size: 12px; margin-top: 10px; }
+    .cs-privacy { font-size: 13px; margin-top: 10px; }
+    .cs-scarcity-hint { font-size: 13px; margin-top: 10px; }
     .cs-countdown { flex-wrap: wrap; }
-    .cs-countdown-wrap { margin-bottom: 0; gap: 6px; }
+    .cs-countdown-wrap { gap: 6px; }
     .cs-cd-unit { min-width: 60px; padding: 10px 14px; }
     .cs-cd-num { font-size: 30px; }
     .cs-cd-label { font-size: 9px; }
@@ -1096,14 +1097,18 @@ function FoundingBar({ count }) {
   const isFull = spots === 0;
 
   return (
-    <div className="cs-founding-bar">
+    <a href="#founding-members" className="cs-founding-bar" style={{ textDecoration: 'none' }}>
       <div className="cs-founding-bar-top">
-        <div className="cs-founding-bar-label">{isFull ? 'Launch spots closed' : `${spots} of 100 launch spots remaining`}</div>
+        <div className="cs-founding-bar-label">
+          {isFull
+            ? 'Founding Member Exclusive Rewards — Closed'
+            : `${count || 0} / 100 Founding Member Exclusive Rewards Remaining`}
+        </div>
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -1155,7 +1160,7 @@ export default function ComingSoon() {
           <p className="cs-subhead">
             Rough skin, a neglected back, a scalp that gets rinsed but never worked.
             That's not laziness — nobody ever built a system to fix it.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. In 10 minutes a day, your body gets properly clean for the first time.</strong>
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. You'll feel it from the first shower.</strong>
           </p>
 
           {/* Scarcity bar */}
@@ -1165,11 +1170,8 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="Sign Up" onSuccess={handleSuccess} />
+            <WaitlistForm label="Claim Your Spot" onSuccess={handleSuccess} />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
-            <a href="#founding-members" className="cs-scarcity-hint">
-              First 100 sign-ups get exclusive Founding Member benefits ↓
-            </a>
           </div>
 
           {/* Countdown — below form */}
