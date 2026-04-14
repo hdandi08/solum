@@ -1105,7 +1105,7 @@ function FoundingBar({ count }) {
         <div className="cs-founding-bar-label">
           {isFull
             ? 'Founding Member Exclusive Rewards — Closed'
-            : `${count || 0} / 100 Founding Member Exclusive Rewards Remaining ↓`}
+            : `${spots} / 100 Founding Member Spots Remaining ↓`}
         </div>
       </div>
       <div className="cs-progress-track">
