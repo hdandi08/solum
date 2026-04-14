@@ -129,33 +129,33 @@ const styles = `
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 120px 24px 80px;
+    padding: 88px 24px 60px;
     text-align: center;
   }
   .cs-eyebrow {
-    font-size: 16px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     color: rgba(240,236,226,0.75);
-    margin-bottom: 28px;
+    margin-bottom: 16px;
     font-weight: 600;
   }
   .cs-headline {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(44px, 6.5vw, 80px);
+    font-size: clamp(40px, 5.5vw, 68px);
     letter-spacing: 0.04em;
     line-height: 0.95;
     color: #f0ece2;
-    margin-bottom: 32px;
+    margin-bottom: 18px;
   }
   .cs-headline em { color: #4a8fc7; font-style: normal; }
   .cs-subhead {
-    font-size: clamp(16px, 2.2vw, 20px);
+    font-size: clamp(15px, 1.8vw, 17px);
     font-weight: 300;
     color: rgba(240,236,226,0.88);
-    max-width: 520px;
+    max-width: 480px;
     line-height: 1.55;
-    margin-bottom: 48px;
+    margin-bottom: 28px;
   }
 
   /* Countdown */
@@ -163,8 +163,8 @@ const styles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 48px;
-    gap: 12px;
+    margin-bottom: 20px;
+    gap: 8px;
   }
   .cs-countdown-label {
     font-size: 11px;
@@ -182,38 +182,38 @@ const styles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 16px 24px;
+    padding: 10px 16px;
     border-right: 1px solid rgba(46,109,164,0.15);
-    min-width: 72px;
+    min-width: 56px;
   }
   .cs-cd-unit:last-child { border-right: none; }
   .cs-cd-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
+    font-size: 28px;
     letter-spacing: 0.05em;
     color: #4a8fc7;
     line-height: 1;
   }
   .cs-cd-label {
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: rgba(240,236,226,0.45);
     font-weight: 600;
-    margin-top: 4px;
+    margin-top: 3px;
   }
 
   /* Founding scarcity bar */
   .cs-founding-bar {
     width: 100%;
-    max-width: 540px;
+    max-width: 480px;
     background: rgba(26,74,120,0.12);
     border: 1px solid rgba(46,109,164,0.35);
-    padding: 20px 24px;
-    margin-bottom: 28px;
+    padding: 14px 20px;
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
   .cs-founding-bar-top {
     display: flex;
@@ -221,15 +221,15 @@ const styles = `
     align-items: center;
   }
   .cs-founding-bar-label {
-    font-size: 11px;
-    letter-spacing: 5px;
+    font-size: 10px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     color: #4a8fc7;
     font-weight: 600;
   }
   .cs-founding-count {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
+    font-size: 18px;
     letter-spacing: 0.08em;
     color: #f0ece2;
   }
@@ -248,7 +248,7 @@ const styles = `
     transition: width 0.6s ease;
   }
   .cs-founding-bar-note {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     color: rgba(240,236,226,0.88);
     letter-spacing: 0.3px;
@@ -301,22 +301,22 @@ const styles = `
   .cs-form-wrap {
     width: 100%;
     max-width: 480px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
   .cs-offer {
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #4a8fc7;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
   .cs-offer-bar {
     background: rgba(46,109,164,0.1);
     border: 1px solid rgba(46,109,164,0.25);
-    padding: 12px 20px;
-    margin-bottom: 20px;
-    font-size: 15px;
+    padding: 10px 18px;
+    margin-bottom: 12px;
+    font-size: 14px;
     color: #f0ece2;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -854,12 +854,12 @@ const styles = `
 
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
-    .cs-main { padding: 100px 20px 60px; }
-    .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
-    .cs-subhead { font-size: 17px; }
+    .cs-main { padding: 80px 20px 48px; }
+    .cs-eyebrow { font-size: 11px; letter-spacing: 4px; }
+    .cs-subhead { font-size: 15px; }
     .cs-countdown { flex-wrap: wrap; }
-    .cs-cd-unit { min-width: 60px; padding: 12px 16px; }
-    .cs-cd-num { font-size: 34px; }
+    .cs-cd-unit { min-width: 50px; padding: 8px 12px; }
+    .cs-cd-num { font-size: 24px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
@@ -1153,13 +1153,7 @@ export default function ComingSoon() {
             <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. In 10 minutes a day, your body gets properly clean for the first time.</strong>
           </p>
 
-          {/* Countdown */}
-          <Countdown />
-
-          {/* Founding member scarcity bar */}
-          <FoundingBar count={waitlistCount} />
-
-          {/* CTA first */}
+          {/* CTA — above the fold */}
           <div className="cs-form-wrap">
             <div className="cs-offer">100 Launch Kits · First Come, First Served</div>
             <div className="cs-offer-bar">
@@ -1167,6 +1161,12 @@ export default function ComingSoon() {
             </div>
             <WaitlistForm label="Claim My Founding Member Spot" onSuccess={handleSuccess} />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+          </div>
+
+          {/* Trust signals below form */}
+          <div style={{ width: '100%', maxWidth: '480px', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <FoundingBar count={waitlistCount} />
+            <Countdown />
           </div>
         </main>
 
