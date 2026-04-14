@@ -209,11 +209,11 @@ const styles = `
     max-width: 480px;
     background: rgba(26,74,120,0.12);
     border: 1px solid rgba(46,109,164,0.35);
-    padding: 16px 20px;
+    padding: 10px 16px;
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
   .cs-founding-bar-top {
     display: flex;
@@ -248,10 +248,7 @@ const styles = `
     transition: width 0.6s ease;
   }
   .cs-founding-bar-note {
-    font-size: 13px;
-    font-weight: 400;
-    color: rgba(240,236,226,0.88);
-    letter-spacing: 0.3px;
+    display: none;
   }
   .cs-founding-bar-note strong { color: #f0ece2; font-weight: 600; }
 
@@ -383,12 +380,20 @@ const styles = `
     color: #e55a5a;
     margin-top: 8px;
   }
+  .cs-scarcity-hint {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a8fc7;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    text-align: center;
+  }
   .cs-privacy {
     font-size: 13px;
     letter-spacing: 1.5px;
     color: rgba(240,236,226,0.7);
     text-transform: uppercase;
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   /* Success state */
@@ -855,11 +860,17 @@ const styles = `
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
     .cs-main { padding: 80px 20px 48px; }
-    .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
-    .cs-subhead { font-size: 15px; }
+    .cs-eyebrow { font-size: 12px; letter-spacing: 3px; margin-bottom: 14px; }
+    .cs-headline { font-size: clamp(40px, 10vw, 56px); margin-bottom: 16px; }
+    .cs-subhead { font-size: 15px; line-height: 1.55; margin-bottom: 24px; }
+    .cs-founding-bar { padding: 14px 16px; gap: 8px; }
+    .cs-founding-bar-note { display: none; }
+    .cs-privacy { font-size: 12px; margin-top: 10px; }
     .cs-countdown { flex-wrap: wrap; }
-    .cs-cd-unit { min-width: 60px; padding: 12px 16px; }
-    .cs-cd-num { font-size: 34px; }
+    .cs-countdown-wrap { margin-bottom: 0; gap: 6px; }
+    .cs-cd-unit { min-width: 56px; padding: 10px 12px; }
+    .cs-cd-num { font-size: 28px; }
+    .cs-cd-label { font-size: 9px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
@@ -898,13 +909,13 @@ const MARQUEE_ITEMS = [
   'The Ritual Men Were Never Taught',
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
-  '10 Products · One System',
+  '8 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
   'The Ritual Men Were Never Taught',
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
-  '10 Products · One System',
+  '8 Products · One System',
   'Body Care — Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
 ];
@@ -1026,14 +1037,14 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
       <div className="cs-success">
         <div className="cs-success-title">
           {isFounder ? (
-            <>{firstName ? `${firstName}, you're` : "You're"} Founding Member <em className="cs-success-num">#{position}</em></>
+            <>{firstName ? `${firstName}, you're` : "You're"} on the list — <em className="cs-success-num">#{position} of 100</em></>
           ) : (
             <>{firstName ? `${firstName}, you're` : "You're"} on the waitlist — <em className="cs-success-num">#{position}</em></>
           )}
         </div>
         <div className="cs-success-body">
           {isFounder
-            ? "Founding Member spot locked. You'll get first access, permanent pricing, and input on what we build next. One email when we launch."
+            ? <>You're one of the first 100 people. <strong style={{color:'#f0ece2'}}>Your price is locked forever</strong> — as the range grows and prices rise, yours never does. We'll send one email when we launch.</>
             : "You're on the list. We'll email you the moment launch kits go live."}
         </div>
       </div>
@@ -1083,11 +1094,9 @@ function FoundingBar({ count }) {
   return (
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
-        <div className="cs-founding-bar-label">Founding Members</div>
+        <div className="cs-founding-bar-label">{isFull ? 'Launch spots closed' : `${spots} of 100 launch spots remaining`}</div>
         <div className="cs-founding-count">
-          {isFull
-            ? <><em>100 / 100</em> — Sold Out</>
-            : <><em>{count || 0}</em> / {FOUNDING_LIMIT} spots taken</>}
+          {isFull ? <><em>100</em> / 100</> : <><em>{count || 0}</em> / {FOUNDING_LIMIT}</>}
         </div>
       </div>
       <div className="cs-progress-track">
@@ -1095,8 +1104,8 @@ function FoundingBar({ count }) {
       </div>
       <div className="cs-founding-bar-note">
         {isFull
-          ? 'All founding spots are gone. You can still join the waitlist for launch access.'
-          : <><strong>{spots} spot{spots !== 1 ? 's' : ''} remaining.</strong> Only 100 people get the product at launch — and permanent Founding Member benefits.</>}
+          ? 'All launch spots are taken. Join the waitlist for access when we restock.'
+          : <>The first 100 people get their price <strong>locked forever</strong> — as the range grows and prices rise, yours never does.</>}
       </div>
     </div>
   );
@@ -1141,7 +1150,7 @@ export default function ComingSoon() {
           <div className="cs-badge">Launching Soon</div>
         </header>
 
-        {/* 1 — Headline + subhead */}
+        {/* 1 — Hero */}
         <main className="cs-main">
           <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
           <h1 className="cs-headline">
@@ -1153,19 +1162,21 @@ export default function ComingSoon() {
             <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. In 10 minutes a day, your body gets properly clean for the first time.</strong>
           </p>
 
-          {/* CTA — above the fold */}
+          {/* Scarcity bar */}
+          <div style={{ width: '100%', maxWidth: '480px', marginBottom: '14px' }}>
+            <FoundingBar count={waitlistCount} />
+          </div>
+
+          {/* CTA */}
           <div className="cs-form-wrap">
-            <div className="cs-offer">100 Launch Kits · First Come, First Served</div>
-            <div className="cs-offer-bar">
-              Founding Members get <strong>first access + locked pricing</strong> — forever
-            </div>
-            <WaitlistForm label="Claim My Founding Member Spot" onSuccess={handleSuccess} />
+            <WaitlistForm label="Join the Waitlist" onSuccess={handleSuccess} />
+            <div className="cs-scarcity-hint">First 100 people lock their price forever.</div>
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
 
-          {/* Founding bar — lean trust signal below form */}
-          <div style={{ width: '100%', maxWidth: '480px', marginTop: '14px' }}>
-            <FoundingBar count={waitlistCount} />
+          {/* Countdown */}
+          <div style={{ width: '100%', maxWidth: '480px', marginTop: '16px' }}>
+            <Countdown />
           </div>
         </main>
 
@@ -1343,7 +1354,7 @@ export default function ComingSoon() {
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">First Box</div>
               <div className="cs-sub-item-title">Your ritual starts day one</div>
-              <div className="cs-sub-item-body">All 10 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
+              <div className="cs-sub-item-body">All 8 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Monthly Refill</div>
@@ -1374,7 +1385,7 @@ export default function ComingSoon() {
 
         {/* 8 — Product pills */}
         <div className="cs-products-wrap">
-          <div className="cs-products-label">10 Products · The Complete System</div>
+          <div className="cs-products-label">8 Products · The Complete System</div>
           <div className="cs-products">
             {PRODUCTS.map(p => (
               <div key={p.num} className="cs-pill">
