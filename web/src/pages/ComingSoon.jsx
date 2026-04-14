@@ -221,11 +221,14 @@ const styles = `
     align-items: center;
   }
   .cs-founding-bar-label {
-    font-size: 11px;
-    letter-spacing: 4px;
+    font-size: 13px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: #4a8fc7;
     font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(74,143,199,0.5);
   }
   .cs-founding-count {
     font-family: 'Bebas Neue', sans-serif;
@@ -1102,7 +1105,7 @@ function FoundingBar({ count }) {
         <div className="cs-founding-bar-label">
           {isFull
             ? 'Founding Member Exclusive Rewards — Closed'
-            : `${count || 0} / 100 Founding Member Exclusive Rewards Remaining`}
+            : `${count || 0} / 100 Founding Member Exclusive Rewards Remaining ↓`}
         </div>
       </div>
       <div className="cs-progress-track">
