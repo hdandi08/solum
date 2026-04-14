@@ -137,25 +137,25 @@ const styles = `
     letter-spacing: 4px;
     text-transform: uppercase;
     color: rgba(240,236,226,0.75);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     font-weight: 600;
   }
   .cs-headline {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 5.5vw, 68px);
+    font-size: clamp(42px, 6vw, 72px);
     letter-spacing: 0.04em;
     line-height: 0.95;
     color: #f0ece2;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
   }
   .cs-headline em { color: #4a8fc7; font-style: normal; }
   .cs-subhead {
-    font-size: clamp(15px, 1.8vw, 17px);
+    font-size: clamp(15px, 2vw, 18px);
     font-weight: 300;
-    color: rgba(240,236,226,0.88);
-    max-width: 480px;
-    line-height: 1.55;
-    margin-bottom: 28px;
+    color: rgba(240,236,226,0.85);
+    max-width: 460px;
+    line-height: 1.6;
+    margin-bottom: 32px;
   }
 
   /* Countdown */
@@ -209,11 +209,11 @@ const styles = `
     max-width: 480px;
     background: rgba(26,74,120,0.12);
     border: 1px solid rgba(46,109,164,0.35);
-    padding: 14px 20px;
+    padding: 16px 20px;
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   .cs-founding-bar-top {
     display: flex;
@@ -221,7 +221,7 @@ const styles = `
     align-items: center;
   }
   .cs-founding-bar-label {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: #4a8fc7;
@@ -229,7 +229,7 @@ const styles = `
   }
   .cs-founding-count {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     letter-spacing: 0.08em;
     color: #f0ece2;
   }
@@ -248,7 +248,7 @@ const styles = `
     transition: width 0.6s ease;
   }
   .cs-founding-bar-note {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     color: rgba(240,236,226,0.88);
     letter-spacing: 0.3px;
@@ -304,19 +304,19 @@ const styles = `
     margin-bottom: 0;
   }
   .cs-offer {
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #4a8fc7;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
   .cs-offer-bar {
     background: rgba(46,109,164,0.1);
     border: 1px solid rgba(46,109,164,0.25);
-    padding: 10px 18px;
-    margin-bottom: 12px;
-    font-size: 14px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    font-size: 15px;
     color: #f0ece2;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -855,11 +855,11 @@ const styles = `
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
     .cs-main { padding: 80px 20px 48px; }
-    .cs-eyebrow { font-size: 11px; letter-spacing: 4px; }
+    .cs-eyebrow { font-size: 12px; letter-spacing: 4px; }
     .cs-subhead { font-size: 15px; }
     .cs-countdown { flex-wrap: wrap; }
-    .cs-cd-unit { min-width: 50px; padding: 8px 12px; }
-    .cs-cd-num { font-size: 24px; }
+    .cs-cd-unit { min-width: 60px; padding: 12px 16px; }
+    .cs-cd-num { font-size: 34px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
@@ -1163,10 +1163,9 @@ export default function ComingSoon() {
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
 
-          {/* Trust signals below form */}
-          <div style={{ width: '100%', maxWidth: '480px', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Founding bar — lean trust signal below form */}
+          <div style={{ width: '100%', maxWidth: '480px', marginTop: '14px' }}>
             <FoundingBar count={waitlistCount} />
-            <Countdown />
           </div>
         </main>
 
