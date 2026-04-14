@@ -93,7 +93,6 @@ test.describe('Checkout — with stock', () => {
     await expect(page).toHaveURL(/\/success/, { timeout: 30_000 });
     await expect(page.getByText(/order|confirmation|reference/i)).toBeVisible();
   });
-});
 
 // ─── GROUND checkout — interstitial flow ──────────────────────────────────────
 
