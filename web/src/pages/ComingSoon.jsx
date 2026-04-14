@@ -237,14 +237,14 @@ const styles = `
   .cs-progress-track {
     width: 100%;
     height: 3px;
-    background: rgba(46,109,164,0.18);
+    background: rgba(200,169,110,0.2);
     position: relative;
   }
   .cs-progress-fill {
     position: absolute;
     top: 0; left: 0;
     height: 100%;
-    background: #4a8fc7;
+    background: #c8a96e;
     transition: width 0.6s ease;
   }
   .cs-founding-bar-note {
@@ -381,13 +381,17 @@ const styles = `
     margin-top: 8px;
   }
   .cs-scarcity-hint {
+    display: block;
     font-size: 13px;
     font-weight: 600;
     color: #4a8fc7;
     letter-spacing: 0.5px;
-    margin-top: 10px;
+    margin-top: 12px;
     text-align: center;
+    text-decoration: none;
+    transition: color 0.2s;
   }
+  .cs-scarcity-hint:hover { color: #f0ece2; }
   .cs-privacy {
     font-size: 13px;
     letter-spacing: 1.5px;
@@ -868,8 +872,8 @@ const styles = `
     .cs-privacy { font-size: 12px; margin-top: 10px; }
     .cs-countdown { flex-wrap: wrap; }
     .cs-countdown-wrap { margin-bottom: 0; gap: 6px; }
-    .cs-cd-unit { min-width: 56px; padding: 10px 12px; }
-    .cs-cd-num { font-size: 28px; }
+    .cs-cd-unit { min-width: 60px; padding: 10px 14px; }
+    .cs-cd-num { font-size: 30px; }
     .cs-cd-label { font-size: 9px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
@@ -1095,17 +1099,9 @@ function FoundingBar({ count }) {
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">{isFull ? 'Launch spots closed' : `${spots} of 100 launch spots remaining`}</div>
-        <div className="cs-founding-count">
-          {isFull ? <><em>100</em> / 100</> : <><em>{count || 0}</em> / {FOUNDING_LIMIT}</>}
-        </div>
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
-      </div>
-      <div className="cs-founding-bar-note">
-        {isFull
-          ? 'All launch spots are taken. Join the waitlist for access when we restock.'
-          : <>The first 100 people get their price <strong>locked forever</strong> — as the range grows and prices rise, yours never does.</>}
       </div>
     </div>
   );
@@ -1169,19 +1165,22 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="Join the Waitlist" onSuccess={handleSuccess} />
-            <div className="cs-scarcity-hint">First 100 people lock their price forever.</div>
+            <WaitlistForm label="Sign Up" onSuccess={handleSuccess} />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+            <a href="#founding-members" className="cs-scarcity-hint">
+              First 100 sign-ups get exclusive Founding Member benefits ↓
+            </a>
           </div>
 
-          {/* Countdown */}
-          <div style={{ width: '100%', maxWidth: '480px', marginTop: '16px' }}>
+          {/* Countdown — below form */}
+          <div style={{ width: '100%', maxWidth: '480px', marginTop: '20px' }}>
             <Countdown />
           </div>
+
         </main>
 
         {/* 2 — Founding Member benefits */}
-        <div className="cs-founding">
+        <div className="cs-founding" id="founding-members">
           <div className="cs-founding-eyebrow">Founding Members Only</div>
           <h2 className="cs-founding-title">
             The First <em>100</em> Get<br />Something Nobody Else Does
