@@ -9,7 +9,7 @@ import ProjectionsPage from './pages/ProjectionsPage'
 import EventsPage from './pages/EventsPage'
 import CostsPage from './pages/CostsPage'
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.co.uk']
+const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
 const DEV_BYPASS = import.meta.env.DEV
 
 function ProtectedRoute({ session, children }) {

@@ -28,7 +28,7 @@ This is a fresh project. Add Solum-specific guidelines below as the project evol
 
 **Name:** SOLUM  
 **Tagline:** Your body. Done right.  
-**Website:** bysolum.com  
+**Website:** bysolum.co.uk  
 **Founder:** Harsha Dandi · harsha@pricedab.com · 07748 370419  
 **Legal:** Sole trader (LTD registration pending)  
 **Category:** Men's body care — not face, not hair. Head to toe.
@@ -331,7 +331,7 @@ DEEP CLEANSE · MINERAL RICH
 **Front:** SOLUM wordmark → "Your Body. Finally Done Right." → hero copy → "YOUR RITUALS ARE INSIDE ↓" → Daily + Weekly pills → all 8 product chips  
 **Inside left (blue):** Daily ritual — 5 steps with full execution guidance per product  
 **Inside right (gold):** Weekly ritual — 4 steps with full execution guidance per product  
-**Back:** Global curation table (all 8 products + origins) + Korean tradition note + bysolum.com
+**Back:** Global curation table (all 8 products + origins) + Korean tradition note + bysolum.co.uk
 
 ---
 
@@ -438,7 +438,7 @@ DEEP CLEANSE · MINERAL RICH
 
 ### Business
 
-- Register bysolum.com domain
+- Register bysolum.co.uk domain
 - Register SOLUM as LTD company (currently sole trader)
 
 ### Marketing
@@ -486,4 +486,4 @@ DEEP CLEANSE · MINERAL RICH
 
 ---
 
-_SOLUM · Internal Use Only · bysolum.com · Last updated March 2026_
+_SOLUM · Internal Use Only · bysolum.co.uk · Last updated March 2026_

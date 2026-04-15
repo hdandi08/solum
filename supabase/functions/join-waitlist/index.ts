@@ -7,7 +7,7 @@ const corsHeaders = {
 
 const DISPOSABLE_DOMAINS = new Set([
   'mailinator.com','guerrillamail.com','guerrillamail.net','guerrillamail.org',
-  'guerrillamail.biz','guerrillamail.de','guerrillamail.info','guerrillamail.co.uk',
+  'guerrillamail.biz','guerrillamail.de','guerrillamail.info','guerrillamail.com',
   'sharklasers.com','guerrillamailblock.com','grr.la','spam4.me',
   'trashmail.com','trashmail.me','trashmail.net','trashmail.io','trashmail.at',
   'trashmail.org','trashmail.xyz','trashmail.app','yopmail.com','yopmail.fr',
@@ -113,7 +113,7 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
           If you didn't sign up to SOLUM, ignore this email — nothing will happen.
         </p>
         <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
-          bysolum.co.uk · contact@bysolum.co.uk
+          bysolum.co.uk · contact@bysolum.com
         </p>
       </td></tr>
 
@@ -208,7 +208,7 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
+          from: 'SOLUM <no-reply@orders.bysolum.com>',
           to: [normalised],
           subject,
           html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token, position),

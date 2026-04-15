@@ -95,7 +95,7 @@ function buildConfirmEmail(
           You signed up to SOLUM via our waitlist. If this wasn't you, ignore this email — nothing will happen.
         </p>
         <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
-          bysolum.co.uk · contact@bysolum.co.uk
+          bysolum.co.uk · contact@bysolum.com
         </p>
       </td></tr>
 
@@ -168,7 +168,7 @@ Deno.serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
+          from: 'SOLUM <no-reply@orders.bysolum.com>',
           to: [lead.email],
           subject,
           html: buildConfirmEmail(lead.email, lead.first_name, lead.confirm_token, position),

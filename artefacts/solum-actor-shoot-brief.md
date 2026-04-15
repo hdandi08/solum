@@ -228,4 +228,4 @@ The product is the answer. It arrives at launch.
 
 ---
 
-*SOLUM · Internal Use Only · bysolum.com · March 2026*
+*SOLUM · Internal Use Only · bysolum.co.uk · March 2026*

@@ -1,6 +1,6 @@
 # SOLUM — Pre-Launch Checklist
 
-> Items that must be completed before bysolum.com goes live to the public.
+> Items that must be completed before bysolum.co.uk goes live to the public.
 > Update this file as items are completed.
 
 ---
@@ -48,15 +48,15 @@
 
 ## 🌐 Domain & Infrastructure ✅
 
-- [x] **bysolum.com domain registered**
+- [x] **bysolum.co.uk domain registered**
 - [x] **Supabase auth URL configuration set**
 
 ---
 
 ## 🔍 SEO & Analytics
 
-- [ ] **Set up Google Search Console** — register bysolum.com and submit `bysolum.com/sitemap.xml` on launch day
-- [ ] **Register Google Business Profile** for bysolum.com
+- [ ] **Set up Google Search Console** — register bysolum.co.uk and submit `bysolum.co.uk/sitemap.xml` on launch day
+- [ ] **Register Google Business Profile** for bysolum.co.uk
 - [ ] **Confirm Plausible Analytics** is tracking correctly on the live domain
 
 ---
@@ -103,8 +103,8 @@
 - [ ] **Add company number + registered office to T&Cs and Privacy Policy** — replace sole trader references with Bysolum Limited details
 - [ ] **Build shipping confirmation email** — with Royal Mail tracking number. Leads table ready, email flow not yet built.
 - [ ] **Build abandoned checkout email flow** — leads table captures every initiated checkout. Email sequence not yet built.
-- [ ] **Set up Google Search Console** — submit bysolum.com/sitemap.xml, monitor keyword rankings
-- [ ] **Register Google Business Profile** for bysolum.com
+- [ ] **Set up Google Search Console** — submit bysolum.co.uk/sitemap.xml, monitor keyword rankings
+- [ ] **Register Google Business Profile** for bysolum.co.uk
 - [ ] **Product photography** — proper product shots for website cards
 - [ ] **Add more Guide articles** — content cluster compounds over time. Next topics: "Italian vs Korean exfoliating mitt", "How argan oil is made", "What is a hammam?"
 

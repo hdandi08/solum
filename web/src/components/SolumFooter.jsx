@@ -49,7 +49,7 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">Contact</div>
             <ul className="footer-links">
-              <li><a href="mailto:contact@bysolum.co.uk">contact@bysolum.co.uk</a></li>
+              <li><a href="mailto:contact@bysolum.com">contact@bysolum.com</a></li>
               <li><a href="https://bysolum.co.uk">bysolum.co.uk</a></li>
               <li>
                 <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="footer-ig">

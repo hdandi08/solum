@@ -1361,12 +1361,12 @@ export default function SolumFooter() {
             <div className="footer-col-title">Contact</div>
             <ul className="footer-links">
               <li><a href="mailto:harsha@pricedab.com">harsha@pricedab.com</a></li>
-              <li><a href="https://bysolum.com">bysolum.com</a></li>
+              <li><a href="https://bysolum.co.uk">bysolum.co.uk</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 SOLUM · bysolum.com</span>
+          <span>© 2026 SOLUM · bysolum.co.uk</span>
           <span>Body Care · Not Face. Not Hair.</span>
         </div>
       </footer>

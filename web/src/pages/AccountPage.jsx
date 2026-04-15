@@ -77,7 +77,7 @@ function LoginView({ phase, setPhase }) {
       });
       const { exists } = await checkRes.json();
       if (!exists) {
-        setError('No account found for this email. If you think this is wrong, email contact@bysolum.co.uk.');
+        setError('No account found for this email. If you think this is wrong, email contact@bysolum.com.');
         setSending(false);
         return;
       }
@@ -337,7 +337,7 @@ function Dashboard({ session, customer, sub, address, setAddress, setSub, setCus
             )}
             {sub?.status === 'past_due' && (
               <div style={{fontSize:14,color:'#e05c5c',lineHeight:1.6}}>
-                Your last payment failed. Email us at <a href="mailto:contact@bysolum.co.uk" style={{color:'#e05c5c'}}>contact@bysolum.co.uk</a> and we'll send you a secure link to update your payment method.
+                Your last payment failed. Email us at <a href="mailto:contact@bysolum.com" style={{color:'#e05c5c'}}>contact@bysolum.com</a> and we'll send you a secure link to update your payment method.
               </div>
             )}
             <div className="ac-field-label" style={{marginTop:sub?.status === 'active' ? 0 : 16}}>Months active</div>

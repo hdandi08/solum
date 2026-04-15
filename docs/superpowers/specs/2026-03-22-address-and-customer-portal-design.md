@@ -10,7 +10,7 @@
 
 Two connected features:
 1. **Address capture** — collect shipping address at Stripe Checkout (required), store in Supabase via webhook.
-2. **Customer portal** — `/account` route on bysolum.com. Magic link login. Customer can view subscription, update address, cancel.
+2. **Customer portal** — `/account` route on bysolum.co.uk. Magic link login. Customer can view subscription, update address, cancel.
 
 ---
 
@@ -117,8 +117,8 @@ Supabase Auth, email OTP (magic link). No passwords.
 
 ### Supabase Dashboard Config (manual, done by Harsha)
 - **Authentication → URL Configuration**
-- Site URL: `https://bysolum.com`
-- Redirect URLs: add `https://bysolum.com/account`
+- Site URL: `https://bysolum.co.uk`
+- Redirect URLs: add `https://bysolum.co.uk/account`
 - Email template (Authentication → Email Templates → Magic Link): customise copy to SOLUM brand
 
 ### Identity Bridge: `supabase_user_id` on `customers`
@@ -145,7 +145,7 @@ const { data: customer } = await supabase
 3. No session → show login form
 4. Customer enters email → we check `customers` table for that email
 5. Not found → "No account found for this email"
-6. Found → call `supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://bysolum.com/account' } })`
+6. Found → call `supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://bysolum.co.uk/account' } })`
 7. Show "Check your email — we've sent you a login link"
 8. Customer clicks link → lands on `/account` → Supabase processes token from URL hash
 9. `onAuthStateChange` fires → session established

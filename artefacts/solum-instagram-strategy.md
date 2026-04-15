@@ -77,12 +77,12 @@ Add:
 - Structure: **Hook (2s) → Problem (5s) → Reframe/SOLUM (10–15s)**
 - B-roll stock footage + text-on-screen + trending audio
 - No talking head pre-launch
-- End card: SOLUM wordmark + bysolum.com
+- End card: SOLUM wordmark + bysolum.co.uk
 
 ### Carousels (3–5 slides)
 - Slide 1 = scroll-stopper hook
 - Slides 2–4 = the method / proof / steps
-- Slide 5 = SOLUM + CTA ("The system is at bysolum.com")
+- Slide 5 = SOLUM + CTA ("The system is at bysolum.co.uk")
 - Carousels are saved more than any other format — use for depth
 
 ---
@@ -170,7 +170,7 @@ Every post drives to the website via link in bio. Structure:
 | 4 | Static | THE PROOF | "Your skin absorbs 70% more moisture in the 3 minutes after a shower. Most men waste it." | "The fix takes 3 minutes → link in bio" |
 | 5 | Reel | THE CRAFT | Moroccan hammam — what a real body ritual looks like | "We built this for men → link in bio" |
 | 6 | Static | THE SYSTEM GAP | "Your back hasn't been properly clean since the last time someone washed it for you." | "The tool that fixes this → link in bio" |
-| 7 | Carousel | THE METHOD | "The 10-minute morning system — all 5 steps" | "Built at bysolum.com → link in bio" |
+| 7 | Carousel | THE METHOD | "The 10-minute morning system — all 5 steps" | "Built at bysolum.co.uk → link in bio" |
 | 8 | Static | THE PROOF | "Most body washes strip your skin barrier every morning. Here's what to use instead." | "No sulphates. No stripping → link in bio" |
 
 ---
@@ -186,4 +186,4 @@ Every post drives to the website via link in bio. Structure:
 
 ---
 
-_SOLUM · Internal Use Only · bysolum.com_
+_SOLUM · Internal Use Only · bysolum.co.uk_

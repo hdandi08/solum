@@ -6,4 +6,4 @@ Disallow: /checkout
 Disallow: /success
 Disallow: /confirm
 
-Sitemap: https://bysolum.com/sitemap.xml
+Sitemap: https://bysolum.co.uk/sitemap.xml

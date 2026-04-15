@@ -1292,7 +1292,7 @@ git push origin master
 - [ ] **Step 3: Verify on live site**
   - `/account` loads and shows login form
   - T-shirt image shows on loyalty section and checkout overlay (fixed separately)
-  - Magic link from Supabase email redirects to `https://bysolum.com/account` and authenticates correctly
+  - Magic link from Supabase email redirects to `https://bysolum.co.uk/account` and authenticates correctly
 
 ---
 

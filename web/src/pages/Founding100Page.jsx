@@ -683,7 +683,7 @@ function UpdatesTab({ member, session }) {
     // mailto fallback — opens email client pre-filled
     const subject = encodeURIComponent(`Founding Member Message — ${member.first_name ?? member.email}`);
     const body    = encodeURIComponent(msg.trim());
-    window.location.href = `mailto:harsha@bysolum.co.uk?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:harsha@bysolum.com?subject=${subject}&body=${body}`;
     setSaving(false);
     setSent(true);
   }
@@ -1348,7 +1348,7 @@ function LandingView({ phase, setPhase }) {
 /* ─── Root ─────────────────────────────────────────────────────────────────── */
 const DEV_MOCK_MEMBER = {
   id: 'dev-preview',
-  email: 'harsha@bysolum.co.uk',
+  email: 'harsha@bysolum.com',
   first_name: 'Harsha',
   last_name: 'Dandi',
   founding_member_since: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -1356,7 +1356,7 @@ const DEV_MOCK_MEMBER = {
   sessions_completed: 2,
   is_active: true,
 };
-const DEV_MOCK_SESSION = { access_token: 'dev-token', user: { email: 'harsha@bysolum.co.uk' } };
+const DEV_MOCK_SESSION = { access_token: 'dev-token', user: { email: 'harsha@bysolum.com' } };
 
 export default function Founding100Page() {
   // DEV-only preview mode — bypasses auth entirely, never included in prod builds

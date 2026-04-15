@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 const COMMON_DOMAINS = [
   'gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com',
   'me.com','live.com','aol.com','protonmail.com','googlemail.com',
-  'yahoo.co.uk','hotmail.co.uk','live.co.uk','btinternet.com',
+  'yahoo.com','hotmail.com','live.com','btinternet.com',
   'sky.com','talktalk.net','virgin.net','virginmedia.com',
 ];
 
@@ -1284,7 +1284,7 @@ export default function ComingSoon() {
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('checkout_status', 'waitlist')
-          .not('email', 'in', '("harsha@bysolum.co.uk","test@bysolum.co.uk")');
+          .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")');
         setWaitlistCount(count || 0);
       } catch {
         // Silent fail — count just won't show
@@ -1315,7 +1315,7 @@ export default function ComingSoon() {
       .from('leads')
       .select('*', { count: 'exact', head: true })
       .eq('checkout_status', 'waitlist')
-      .not('email', 'in', '("harsha@bysolum.co.uk","test@bysolum.co.uk")')
+      .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")')
       .then(({ count }) => setWaitlistCount(count || 0));
   }
 
@@ -1664,7 +1664,7 @@ export default function ComingSoon() {
         {/* Footer */}
         <footer className="cs-footer">
           <span className="cs-footer-logo">SOLUM</span>
-          <a href="mailto:contact@bysolum.co.uk" className="cs-footer-contact">contact@bysolum.co.uk</a>
+          <a href="mailto:contact@bysolum.com" className="cs-footer-contact">contact@bysolum.com</a>
           <a href="#founding-members" className="cs-footer-founding">Founding 100 ↗</a>
           <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">

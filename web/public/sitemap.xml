@@ -3,68 +3,68 @@
 
   <!-- Core pages -->
   <url>
-    <loc>https://bysolum.com/</loc>
+    <loc>https://bysolum.co.uk/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/ritual</loc>
+    <loc>https://bysolum.co.uk/ritual</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Legal -->
   <url>
-    <loc>https://bysolum.com/terms</loc>
+    <loc>https://bysolum.co.uk/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/privacy</loc>
+    <loc>https://bysolum.co.uk/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <!-- Guide — listing -->
   <url>
-    <loc>https://bysolum.com/guide</loc>
+    <loc>https://bysolum.co.uk/guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Guide — articles -->
   <url>
-    <loc>https://bysolum.com/guide/mens-body-care-routine</loc>
+    <loc>https://bysolum.co.uk/guide/mens-body-care-routine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/how-to-exfoliate-body-men</loc>
+    <loc>https://bysolum.co.uk/guide/how-to-exfoliate-body-men</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/best-body-wash-men-uk</loc>
+    <loc>https://bysolum.co.uk/guide/best-body-wash-men-uk</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/mens-shower-routine</loc>
+    <loc>https://bysolum.co.uk/guide/mens-shower-routine</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/scalp-massager-men</loc>
+    <loc>https://bysolum.co.uk/guide/scalp-massager-men</loc>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/rhassoul-clay-men</loc>
+    <loc>https://bysolum.co.uk/guide/rhassoul-clay-men</loc>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://bysolum.com/guide/how-to-moisturise-after-shower-men</loc>
+    <loc>https://bysolum.co.uk/guide/how-to-moisturise-after-shower-men</loc>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>

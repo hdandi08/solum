@@ -1,7 +1,7 @@
 # SOLUM — Master Brand Brief
 **Last updated:** March 2026  
 **Founder:** Harsha Dandi · harsha@pricedab.com · 07748 370419  
-**Domain:** bysolum.com  
+**Domain:** bysolum.co.uk  
 **Legal:** Sole trader (LTD registration pending)
 
 ---
@@ -261,7 +261,7 @@
 - **Front:** SOLUM wordmark large → "Your Body. Finally Done Right." → hero copy → "Your rituals are inside" → Daily + Weekly pills → all 8 product chips
 - **Inside left (blue):** Daily ritual — 5 steps with full execution guidance per product
 - **Inside right (gold):** Weekly ritual — 4 steps with full execution guidance per product
-- **Back:** Global curation table (all 8 products + origins) + Korean tradition note + bysolum.com
+- **Back:** Global curation table (all 8 products + origins) + Korean tradition note + bysolum.co.uk
 
 ---
 
@@ -295,7 +295,7 @@
 - [ ] Confirm lotion bottle dimensions from Cosmiko before ordering box samples
 
 ### Business
-- [ ] Register bysolum.com domain
+- [ ] Register bysolum.co.uk domain
 - [ ] Register SOLUM as LTD company (currently sole trader)
 
 ### Marketing
