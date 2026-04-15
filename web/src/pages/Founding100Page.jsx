@@ -241,7 +241,7 @@ function SolumStatus() {
   const milestones = [
     { label: 'Products locked',    sub: 'Complete',      state: 'done'    },
     { label: 'First box ships',    sub: 'Q2 2026',       state: 'current' },
-    { label: '100 subscribers',    sub: 'Target Y1',     state: 'pending' },
+    { label: '500–1,000 subs',      sub: 'Year 1 goal',   state: 'pending' },
     { label: '£1M ARR',            sub: 'Equity vests',  state: 'pending' },
   ];
   return (
