@@ -16,7 +16,7 @@ function json(body: unknown, status = 200) {
 }
 
 function generateCode(firstName: string | null): string {
-  const name = (firstName ?? 'SOLM')
+  const name = (firstName || 'SOLM')
     .toUpperCase()
     .replace(/[^A-Z]/g, '')
     .slice(0, 5)
