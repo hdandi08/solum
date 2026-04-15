@@ -448,6 +448,9 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-pledge-section-label">SOLUM commits to you</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
+              A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests when we hit £1M ARR. This is real ownership — not a discount, not a voucher.
+            </li>
+            <li className="f1-pledge-item">
               Your <strong>subscription price, locked permanently</strong> — £38, £48, or £58 depending on your kit. It will never increase for you.
             </li>
             <li className="f1-pledge-item">
