@@ -8,6 +8,8 @@ footer.solum-footer{background:var(--black);border-top:1px solid var(--line);pad
 .footer-links{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0;}
 .footer-links a{font-size:14px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
 .footer-links a:hover{color:var(--bone);}
+.footer-links a.founding{color:var(--sky);letter-spacing:1.5px;}
+.footer-links a.founding:hover{color:#7ab8e0;}
 .footer-ig{display:flex;align-items:center;gap:8px;}
 .footer-ig svg{flex-shrink:0;opacity:.7;transition:opacity .2s;}
 .footer-ig:hover svg{opacity:1;}
@@ -41,6 +43,7 @@ export default function SolumFooter() {
               <li><a href="#truth">Why SOLUM</a></li>
               <li><a href="#origins">Where It's From</a></li>
               <li><a href="/guide">The Guide</a></li>
+              <li><a href="/founding-100" className="founding">Founding 100 ↗</a></li>
             </ul>
           </div>
           <div>
