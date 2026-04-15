@@ -113,7 +113,7 @@ const CSS = `
 .f1-ref-card-count{font-size:13px;font-weight:600;color:#4A8FC7;letter-spacing:.5px;}
 .f1-ref-card-body{padding:20px;}
 .f1-ref-code-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.f1-ref-code{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.12em;color:#F0ECE2;background:#181C24;border:1px solid rgba(240,236,226,0.12);padding:10px 20px;flex:1;text-align:center;}
+.f1-ref-code{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.12em;color:#F0ECE2;background:#181C24;border:1px solid rgba(240,236,226,0.12);padding:10px 20px;flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .f1-ref-copy{background:#2E6DA4;color:#F0ECE2;border:none;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;padding:0 20px;height:52px;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;}
 .f1-ref-copy:hover{background:#4A8FC7;}
 .f1-ref-copy.copied{background:#1A4A78;}
@@ -494,11 +494,19 @@ function ReferralCard({ session }) {
   const [copied,  setCopied]  = useState(false);
 
   useEffect(() => {
+    // Dev preview — skip the real API, show a mock code
+    if (import.meta.env.DEV && session.access_token === 'dev-token') {
+      setCode('F-HARS-DEV1');
+      setCount(3);
+      return;
+    }
     fetch(`${SUPABASE_URL}/functions/v1/get-or-create-referral-code`, {
       headers: { 'Authorization': `Bearer ${session.access_token}` },
     })
       .then(r => r.json())
-      .then(d => { if (d.code) { setCode(d.code); setCount(d.referral_count ?? 0); } })
+      // Only accept codes in our format (F-NAME-RAND) — guards against Supabase
+      // JWT error objects which also contain a "code" field
+      .then(d => { if (d.code && d.code.startsWith('F-')) { setCode(d.code); setCount(d.referral_count ?? 0); } })
       .catch(() => {});
   }, []);
 
@@ -550,6 +558,12 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
 
   return (
     <>
+      {/* Referral — top priority: 1 member → many signups */}
+      <div style={{ marginBottom: 32 }}>
+        <div className="f1-section-label" style={{ marginBottom: 16 }}>Grow Solum · Grow Your Equity</div>
+        <ReferralCard session={session} />
+      </div>
+
       <div className="f1-stats-strip">
         <div className="f1-stat-card">
           <CircularRing pct={pct} />
@@ -595,11 +609,6 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
         </>
       )}
 
-      {/* Referral code — always visible in missions tab */}
-      <div style={{ marginTop: 40 }}>
-        <div className="f1-section-label" style={{ marginBottom: 16 }}>Grow Solum · Grow Your Equity</div>
-        <ReferralCard session={session} />
-      </div>
     </>
   );
 }
