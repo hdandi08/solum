@@ -447,7 +447,7 @@ function PledgeView({ session, member, onSigned }) {
               A share of the <strong>bySolum Limited founding member equity pool</strong>, divided equally across all 100 members. Vests at £500K ARR.
             </li>
             <li className="f1-pledge-item">
-              <strong>Lifetime 30% off</strong> every SOLUM order, forever.
+              <strong>First access</strong> to every product before public launch, for life.
             </li>
             <li className="f1-pledge-item">
               <strong>First access</strong> to every product before public launch.
@@ -734,7 +734,7 @@ function LandingView({ phase, setPhase }) {
           <span className="f1-benefit-icon">◉</span>
           <div className="f1-benefit-title">Founding Privileges</div>
           <div className="f1-benefit-body">
-            Lifetime 30% off every order. First access to every product launch.
+            First access to every product before public launch, for life.
             Your name on the bysolum.com founding wall.{' '}
             <strong>Forever.</strong>
           </div>
