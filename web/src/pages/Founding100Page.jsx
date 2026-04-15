@@ -665,7 +665,7 @@ function LandingView({ phase, setPhase }) {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/check-founding-member`, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
         body:    JSON.stringify({ email: normEmail }),
       });
       const { is_member } = await res.json();
