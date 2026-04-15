@@ -275,14 +275,12 @@ function EquityScenarios() {
       arr:       '£2M ARR',
       multiple:  '3× revenue',
       poolValue: '~£60K',
-      yourShare: '~£600',
     },
     {
       label:     'Base Case',
       arr:       '£5.3M ARR',
       multiple:  '4× revenue',
       poolValue: '~£210K',
-      yourShare: '~£2,100',
       highlight:  true,
     },
     {
@@ -290,13 +288,12 @@ function EquityScenarios() {
       arr:       '£17.8M ARR',
       multiple:  '5× revenue',
       poolValue: '~£890K',
-      yourShare: '~£8,900',
     },
   ];
   return (
     <div className="f1-equity-scenarios">
       <div className="f1-eq-header">
-        <div className="f1-eq-title">What Your Equity Could Be Worth</div>
+        <div className="f1-eq-title">What the Founding Pool Could Be Worth</div>
         <div className="f1-eq-subtitle">Year 5 projections · 3 scenarios</div>
       </div>
       <div className="f1-eq-grid">
@@ -305,16 +302,23 @@ function EquityScenarios() {
             <div className="f1-eq-scenario">{s.label}</div>
             <div className="f1-eq-arr">{s.arr}</div>
             <div className="f1-eq-multiple">{s.multiple} valuation</div>
-            <div className="f1-eq-value">{s.yourShare}</div>
-            <div className="f1-eq-value-label">your share</div>
-            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(240,236,226,0.07)', fontSize: 12, color: 'rgba(240,236,226,0.45)', letterSpacing: '1px' }}>
-              Pool: {s.poolValue}
-            </div>
+            <div className="f1-eq-value">{s.poolValue}</div>
+            <div className="f1-eq-value-label">founding pool</div>
           </div>
         ))}
       </div>
+      {/* Long-hold upside */}
+      <div style={{ background: 'rgba(74,143,199,0.06)', border: '1px solid rgba(74,143,199,0.2)', padding: '18px 20px', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7', marginBottom: 8 }}>The longer view</div>
+        <div style={{ fontSize: 15, fontWeight: 300, color: 'rgba(240,236,226,0.88)', lineHeight: 1.6 }}>
+          These are Year 5 projections — a conservative start. The vision over 5–10 years is <strong style={{ color: '#F0ECE2' }}>unicorn status</strong>.
+          Men's personal care is a multi-billion pound category. Dollar Shave Club sold to Unilever for <strong style={{ color: '#F0ECE2' }}>$1 billion</strong>.
+          At a £1B valuation, the founding pool is worth <strong style={{ color: '#F0ECE2' }}>£10 million</strong>.
+          Equity vests early — but you never have to sell. The window opens in 14 months. What happens after that is up to all of us.
+        </div>
+      </div>
       <div className="f1-eq-disclaimer">
-        The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Your share is 1/100 of that pool — 0.01% of the company. Projections are from the financial model, not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
+        The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Year 5 projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
       </div>
     </div>
   );
