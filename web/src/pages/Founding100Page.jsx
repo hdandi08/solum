@@ -93,6 +93,33 @@ const CSS = `
 .f1-welcome{background:#181C24;border:1px solid rgba(74,143,199,0.2);padding:32px 36px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;}
 .f1-welcome-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;line-height:1;margin-bottom:4px;}
 .f1-welcome-date{font-size:14px;font-weight:300;color:rgba(240,236,226,0.78);letter-spacing:.5px;}
+
+/* Founder message (post-pledge) */
+.f1-founder-msg{background:#0f1318;border:1px solid rgba(74,143,199,0.25);margin-bottom:28px;overflow:hidden;}
+.f1-founder-msg-header{background:rgba(46,109,164,0.12);border-bottom:1px solid rgba(74,143,199,0.15);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;}
+.f1-founder-msg-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:#4A8FC7;}
+.f1-founder-msg-dismiss{background:none;border:none;font-size:18px;color:rgba(240,236,226,0.3);cursor:pointer;padding:0;line-height:1;transition:color .2s;}
+.f1-founder-msg-dismiss:hover{color:#F0ECE2;}
+.f1-founder-msg-body{padding:28px 24px 24px;display:flex;flex-direction:column;gap:14px;}
+.f1-founder-msg-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.06em;color:#F0ECE2;line-height:1;}
+.f1-founder-msg-para{font-size:15px;font-weight:300;color:rgba(240,236,226,0.85);line-height:1.7;}
+.f1-founder-msg-para strong{color:#F0ECE2;font-weight:600;}
+.f1-founder-msg-sig{font-size:14px;font-weight:600;color:rgba(240,236,226,0.55);letter-spacing:1px;margin-top:4px;}
+
+/* Referral card */
+.f1-ref-card{border:1px solid rgba(240,236,226,0.08);margin-bottom:32px;}
+.f1-ref-card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(240,236,226,0.07);}
+.f1-ref-card-label{font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.55);}
+.f1-ref-card-count{font-size:13px;font-weight:600;color:#4A8FC7;letter-spacing:.5px;}
+.f1-ref-card-body{padding:20px;}
+.f1-ref-code-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.f1-ref-code{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.12em;color:#F0ECE2;background:#181C24;border:1px solid rgba(240,236,226,0.12);padding:10px 20px;flex:1;text-align:center;}
+.f1-ref-copy{background:#2E6DA4;color:#F0ECE2;border:none;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;padding:0 20px;height:52px;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;}
+.f1-ref-copy:hover{background:#4A8FC7;}
+.f1-ref-copy.copied{background:#1A4A78;}
+.f1-ref-url{font-size:13px;font-weight:300;color:rgba(240,236,226,0.45);letter-spacing:.3px;margin-bottom:14px;word-break:break-all;}
+.f1-ref-why{font-size:13px;font-weight:300;color:rgba(240,236,226,0.65);line-height:1.6;}
+.f1-ref-why strong{color:rgba(240,236,226,0.88);font-weight:600;}
 .f1-status-pill{display:inline-block;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:6px 14px;}
 .f1-status-active{background:rgba(74,143,199,0.15);color:#4A8FC7;}
 .f1-status-inactive{background:rgba(168,180,188,0.1);color:rgba(240,236,226,0.78);}
@@ -460,6 +487,58 @@ function VestingCountdown({ member }) {
   );
 }
 
+/* ─── Referral card ────────────────────────────────────────────────────────── */
+function ReferralCard({ session }) {
+  const [code,    setCode]    = useState(null);
+  const [count,   setCount]   = useState(0);
+  const [copied,  setCopied]  = useState(false);
+
+  useEffect(() => {
+    fetch(`${SUPABASE_URL}/functions/v1/get-or-create-referral-code`, {
+      headers: { 'Authorization': `Bearer ${session.access_token}` },
+    })
+      .then(r => r.json())
+      .then(d => { if (d.code) { setCode(d.code); setCount(d.referral_count ?? 0); } })
+      .catch(() => {});
+  }, []);
+
+  if (!code) return null;
+
+  const shareUrl = `https://bysolum.co.uk/?ref=${code}`;
+
+  function copy() {
+    navigator.clipboard.writeText(shareUrl).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  }
+
+  return (
+    <div className="f1-ref-card">
+      <div className="f1-ref-card-head">
+        <div className="f1-ref-card-label">Your Referral Code</div>
+        <div className="f1-ref-card-count">
+          {count === 0 ? 'No referrals yet' : `${count} ${count === 1 ? 'person' : 'people'} joined via your code`}
+        </div>
+      </div>
+      <div className="f1-ref-card-body">
+        <div className="f1-ref-code-row">
+          <div className="f1-ref-code">{code}</div>
+          <button className={`f1-ref-copy${copied ? ' copied' : ''}`} onClick={copy}>
+            {copied ? 'Copied ✓' : 'Copy Link'}
+          </button>
+        </div>
+        <div className="f1-ref-url">{shareUrl}</div>
+        <div className="f1-ref-why">
+          Every person who joins via your code is tracked against it.
+          More people on the waitlist means a <strong>faster launch</strong>, faster growth,
+          and a <strong>faster path to £1M ARR</strong> — which is when your equity vests.
+          Share it with people who'd actually use SOLUM.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Missions tab ─────────────────────────────────────────────────────────── */
 function MissionsTab({ jobs, completions, session, onComplete }) {
   const completedCount = Object.keys(completions).length;
@@ -515,6 +594,12 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
           )}
         </>
       )}
+
+      {/* Referral code — always visible in missions tab */}
+      <div style={{ marginTop: 40 }}>
+        <div className="f1-section-label" style={{ marginBottom: 16 }}>Grow Solum · Grow Your Equity</div>
+        <ReferralCard session={session} />
+      </div>
     </>
   );
 }
@@ -984,13 +1069,24 @@ function PledgeView({ session, member, onSigned }) {
 }
 
 /* ─── Portal ───────────────────────────────────────────────────────────────── */
-function PortalView({ session, member, jobs, completions: initialCompletions, onSignOut }) {
+function PortalView({ session, member, jobs, completions: initialCompletions, onSignOut, justSigned }) {
   const [completions, setCompletions] = useState(
     Object.fromEntries(initialCompletions.map(c => [c.job_id, c]))
   );
   const [tab, setTab] = useState('missions');
   const isActive      = member.is_active;
   const openCount     = jobs.filter(j => !completions[j.id]).length;
+
+  // Welcome message: show once after pledge, tracked per member in localStorage
+  const welcomeKey = `solum_f100_welcomed_${member.email}`;
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (justSigned) return true;
+    try { return !localStorage.getItem(welcomeKey); } catch { return false; }
+  });
+  function dismissWelcome() {
+    try { localStorage.setItem(welcomeKey, '1'); } catch {}
+    setShowWelcome(false);
+  }
 
   function handleJobComplete(jobId, responses) {
     setCompletions(prev => ({
@@ -1030,6 +1126,43 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
           </span>
         </div>
       </div>
+
+      {/* Post-pledge welcome from Harsha — shown once */}
+      {showWelcome && (
+        <div className="f1-portal" style={{ paddingBottom: 0, paddingTop: 0 }}>
+          <div className="f1-founder-msg">
+            <div className="f1-founder-msg-header">
+              <div className="f1-founder-msg-label">A Message from the Founder</div>
+              <button className="f1-founder-msg-dismiss" onClick={dismissWelcome} aria-label="Dismiss">×</button>
+            </div>
+            <div className="f1-founder-msg-body">
+              <div className="f1-founder-msg-name">
+                {member.first_name ? `${member.first_name}.` : 'Welcome.'}
+              </div>
+              <p className="f1-founder-msg-para">
+                You're one of 100 people who own a stake in what we're building.
+                Thank you for committing — genuinely.
+              </p>
+              <p className="f1-founder-msg-para">
+                Here's what I need you to understand: <strong>your equity isn't passive.</strong>{' '}
+                Every mission you complete gives us real input that makes SOLUM better.
+                A better product grows faster. Faster growth means we hit £1M ARR sooner.
+                That's when your equity vests.
+              </p>
+              <p className="f1-founder-msg-para">
+                The referral code below is just as important.{' '}
+                <strong>Every person you bring to the waitlist</strong> accelerates our launch.
+                More demand before we ship means more customers day one.
+                Share it with people who'd actually use this — not everyone, the right people.
+              </p>
+              <p className="f1-founder-msg-para">
+                You're not just a customer. You're part of this.
+              </p>
+              <div className="f1-founder-msg-sig">— Harsha, Founder</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!isActive ? (
         <div className="f1-portal">
@@ -1250,8 +1383,11 @@ export default function Founding100Page() {
     }
   }
 
+  const [justSigned, setJustSigned] = useState(false);
+
   function handlePledgeSigned() {
     setMember(m => ({ ...m, pledge_signed_at: new Date().toISOString() }));
+    setJustSigned(true);
     setPhase('portal');
   }
 
@@ -1281,6 +1417,7 @@ export default function Founding100Page() {
         jobs={jobs}
         completions={completions}
         onSignOut={handleSignOut}
+        justSigned={justSigned}
       />
     );
   }
