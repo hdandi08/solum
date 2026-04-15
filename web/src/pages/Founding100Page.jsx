@@ -452,7 +452,7 @@ function PledgeView({ session, member, onSigned }) {
               Your <strong>1/100 equity share</strong> in bySolum Limited, vesting at £500K ARR. Equal across all founding members, no exceptions.
             </li>
             <li className="f1-pledge-item">
-              <strong>Your monthly subscription price, locked forever</strong> — £38, £48, or £58 depending on your kit. As prices rise for every new subscriber, yours never moves.
+              <strong>Your monthly subscription price, locked forever</strong> — £38, £48, or £58 depending on your kit. That price never changes for you, ever.
             </li>
             <li className="f1-pledge-item">
               <strong>First access to every new product</strong> SOLUM develops — always before public launch.
