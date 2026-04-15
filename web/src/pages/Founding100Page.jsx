@@ -1137,7 +1137,7 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
             </div>
             <div className="f1-founder-msg-body">
               <div className="f1-founder-msg-name">
-                {member.first_name ? `${member.first_name}.` : 'Welcome.'}
+                Welcome{member.first_name ? `, ${member.first_name}` : ''}.
               </div>
               <p className="f1-founder-msg-para">
                 You're one of 100 people who own a stake in what we're building.
