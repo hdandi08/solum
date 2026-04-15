@@ -1146,8 +1146,8 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
               <p className="f1-founder-msg-para">
                 Here's what I need you to understand: <strong>your equity isn't passive.</strong>{' '}
                 Every mission you complete gives us real input that makes SOLUM better.
-                A better product grows faster. Faster growth means we hit £1M ARR sooner.
-                That's when your equity vests.
+                A better product grows faster. Faster growth means we hit £1M ARR sooner —
+                and that's when your equity vests. <strong>The better your input, the more valuable your share becomes. The more valuable your share, the more you make.</strong>
               </p>
               <p className="f1-founder-msg-para">
                 The referral code below is just as important.{' '}
