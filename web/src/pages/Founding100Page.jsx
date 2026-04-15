@@ -19,20 +19,42 @@ const CSS = `
 .f1-nav-signout:hover{color:#F0ECE2;}
 
 /* Landing hero */
-.f1-hero{max-width:920px;margin:0 auto;padding:80px 48px 56px;text-align:center;}
-.f1-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;font-weight:700;color:#4A8FC7;margin-bottom:20px;}
-.f1-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,8vw,96px);letter-spacing:.04em;line-height:.95;color:#F0ECE2;margin-bottom:28px;}
-.f1-h1 em{color:#4A8FC7;font-style:normal;}
-.f1-hero-body{font-size:17px;font-weight:300;color:rgba(240,236,226,0.65);line-height:1.65;max-width:620px;margin:0 auto 48px;}
-.f1-hero-body strong{color:#F0ECE2;font-weight:600;}
+.f1-hero{padding:72px 48px 56px;text-align:center;border-bottom:1px solid rgba(240,236,226,0.06);}
+.f1-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;font-weight:700;color:#4A8FC7;margin-bottom:16px;}
+.f1-hero-stat{font-family:'Bebas Neue',sans-serif;font-size:clamp(100px,18vw,200px);letter-spacing:-.02em;line-height:.85;color:#F0ECE2;margin-bottom:8px;}
+.f1-hero-label{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,40px);letter-spacing:.12em;color:rgba(240,236,226,0.5);margin-bottom:24px;}
+.f1-hero-line{font-size:16px;font-weight:300;color:rgba(240,236,226,0.5);letter-spacing:1px;max-width:480px;margin:0 auto;}
 
-/* Benefit grid */
-.f1-benefits{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(240,236,226,0.08);border-left:1px solid rgba(240,236,226,0.08);max-width:920px;margin:0 auto 64px;}
-.f1-benefit{padding:36px 32px;border-right:1px solid rgba(240,236,226,0.08);border-bottom:1px solid rgba(240,236,226,0.08);}
-.f1-benefit-icon{font-size:20px;margin-bottom:14px;display:block;}
-.f1-benefit-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.08em;color:#F0ECE2;margin-bottom:10px;}
-.f1-benefit-body{font-size:14px;font-weight:300;color:rgba(240,236,226,0.55);line-height:1.6;}
-.f1-benefit-body strong{color:rgba(240,236,226,0.85);font-weight:600;}
+/* Reward cards */
+.f1-rewards{display:grid;grid-template-columns:repeat(3,1fr);max-width:1200px;margin:0 auto;}
+.f1-reward{padding:48px 40px;border-right:1px solid rgba(240,236,226,0.07);border-bottom:1px solid rgba(240,236,226,0.07);display:flex;flex-direction:column;}
+.f1-reward:last-child{border-right:none;}
+.f1-reward-tag{font-size:10px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:#4A8FC7;margin-bottom:24px;}
+.f1-reward-visual{margin-bottom:28px;}
+.f1-reward-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6vw,72px);letter-spacing:.02em;line-height:.9;color:#F0ECE2;}
+.f1-reward-big em{color:#4A8FC7;font-style:normal;}
+.f1-reward-sub{font-size:13px;font-weight:300;color:rgba(240,236,226,0.4);margin-top:6px;letter-spacing:.5px;line-height:1.5;}
+.f1-reward-body{font-size:15px;font-weight:300;color:rgba(240,236,226,0.6);line-height:1.6;flex:1;}
+.f1-reward-body strong{color:#F0ECE2;font-weight:600;}
+
+/* Price lock rows */
+.f1-price-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.f1-price-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border:1px solid rgba(240,236,226,0.07);background:rgba(240,236,226,0.02);}
+.f1-price-name{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.45);}
+.f1-price-amount{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:#F0ECE2;}
+.f1-price-lock{font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:#4A8FC7;border:1px solid rgba(74,143,199,0.4);padding:3px 8px;}
+
+/* Product chips */
+.f1-product-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px;}
+.f1-chip{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:rgba(240,236,226,0.5);border:1px solid rgba(240,236,226,0.1);padding:6px 12px;}
+.f1-chip-new{color:#4A8FC7;border-color:rgba(74,143,199,0.3);}
+
+/* Commitment strip */
+.f1-commitment{border-top:1px solid rgba(240,236,226,0.07);border-bottom:1px solid rgba(240,236,226,0.07);padding:28px 48px;display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
+.f1-commitment-item{display:flex;align-items:center;gap:12px;}
+.f1-commitment-icon{font-size:18px;opacity:.5;}
+.f1-commitment-text{font-size:13px;font-weight:300;color:rgba(240,236,226,0.45);letter-spacing:.5px;line-height:1.4;}
+.f1-commitment-text strong{color:rgba(240,236,226,0.7);font-weight:600;}
 
 /* Login form */
 .f1-login-wrap{max-width:480px;margin:0 auto;padding:0 48px 80px;}
@@ -168,7 +190,9 @@ const CSS = `
 @media(max-width:768px){
   .f1-nav{padding:20px 24px;}
   .f1-hero{padding:48px 24px 40px;}
-  .f1-benefits{grid-template-columns:1fr;}
+  .f1-rewards{grid-template-columns:1fr;}
+  .f1-reward{border-right:none;}
+  .f1-commitment{padding:24px;gap:24px;}
   .f1-login-wrap{padding:0 24px 60px;}
   .f1-pledge-wrap{padding:40px 24px 60px;}
   .f1-portal{padding:32px 24px 60px;}
@@ -699,45 +723,92 @@ function LandingView({ phase, setPhase }) {
         <a href="/" className="f1-back" style={{ marginTop: 0 }}>← Home</a>
       </nav>
 
+      {/* Hero — number-led, minimal text */}
       <div className="f1-hero">
-        <div className="f1-eyebrow">By invitation only</div>
-        <div className="f1-h1">Shape what<br /><em>SOLUM</em><br />becomes.</div>
-        <div className="f1-hero-body">
-          One hundred people. Real input. Real skin. Real results.
-          Founding members don't just buy SOLUM — they build it.
-          Your feedback shapes formulas, rituals, and product decisions
-          before a single box ships at scale. And because you're building this,{' '}
-          <strong>a portion of bySolum Limited is set aside for you.</strong>
+        <div className="f1-eyebrow">By invitation only · One time only</div>
+        <div className="f1-hero-stat">100</div>
+        <div className="f1-hero-label">Founding Members</div>
+        <div className="f1-hero-line">
+          You don't just buy SOLUM. You build it — and you own part of it.
         </div>
       </div>
 
-      <div className="f1-benefits">
-        <div className="f1-benefit">
-          <span className="f1-benefit-icon">◈</span>
-          <div className="f1-benefit-title">Real Co-Creation</div>
-          <div className="f1-benefit-body">
-            Regular jobs where your input directly changes product formulas,
-            ritual sequencing, and what gets built next.{' '}
-            <strong>What you say, we log. What we change, we tell you why.</strong>
+      {/* Three rewards — visual first */}
+      <div className="f1-rewards">
+
+        {/* Reward 1: Price Lock */}
+        <div className="f1-reward">
+          <div className="f1-reward-tag">Reward 01</div>
+          <div className="f1-price-rows">
+            <div className="f1-price-row">
+              <span className="f1-price-name">Ground</span>
+              <span className="f1-price-amount">£55</span>
+              <span className="f1-price-lock">Locked</span>
+            </div>
+            <div className="f1-price-row">
+              <span className="f1-price-name">Ritual</span>
+              <span className="f1-price-amount">£85</span>
+              <span className="f1-price-lock">Locked</span>
+            </div>
+            <div className="f1-price-row">
+              <span className="f1-price-name">Sovereign</span>
+              <span className="f1-price-amount">£130</span>
+              <span className="f1-price-lock">Locked</span>
+            </div>
+          </div>
+          <div className="f1-reward-body">
+            You join at launch price. <strong>That price is yours forever.</strong>{' '}
+            As SOLUM scales and prices rise, you stay exactly where you started.
           </div>
         </div>
-        <div className="f1-benefit">
-          <span className="f1-benefit-icon">◇</span>
-          <div className="f1-benefit-title">Equity Stake</div>
-          <div className="f1-benefit-body">
-            A dedicated founding member equity pool in bySolum Limited,
-            divided equally across all 100 members.{' '}
-            <strong>Vests at £500K ARR</strong> — tied to participation, not just membership.
+
+        {/* Reward 2: Product Trials */}
+        <div className="f1-reward">
+          <div className="f1-reward-tag">Reward 02</div>
+          <div className="f1-reward-visual">
+            <div className="f1-reward-big">First.<br />Every time.</div>
+          </div>
+          <div className="f1-product-chips">
+            {['01','02','03','04','05','06','07','08','09','10'].map(n => (
+              <span key={n} className={`f1-chip ${parseInt(n) > 8 ? 'f1-chip-new' : ''}`}>{n}</span>
+            ))}
+          </div>
+          <div className="f1-reward-body">
+            Every new product SOLUM develops — you trial it before anyone else.{' '}
+            <strong>Products 09 and 10 are yours first.</strong>{' '}
+            You shape what ships.
           </div>
         </div>
-        <div className="f1-benefit">
-          <span className="f1-benefit-icon">◉</span>
-          <div className="f1-benefit-title">Founding Privileges</div>
-          <div className="f1-benefit-body">
-            First access to every product before public launch, for life.
-            Your name on the bysolum.com founding wall.{' '}
-            <strong>Forever.</strong>
+
+        {/* Reward 3: Equity */}
+        <div className="f1-reward">
+          <div className="f1-reward-tag">Reward 03</div>
+          <div className="f1-reward-visual">
+            <div className="f1-reward-big"><em>1</em>/100</div>
+            <div className="f1-reward-sub">share of the founding pool<br />bySolum Limited</div>
           </div>
+          <div className="f1-reward-body">
+            A real equity stake. Equal among all 100 members.{' '}
+            <strong>Vests when SOLUM hits £500K ARR.</strong>{' '}
+            Tied to participation — not just showing up.
+          </div>
+        </div>
+
+      </div>
+
+      {/* Commitment strip */}
+      <div className="f1-commitment">
+        <div className="f1-commitment-item">
+          <span className="f1-commitment-icon">◎</span>
+          <div className="f1-commitment-text"><strong>3 of 4 jobs per month.</strong> ~5 min each.</div>
+        </div>
+        <div className="f1-commitment-item">
+          <span className="f1-commitment-icon">◎</span>
+          <div className="f1-commitment-text"><strong>Active subscription</strong> required.</div>
+        </div>
+        <div className="f1-commitment-item">
+          <span className="f1-commitment-icon">◎</span>
+          <div className="f1-commitment-text">Miss 4 jobs → <strong>warning.</strong> Miss 8 → spot opens.</div>
         </div>
       </div>
 
