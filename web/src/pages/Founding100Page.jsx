@@ -460,6 +460,9 @@ function PledgeView({ session, member, onSigned }) {
               Your name listed permanently as a <strong>founding member of SOLUM</strong> on bysolum.com when we launch.
             </li>
             <li className="f1-pledge-item">
+              A <strong>monthly update</strong> on how SOLUM is performing — revenue, growth, what's working, what isn't. Founding members only, in confidence.
+            </li>
+            <li className="f1-pledge-item">
               A running log of every decision your input shaped — <strong>what changed, and why</strong>.
             </li>
           </ul>
@@ -476,7 +479,7 @@ function PledgeView({ session, member, onSigned }) {
               Keeping an <strong>active SOLUM subscription</strong>. You're shaping a product you use — that's the deal.
             </li>
             <li className="f1-pledge-item">
-              Treating <strong>product formulas, supplier names, and pricing as confidential</strong>. You have inside knowledge. Keep it inside.
+              Treating <strong>product formulas, supplier names, pricing, and the monthly progress updates as confidential</strong>. You have inside knowledge. Keep it inside.
             </li>
             <li className="f1-pledge-item">
               Raising issues <strong>here, not publicly</strong>. Disagree with anything — we want to hear it. But inside the portal, not on social.
