@@ -911,6 +911,33 @@ const styles = `
     z-index: 0;
   }
 
+  /* Box reveal */
+  .cs-box-reveal {
+    position: relative;
+    z-index: 1;
+    background: #0c0e12;
+    border-bottom: 1px solid rgba(240,236,226,0.055);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+  .cs-box-img {
+    width: 100%;
+    max-width: 960px;
+    display: block;
+    object-fit: cover;
+  }
+  .cs-box-caption {
+    padding: 14px 24px 20px;
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(240,236,226,0.40);
+    font-weight: 600;
+    text-align: center;
+  }
+
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
     .cs-main { padding: 84px 24px 48px; }
@@ -1116,7 +1143,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
               Founding 100 · Members Portal
             </div>
             <div style={{ padding: '20px 20px 0' }}>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in bySolum Limited</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in Solum</div>
               <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
                 A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
               </div>
@@ -1325,6 +1352,35 @@ export default function ComingSoon() {
 
         </main>
 
+        {/* Box reveal */}
+        <div className="cs-box-reveal">
+          <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
+          <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
+        </div>
+
+        {/* Stats */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 24px', borderBottom: '1px solid rgba(240,236,226,0.055)' }}>
+          <div className="cs-stats-intro">Here's what actually happens when you do it right:</div>
+          <div className="cs-stats">
+            <div className="cs-stat">
+              <div className="cs-stat-num">Week 1</div>
+              <div className="cs-stat-label">dead skin you didn't know<br />existed rolls off</div>
+            </div>
+            <div className="cs-stat">
+              <div className="cs-stat-num">Week 2</div>
+              <div className="cs-stat-label">body odour reduces —<br />dead cells feed bacteria, not sweat</div>
+            </div>
+            <div className="cs-stat">
+              <div className="cs-stat-num">Week 3</div>
+              <div className="cs-stat-label">skin holds moisture<br />past midday</div>
+            </div>
+            <div className="cs-stat">
+              <div className="cs-stat-num">Day 66</div>
+              <div className="cs-stat-label">the ritual is automatic.<br />you don't think about it.</div>
+            </div>
+          </div>
+        </div>
+
         {/* 2 — Founding Member benefits */}
         <div className="cs-founding" id="founding-members">
           <div className="cs-founding-eyebrow">Founding Members Only · First 100</div>
@@ -1332,7 +1388,7 @@ export default function ComingSoon() {
             The First <em>100</em> Own<br />Part of What They Build
           </h2>
           <p className="cs-founding-sub">
-            Locked price. First access. Real equity in bySolum.
+            Locked price. First access. Real equity in Solum.
             The people who show up at the start don't just use it — they own part of it.
           </p>
 
@@ -1360,9 +1416,9 @@ export default function ComingSoon() {
             {/* Card 1 — Equity */}
             <div className="cs-founding-item">
               <div className="cs-founding-item-label">Equity</div>
-              <div className="cs-founding-item-title">A Real Stake in bySolum.</div>
+              <div className="cs-founding-item-title">A Real Stake in Solum.</div>
               <div className="cs-founding-item-body">
-                Founding members receive actual equity in bySolum Limited — not a discount, not a voucher.
+                Founding members receive actual equity in Solum — not a discount, not a voucher.
                 Real ownership that vests as the company grows. The full details live inside the members portal.
               </div>
               {/* Visual growth arc */}
@@ -1439,29 +1495,6 @@ export default function ComingSoon() {
             <strong>This is not a discount code.</strong> Founding Member status is permanent —
             tied to your account, not a campaign. Once the 100 spots are gone, this tier closes. It will not reopen.{' '}
             <a href="/founding-100" style={{ color: '#4A8FC7', textDecoration: 'none', fontWeight: 600 }}>Already a member? Enter the portal →</a>
-          </div>
-        </div>
-
-        {/* 3 — Stats */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 24px', borderBottom: '1px solid rgba(240,236,226,0.055)' }}>
-          <div className="cs-stats-intro">Here's what actually happens when you do it right:</div>
-          <div className="cs-stats">
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 1</div>
-              <div className="cs-stat-label">dead skin you didn't know<br />existed rolls off</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 2</div>
-              <div className="cs-stat-label">body odour reduces —<br />dead cells feed bacteria, not sweat</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 3</div>
-              <div className="cs-stat-label">skin holds moisture<br />past midday</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Day 66</div>
-              <div className="cs-stat-label">the ritual is automatic.<br />you don't think about it.</div>
-            </div>
           </div>
         </div>
 

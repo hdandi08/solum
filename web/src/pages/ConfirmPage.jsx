@@ -137,7 +137,7 @@ export default function ConfirmPage() {
                 </div>
                 {/* Body */}
                 <div style={{ padding: '20px 20px 0' }}>
-                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in bySolum Limited</div>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in Solum</div>
                   <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
                     A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
                   </div>

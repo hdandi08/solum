@@ -394,7 +394,7 @@ function EquityScenarios() {
         </div>
       </div>
       <div className="f1-eq-disclaimer">
-        The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Year 5 projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
+        The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of Solum</strong>, split equally across all 100 members. Year 5 projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
       </div>
     </div>
   );
@@ -884,9 +884,9 @@ function PledgeView({ session, member, onSigned }) {
         <div className="f1-equity-box">
           <div className="f1-equity-fraction"><em>1</em>/100</div>
           <div className="f1-equity-text">
-            <div className="f1-equity-headline">Real equity in bySolum Limited</div>
+            <div className="f1-equity-headline">Real equity in Solum</div>
             <div className="f1-equity-detail">
-              The founding pool is <strong style={{ color: '#F0ECE2' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Your share: 1/100 of that pool.
+              The founding pool is <strong style={{ color: '#F0ECE2' }}>1% of Solum</strong>, split equally across all 100 members. Your share: 1/100 of that pool.
               Vests at <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong> or <strong style={{ color: '#F0ECE2' }}>14 months</strong> — whichever comes first.
               Active members only — participation is required, not optional.
             </div>
@@ -899,7 +899,7 @@ function PledgeView({ session, member, onSigned }) {
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">01</span>
-              <span>A <strong>1/100 share of the founding pool</strong> — 1% of bySolum Limited split equally across all 100 members. Vests at £1M ARR or 14 months — whichever comes first. Real ownership — not a discount, not a voucher.</span>
+              <span>A <strong>1/100 share of the founding pool</strong> — 1% of Solum split equally across all 100 members. Vests at £1M ARR or 14 months — whichever comes first. Real ownership — not a discount, not a voucher.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">02</span>
@@ -1186,7 +1186,7 @@ function LandingView({ phase, setPhase }) {
           <div className="f1-benefit-trio">
             <div className="f1-benefit">
               <div className="f1-benefit-value"><em>1</em>/100</div>
-              <div className="f1-benefit-label">Equity share<br />bySolum Limited</div>
+              <div className="f1-benefit-label">Equity share<br />in Solum</div>
             </div>
             <div className="f1-benefit">
               <div className="f1-benefit-value">Locked<em>/mo</em></div>
