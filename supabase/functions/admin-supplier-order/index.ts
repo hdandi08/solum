@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
+const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.co.uk']
 
 function toPence(pounds: number | null | undefined): number {
   if (pounds == null || isNaN(pounds)) return 0

@@ -23,7 +23,7 @@ function buildConfirmEmail(
   token: string,
   position: number,
 ): string {
-  const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.com'
+  const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.co.uk'
   const confirmUrl = `${siteUrl}/confirm?token=${token}`
   const greeting = firstName ? `${firstName},` : 'Hey,'
 
@@ -95,7 +95,7 @@ function buildConfirmEmail(
           You signed up to SOLUM via our waitlist. If this wasn't you, ignore this email — nothing will happen.
         </p>
         <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
-          bysolum.com · contact@bysolum.com
+          bysolum.co.uk · contact@bysolum.co.uk
         </p>
       </td></tr>
 

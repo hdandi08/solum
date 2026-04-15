@@ -215,7 +215,7 @@ export default function PrivacyPage() {
             <section className="privacy-section" id="p1">
               <span className="privacy-section-num">Section 01</span>
               <h2 className="privacy-section-title">Who We Are</h2>
-              <p className="privacy-p">SOLUM is a men's body care brand operated by <strong>Harsha Dandi</strong> (sole trader) via bysolum.com. Harsha Dandi is the <strong>data controller</strong> for personal data collected through this website and any associated services.</p>
+              <p className="privacy-p">SOLUM is a men's body care brand operated by <strong>Harsha Dandi</strong> (sole trader) via bysolum.co.uk. Harsha Dandi is the <strong>data controller</strong> for personal data collected through this website and any associated services.</p>
               <div className="privacy-info-block">
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Controller</span>
@@ -227,7 +227,7 @@ export default function PrivacyPage() {
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Email</span>
-                  <span className="privacy-info-value">contact@bysolum.com</span>
+                  <span className="privacy-info-value">contact@bysolum.co.uk</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Phone</span>
@@ -238,7 +238,7 @@ export default function PrivacyPage() {
                   <span className="privacy-info-value">[To be registered with ICO — required before launch]</span>
                 </div>
               </div>
-              <p className="privacy-p">If you have any questions about this Privacy Policy or how we handle your data, please contact us at contact@bysolum.com.</p>
+              <p className="privacy-p">If you have any questions about this Privacy Policy or how we handle your data, please contact us at contact@bysolum.co.uk.</p>
             </section>
 
             {/* 2 */}
@@ -355,7 +355,7 @@ export default function PrivacyPage() {
               <p className="privacy-p">Processing where we have a legitimate business interest that does not override your rights — including fraud prevention, improving our service, sending renewal reminders, and responding to complaints. We have assessed that our legitimate interests do not override your rights in these cases.</p>
 
               <div className="privacy-h3">Consent (Article 6(1)(a))</div>
-              <p className="privacy-p">Where we send you marketing emails, we rely on your explicit opt-in consent. You can withdraw consent at any time by clicking unsubscribe in any email or by contacting us at contact@bysolum.com. Withdrawal of consent does not affect the lawfulness of processing before withdrawal.</p>
+              <p className="privacy-p">Where we send you marketing emails, we rely on your explicit opt-in consent. You can withdraw consent at any time by clicking unsubscribe in any email or by contacting us at contact@bysolum.co.uk. Withdrawal of consent does not affect the lawfulness of processing before withdrawal.</p>
             </section>
 
             {/* 5 */}
@@ -486,7 +486,7 @@ export default function PrivacyPage() {
               </ul>
 
               <div className="privacy-callout">
-                <p><strong>How to exercise your rights:</strong> Email contact@bysolum.com with the subject "Data Rights Request" and your name and email address. We will respond within <strong>one calendar month</strong>, as required by UK GDPR. We may need to verify your identity before processing your request.</p>
+                <p><strong>How to exercise your rights:</strong> Email contact@bysolum.co.uk with the subject "Data Rights Request" and your name and email address. We will respond within <strong>one calendar month</strong>, as required by UK GDPR. We may need to verify your identity before processing your request.</p>
               </div>
 
               <p className="privacy-p">Exercising your rights is free of charge. If a request is manifestly unfounded or excessive, we may charge a reasonable fee or decline to act, in which case we will explain why.</p>
@@ -498,7 +498,7 @@ export default function PrivacyPage() {
               <h2 className="privacy-section-title">Cookies &amp; Analytics</h2>
 
               <div className="privacy-h3">Analytics — Plausible</div>
-              <p className="privacy-p">We use <strong>Plausible Analytics</strong> to understand how visitors use bysolum.com. Plausible is a privacy-friendly analytics tool that:</p>
+              <p className="privacy-p">We use <strong>Plausible Analytics</strong> to understand how visitors use bysolum.co.uk. Plausible is a privacy-friendly analytics tool that:</p>
               <ul className="privacy-list">
                 <li>Does not use cookies</li>
                 <li>Does not collect or store any personal data</li>
@@ -526,21 +526,21 @@ export default function PrivacyPage() {
                 <li><strong>Supabase</strong> — database hosted on AWS eu-west-2 (London) and eu-central-1 (Frankfurt). No transfer outside the EEA/UK</li>
                 <li><strong>AWS Amplify</strong> — website hosted on AWS eu-west-2 (London). No transfer outside the UK</li>
               </ul>
-              <p className="privacy-p">You may request a copy of the safeguards we rely on for international transfers by contacting contact@bysolum.com.</p>
+              <p className="privacy-p">You may request a copy of the safeguards we rely on for international transfers by contacting contact@bysolum.co.uk.</p>
             </section>
 
             {/* 10 */}
             <section className="privacy-section" id="p10">
               <span className="privacy-section-num">Section 10</span>
               <h2 className="privacy-section-title">Children</h2>
-              <p className="privacy-p">Our website and products are intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under the age of 18. If you believe we have inadvertently collected data from a child, please contact us at contact@bysolum.com and we will delete it promptly.</p>
+              <p className="privacy-p">Our website and products are intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under the age of 18. If you believe we have inadvertently collected data from a child, please contact us at contact@bysolum.co.uk and we will delete it promptly.</p>
             </section>
 
             {/* 11 */}
             <section className="privacy-section" id="p11">
               <span className="privacy-section-num">Section 11</span>
               <h2 className="privacy-section-title">Changes to This Policy</h2>
-              <p className="privacy-p">We may update this Privacy Policy from time to time to reflect changes in the law, our data practices, or our third-party service providers. The current version will always be available at bysolum.com/privacy, with the date of last update shown at the top.</p>
+              <p className="privacy-p">We may update this Privacy Policy from time to time to reflect changes in the law, our data practices, or our third-party service providers. The current version will always be available at bysolum.co.uk/privacy, with the date of last update shown at the top.</p>
               <p className="privacy-p">For material changes that affect how we use your personal data, we will notify you by email before the changes take effect.</p>
             </section>
 
@@ -552,7 +552,7 @@ export default function PrivacyPage() {
               <div className="privacy-info-block">
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Email</span>
-                  <span className="privacy-info-value">contact@bysolum.com</span>
+                  <span className="privacy-info-value">contact@bysolum.co.uk</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Post</span>

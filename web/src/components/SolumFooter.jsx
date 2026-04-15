@@ -49,8 +49,8 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">Contact</div>
             <ul className="footer-links">
-              <li><a href="mailto:contact@bysolum.com">contact@bysolum.com</a></li>
-              <li><a href="https://bysolum.com">bysolum.com</a></li>
+              <li><a href="mailto:contact@bysolum.co.uk">contact@bysolum.co.uk</a></li>
+              <li><a href="https://bysolum.co.uk">bysolum.co.uk</a></li>
               <li>
                 <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="footer-ig">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -65,7 +65,7 @@ export default function SolumFooter() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Bysolum Limited · bysolum.com</span>
+          <span>© 2026 Bysolum Limited · bysolum.co.uk</span>
           <span style={{display:'flex',gap:'20px',alignItems:'center'}}>
             <a href="/terms" style={{color:'inherit',textDecoration:'none',letterSpacing:'2px',fontSize:'12px'}}>Terms &amp; Conditions</a>
             <span>·</span>

@@ -180,7 +180,7 @@ export default function GuideArticle() {
     if (meta) meta.setAttribute('content', article.metaDescription);
     // Canonical
     let canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute('href', `https://bysolum.com/guide/${article.slug}`);
+    if (canonical) canonical.setAttribute('href', `https://bysolum.co.uk/guide/${article.slug}`);
     window.scrollTo(0, 0);
   }, [article]);
 

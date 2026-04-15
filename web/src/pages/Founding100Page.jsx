@@ -521,7 +521,7 @@ function UpdatesTab({ member, session }) {
     // mailto fallback — opens email client pre-filled
     const subject = encodeURIComponent(`Founding Member Message — ${member.first_name ?? member.email}`);
     const body    = encodeURIComponent(msg.trim());
-    window.location.href = `mailto:harsha@bysolum.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:harsha@bysolum.co.uk?subject=${subject}&body=${body}`;
     setSaving(false);
     setSent(true);
   }
