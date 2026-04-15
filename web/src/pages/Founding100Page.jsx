@@ -350,6 +350,28 @@ function EquityScenarios() {
         <div className="f1-eq-title">What the Founding Pool Could Be Worth</div>
         <div className="f1-eq-subtitle">Year 5 projections · 3 scenarios</div>
       </div>
+      {/* Growth arc */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 80, marginBottom: 8 }}>
+          {[
+            { label: 'Launch',  h: 8,  color: 'rgba(74,143,199,0.20)' },
+            { label: 'Year 1',  h: 22, color: 'rgba(74,143,199,0.35)' },
+            { label: 'Year 3',  h: 44, color: 'rgba(74,143,199,0.55)' },
+            { label: 'Year 5',  h: 62, color: '#2E6DA4' },
+            { label: 'Unicorn', h: 80, color: '#4A8FC7' },
+          ].map((b, i) => (
+            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: '60%', height: b.h, background: b.color }} />
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex' }}>
+          {['Launch', 'Year 1', 'Year 3', 'Year 5', 'Unicorn ★'].map((l, i) => (
+            <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: i === 4 ? '#4A8FC7' : 'rgba(240,236,226,0.38)', fontWeight: 600 }}>{l}</div>
+          ))}
+        </div>
+      </div>
+
       <div className="f1-eq-grid">
         {scenarios.map(s => (
           <div className={`f1-eq-card${s.highlight ? ' highlight' : ''}`} key={s.label}>
