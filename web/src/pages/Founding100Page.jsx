@@ -445,7 +445,7 @@ function PledgeView({ session, member, onSigned }) {
             <div className="f1-equity-headline">Real equity in bySolum Limited</div>
             <div className="f1-equity-detail">
               One equal share of the founding pool for each of the 100 members.
-              Vests when SOLUM hits <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong>.
+              Vests at <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong> or <strong style={{ color: '#F0ECE2' }}>14 months</strong> — whichever comes first.
               Active members only — participation is required, not optional.
             </div>
           </div>
@@ -457,7 +457,7 @@ function PledgeView({ session, member, onSigned }) {
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">01</span>
-              <span>A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests at £1M ARR. Real ownership — not a discount, not a voucher.</span>
+              <span>A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests at £1M ARR or 14 months — whichever comes first. Real ownership — not a discount, not a voucher.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">02</span>
@@ -469,7 +469,7 @@ function PledgeView({ session, member, onSigned }) {
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">04</span>
-              <span>A <strong>monthly update</strong> on how SOLUM is performing — revenue, growth, what's working. Founding members only, in confidence.</span>
+              <span>A <strong>monthly update</strong> on how SOLUM is growing — high-level progress, milestones hit, and what's coming next. Founding members only.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">05</span>
@@ -484,7 +484,7 @@ function PledgeView({ session, member, onSigned }) {
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">01</span>
-              <span><strong>5–10 minutes a month</strong> responding to jobs — product decisions, brand direction, what works and what doesn't. That's the minimum. Go deeper whenever you want.</span>
+              <span><strong>5–10 minutes a month</strong> sharing your input on products, formulas, and what could be better. You're not filling in forms — you're shaping what gets built. Go deeper whenever you want.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">02</span>
@@ -492,7 +492,7 @@ function PledgeView({ session, member, onSigned }) {
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">03</span>
-              <span>Keeping <strong>formulas, supplier names, pricing, and monthly updates confidential</strong>. You have inside knowledge. Keep it inside.</span>
+              <span>Keeping <strong>formulas, supplier names, and pricing confidential</strong>. You have inside knowledge. Keep it inside.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">04</span>
