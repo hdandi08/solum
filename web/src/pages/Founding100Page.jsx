@@ -438,7 +438,7 @@ function PledgeView({ session, member, onSigned }) {
             <div className="f1-equity-headline">Real equity in bySolum Limited</div>
             <div className="f1-equity-detail">
               An equal share of the founding member pool — divided across all 100 members.
-              Vests when SOLUM reaches <strong style={{ color: '#F0ECE2' }}>£500K ARR</strong>.
+              Vests when SOLUM reaches <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong>.
               Tied to participation, not just holding a spot.
             </div>
           </div>
@@ -449,7 +449,7 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-pledge-section-label">SOLUM commits to you</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              Your <strong>1/100 equity share</strong> in bySolum Limited, vesting at £500K ARR. Equal across all founding members, no exceptions.
+              Your <strong>1/100 equity share</strong> in bySolum Limited, vesting at £1M ARR. Equal across all founding members, no exceptions.
             </li>
             <li className="f1-pledge-item">
               <strong>Your monthly subscription price, locked forever</strong> — £38, £48, or £58 depending on your kit. That price never changes for you, ever.
@@ -471,7 +471,7 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-pledge-section-label">You commit to</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              Completing at least <strong>3 of every 4 jobs SOLUM posts</strong>. Jobs take ~5 minutes. They're how your input shapes the brand.
+              Giving us <strong>at least 5–10 minutes a month</strong> — responding to jobs that shape the products, the brand, and the direction. No ceiling: if you want to go deeper, we want to hear it.
             </li>
             <li className="f1-pledge-item">
               Maintaining an <strong>active SOLUM subscription</strong> once we launch. Founding membership requires skin in the game.
@@ -724,34 +724,10 @@ function LandingView({ phase, setPhase }) {
       </nav>
 
       <div className="f1-entrance">
-        <div className="f1-eyebrow">Member portal · By invitation only</div>
-        <div className="f1-entrance-title">Welcome,<br />Founding Member.</div>
-        <div className="f1-entrance-sub">
-          You've been selected as one of 100 people helping build SOLUM.<br />
-          Your portal is below.
-        </div>
+        <div className="f1-eyebrow">Founding 100 · Members only</div>
+        <div className="f1-entrance-title">Enter the Portal.</div>
 
-        {/* Three-stat benefit confirmation */}
-        <div className="f1-benefit-trio">
-          <div className="f1-benefit">
-            <div className="f1-benefit-value"><em>1</em>/100</div>
-            <div className="f1-benefit-label">Equity share<br />bySolum Limited</div>
-          </div>
-          <div className="f1-benefit">
-            <div className="f1-benefit-value">£38<em>/mo</em></div>
-            <div className="f1-benefit-label">Subscription locked<br />forever · never rises</div>
-          </div>
-          <div className="f1-benefit">
-            <div className="f1-benefit-value">First</div>
-            <div className="f1-benefit-label">Every new product<br />before public launch</div>
-          </div>
-        </div>
-
-        <div className="f1-login-title">Enter Your Portal</div>
-        <div className="f1-login-sub">
-          Enter your email to receive a login link. No password needed.
-        </div>
-        <form onSubmit={handleSend}>
+        <form onSubmit={handleSend} style={{ marginBottom: 12 }}>
           <input
             className="f1-input"
             type="email"
@@ -767,7 +743,30 @@ function LandingView({ phase, setPhase }) {
         </form>
         <div className="f1-not-member">
           Not a founding member?{' '}
-          <a href="/#founding-members">Join the waitlist to apply ↗</a>
+          <a href="/#founding-members">Join the waitlist ↗</a>
+        </div>
+
+        {/* What this is — below the fold */}
+        <div style={{ borderTop: '1px solid rgba(240,236,226,0.06)', marginTop: 48, paddingTop: 40 }}>
+          <div className="f1-entrance-sub" style={{ marginBottom: 28 }}>
+            You subscribe to SOLUM because you genuinely want to shape what it becomes —
+            the products, the rituals, the brand. 5–10 minutes a month minimum.
+            In return, you own part of it.
+          </div>
+          <div className="f1-benefit-trio">
+            <div className="f1-benefit">
+              <div className="f1-benefit-value"><em>1</em>/100</div>
+              <div className="f1-benefit-label">Equity share<br />bySolum Limited</div>
+            </div>
+            <div className="f1-benefit">
+              <div className="f1-benefit-value">£38<em>/mo</em></div>
+              <div className="f1-benefit-label">Subscription locked<br />forever · never rises</div>
+            </div>
+            <div className="f1-benefit">
+              <div className="f1-benefit-value">First</div>
+              <div className="f1-benefit-label">Every new product<br />before public launch</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
