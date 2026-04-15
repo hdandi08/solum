@@ -452,7 +452,7 @@ function PledgeView({ session, member, onSigned }) {
               Your <strong>1/100 equity share</strong> in bySolum Limited, vesting at £500K ARR. Equal across all founding members, no exceptions.
             </li>
             <li className="f1-pledge-item">
-              <strong>Your launch price, locked forever.</strong> As prices rise for everyone else, yours stays exactly where you started.
+              <strong>Your monthly subscription price, locked forever</strong> — £38, £48, or £58 depending on your kit. As prices rise for every new subscriber, yours never moves.
             </li>
             <li className="f1-pledge-item">
               <strong>First access to every new product</strong> SOLUM develops — always before public launch.
@@ -738,8 +738,8 @@ function LandingView({ phase, setPhase }) {
             <div className="f1-benefit-label">Equity share<br />bySolum Limited</div>
           </div>
           <div className="f1-benefit">
-            <div className="f1-benefit-value">Locked</div>
-            <div className="f1-benefit-label">Launch price<br />forever</div>
+            <div className="f1-benefit-value">£38<em>/mo</em></div>
+            <div className="f1-benefit-label">Subscription locked<br />forever · never rises</div>
           </div>
           <div className="f1-benefit">
             <div className="f1-benefit-value">First</div>
