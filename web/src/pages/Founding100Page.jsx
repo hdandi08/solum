@@ -759,8 +759,8 @@ function LandingView({ phase, setPhase }) {
               <div className="f1-benefit-label">Equity share<br />bySolum Limited</div>
             </div>
             <div className="f1-benefit">
-              <div className="f1-benefit-value">£38<em>/mo</em></div>
-              <div className="f1-benefit-label">Subscription locked<br />forever · never rises</div>
+              <div className="f1-benefit-value">Locked<em>/mo</em></div>
+              <div className="f1-benefit-label">Your subscription price<br />frozen forever</div>
             </div>
             <div className="f1-benefit">
               <div className="f1-benefit-value">First</div>
