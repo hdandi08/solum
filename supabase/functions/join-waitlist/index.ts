@@ -38,7 +38,7 @@ async function hasMxRecords(domain: string): Promise<boolean> {
 
 
 function buildConfirmEmail(email: string, firstName: string | null, token: string, position: number): string {
-  const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.com'
+  const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.co.uk'
   const confirmUrl = `${siteUrl}/confirm?token=${token}`
   const isFounder = position <= 100
   const greeting = firstName ? `${firstName},` : 'Hey,'
@@ -113,7 +113,7 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
           If you didn't sign up to SOLUM, ignore this email — nothing will happen.
         </p>
         <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
-          bysolum.com · contact@bysolum.com
+          bysolum.co.uk · contact@bysolum.co.uk
         </p>
       </td></tr>
 

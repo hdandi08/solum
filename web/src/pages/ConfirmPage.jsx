@@ -149,7 +149,7 @@ export default function ConfirmPage() {
             <div className="cp-title">That link didn't work.</div>
             <div className="cp-body">
               This confirmation link is invalid or has expired. If you signed up recently, check your inbox for the original email — or sign up again at{' '}
-              <strong><a href="/" style={{ color: '#4a8fc7' }}>bysolum.com</a></strong>.
+              <strong><a href="/" style={{ color: '#4a8fc7' }}>bysolum.co.uk</a></strong>.
             </div>
           </div>
         )}

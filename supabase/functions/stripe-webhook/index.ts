@@ -130,8 +130,8 @@ async function sendConfirmationEmail(
 
         <!-- Footer -->
         <tr><td style="background:#08090B;padding:32px 48px;">
-          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">Questions? Reply to this email or contact us at <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a></p>
-          <p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.com · You can cancel any time from your account.</p>
+          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">Questions? Reply to this email or contact us at <a href="mailto:contact@bysolum.co.uk" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.co.uk</a></p>
+          <p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.co.uk · You can cancel any time from your account.</p>
         </td></tr>
 
       </table>
