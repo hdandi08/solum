@@ -53,32 +53,38 @@ const CSS = `
 .f1-sent-body{font-size:15px;font-weight:300;color:rgba(240,236,226,0.8);line-height:1.65;margin-bottom:28px;}
 
 /* ── Pledge gate ── */
-.f1-pledge-wrap{max-width:680px;margin:0 auto;padding:64px 48px 80px;}
-.f1-pledge-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;font-weight:700;color:#4A8FC7;margin-bottom:16px;}
-.f1-pledge-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,56px);letter-spacing:.04em;line-height:1;margin-bottom:8px;}
-.f1-pledge-intro{font-size:16px;font-weight:300;color:rgba(240,236,226,0.80);line-height:1.6;margin-bottom:32px;}
+.f1-pledge-wrap{max-width:660px;margin:0 auto;padding:64px 48px 80px;}
+.f1-pledge-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:#4A8FC7;margin-bottom:14px;}
+.f1-pledge-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);letter-spacing:.04em;line-height:1;color:#F0ECE2;margin-bottom:12px;}
+.f1-pledge-intro{font-size:16px;font-weight:300;color:rgba(240,236,226,0.80);line-height:1.6;margin-bottom:36px;border-bottom:1px solid rgba(240,236,226,0.07);padding-bottom:32px;}
 
 /* Equity highlight box */
-.f1-equity-box{background:#181C24;border:1px solid rgba(74,143,199,0.35);padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;gap:28px;}
-.f1-equity-fraction{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:.02em;line-height:1;color:#4A8FC7;flex-shrink:0;}
+.f1-equity-box{background:#181C24;border-left:3px solid #2E6DA4;padding:24px 28px;margin-bottom:32px;display:flex;align-items:center;gap:24px;}
+.f1-equity-fraction{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.02em;line-height:1;color:#4A8FC7;flex-shrink:0;min-width:80px;}
 .f1-equity-fraction em{color:#F0ECE2;font-style:normal;}
-.f1-equity-text{}
-.f1-equity-headline{font-size:16px;font-weight:600;color:#F0ECE2;margin-bottom:4px;line-height:1.3;}
-.f1-equity-detail{font-size:14px;font-weight:300;color:rgba(240,236,226,0.78);line-height:1.5;}
+.f1-equity-headline{font-size:16px;font-weight:600;color:#F0ECE2;margin-bottom:5px;line-height:1.3;}
+.f1-equity-detail{font-size:14px;font-weight:300;color:rgba(240,236,226,0.78);line-height:1.55;}
 
-.f1-pledge-block{border:1px solid rgba(240,236,226,0.1);padding:28px 32px;margin-bottom:16px;}
-.f1-pledge-section-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.60);margin-bottom:16px;}
-.f1-pledge-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
-.f1-pledge-item{display:flex;align-items:flex-start;gap:14px;font-size:15px;font-weight:300;color:rgba(240,236,226,0.85);line-height:1.55;}
-.f1-pledge-item::before{content:'—';color:#4A8FC7;flex-shrink:0;margin-top:1px;}
+/* Commitment sections */
+.f1-pledge-section{margin-bottom:24px;}
+.f1-pledge-section-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.55);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(240,236,226,0.07);}
+.f1-pledge-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0;}
+.f1-pledge-item{display:flex;align-items:flex-start;gap:16px;font-size:15px;font-weight:300;color:rgba(240,236,226,0.85);line-height:1.6;padding:12px 0;border-bottom:1px solid rgba(240,236,226,0.05);}
+.f1-pledge-item:last-child{border-bottom:none;}
+.f1-pledge-marker{color:#4A8FC7;font-size:14px;flex-shrink:0;margin-top:3px;font-weight:600;}
 .f1-pledge-item strong{color:#F0ECE2;font-weight:600;}
-.f1-pledge-divider{border:none;border-top:1px solid rgba(240,236,226,0.07);margin:24px 0;}
-.f1-pledge-exit{font-size:13px;font-weight:300;color:rgba(240,236,226,0.65);line-height:1.6;}
-.f1-pledge-exit strong{color:rgba(240,236,226,0.82);font-weight:600;}
-.f1-pledge-check-row{display:flex;align-items:flex-start;gap:14px;margin-top:28px;margin-bottom:20px;cursor:pointer;}
-.f1-pledge-checkbox{width:18px;height:18px;border:1px solid rgba(240,236,226,0.35);background:transparent;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s;}
+
+/* Exit callout */
+.f1-pledge-exit-box{background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.08);padding:20px 24px;margin-top:8px;margin-bottom:32px;}
+.f1-pledge-exit-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.45);margin-bottom:8px;}
+.f1-pledge-exit-body{font-size:14px;font-weight:300;color:rgba(240,236,226,0.72);line-height:1.65;}
+.f1-pledge-exit-body strong{color:rgba(240,236,226,0.88);font-weight:600;}
+
+/* Accept row */
+.f1-pledge-check-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;cursor:pointer;padding:20px 0;border-top:1px solid rgba(240,236,226,0.07);}
+.f1-pledge-checkbox{width:20px;height:20px;border:1px solid rgba(240,236,226,0.30);background:transparent;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s;}
 .f1-pledge-checkbox.checked{background:#2E6DA4;border-color:#2E6DA4;}
-.f1-pledge-check-label{font-size:15px;font-weight:400;color:rgba(240,236,226,0.90);line-height:1.5;}
+.f1-pledge-check-label{font-size:15px;font-weight:400;color:rgba(240,236,226,0.88);line-height:1.5;}
 
 /* ── Portal ── */
 .f1-portal{max-width:800px;margin:0 auto;padding:48px 48px 80px;}
@@ -178,6 +184,8 @@ const CSS = `
   .f1-equity-box{flex-direction:column;gap:16px;text-align:center;}
   .f1-login-wrap{padding:0 24px 60px;}
   .f1-pledge-wrap{padding:40px 24px 60px;}
+  .f1-equity-box{flex-direction:column;gap:12px;}
+  .f1-equity-fraction{font-size:40px;}
   .f1-portal{padding:32px 24px 60px;}
   .f1-welcome{flex-direction:column;gap:12px;}
   .f1-participation{flex-direction:column;gap:16px;}
@@ -444,55 +452,67 @@ function PledgeView({ session, member, onSigned }) {
         </div>
 
         {/* What SOLUM commits to */}
-        <div className="f1-pledge-block">
+        <div className="f1-pledge-section">
           <div className="f1-pledge-section-label">SOLUM commits to you</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests when we hit £1M ARR. This is real ownership — not a discount, not a voucher.
+              <span className="f1-pledge-marker">01</span>
+              <span>A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests at £1M ARR. Real ownership — not a discount, not a voucher.</span>
             </li>
             <li className="f1-pledge-item">
-              Your <strong>subscription price, locked permanently</strong> — £38, £48, or £58 depending on your kit. It will never increase for you.
+              <span className="f1-pledge-marker">02</span>
+              <span>Your <strong>subscription price, locked permanently</strong> — £38, £48, or £58 depending on your kit. It will never increase for you.</span>
             </li>
             <li className="f1-pledge-item">
-              <strong>First access to every new product</strong>, before it's available to anyone else. Always.
+              <span className="f1-pledge-marker">03</span>
+              <span><strong>First access to every new product</strong> before it's available to anyone else. Always.</span>
             </li>
             <li className="f1-pledge-item">
-              Your name listed permanently as a <strong>founding member of SOLUM</strong> on bysolum.com when we launch.
+              <span className="f1-pledge-marker">04</span>
+              <span>A <strong>monthly update</strong> on how SOLUM is performing — revenue, growth, what's working. Founding members only, in confidence.</span>
             </li>
             <li className="f1-pledge-item">
-              A <strong>monthly update</strong> on how SOLUM is performing — revenue, growth, what's working, what isn't. Founding members only, in confidence.
+              <span className="f1-pledge-marker">05</span>
+              <span>Your name listed permanently as a <strong>SOLUM founding member</strong> on bysolum.com at launch.</span>
             </li>
             <li className="f1-pledge-item">
-              A running log of every decision your input shaped — <strong>what changed, and why</strong>.
+              <span className="f1-pledge-marker">06</span>
+              <span>A log of every decision your input shaped — <strong>what changed, and why</strong>.</span>
             </li>
           </ul>
         </div>
 
         {/* What you commit to */}
-        <div className="f1-pledge-block">
+        <div className="f1-pledge-section">
           <div className="f1-pledge-section-label">You commit to</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              <strong>At least 5–10 minutes a month</strong> responding to jobs — product decisions, brand direction, what works and what doesn't. More is welcome. This is the minimum.
+              <span className="f1-pledge-marker">01</span>
+              <span><strong>5–10 minutes a month</strong> responding to jobs — product decisions, brand direction, what works and what doesn't. That's the minimum. Go deeper whenever you want.</span>
             </li>
             <li className="f1-pledge-item">
-              Keeping an <strong>active SOLUM subscription</strong>. You're shaping a product you use — that's the deal.
+              <span className="f1-pledge-marker">02</span>
+              <span>An <strong>active SOLUM subscription</strong>. You're shaping a product you use — that's the deal.</span>
             </li>
             <li className="f1-pledge-item">
-              Treating <strong>product formulas, supplier names, pricing, and the monthly progress updates as confidential</strong>. You have inside knowledge. Keep it inside.
+              <span className="f1-pledge-marker">03</span>
+              <span>Keeping <strong>formulas, supplier names, pricing, and monthly updates confidential</strong>. You have inside knowledge. Keep it inside.</span>
             </li>
             <li className="f1-pledge-item">
-              Raising issues <strong>here, not publicly</strong>. Disagree with anything — we want to hear it. But inside the portal, not on social.
+              <span className="f1-pledge-marker">04</span>
+              <span>Raising issues <strong>here, not publicly</strong>. Disagree with anything — we want to hear it. Inside the portal, not on social.</span>
             </li>
           </ul>
         </div>
 
-        {/* Exit terms — standalone */}
-        <div className="f1-pledge-exit">
-          <strong>If the commitment ends:</strong> Membership is withdrawn for missing jobs
-          consistently, a lapsed subscription, or a confidentiality breach. You'll receive{' '}
-          <strong>30 days' notice</strong> except in the case of breach. Your equity share
-          returns to the pool and is offered to the next person on the waitlist.
+        {/* Exit terms */}
+        <div className="f1-pledge-exit-box">
+          <div className="f1-pledge-exit-label">If the commitment ends</div>
+          <div className="f1-pledge-exit-body">
+            Membership is withdrawn for consistently missing jobs, a lapsed subscription, or a confidentiality breach.
+            You'll receive <strong>30 days' notice</strong> in all cases except breach.
+            Your equity share returns to the pool and is offered to the next person on the waitlist.
+          </div>
         </div>
 
         <div
