@@ -191,6 +191,55 @@ const CSS = `
 .f1-ms-sub{font-size:11px;font-weight:300;color:rgba(240,236,226,0.40);margin-top:3px;}
 .f1-ms-sub.current{color:#4A8FC7;}
 
+/* ── Tabs ── */
+.f1-tab-bar{display:flex;gap:0;padding:0 48px;border-bottom:1px solid rgba(240,236,226,0.07);}
+.f1-tab-bar-inner{max-width:800px;margin:0 auto;display:flex;width:100%;}
+.f1-tab-btn{font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.45);padding:16px 24px 14px;cursor:pointer;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;font-family:'Barlow Condensed',sans-serif;transition:color .2s,border-color .2s;display:flex;align-items:center;gap:8px;}
+.f1-tab-btn:hover{color:rgba(240,236,226,0.80);}
+.f1-tab-btn.active{color:#F0ECE2;border-bottom-color:#4A8FC7;}
+.f1-tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;background:#2E6DA4;color:#F0ECE2;font-size:10px;font-weight:700;border-radius:9px;}
+
+/* ── Stats strip ── */
+.f1-stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(240,236,226,0.06);border:1px solid rgba(240,236,226,0.06);margin-bottom:24px;}
+.f1-stat-card{background:#08090B;padding:28px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
+.f1-stat-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4.5vw,54px);letter-spacing:.02em;line-height:1;color:#F0ECE2;}
+.f1-stat-big em{color:#4A8FC7;font-style:normal;}
+.f1-stat-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.55);}
+.f1-stat-sub{font-size:12px;font-weight:300;color:rgba(240,236,226,0.40);}
+
+/* ── Ring ── */
+.f1-ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.f1-ring-inner{position:absolute;text-align:center;pointer-events:none;}
+.f1-ring-pct{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.02em;color:#F0ECE2;line-height:1;}
+.f1-ring-done{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.45);font-weight:600;}
+
+/* ── Vesting card ── */
+.f1-vesting-card{background:#181C24;border:1px solid rgba(74,143,199,0.2);padding:28px 32px;margin-bottom:24px;display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;}
+.f1-vest-days{text-align:center;}
+.f1-vest-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,8vw,96px);letter-spacing:.01em;line-height:1;color:#4A8FC7;}
+.f1-vest-unit{font-size:11px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:rgba(74,143,199,0.70);margin-top:2px;}
+.f1-vest-date{font-size:12px;font-weight:300;color:rgba(240,236,226,0.45);margin-top:6px;}
+.f1-vest-bars{}
+.f1-vest-bar-row{margin-bottom:18px;}
+.f1-vest-bar-row:last-child{margin-bottom:0;}
+.f1-vest-bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.f1-vest-bar-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.55);}
+.f1-vest-bar-val{font-size:13px;font-weight:400;color:rgba(240,236,226,0.75);}
+.f1-vest-track{height:3px;background:rgba(240,236,226,0.07);width:100%;}
+.f1-vest-fill{height:100%;background:linear-gradient(90deg,#1A4A78,#4A8FC7);transition:width 1.2s ease;}
+.f1-vest-note{font-size:12px;font-weight:300;color:rgba(240,236,226,0.38);margin-top:5px;}
+
+/* ── Open mission banner ── */
+.f1-open-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(74,143,199,0.07);border:1px solid rgba(74,143,199,0.28);padding:16px 22px;margin-bottom:20px;}
+.f1-open-banner-text{font-size:14px;font-weight:500;color:#F0ECE2;}
+.f1-open-banner-count{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.04em;color:#4A8FC7;line-height:1;}
+
+/* ── Message form ── */
+.f1-message-card{border:1px solid rgba(240,236,226,0.07);padding:28px;margin-top:12px;}
+.f1-message-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;margin-bottom:6px;}
+.f1-message-sub{font-size:14px;font-weight:300;color:rgba(240,236,226,0.70);line-height:1.55;margin-bottom:20px;}
+.f1-msg-sent{display:flex;align-items:center;gap:10px;font-size:14px;color:#4A8FC7;padding:12px 0;}
+
 /* ── Equity scenarios ── */
 .f1-equity-scenarios{border:1px solid rgba(74,143,199,0.18);background:rgba(74,143,199,0.03);padding:28px;margin-bottom:24px;}
 .f1-eq-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
@@ -227,6 +276,11 @@ const CSS = `
   .f1-milestone{flex-direction:row;align-items:center;text-align:left;gap:14px;}
   .f1-ms-dot{margin-bottom:0;flex-shrink:0;}
   .f1-ms-label{max-width:none;}
+  .f1-stats-strip{grid-template-columns:1fr;}
+  .f1-vesting-card{grid-template-columns:1fr;gap:24px;}
+  .f1-vest-days{text-align:left;}
+  .f1-tab-bar{padding:0 24px;}
+  .f1-tab-btn{padding:14px 16px 12px;font-size:11px;}
 }
 `;
 
@@ -321,6 +375,202 @@ function EquityScenarios() {
         The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Year 5 projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
       </div>
     </div>
+  );
+}
+
+/* ─── Circular ring ────────────────────────────────────────────────────────── */
+function CircularRing({ pct }) {
+  const size = 88, stroke = 5, r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.min(pct, 100) / 100);
+  return (
+    <div className="f1-ring-wrap" style={{ width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(240,236,226,0.07)" strokeWidth={stroke} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#4A8FC7" strokeWidth={stroke}
+          strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 1s ease' }} />
+      </svg>
+      <div className="f1-ring-inner">
+        <div className="f1-ring-pct">{pct}%</div>
+        <div className="f1-ring-done">done</div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Vesting countdown ────────────────────────────────────────────────────── */
+function VestingCountdown({ member }) {
+  const start   = new Date(member.founding_member_since);
+  const vesting = new Date(start);
+  vesting.setMonth(vesting.getMonth() + 14);
+  const today    = new Date();
+  const daysLeft = Math.max(0, Math.ceil((vesting - today) / 86400000));
+  const totalDays = Math.ceil((vesting - start) / 86400000);
+  const elapsed   = Math.min(totalDays, totalDays - daysLeft);
+  const timePct   = totalDays > 0 ? Math.round((elapsed / totalDays) * 100) : 0;
+  return (
+    <div className="f1-vesting-card">
+      <div className="f1-vest-days">
+        <div className="f1-vest-num">{daysLeft}</div>
+        <div className="f1-vest-unit">days</div>
+        <div className="f1-vest-date">to vesting window</div>
+      </div>
+      <div className="f1-vest-bars">
+        <div className="f1-vest-bar-row">
+          <div className="f1-vest-bar-head">
+            <span className="f1-vest-bar-lbl">Time elapsed</span>
+            <span className="f1-vest-bar-val">{timePct}% of 14 months</span>
+          </div>
+          <div className="f1-vest-track"><div className="f1-vest-fill" style={{ width: `${timePct}%` }} /></div>
+          <div className="f1-vest-note">Vests {vesting.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })} · or at £1M ARR</div>
+        </div>
+        <div className="f1-vest-bar-row">
+          <div className="f1-vest-bar-head">
+            <span className="f1-vest-bar-lbl">ARR progress</span>
+            <span className="f1-vest-bar-val">£0 of £1M</span>
+          </div>
+          <div className="f1-vest-track"><div className="f1-vest-fill" style={{ width: '0%' }} /></div>
+          <div className="f1-vest-note">Pre-launch · first revenue incoming</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Missions tab ─────────────────────────────────────────────────────────── */
+function MissionsTab({ jobs, completions, session, onComplete }) {
+  const completedCount = Object.keys(completions).length;
+  const totalJobs      = jobs.length;
+  const openJobs       = jobs.filter(j => !completions[j.id]);
+  const doneJobs       = jobs.filter(j =>  completions[j.id]);
+  const totalPts       = Object.values(completions).reduce((s, c) => s + (c.points_earned ?? 0), 0);
+  const pct            = totalJobs > 0 ? Math.round((completedCount / totalJobs) * 100) : 0;
+
+  return (
+    <>
+      <div className="f1-stats-strip">
+        <div className="f1-stat-card">
+          <CircularRing pct={pct} />
+          <div className="f1-stat-label">Missions</div>
+          <div className="f1-stat-sub">{completedCount} of {totalJobs} complete</div>
+        </div>
+        <div className="f1-stat-card">
+          <div className="f1-stat-big"><em>{openJobs.length}</em></div>
+          <div className="f1-stat-label">Open now</div>
+          <div className="f1-stat-sub">awaiting your input</div>
+        </div>
+        <div className="f1-stat-card">
+          <div className="f1-stat-big">{totalPts}<em>pts</em></div>
+          <div className="f1-stat-label">Points earned</div>
+          <div className="f1-stat-sub">participation score</div>
+        </div>
+      </div>
+
+      {openJobs.length > 0 && (
+        <div className="f1-open-banner">
+          <div className="f1-open-banner-text">You have missions waiting for your input</div>
+          <div className="f1-open-banner-count">{openJobs.length} open</div>
+        </div>
+      )}
+
+      {jobs.length === 0 ? (
+        <div style={{ color: 'rgba(240,236,226,0.3)', fontSize: 14, fontWeight: 300, padding: '20px 0' }}>
+          No missions yet. The first drops when we're closer to launch.
+        </div>
+      ) : (
+        <>
+          {openJobs.map(job => (
+            <JobCard key={job.id} job={job} completion={null} session={session} onComplete={onComplete} />
+          ))}
+          {doneJobs.length > 0 && (
+            <>
+              <div className="f1-section-label" style={{ marginTop: 32, marginBottom: 12 }}>Completed</div>
+              {doneJobs.map(job => (
+                <JobCard key={job.id} job={job} completion={completions[job.id]} session={session} onComplete={onComplete} />
+              ))}
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+/* ─── Equity tab ───────────────────────────────────────────────────────────── */
+function EquityTab({ member }) {
+  return (
+    <>
+      <VestingCountdown member={member} />
+      <SolumStatus />
+      <EquityScenarios />
+    </>
+  );
+}
+
+/* ─── Updates tab ──────────────────────────────────────────────────────────── */
+function UpdatesTab({ member, session }) {
+  const [msg,    setMsg]    = useState('');
+  const [sent,   setSent]   = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  function handleSend(e) {
+    e.preventDefault();
+    if (!msg.trim()) return;
+    setSaving(true);
+    // mailto fallback — opens email client pre-filled
+    const subject = encodeURIComponent(`Founding Member Message — ${member.first_name ?? member.email}`);
+    const body    = encodeURIComponent(msg.trim());
+    window.location.href = `mailto:harsha@bysolum.com?subject=${subject}&body=${body}`;
+    setSaving(false);
+    setSent(true);
+  }
+
+  return (
+    <>
+      {/* The Record */}
+      <div className="f1-record">
+        <div className="f1-record-title">The Record</div>
+        <div className="f1-record-sub">
+          Every decision SOLUM makes using founding member input is logged here —
+          what changed, why, and which mission drove it.
+        </div>
+        <div className="f1-record-empty">
+          <div className="f1-record-empty-text">
+            No entries yet.<br />
+            <span style={{ color: 'rgba(240,236,226,0.2)' }}>
+              The first will appear once mission responses are reviewed.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Direct line */}
+      <div className="f1-message-card">
+        <div className="f1-message-title">Direct Line to Harsha</div>
+        <div className="f1-message-sub">
+          Thoughts, questions, disagreements — anything. Founding members get a direct line. It goes straight to me.
+        </div>
+        {sent ? (
+          <div className="f1-msg-sent">✓ Your email client will open with your message ready to send.</div>
+        ) : (
+          <form onSubmit={handleSend}>
+            <textarea
+              className="f1-textarea"
+              placeholder="What's on your mind?"
+              value={msg}
+              onChange={e => setMsg(e.target.value)}
+              rows={4}
+            />
+            <div style={{ marginTop: 12 }}>
+              <button className="f1-btn-submit" type="submit" disabled={saving || !msg.trim()}>
+                Send Message
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -670,11 +920,9 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
   const [completions, setCompletions] = useState(
     Object.fromEntries(initialCompletions.map(c => [c.job_id, c]))
   );
-
-  const totalJobs     = jobs.length;
-  const completedCount = Object.keys(completions).length;
-  const pct           = totalJobs > 0 ? Math.round((completedCount / totalJobs) * 100) : 0;
+  const [tab, setTab] = useState('missions');
   const isActive      = member.is_active;
+  const openCount     = jobs.filter(j => !completions[j.id]).length;
 
   function handleJobComplete(jobId, responses) {
     setCompletions(prev => ({
@@ -691,16 +939,13 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
         <a href="/" className="f1-nav-logo">SOLUM</a>
         <div className="f1-nav-badge">Founding 100</div>
         <div className="f1-nav-right">
-          <span className="f1-nav-meta">
-            {member.first_name ?? member.email.split('@')[0]}
-          </span>
+          <span className="f1-nav-meta">{member.first_name ?? member.email.split('@')[0]}</span>
           <button className="f1-nav-signout" onClick={onSignOut}>Sign out</button>
         </div>
       </nav>
 
-      <div className="f1-portal">
-
-        {/* Welcome */}
+      {/* Welcome strip — always visible */}
+      <div className="f1-portal" style={{ paddingBottom: 0 }}>
         <div className="f1-welcome">
           <div>
             <div className="f1-welcome-name">
@@ -716,27 +961,10 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
             {isActive ? 'Active' : 'Inactive'}
           </span>
         </div>
+      </div>
 
-        {/* Participation */}
-        <div className="f1-participation">
-          <div className="f1-part-stat">
-            <div className="f1-part-label">Missions completed</div>
-            <div className="f1-part-value">{completedCount} / {totalJobs}</div>
-          </div>
-          <div className="f1-part-bar-wrap">
-            <div className="f1-part-track">
-              <div className="f1-part-fill" style={{ width: `${pct}%` }} />
-            </div>
-            <div className="f1-part-note">
-              Complete at least 75% of missions to maintain founding status
-            </div>
-          </div>
-        </div>
-
-        <SolumStatus />
-        <EquityScenarios />
-
-        {!isActive ? (
+      {!isActive ? (
+        <div className="f1-portal">
           <div className="f1-inactive-gate">
             <div className="f1-inactive-title">Your Spot Is Reserved.</div>
             <div className="f1-inactive-body">
@@ -744,53 +972,43 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
               Reactivate to unlock missions and keep your equity allocation.
             </div>
             <a href="/checkout">
-              <button className="f1-btn" style={{ width: 'auto', padding: '14px 40px' }}>
-                Reactivate
-              </button>
+              <button className="f1-btn" style={{ width: 'auto', padding: '14px 40px' }}>Reactivate</button>
             </a>
           </div>
-        ) : (
-          <>
-            <div className="f1-section-label">Your Missions</div>
-
-            {jobs.length === 0 ? (
-              <div style={{ color: 'rgba(240,236,226,0.3)', fontSize: 14, fontWeight: 300, padding: '20px 0' }}>
-                No missions yet. The first drops when we're closer to launch.
-              </div>
-            ) : (
-              jobs.map(job => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  completion={completions[job.id] ?? null}
-                  session={session}
-                  onComplete={handleJobComplete}
-                />
-              ))
-            )}
-
-            <hr className="f1-divider" />
-
-            {/* The Record */}
-            <div className="f1-record">
-              <div className="f1-record-title">The Record</div>
-              <div className="f1-record-sub">
-                Every decision SOLUM makes using founding member input is logged here —
-                what changed, why, and which mission drove it.
-              </div>
-              <div className="f1-record-empty">
-                <div className="f1-record-empty-text">
-                  No entries yet.<br />
-                  <span style={{ color: 'rgba(240,236,226,0.2)' }}>
-                    The first will appear once mission responses are reviewed.
-                  </span>
-                </div>
-              </div>
+        </div>
+      ) : (
+        <>
+          {/* Tab bar */}
+          <div className="f1-tab-bar">
+            <div className="f1-tab-bar-inner">
+              <button className={`f1-tab-btn${tab === 'missions' ? ' active' : ''}`} onClick={() => setTab('missions')}>
+                Missions
+                {openCount > 0 && <span className="f1-tab-badge">{openCount}</span>}
+              </button>
+              <button className={`f1-tab-btn${tab === 'equity' ? ' active' : ''}`} onClick={() => setTab('equity')}>
+                Equity
+              </button>
+              <button className={`f1-tab-btn${tab === 'updates' ? ' active' : ''}`} onClick={() => setTab('updates')}>
+                Updates
+              </button>
             </div>
-          </>
-        )}
+          </div>
 
-      </div>
+          {/* Tab content */}
+          <div className="f1-portal" style={{ paddingTop: 32 }}>
+            {tab === 'missions' && (
+              <MissionsTab
+                jobs={jobs}
+                completions={completions}
+                session={session}
+                onComplete={handleJobComplete}
+              />
+            )}
+            {tab === 'equity' && <EquityTab member={member} />}
+            {tab === 'updates' && <UpdatesTab member={member} session={session} />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
