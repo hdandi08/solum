@@ -83,11 +83,6 @@ export default function ConfirmPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    // Preview mode for local testing — remove before going live in production use
-    const preview = params.get('preview');
-    if (preview === 'founder') { setFirstName('Harsha'); setIsFounder(true); setStatus('confirmed'); return; }
-    if (preview === 'waitlist') { setFirstName('Harsha'); setIsFounder(false); setStatus('confirmed'); return; }
-
     const token = params.get('token');
     if (!token) { setStatus('invalid'); return; }
 
