@@ -802,14 +802,20 @@ export default function Founding100Page() {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/get-founding-member`, {
         headers: { 'Authorization': `Bearer ${sess.access_token}` },
       });
-      if (!res.ok) { setPhase('login'); return; }
       const data = await res.json();
-      if (!data.member) { setPhase('login'); return; }
+      console.log('[founding] get-founding-member response:', res.status, JSON.stringify(data));
+      if (!res.ok) { setPhase('login'); return; }
+      if (!data.member) {
+        console.log('[founding] member null — auth user email:', sess.user?.email);
+        setPhase('login');
+        return;
+      }
       setMember(data.member);
       setJobs(data.jobs ?? []);
       setCompletions(data.completions ?? []);
       setPhase(data.member.pledge_signed_at ? 'portal' : 'pledge');
-    } catch {
+    } catch (e) {
+      console.error('[founding] loadMember error:', e);
       setPhase('login');
     }
   }
