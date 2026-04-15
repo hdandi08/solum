@@ -835,6 +835,16 @@ const styles = `
     transition: color 0.2s;
   }
   .cs-footer-contact:hover { color: #f0ece2; }
+  .cs-footer-founding {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4a8fc7;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 600;
+  }
+  .cs-footer-founding:hover { color: #7ab8e0; }
   .cs-footer-ig {
     display: flex;
     align-items: center;
@@ -1430,6 +1440,7 @@ export default function ComingSoon() {
         <footer className="cs-footer">
           <span className="cs-footer-logo">SOLUM</span>
           <a href="mailto:contact@bysolum.com" className="cs-footer-contact">contact@bysolum.com</a>
+          <a href="#founding-members" className="cs-footer-founding">Founding 100 ↗</a>
           <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
