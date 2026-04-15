@@ -520,6 +520,43 @@ const styles = `
   }
   .cs-founding-note strong { color: rgba(240,236,226,0.88); font-weight: 600; }
 
+  /* Founding infographics */
+  .cs-f-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;width:100%;max-width:860px;border:1px solid rgba(240,236,226,0.07);margin-bottom:40px;}
+  .cs-f-stat{padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;}
+  .cs-f-stat:last-child{border-right:none;}
+  .cs-f-stat-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,4vw,48px);letter-spacing:.02em;line-height:1;color:#F0ECE2;margin-bottom:5px;}
+  .cs-f-stat-num em{color:#4A8FC7;font-style:normal;}
+  .cs-f-stat-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.50);}
+
+  /* Equity scenario bars */
+  .cs-eq-bars{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+  .cs-eq-bar-row{display:flex;align-items:center;gap:10px;}
+  .cs-eq-bar-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.45);width:80px;flex-shrink:0;}
+  .cs-eq-bar-track{flex:1;height:4px;background:rgba(240,236,226,0.07);}
+  .cs-eq-bar-fill{height:100%;background:linear-gradient(90deg,#1A4A78,#4A8FC7);transition:width 1s ease;}
+  .cs-eq-bar-val{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.04em;color:#4A8FC7;width:52px;text-align:right;flex-shrink:0;}
+  .cs-eq-unicorn{margin-top:10px;padding:8px 12px;background:rgba(74,143,199,0.08);border:1px solid rgba(74,143,199,0.2);display:flex;align-items:center;justify-content:space-between;}
+  .cs-eq-unicorn-lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.55);}
+  .cs-eq-unicorn-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:#F0ECE2;}
+
+  /* Price lock visual */
+  .cs-price-vis{margin-top:16px;display:flex;flex-direction:column;gap:6px;}
+  .cs-price-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;}
+  .cs-price-row.others{background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.07);}
+  .cs-price-row.yours{background:rgba(46,109,164,0.12);border:1px solid rgba(46,109,164,0.35);}
+  .cs-price-who{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.45);}
+  .cs-price-who.yours{color:#4A8FC7;}
+  .cs-price-amount{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:rgba(240,236,226,0.35);text-decoration:line-through;}
+  .cs-price-amount.yours{color:#F0ECE2;text-decoration:none;}
+  .cs-price-badge{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:#4A8FC7;background:rgba(74,143,199,0.12);padding:3px 8px;}
+
+  /* Mission flow */
+  .cs-flow{margin-top:16px;display:flex;align-items:center;gap:0;}
+  .cs-flow-step{flex:1;text-align:center;padding:12px 8px;background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.07);}
+  .cs-flow-step-num{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.04em;color:#4A8FC7;line-height:1;}
+  .cs-flow-step-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.50);margin-top:3px;}
+  .cs-flow-arrow{color:rgba(74,143,199,0.50);font-size:14px;padding:0 4px;flex-shrink:0;}
+
   /* Provenance */
   .cs-provenance {
     position: relative;
@@ -899,6 +936,12 @@ const styles = `
     .cs-founding-grid { grid-template-columns: 1fr; }
     .cs-founding-item { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
     .cs-founding-item:last-child { border-bottom: none; }
+    .cs-f-stats { grid-template-columns: repeat(2,1fr); }
+    .cs-f-stat:nth-child(2) { border-right: none; }
+    .cs-f-stat:nth-child(3) { border-top: 1px solid rgba(240,236,226,0.07); }
+    .cs-f-stat:nth-child(4) { border-top: 1px solid rgba(240,236,226,0.07); border-right: none; }
+    .cs-flow { flex-direction: column; gap: 4px; }
+    .cs-flow-arrow { transform: rotate(90deg); }
     .cs-provenance { grid-template-columns: 1fr 1fr; }
     .cs-prov-item { padding: 28px 20px; }
     .cs-prov-item:nth-child(2) { border-right: none; }
@@ -1068,37 +1111,31 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
 
         {/* Founding 100 teaser — founders only */}
         {isFounder && (
-          <div style={{
-            marginTop: 16,
-            padding: '16px 20px',
-            background: 'rgba(74,143,199,0.06)',
-            border: '1px solid rgba(74,143,199,0.25)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}>
-            <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
+          <div style={{ marginTop: 16, background: '#181C24', border: '1px solid rgba(74,143,199,0.3)' }}>
+            <div style={{ borderBottom: '1px solid rgba(240,236,226,0.07)', padding: '12px 20px', fontSize: 11, letterSpacing: 5, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
               Founding 100 · Members Portal
             </div>
-            <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.88)', lineHeight: 1.6 }}>
-              As one of the first 100, you'll get{' '}
-              <strong style={{color:'#f0ece2'}}>real equity in bySolum</strong> — a share of the founding pool that vests at £1M ARR or 14 months, whichever comes first.
-              Inside the portal: shape products before launch, track SOLUM's growth, and see what your equity could be worth.
+            <div style={{ padding: '20px 20px 0' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in bySolum Limited</div>
+              <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
+                A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
+              </div>
             </div>
             <a
               href="/founding-100"
               style={{
-                display: 'inline-block',
-                marginTop: 4,
-                fontSize: 12,
-                letterSpacing: 3,
-                textTransform: 'uppercase',
-                fontWeight: 700,
-                color: '#4A8FC7',
+                display: 'block',
+                background: '#2E6DA4',
+                color: '#f0ece2',
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 15,
+                letterSpacing: '.15em',
+                padding: '14px 20px',
                 textDecoration: 'none',
+                textAlign: 'center',
               }}
             >
-              Enter the Founding 100 Portal →
+              Enter the Founding 100 Portal
             </a>
           </div>
         )}
@@ -1290,50 +1327,118 @@ export default function ComingSoon() {
 
         {/* 2 — Founding Member benefits */}
         <div className="cs-founding" id="founding-members">
-          <div className="cs-founding-eyebrow">Founding Members Only</div>
+          <div className="cs-founding-eyebrow">Founding Members Only · First 100</div>
           <h2 className="cs-founding-title">
-            The First <em>100</em> Get<br />Something Nobody Else Does
+            The First <em>100</em> Own<br />Part of What They Build
           </h2>
           <p className="cs-founding-sub">
-            SOLUM is building something permanent. The people who show up at the start
-            shape what it becomes — and get rewarded for it. Forever.
+            Locked price. First access. Real equity in bySolum.
+            The people who show up at the start don't just use it — they own part of it.
           </p>
 
+          {/* Stat strip */}
+          <div className="cs-f-stats">
+            <div className="cs-f-stat">
+              <div className="cs-f-stat-num"><em>100</em></div>
+              <div className="cs-f-stat-lbl">spots. ever.</div>
+            </div>
+            <div className="cs-f-stat">
+              <div className="cs-f-stat-num"><em>Equity</em></div>
+              <div className="cs-f-stat-lbl">real ownership</div>
+            </div>
+            <div className="cs-f-stat">
+              <div className="cs-f-stat-num"><em>Locked</em></div>
+              <div className="cs-f-stat-lbl">price forever</div>
+            </div>
+            <div className="cs-f-stat">
+              <div className="cs-f-stat-num"><em>First</em></div>
+              <div className="cs-f-stat-lbl">every product</div>
+            </div>
+          </div>
+
           <div className="cs-founding-grid">
+            {/* Card 1 — Equity */}
             <div className="cs-founding-item">
-              <div className="cs-founding-icon">🔒</div>
-              <div className="cs-founding-item-label">Locked In</div>
+              <div className="cs-founding-item-label">Equity</div>
+              <div className="cs-founding-item-title">A Real Stake in bySolum.</div>
+              <div className="cs-founding-item-body">
+                Founding members receive actual equity in bySolum Limited — not a discount, not a voucher.
+                Real ownership that vests as the company grows. The full details live inside the members portal.
+              </div>
+              {/* Visual growth arc */}
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 56, marginBottom: 6 }}>
+                  {[
+                    { h: 8,  color: 'rgba(74,143,199,0.20)' },
+                    { h: 18, color: 'rgba(74,143,199,0.35)' },
+                    { h: 32, color: 'rgba(74,143,199,0.55)' },
+                    { h: 44, color: '#2E6DA4' },
+                    { h: 56, color: '#4A8FC7' },
+                  ].map((b, i) => (
+                    <div key={i} style={{ flex: 1, height: b.h, background: b.color }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(240,236,226,0.35)', fontWeight: 600 }}>Launch</span>
+                  <span style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#4A8FC7', fontWeight: 600 }}>Unicorn ★</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2 — Price Lock */}
+            <div className="cs-founding-item">
+              <div className="cs-founding-item-label">Price Lock</div>
               <div className="cs-founding-item-title">Founding Price. Forever.</div>
               <div className="cs-founding-item-body">
                 Whatever you pay at launch is your price permanently. As the range grows
-                and prices rise, you never pay more. Your subscription never increases.
+                and prices rise, yours never does.
+              </div>
+              <div className="cs-price-vis">
+                <div className="cs-price-row others">
+                  <span className="cs-price-who">Everyone else</span>
+                  <span className="cs-price-amount">Rises over time</span>
+                </div>
+                <div className="cs-price-row yours">
+                  <span className="cs-price-who yours">You</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="cs-price-amount yours">Launch price</span>
+                    <span className="cs-price-badge">Locked</span>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Card 3 — Direct Input */}
             <div className="cs-founding-item">
-              <div className="cs-founding-icon">📦</div>
-              <div className="cs-founding-item-label">Free Upgrades</div>
-              <div className="cs-founding-item-title">Every New Product. Automatically.</div>
-              <div className="cs-founding-item-body">
-                When we add a new product to the lineup — a new tool, a new formula,
-                a new supplier — Founding Members get it in their next box. Before
-                anyone else. No extra charge.
-              </div>
-            </div>
-            <div className="cs-founding-item">
-              <div className="cs-founding-icon">🎯</div>
               <div className="cs-founding-item-label">Direct Input</div>
-              <div className="cs-founding-item-title">You Help Build What's Next.</div>
+              <div className="cs-founding-item-title">You Shape What Gets Built.</div>
               <div className="cs-founding-item-body">
-                Fragrance selection. Formula testing. New product decisions. Founding
-                Members get asked first — your feedback directly shapes the next
-                iteration of SOLUM.
+                Formulas, fragrances, new products — your input goes directly into what
+                we build next. First access before public launch. Always.
+              </div>
+              <div className="cs-flow">
+                <div className="cs-flow-step">
+                  <div className="cs-flow-step-num">01</div>
+                  <div className="cs-flow-step-lbl">Your input</div>
+                </div>
+                <div className="cs-flow-arrow">›</div>
+                <div className="cs-flow-step">
+                  <div className="cs-flow-step-num">02</div>
+                  <div className="cs-flow-step-lbl">We build it</div>
+                </div>
+                <div className="cs-flow-arrow">›</div>
+                <div className="cs-flow-step">
+                  <div className="cs-flow-step-num">03</div>
+                  <div className="cs-flow-step-lbl">You get it first</div>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="cs-founding-note">
             <strong>This is not a discount code.</strong> Founding Member status is permanent —
-            tied to your account, not a campaign. Once the 100 spots are gone, this tier closes. It will not reopen.
+            tied to your account, not a campaign. Once the 100 spots are gone, this tier closes. It will not reopen.{' '}
+            <a href="/founding-100" style={{ color: '#4A8FC7', textDecoration: 'none', fontWeight: 600 }}>Already a member? Enter the portal →</a>
           </div>
         </div>
 

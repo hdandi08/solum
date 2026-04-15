@@ -82,7 +82,13 @@ export default function ConfirmPage() {
   const [isFounder, setIsFounder] = useState(false);
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
+    const params = new URLSearchParams(window.location.search);
+    // Preview mode for local testing — remove before going live in production use
+    const preview = params.get('preview');
+    if (preview === 'founder') { setFirstName('Harsha'); setIsFounder(true); setStatus('confirmed'); return; }
+    if (preview === 'waitlist') { setFirstName('Harsha'); setIsFounder(false); setStatus('confirmed'); return; }
+
+    const token = params.get('token');
     if (!token) { setStatus('invalid'); return; }
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -129,37 +135,34 @@ export default function ConfirmPage() {
 
             {/* Founding 100 teaser — founders only */}
             {isFounder && (
-              <div style={{
-                marginTop: 20,
-                padding: '16px 20px',
-                background: 'rgba(74,143,199,0.07)',
-                border: '1px solid rgba(74,143,199,0.28)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-              }}>
-                <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
+              <div style={{ marginTop: 20, background: '#181C24', border: '1px solid rgba(74,143,199,0.3)' }}>
+                {/* Header strip */}
+                <div style={{ borderBottom: '1px solid rgba(240,236,226,0.07)', padding: '12px 20px', fontSize: 11, letterSpacing: 5, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
                   Founding 100 · Members Portal
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.88)', lineHeight: 1.65 }}>
-                  You're one of the first 100 — you get <strong style={{ color: '#f0ece2' }}>real equity in bySolum</strong>.
-                  A share of the founding pool that vests at £1M ARR or 14 months, whichever comes first.
-                  Inside the portal: shape products, track SOLUM's growth, and see what your equity could be worth.
+                {/* Body */}
+                <div style={{ padding: '20px 20px 0' }}>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in bySolum Limited</div>
+                  <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
+                    A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
+                  </div>
                 </div>
+                {/* CTA */}
                 <a
                   href="/founding-100"
                   style={{
-                    display: 'inline-block',
-                    marginTop: 4,
-                    fontSize: 12,
-                    letterSpacing: 3,
-                    textTransform: 'uppercase',
-                    fontWeight: 700,
-                    color: '#4A8FC7',
+                    display: 'block',
+                    background: '#2E6DA4',
+                    color: '#f0ece2',
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontSize: 15,
+                    letterSpacing: '.15em',
+                    padding: '14px 20px',
                     textDecoration: 'none',
+                    textAlign: 'center',
                   }}
                 >
-                  Enter the Founding 100 Portal →
+                  Enter the Founding 100 Portal
                 </a>
               </div>
             )}
