@@ -177,6 +177,36 @@ const CSS = `
 .f1-back{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.72);text-decoration:none;display:inline-block;margin-top:20px;}
 .f1-back:hover{color:#F0ECE2;}
 
+/* ── SOLUM Status strip ── */
+.f1-status-strip{border:1px solid rgba(240,236,226,0.07);padding:24px 28px;margin-bottom:24px;}
+.f1-milestones{display:flex;align-items:flex-start;gap:0;position:relative;}
+.f1-milestones::before{content:'';position:absolute;top:10px;left:10px;right:10px;height:1px;background:rgba(240,236,226,0.08);z-index:0;}
+.f1-milestone{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;}
+.f1-ms-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(240,236,226,0.15);background:#08090B;display:flex;align-items:center;justify-content:center;margin-bottom:10px;flex-shrink:0;}
+.f1-ms-dot.done{background:#2E6DA4;border-color:#2E6DA4;}
+.f1-ms-dot.current{background:#08090B;border-color:#4A8FC7;box-shadow:0 0 0 3px rgba(74,143,199,0.15);}
+.f1-ms-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.55);line-height:1.4;max-width:80px;}
+.f1-ms-label.done{color:rgba(74,143,199,0.85);}
+.f1-ms-label.current{color:#F0ECE2;}
+.f1-ms-sub{font-size:11px;font-weight:300;color:rgba(240,236,226,0.40);margin-top:3px;}
+.f1-ms-sub.current{color:#4A8FC7;}
+
+/* ── Equity scenarios ── */
+.f1-equity-scenarios{border:1px solid rgba(74,143,199,0.18);background:rgba(74,143,199,0.03);padding:28px;margin-bottom:24px;}
+.f1-eq-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
+.f1-eq-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:#F0ECE2;}
+.f1-eq-subtitle{font-size:13px;font-weight:300;color:rgba(240,236,226,0.60);letter-spacing:.3px;}
+.f1-eq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(240,236,226,0.06);margin-bottom:16px;}
+.f1-eq-card{background:#08090B;padding:20px 16px;text-align:center;}
+.f1-eq-scenario{font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.50);margin-bottom:10px;}
+.f1-eq-arr{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:rgba(240,236,226,0.70);margin-bottom:2px;}
+.f1-eq-multiple{font-size:12px;font-weight:300;color:rgba(240,236,226,0.45);margin-bottom:12px;}
+.f1-eq-value{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.5vw,38px);letter-spacing:.03em;color:#4A8FC7;line-height:1;}
+.f1-eq-value-label{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.60);margin-top:5px;}
+.f1-eq-card.highlight .f1-eq-value{color:#F0ECE2;}
+.f1-eq-card.highlight{background:#181C24;}
+.f1-eq-disclaimer{font-size:12px;font-weight:300;color:rgba(240,236,226,0.40);line-height:1.6;}
+
 @media(max-width:768px){
   .f1-nav{padding:20px 24px;}
   .f1-entrance{padding:56px 24px 40px;}
@@ -191,6 +221,12 @@ const CSS = `
   .f1-participation{flex-direction:column;gap:16px;}
   .f1-part-bar-wrap{width:100%;}
   .f1-submit-row{flex-direction:column;align-items:stretch;}
+  .f1-eq-grid{grid-template-columns:1fr;}
+  .f1-milestones{flex-direction:column;gap:16px;align-items:flex-start;}
+  .f1-milestones::before{display:none;}
+  .f1-milestone{flex-direction:row;align-items:center;text-align:left;gap:14px;}
+  .f1-ms-dot{margin-bottom:0;flex-shrink:0;}
+  .f1-ms-label{max-width:none;}
 }
 `;
 
@@ -198,6 +234,87 @@ const CSS = `
 function formatDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+/* ─── SOLUM Status strip ───────────────────────────────────────────────────── */
+function SolumStatus() {
+  const milestones = [
+    { label: 'Products locked',    sub: 'Complete',      state: 'done'    },
+    { label: 'First box ships',    sub: 'Q2 2026',       state: 'current' },
+    { label: '100 subscribers',    sub: 'Target Y1',     state: 'pending' },
+    { label: '£1M ARR',            sub: 'Equity vests',  state: 'pending' },
+  ];
+  return (
+    <div className="f1-status-strip">
+      <div className="f1-section-label" style={{ marginBottom: 20 }}>SOLUM · Where We Are</div>
+      <div className="f1-milestones">
+        {milestones.map(m => (
+          <div className="f1-milestone" key={m.label}>
+            <div className={`f1-ms-dot ${m.state}`}>
+              {m.state === 'done' && (
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="#F0ECE2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+              {m.state === 'current' && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4A8FC7' }} />}
+            </div>
+            <div className={`f1-ms-label ${m.state}`}>{m.label}</div>
+            <div className={`f1-ms-sub ${m.state}`}>{m.sub}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Equity scenarios ─────────────────────────────────────────────────────── */
+function EquityScenarios() {
+  const scenarios = [
+    {
+      label:    'Conservative',
+      arr:      '£2M ARR',
+      multiple: '3× revenue',
+      value:    '~£60K',
+      note:     'your 1/100',
+    },
+    {
+      label:    'Base Case',
+      arr:      '£5.3M ARR',
+      multiple: '4× revenue',
+      value:    '~£210K',
+      note:     'your 1/100',
+      highlight: true,
+    },
+    {
+      label:    'Optimistic',
+      arr:      '£17.8M ARR',
+      multiple: '5× revenue',
+      value:    '~£890K',
+      note:     'your 1/100',
+    },
+  ];
+  return (
+    <div className="f1-equity-scenarios">
+      <div className="f1-eq-header">
+        <div className="f1-eq-title">What Your Equity Could Be Worth</div>
+        <div className="f1-eq-subtitle">Year 5 projections · 3 scenarios</div>
+      </div>
+      <div className="f1-eq-grid">
+        {scenarios.map(s => (
+          <div className={`f1-eq-card${s.highlight ? ' highlight' : ''}`} key={s.label}>
+            <div className="f1-eq-scenario">{s.label}</div>
+            <div className="f1-eq-arr">{s.arr}</div>
+            <div className="f1-eq-multiple">{s.multiple} valuation</div>
+            <div className="f1-eq-value">{s.value}</div>
+            <div className="f1-eq-value-label">{s.note}</div>
+          </div>
+        ))}
+      </div>
+      <div className="f1-eq-disclaimer">
+        Projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution. Your share is real. What it's worth depends on what we build together.
+      </div>
+    </div>
+  );
 }
 
 /* ─── Schema-driven question renderer ─────────────────────────────────────── */
@@ -505,7 +622,7 @@ function PledgeView({ session, member, onSigned }) {
         <div className="f1-pledge-exit-box">
           <div className="f1-pledge-exit-label">If the commitment ends</div>
           <div className="f1-pledge-exit-body">
-            Membership is withdrawn for consistently missing jobs, a lapsed subscription, or a confidentiality breach.
+            Membership is withdrawn for consistently missing missions, a lapsed subscription, or a confidentiality breach.
             You'll receive <strong>30 days' notice</strong> in all cases except breach.
             Your equity share returns to the pool and is offered to the next person on the waitlist.
           </div>
@@ -596,7 +713,7 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
         {/* Participation */}
         <div className="f1-participation">
           <div className="f1-part-stat">
-            <div className="f1-part-label">Jobs completed</div>
+            <div className="f1-part-label">Missions completed</div>
             <div className="f1-part-value">{completedCount} / {totalJobs}</div>
           </div>
           <div className="f1-part-bar-wrap">
@@ -604,17 +721,20 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
               <div className="f1-part-fill" style={{ width: `${pct}%` }} />
             </div>
             <div className="f1-part-note">
-              Complete at least 75% of jobs to maintain founding status
+              Complete at least 75% of missions to maintain founding status
             </div>
           </div>
         </div>
+
+        <SolumStatus />
+        <EquityScenarios />
 
         {!isActive ? (
           <div className="f1-inactive-gate">
             <div className="f1-inactive-title">Your Spot Is Reserved.</div>
             <div className="f1-inactive-body">
               Founding member access requires an active SOLUM subscription.<br />
-              Reactivate to unlock jobs and keep your equity allocation.
+              Reactivate to unlock missions and keep your equity allocation.
             </div>
             <a href="/checkout">
               <button className="f1-btn" style={{ width: 'auto', padding: '14px 40px' }}>
@@ -624,11 +744,11 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
           </div>
         ) : (
           <>
-            <div className="f1-section-label">Your Jobs</div>
+            <div className="f1-section-label">Your Missions</div>
 
             {jobs.length === 0 ? (
               <div style={{ color: 'rgba(240,236,226,0.3)', fontSize: 14, fontWeight: 300, padding: '20px 0' }}>
-                No jobs posted yet. Check back soon.
+                No missions yet. The first drops when we're closer to launch.
               </div>
             ) : (
               jobs.map(job => (
@@ -649,13 +769,13 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
               <div className="f1-record-title">The Record</div>
               <div className="f1-record-sub">
                 Every decision SOLUM makes using founding member input is logged here —
-                what changed, why, and which job drove it.
+                what changed, why, and which mission drove it.
               </div>
               <div className="f1-record-empty">
                 <div className="f1-record-empty-text">
                   No entries yet.<br />
                   <span style={{ color: 'rgba(240,236,226,0.2)' }}>
-                    The first will appear once job responses are reviewed.
+                    The first will appear once mission responses are reviewed.
                   </span>
                 </div>
               </div>
@@ -766,8 +886,8 @@ function LandingView({ phase, setPhase }) {
         {/* What this is — below the fold */}
         <div style={{ borderTop: '1px solid rgba(240,236,226,0.06)', marginTop: 48, paddingTop: 40 }}>
           <div className="f1-entrance-sub" style={{ marginBottom: 28 }}>
-            You subscribe to SOLUM because you genuinely want to shape what it becomes —
-            the products, the rituals, the brand. 5–10 minutes a month minimum.
+            You subscribe to SOLUM because you want to shape what it becomes —
+            the products, the formulas, the rituals. Give us your input once a month.
             In return, you own part of it.
           </div>
           <div className="f1-benefit-trio">
