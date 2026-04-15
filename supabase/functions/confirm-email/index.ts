@@ -41,5 +41,15 @@ Deno.serve(async (req) => {
     .update({ confirmed_at: new Date().toISOString() })
     .eq('id', lead.id)
 
-  return json({ status: 'confirmed', email: lead.email, first_name: lead.first_name })
+  // Determine position in waitlist to know if founding member
+  const { count } = await db
+    .from('leads')
+    .select('*', { count: 'exact', head: true })
+    .eq('checkout_status', 'waitlist')
+    .lte('created_at', lead.created_at)
+
+  const position  = count ?? 999
+  const is_founder = position <= 100
+
+  return json({ status: 'confirmed', email: lead.email, first_name: lead.first_name, position, is_founder })
 })

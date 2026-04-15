@@ -77,8 +77,9 @@ const styles = `
 `;
 
 export default function ConfirmPage() {
-  const [status, setStatus] = useState('loading'); // loading | confirmed | already_confirmed | invalid | error
+  const [status,    setStatus]    = useState('loading'); // loading | confirmed | already_confirmed | invalid | error
   const [firstName, setFirstName] = useState(null);
+  const [isFounder, setIsFounder] = useState(false);
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get('token');
@@ -95,6 +96,7 @@ export default function ConfirmPage() {
       .then(r => r.json())
       .then(data => {
         setFirstName(data.first_name || null);
+        setIsFounder(!!data.is_founder);
         setStatus(data.status === 'confirmed' ? 'confirmed'
           : data.status === 'already_confirmed' ? 'already_confirmed'
           : 'invalid');
@@ -122,12 +124,87 @@ export default function ConfirmPage() {
             <div className="cp-tag success">Confirmed</div>
             <div className="cp-title">{name}You're in.</div>
             <div className="cp-body">
-              Your email is confirmed and your spot is locked. We'll send you one email when we launch — nothing before that.
+              Your spot is locked. We'll send one email when we launch — nothing before that.
             </div>
+
+            {/* Founding 100 teaser — founders only */}
+            {isFounder && (
+              <div style={{
+                marginTop: 20,
+                padding: '16px 20px',
+                background: 'rgba(74,143,199,0.07)',
+                border: '1px solid rgba(74,143,199,0.28)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}>
+                <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
+                  Founding 100 · Members Portal
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.88)', lineHeight: 1.65 }}>
+                  You're one of the first 100 — you get <strong style={{ color: '#f0ece2' }}>real equity in bySolum</strong>.
+                  A share of the founding pool that vests at £1M ARR or 14 months, whichever comes first.
+                  Inside the portal: shape products, track SOLUM's growth, and see what your equity could be worth.
+                </div>
+                <a
+                  href="/founding-100"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: 4,
+                    fontSize: 12,
+                    letterSpacing: 3,
+                    textTransform: 'uppercase',
+                    fontWeight: 700,
+                    color: '#4A8FC7',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Enter the Founding 100 Portal →
+                </a>
+              </div>
+            )}
+
+            {/* Instagram CTA — everyone */}
+            <div style={{
+              marginTop: 16,
+              padding: '14px 18px',
+              background: 'rgba(240,236,226,0.03)',
+              border: '1px solid rgba(240,236,226,0.09)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 14,
+              flexWrap: 'wrap',
+            }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#f0ece2', marginBottom: 2 }}>Follow while you wait</div>
+                <div style={{ fontSize: 12, fontWeight: 300, color: 'rgba(240,236,226,0.60)' }}>
+                  Sneak previews, formulas, rituals — before anyone else.
+                </div>
+              </div>
+              <a
+                href="https://instagram.com/bysolum.body"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  background: '#f0ece2',
+                  color: '#08090B',
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: 14,
+                  letterSpacing: '.12em',
+                  padding: '9px 18px',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                @bysolum.body
+              </a>
+            </div>
+
             <div className="cp-divider" />
-            <div className="cp-note">
-              You can close this tab. See you at launch.
-            </div>
+            <div className="cp-note">See you at launch.</div>
           </div>
         )}
 
