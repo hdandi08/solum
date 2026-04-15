@@ -519,11 +519,57 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
   );
 }
 
+/* ─── Price lock ───────────────────────────────────────────────────────────── */
+function PriceLock() {
+  const kits = [
+    { name: 'GROUND',    first: '£55', monthly: '£38', products: 'Products 01 02 03 04 07' },
+    { name: 'RITUAL',    first: '£85', monthly: '£48', products: 'Products 01–07', highlight: true },
+    { name: 'SOVEREIGN', first: '£130', monthly: '£58', products: 'All 10 products' },
+  ];
+  return (
+    <div style={{ border: '1px solid rgba(240,236,226,0.07)', marginBottom: 24 }}>
+      <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(240,236,226,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <div className="f1-section-label" style={{ marginBottom: 0 }}>Your Locked Prices</div>
+        <div style={{ fontSize: 12, fontWeight: 300, color: 'rgba(240,236,226,0.45)' }}>These prices never increase for you</div>
+      </div>
+      {kits.map(k => (
+        <div key={k.name} style={{
+          display: 'grid', gridTemplateColumns: '1fr auto auto',
+          alignItems: 'center', gap: 16,
+          padding: '18px 24px',
+          borderBottom: '1px solid rgba(240,236,226,0.05)',
+          background: k.highlight ? 'rgba(74,143,199,0.04)' : 'transparent',
+        }}>
+          <div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: '.08em', color: k.highlight ? '#F0ECE2' : 'rgba(240,236,226,0.75)', marginBottom: 3 }}>{k.name}</div>
+            <div style={{ fontSize: 12, fontWeight: 300, color: 'rgba(240,236,226,0.40)', letterSpacing: '.5px' }}>{k.products}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(240,236,226,0.40)', marginBottom: 3 }}>First box</div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.04em', color: 'rgba(240,236,226,0.70)' }}>{k.first}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(240,236,226,0.40)', marginBottom: 3 }}>Monthly</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.04em', color: '#4A8FC7' }}>{k.monthly}</div>
+              <span style={{ fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7', background: 'rgba(74,143,199,0.12)', padding: '2px 6px' }}>Locked</span>
+            </div>
+          </div>
+        </div>
+      ))}
+      <div style={{ padding: '12px 24px', fontSize: 12, fontWeight: 300, color: 'rgba(240,236,226,0.35)', lineHeight: 1.6 }}>
+        Your monthly price is locked at whichever kit you subscribed with. As SOLUM grows and prices rise for new customers, yours stays here.
+      </div>
+    </div>
+  );
+}
+
 /* ─── Equity tab ───────────────────────────────────────────────────────────── */
 function EquityTab({ member }) {
   return (
     <>
       <VestingCountdown member={member} />
+      <PriceLock />
       <SolumStatus />
       <EquityScenarios />
     </>
