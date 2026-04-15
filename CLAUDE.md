@@ -178,7 +178,7 @@ This is a fresh project. Add Solum-specific guidelines below as the project evol
 
 | Kit           | Products           | First Box COGS | RRP  | Gross Margin | Monthly Sub | Sub GP |
 | ------------- | ------------------ | -------------- | ---- | ------------ | ----------- | ------ |
-| GROUND        | 01, 02, 03, 04, 07 | £16.35         | £55  | 61.1%        | £38         | £18.20 |
+| GROUND        | 01, 02, 03, 04, 07 | £16.35         | £65  | 74.8%        | £38         | £18.20 |
 | RITUAL ★      | 01–06, 07          | £21.55         | £85  | 72.4%        | £48         | £30.70 |
 | SOVEREIGN     | All 10             | £32.95         | £130 | 70.0%        | £58         | £33.20 |
 
