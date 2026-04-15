@@ -1146,8 +1146,8 @@ function PortalView({ session, member, jobs, completions: initialCompletions, on
               <p className="f1-founder-msg-para">
                 Here's what I need you to understand: <strong>your equity isn't passive.</strong>{' '}
                 Every mission you complete gives us real input that makes SOLUM better.
-                A better product grows faster. Faster growth means we hit £1M ARR sooner.
-                That's when your equity vests.
+                A better product grows faster. Faster growth means we hit £1M ARR sooner —
+                and that's when your equity vests. <strong>The better your input, the more valuable your share becomes. The more valuable your share, the more you make.</strong>
               </p>
               <p className="f1-founder-msg-para">
                 The referral code below is just as important.{' '}
@@ -1337,7 +1337,30 @@ function LandingView({ phase, setPhase }) {
 }
 
 /* ─── Root ─────────────────────────────────────────────────────────────────── */
+const DEV_MOCK_MEMBER = {
+  id: 'dev-preview',
+  email: 'harsha@bysolum.co.uk',
+  first_name: 'Harsha',
+  last_name: 'Dandi',
+  founding_member_since: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+  pledge_signed_at: new Date().toISOString(),
+  sessions_completed: 2,
+  is_active: true,
+};
+const DEV_MOCK_SESSION = { access_token: 'dev-token', user: { email: 'harsha@bysolum.co.uk' } };
+
 export default function Founding100Page() {
+  // DEV-only preview mode — bypasses auth entirely, never included in prod builds
+  if (import.meta.env.DEV) {
+    const preview = new URLSearchParams(window.location.search).get('preview');
+    if (preview === 'portal') {
+      return <PortalView session={DEV_MOCK_SESSION} member={DEV_MOCK_MEMBER} jobs={[]} completions={[]} onSignOut={() => {}} justSigned={true} />;
+    }
+    if (preview === 'pledge') {
+      return <PledgeView session={DEV_MOCK_SESSION} member={DEV_MOCK_MEMBER} onSigned={() => alert('Pledge signed (dev preview)')} />;
+    }
+  }
+
   const [phase,       setPhase]       = useState('loading');
   const [session,     setSession]     = useState(null);
   const [member,      setMember]      = useState(null);
