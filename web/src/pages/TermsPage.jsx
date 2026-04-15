@@ -330,7 +330,7 @@ export default function TermsPage() {
               <div className="terms-info-block">
                 <div className="terms-info-row">
                   <span className="terms-info-label">GROUND Kit</span>
-                  <span className="terms-info-value">£55 first box · £38/month subscription</span>
+                  <span className="terms-info-value">£65 first box · £38/month subscription</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">RITUAL Kit</span>
