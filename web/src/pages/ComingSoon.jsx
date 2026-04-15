@@ -1065,6 +1065,82 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
             ? <>You're one of the first 100 people. <strong style={{color:'#f0ece2'}}>Your price is locked forever</strong> — as the range grows and prices rise, yours never does. We'll send one email when we launch.</>
             : "You're on the list. We'll email you the moment launch kits go live."}
         </div>
+
+        {/* Founding 100 teaser — founders only */}
+        {isFounder && (
+          <div style={{
+            marginTop: 16,
+            padding: '16px 20px',
+            background: 'rgba(74,143,199,0.06)',
+            border: '1px solid rgba(74,143,199,0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+          }}>
+            <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
+              Founding 100 · Members Portal
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.88)', lineHeight: 1.6 }}>
+              As one of the first 100, you'll get{' '}
+              <strong style={{color:'#f0ece2'}}>real equity in bySolum</strong> — a share of the founding pool that vests at £1M ARR or 14 months, whichever comes first.
+              Inside the portal: shape products before launch, track SOLUM's growth, and see what your equity could be worth.
+            </div>
+            <a
+              href="/founding-100"
+              style={{
+                display: 'inline-block',
+                marginTop: 4,
+                fontSize: 12,
+                letterSpacing: 3,
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                color: '#4A8FC7',
+                textDecoration: 'none',
+              }}
+            >
+              Enter the Founding 100 Portal →
+            </a>
+          </div>
+        )}
+
+        {/* Instagram follow CTA — everyone */}
+        <div style={{
+          marginTop: 12,
+          padding: '14px 20px',
+          background: 'rgba(240,236,226,0.03)',
+          border: '1px solid rgba(240,236,226,0.09)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#f0ece2', marginBottom: 2 }}>Follow us while you wait</div>
+            <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.65)' }}>
+              Sneak previews, formulas, rituals — before anyone else sees them.
+            </div>
+          </div>
+          <a
+            href="https://instagram.com/bysolum.body"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              background: '#f0ece2',
+              color: '#08090B',
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 15,
+              letterSpacing: '.12em',
+              padding: '10px 20px',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            @bysolum.body
+          </a>
+        </div>
       </div>
     );
   }
