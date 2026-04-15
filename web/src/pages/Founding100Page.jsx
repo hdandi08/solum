@@ -67,7 +67,7 @@ const CSS = `
 .f1-equity-detail{font-size:14px;font-weight:300;color:rgba(240,236,226,0.78);line-height:1.5;}
 
 .f1-pledge-block{border:1px solid rgba(240,236,226,0.1);padding:28px 32px;margin-bottom:16px;}
-.f1-pledge-section-label{font-size:10px;letter-spacing:5px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.55);margin-bottom:14px;}
+.f1-pledge-section-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(240,236,226,0.60);margin-bottom:16px;}
 .f1-pledge-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
 .f1-pledge-item{display:flex;align-items:flex-start;gap:14px;font-size:15px;font-weight:300;color:rgba(240,236,226,0.85);line-height:1.55;}
 .f1-pledge-item::before{content:'—';color:#4A8FC7;flex-shrink:0;margin-top:1px;}
@@ -424,22 +424,21 @@ function PledgeView({ session, member, onSigned }) {
         <div />
       </nav>
       <div className="f1-pledge-wrap">
-        <div className="f1-pledge-eyebrow">One time — before you enter</div>
+        <div className="f1-pledge-eyebrow">Before you enter · One time only</div>
         <div className="f1-pledge-title">The Founding Commitment.</div>
         <div className="f1-pledge-intro">
-          This is what you're agreeing to, and what SOLUM is agreeing to in return.
-          Read it — it matters.
+          Two sides. Read both. This is binding on us as much as it is on you.
         </div>
 
-        {/* Equity — lead with the big promise */}
+        {/* Equity — lead with the headline promise */}
         <div className="f1-equity-box">
           <div className="f1-equity-fraction"><em>1</em>/100</div>
           <div className="f1-equity-text">
             <div className="f1-equity-headline">Real equity in bySolum Limited</div>
             <div className="f1-equity-detail">
-              An equal share of the founding member pool — divided across all 100 members.
-              Vests when SOLUM reaches <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong>.
-              Tied to participation, not just holding a spot.
+              One equal share of the founding pool for each of the 100 members.
+              Vests when SOLUM hits <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong>.
+              Active members only — participation is required, not optional.
             </div>
           </div>
         </div>
@@ -449,19 +448,16 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-pledge-section-label">SOLUM commits to you</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              Your <strong>1/100 equity share</strong> in bySolum Limited, vesting at £1M ARR. Equal across all founding members, no exceptions.
+              Your <strong>subscription price, locked permanently</strong> — £38, £48, or £58 depending on your kit. It will never increase for you.
             </li>
             <li className="f1-pledge-item">
-              <strong>Your monthly subscription price, locked forever</strong> — £38, £48, or £58 depending on your kit. That price never changes for you, ever.
+              <strong>First access to every new product</strong>, before it's available to anyone else. Always.
             </li>
             <li className="f1-pledge-item">
-              <strong>First access to every new product</strong> SOLUM develops — always before public launch.
+              Your name listed permanently as a <strong>founding member of SOLUM</strong> on bysolum.com when we launch.
             </li>
             <li className="f1-pledge-item">
-              Your name on the <strong>bysolum.com founding wall</strong>, permanently.
-            </li>
-            <li className="f1-pledge-item">
-              A log of every decision your input shaped — <strong>what changed, and why</strong>.
+              A running log of every decision your input shaped — <strong>what changed, and why</strong>.
             </li>
           </ul>
         </div>
@@ -471,27 +467,26 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-pledge-section-label">You commit to</div>
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
-              Giving us <strong>at least 5–10 minutes a month</strong> — responding to jobs that shape the products, the brand, and the direction. No ceiling: if you want to go deeper, we want to hear it.
+              <strong>At least 5–10 minutes a month</strong> responding to jobs — product decisions, brand direction, what works and what doesn't. More is welcome. This is the minimum.
             </li>
             <li className="f1-pledge-item">
-              Maintaining an <strong>active SOLUM subscription</strong> once we launch. Founding membership requires skin in the game.
+              Keeping an <strong>active SOLUM subscription</strong>. You're shaping a product you use — that's the deal.
             </li>
             <li className="f1-pledge-item">
-              Keeping <strong>product formulas, supplier details, and pricing confidential</strong>. You're building this with us — that knowledge stays here.
+              Treating <strong>product formulas, supplier names, and pricing as confidential</strong>. You have inside knowledge. Keep it inside.
             </li>
             <li className="f1-pledge-item">
-              Disagreeing with us <strong>inside the portal, not publicly</strong>. Challenge everything here — that's the point.
+              Raising issues <strong>here, not publicly</strong>. Disagree with anything — we want to hear it. But inside the portal, not on social.
             </li>
           </ul>
+        </div>
 
-          <div className="f1-pledge-divider" />
-
-          <div className="f1-pledge-exit">
-            <strong>Exit terms:</strong> Founding membership is withdrawn if you miss 4 consecutive jobs,
-            your subscription lapses, or confidentiality is breached.
-            You'll receive <strong>30 days' notice</strong> in all cases except breach.
-            Your equity allocation returns to the pool.
-          </div>
+        {/* Exit terms — standalone */}
+        <div className="f1-pledge-exit">
+          <strong>If the commitment ends:</strong> Membership is withdrawn for missing jobs
+          consistently, a lapsed subscription, or a confidentiality breach. You'll receive{' '}
+          <strong>30 days' notice</strong> except in the case of breach. Your equity share
+          returns to the pool and is offered to the next person on the waitlist.
         </div>
 
         <div
