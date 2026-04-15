@@ -271,26 +271,26 @@ function SolumStatus() {
 function EquityScenarios() {
   const scenarios = [
     {
-      label:    'Conservative',
-      arr:      '£2M ARR',
-      multiple: '3× revenue',
-      value:    '~£60K',
-      note:     'your 1/100',
+      label:     'Conservative',
+      arr:       '£2M ARR',
+      multiple:  '3× revenue',
+      poolValue: '~£60K',
+      yourShare: '~£600',
     },
     {
-      label:    'Base Case',
-      arr:      '£5.3M ARR',
-      multiple: '4× revenue',
-      value:    '~£210K',
-      note:     'your 1/100',
-      highlight: true,
+      label:     'Base Case',
+      arr:       '£5.3M ARR',
+      multiple:  '4× revenue',
+      poolValue: '~£210K',
+      yourShare: '~£2,100',
+      highlight:  true,
     },
     {
-      label:    'Optimistic',
-      arr:      '£17.8M ARR',
-      multiple: '5× revenue',
-      value:    '~£890K',
-      note:     'your 1/100',
+      label:     'Optimistic',
+      arr:       '£17.8M ARR',
+      multiple:  '5× revenue',
+      poolValue: '~£890K',
+      yourShare: '~£8,900',
     },
   ];
   return (
@@ -305,13 +305,16 @@ function EquityScenarios() {
             <div className="f1-eq-scenario">{s.label}</div>
             <div className="f1-eq-arr">{s.arr}</div>
             <div className="f1-eq-multiple">{s.multiple} valuation</div>
-            <div className="f1-eq-value">{s.value}</div>
-            <div className="f1-eq-value-label">{s.note}</div>
+            <div className="f1-eq-value">{s.yourShare}</div>
+            <div className="f1-eq-value-label">your share</div>
+            <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(240,236,226,0.07)', fontSize: 12, color: 'rgba(240,236,226,0.45)', letterSpacing: '1px' }}>
+              Pool: {s.poolValue}
+            </div>
           </div>
         ))}
       </div>
       <div className="f1-eq-disclaimer">
-        Projections from the financial model — not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution. Your share is real. What it's worth depends on what we build together.
+        The founding pool is <strong style={{ color: 'rgba(240,236,226,0.70)' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Your share is 1/100 of that pool — 0.01% of the company. Projections are from the financial model, not a guarantee. Actual value depends on exit timing, valuation multiple, and any future dilution.
       </div>
     </div>
   );
@@ -561,7 +564,7 @@ function PledgeView({ session, member, onSigned }) {
           <div className="f1-equity-text">
             <div className="f1-equity-headline">Real equity in bySolum Limited</div>
             <div className="f1-equity-detail">
-              One equal share of the founding pool for each of the 100 members.
+              The founding pool is <strong style={{ color: '#F0ECE2' }}>1% of bySolum Limited</strong>, split equally across all 100 members. Your share: 1/100 of that pool.
               Vests at <strong style={{ color: '#F0ECE2' }}>£1M ARR</strong> or <strong style={{ color: '#F0ECE2' }}>14 months</strong> — whichever comes first.
               Active members only — participation is required, not optional.
             </div>
@@ -574,7 +577,7 @@ function PledgeView({ session, member, onSigned }) {
           <ul className="f1-pledge-list">
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">01</span>
-              <span>A <strong>1/100 equity share in bySolum Limited</strong>, equal across all founding members. Vests at £1M ARR or 14 months — whichever comes first. Real ownership — not a discount, not a voucher.</span>
+              <span>A <strong>1/100 share of the founding pool</strong> — 1% of bySolum Limited split equally across all 100 members. Vests at £1M ARR or 14 months — whichever comes first. Real ownership — not a discount, not a voucher.</span>
             </li>
             <li className="f1-pledge-item">
               <span className="f1-pledge-marker">02</span>
