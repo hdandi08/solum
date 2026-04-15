@@ -19,7 +19,7 @@ const CSS = `
 const FAQS = [
   {
     q: 'Am I paying the full kit price every month?',
-    a: 'No. The first box price (£55 for GROUND, £85 for RITUAL) is a one-time payment that includes physical tools lasting 6–12 months. After that, you pay £38 or £48/month for consumables only — body wash, lotion, bamboo cloth, and the tools that refresh on a quarterly or 6-monthly cycle. You never pay the setup price again.',
+    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment that includes physical tools lasting 6–12 months. After that, you pay £38 or £48/month for consumables only — body wash, lotion, bamboo cloth, and the tools that refresh on a quarterly or 6-monthly cycle. You never pay the setup price again.',
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',

@@ -607,7 +607,7 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
 /* ─── Price lock ───────────────────────────────────────────────────────────── */
 function PriceLock() {
   const kits = [
-    { name: 'GROUND',    first: '£55', monthly: '£38', products: 'Products 01 02 03 04 07' },
+    { name: 'GROUND',    first: '£65', monthly: '£38', products: 'Products 01 02 03 04 07' },
     { name: 'RITUAL',    first: '£85', monthly: '£48', products: 'Products 01–07', highlight: true },
     { name: 'SOVEREIGN', first: '£130', monthly: '£58', products: 'All 10 products' },
   ];
