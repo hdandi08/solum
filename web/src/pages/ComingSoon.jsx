@@ -1058,6 +1058,14 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
   const [error, setError] = useState('');
   const [suggestion, setSuggestion] = useState(null);
   const [position, setPosition] = useState(null);
+  // Capture referral code from URL or sessionStorage
+  const refCode = (() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get('ref');
+      if (p) { sessionStorage.setItem('solum_ref', p); return p; }
+      return sessionStorage.getItem('solum_ref') || null;
+    } catch { return null; }
+  })();
 
   function handleEmailChange(e) {
     const val = e.target.value;
@@ -1099,6 +1107,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
           source,
           utm_medium: medium,
           utm_campaign: campaign,
+          referred_by: refCode || null,
         }),
       });
 

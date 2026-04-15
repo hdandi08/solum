@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { email, first_name, source, utm_medium, utm_campaign } = await req.json()
+    const { email, first_name, source, utm_medium, utm_campaign, referred_by } = await req.json()
 
     const normalised = (email ?? '').trim().toLowerCase()
 
@@ -181,6 +181,7 @@ Deno.serve(async (req) => {
         source: source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
+        referred_by: referred_by || null,
       })
       .select('confirm_token')
       .single()
