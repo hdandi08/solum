@@ -1134,7 +1134,9 @@ export default function ComingSoon() {
         const { count } = await supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
-          .eq('checkout_status', 'waitlist');
+          .eq('checkout_status', 'waitlist')
+          .not('confirmed_at', 'is', null)
+          .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")');
         setWaitlistCount(count || 0);
       } catch {
         // Silent fail — count just won't show
@@ -1165,6 +1167,8 @@ export default function ComingSoon() {
       .from('leads')
       .select('*', { count: 'exact', head: true })
       .eq('checkout_status', 'waitlist')
+      .not('confirmed_at', 'is', null)
+      .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")')
       .then(({ count }) => setWaitlistCount(count || 0));
   }
 
