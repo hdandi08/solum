@@ -267,6 +267,30 @@ const CSS = `
 .f1-message-sub{font-size:14px;font-weight:300;color:rgba(240,236,226,0.70);line-height:1.55;margin-bottom:20px;}
 .f1-msg-sent{display:flex;align-items:center;gap:10px;font-size:14px;color:#4A8FC7;padding:12px 0;}
 
+/* ── Benefit cards (entrance) ── */
+.f1-benefit-cards{display:flex;flex-direction:column;gap:0;border:1px solid rgba(240,236,226,0.07);margin-bottom:40px;}
+.f1-benefit-card{display:flex;border-bottom:1px solid rgba(240,236,226,0.07);}
+.f1-benefit-card:last-child{border-bottom:none;}
+.f1-benefit-card-text{flex:1;padding:36px 40px;display:flex;flex-direction:column;gap:10px;}
+.f1-benefit-card-tag{font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:#4A8FC7;}
+.f1-benefit-card-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,3vw,34px);letter-spacing:.06em;color:#F0ECE2;line-height:1;}
+.f1-benefit-card-body{font-size:16px;font-weight:300;color:rgba(240,236,226,0.82);line-height:1.65;max-width:480px;}
+.f1-benefit-card-body strong{color:#F0ECE2;font-weight:600;}
+.f1-benefit-card-visual{width:280px;flex-shrink:0;padding:36px 32px;border-left:1px solid rgba(240,236,226,0.07);display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.f1-price-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;}
+.f1-price-row.others{background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.07);}
+.f1-price-row.yours{background:rgba(46,109,164,0.12);border:1px solid rgba(46,109,164,0.35);}
+.f1-price-who{font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.45);}
+.f1-price-who.yours{color:#4A8FC7;}
+.f1-price-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:rgba(240,236,226,0.30);text-decoration:line-through;}
+.f1-price-val.yours{color:#F0ECE2;text-decoration:none;}
+.f1-price-locked{font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#4A8FC7;background:rgba(74,143,199,0.12);padding:3px 10px;border:1px solid rgba(74,143,199,0.25);}
+.f1-flow{display:flex;align-items:center;gap:0;}
+.f1-flow-step{flex:1;text-align:center;padding:14px 8px;background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.07);}
+.f1-flow-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;color:#4A8FC7;line-height:1;}
+.f1-flow-lbl{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:rgba(240,236,226,0.55);margin-top:4px;font-weight:600;}
+.f1-flow-arrow{color:rgba(74,143,199,0.5);font-size:16px;padding:0 4px;flex-shrink:0;}
+
 /* ── Equity scenarios ── */
 .f1-equity-scenarios{border:1px solid rgba(74,143,199,0.18);background:rgba(74,143,199,0.03);padding:28px;margin-bottom:24px;}
 .f1-eq-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
@@ -287,6 +311,8 @@ const CSS = `
   .f1-nav{padding:20px 24px;}
   .f1-entrance{padding:56px 24px 40px;}
   .f1-benefit-trio{grid-template-columns:1fr;}
+  .f1-benefit-card{flex-direction:column !important;}
+  .f1-benefit-card-visual{min-width:unset !important;border-left:none !important;border-top:1px solid rgba(240,236,226,0.07) !important;padding:20px 24px !important;}
   .f1-equity-box{flex-direction:column;gap:16px;text-align:center;}
   .f1-login-wrap{padding:0 24px 60px;}
   .f1-pledge-wrap{padding:40px 24px 60px;}
@@ -1321,23 +1347,97 @@ function LandingView({ phase, setPhase }) {
         {/* What this is — below the fold */}
         <div style={{ borderTop: '1px solid rgba(240,236,226,0.06)', marginTop: 48, paddingTop: 40 }}>
           <div className="f1-entrance-sub" style={{ marginBottom: 28 }}>
-            You subscribe to SOLUM because you want to shape what it becomes —
-            the products, the formulas, the rituals. Give us your input once a month.
-            In return, you own part of it.
+            100 spots. Ever. The people who show up at the start don't just use SOLUM — they own part of it.
           </div>
-          <div className="f1-benefit-trio">
-            <div className="f1-benefit">
-              <div className="f1-benefit-value"><em>1</em>/100</div>
-              <div className="f1-benefit-label">Equity share<br />in Solum</div>
+
+          {/* Benefit cards */}
+          <div className="f1-benefit-cards">
+
+            {/* Card 1 — Equity */}
+            <div className="f1-benefit-card">
+              <div className="f1-benefit-card-text">
+                <div className="f1-benefit-card-tag">Equity</div>
+                <div className="f1-benefit-card-title">A Real Stake in Solum.</div>
+                <div className="f1-benefit-card-body">
+                  Real ownership that vests at <strong>£1M ARR or 14 months</strong> — whichever comes first. Not a discount. Not a voucher. Actual equity in the company you helped build.
+                </div>
+              </div>
+              <div className="f1-benefit-card-visual">
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 64, marginBottom: 10 }}>
+                  {[
+                    { h: 10, bg: 'rgba(74,143,199,0.20)' },
+                    { h: 22, bg: 'rgba(74,143,199,0.35)' },
+                    { h: 38, bg: 'rgba(74,143,199,0.55)' },
+                    { h: 52, bg: '#2E6DA4' },
+                    { h: 64, bg: '#4A8FC7' },
+                  ].map((b, i) => (
+                    <div key={i} style={{ flex: 1, height: b.h, background: b.bg }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(240,236,226,0.40)', fontWeight: 600 }}>Launch</span>
+                  <span style={{ fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: '#4A8FC7', fontWeight: 600 }}>Unicorn ★</span>
+                </div>
+              </div>
             </div>
-            <div className="f1-benefit">
-              <div className="f1-benefit-value">Locked<em>/mo</em></div>
-              <div className="f1-benefit-label">Your subscription price<br />frozen forever</div>
+
+            {/* Card 2 — Price Lock */}
+            <div className="f1-benefit-card">
+              <div className="f1-benefit-card-text">
+                <div className="f1-benefit-card-tag">Price Lock</div>
+                <div className="f1-benefit-card-title">Founding Price. Forever.</div>
+                <div className="f1-benefit-card-body">
+                  Whatever you pay at launch is your subscription price permanently. As the range grows and prices rise for new customers, yours never does.
+                </div>
+              </div>
+              <div className="f1-benefit-card-visual">
+                <div className="f1-price-row others">
+                  <span className="f1-price-who">Everyone else</span>
+                  <span className="f1-price-val">Rises over time</span>
+                </div>
+                <div className="f1-price-row yours" style={{ marginTop: 6 }}>
+                  <span className="f1-price-who yours">You</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span className="f1-price-val yours">Launch price</span>
+                    <span className="f1-price-locked">Locked</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="f1-benefit">
-              <div className="f1-benefit-value">First</div>
-              <div className="f1-benefit-label">Every new product<br />before public launch</div>
+
+            {/* Card 3 — Direct Input */}
+            <div className="f1-benefit-card">
+              <div className="f1-benefit-card-text">
+                <div className="f1-benefit-card-tag">Direct Input</div>
+                <div className="f1-benefit-card-title">You Shape What Gets Built.</div>
+                <div className="f1-benefit-card-body">
+                  Formulas, fragrances, new products — your input goes directly into what we build next. First access before public launch. Always.
+                </div>
+              </div>
+              <div className="f1-benefit-card-visual">
+                <div className="f1-flow">
+                  <div className="f1-flow-step">
+                    <div className="f1-flow-num">01</div>
+                    <div className="f1-flow-lbl">Your input</div>
+                  </div>
+                  <div className="f1-flow-arrow">›</div>
+                  <div className="f1-flow-step">
+                    <div className="f1-flow-num">02</div>
+                    <div className="f1-flow-lbl">We build it</div>
+                  </div>
+                  <div className="f1-flow-arrow">›</div>
+                  <div className="f1-flow-step">
+                    <div className="f1-flow-num">03</div>
+                    <div className="f1-flow-lbl">First access</div>
+                  </div>
+                </div>
+              </div>
             </div>
+
+          </div>
+
+          <div style={{ fontSize: 14, fontWeight: 400, color: 'rgba(240,236,226,0.55)', lineHeight: 1.6, textAlign: 'center' }}>
+            This tier closes permanently when it fills. It will not reopen.
           </div>
         </div>
       </div>
