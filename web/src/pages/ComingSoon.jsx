@@ -1254,9 +1254,9 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
 }
 
 function FoundingBar({ count }) {
-  const spots = Math.max(0, FOUNDING_LIMIT - (count || 0));
-  const filled = Math.min(100, ((count || 0) / FOUNDING_LIMIT) * 100);
-  const isFull = spots === 0;
+  const taken = Math.min(FOUNDING_LIMIT, count || 0);
+  const filled = Math.min(100, (taken / FOUNDING_LIMIT) * 100);
+  const isFull = taken >= FOUNDING_LIMIT;
 
   return (
     <a href="#founding-members" className="cs-founding-bar" style={{ textDecoration: 'none' }}>
@@ -1264,7 +1264,7 @@ function FoundingBar({ count }) {
         <div className="cs-founding-bar-label">
           {isFull
             ? 'Founding Member Exclusive Rewards — Closed'
-            : `${spots} / 100 Founding Member Spots Remaining ↓`}
+            : `${taken} / 100 Founding Member Spots Taken ↓`}
         </div>
       </div>
       <div className="cs-progress-track">
