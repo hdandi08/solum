@@ -255,46 +255,154 @@ const styles = `
   }
   .cs-founding-bar-note strong { color: #f0ece2; font-weight: 600; }
 
-  /* Stats intro */
-  .cs-stats-intro {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: rgba(240,236,226,0.75);
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
-  /* Stats */
-  .cs-stats {
-    display: flex;
-    gap: 0;
-    border: 1px solid rgba(240,236,226,0.07);
-    margin-bottom: 52px;
-    max-width: 780px;
+  /* Hero timeline */
+  .cs-timeline {
     width: 100%;
+    max-width: 480px;
+    margin-bottom: 0;
+    display: flex;
+    position: relative;
+    padding-top: 6px;
   }
-  .cs-stat {
+  .cs-timeline::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: calc(100% / 6);
+    right: calc(100% / 6);
+    height: 1px;
+    background: linear-gradient(90deg, #2e6da4, #4a8fc7, #2e6da4);
+    z-index: 0;
+  }
+  .cs-tl-node {
     flex: 1;
-    padding: 24px 20px;
-    border-right: 1px solid rgba(240,236,226,0.07);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
   }
-  .cs-stat:last-child { border-right: none; }
-  .cs-stat-num {
+  .cs-tl-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #4a8fc7;
+    border: 2px solid #08090b;
+    outline: 1.5px solid #4a8fc7;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .cs-tl-marker {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    letter-spacing: 0.05em;
+    font-size: 15px;
+    letter-spacing: 0.08em;
     color: #4a8fc7;
     line-height: 1;
-    margin-bottom: 6px;
+    text-align: center;
   }
-  .cs-stat-label {
+  .cs-tl-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f0ece2;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+    text-align: center;
+    padding: 0 6px;
+  }
+  .cs-tl-sub {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.5);
+    line-height: 1.4;
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  /* Outcomes */
+  .cs-outcomes {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px 56px;
+    border-bottom: 1px solid rgba(240,236,226,0.055);
+  }
+  .cs-outcomes-eyebrow {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #2e6da4;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .cs-outcomes-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 44px;
+  }
+  .cs-outcomes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    width: 100%;
+    max-width: 900px;
+    border: 1px solid rgba(240,236,226,0.07);
+  }
+  .cs-outcome {
+    padding: 28px 24px 32px;
+    border-right: 1px solid rgba(240,236,226,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  .cs-outcome:last-child { border-right: none; }
+  .cs-outcome-marker {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 56px);
+    letter-spacing: 0.03em;
+    color: #2e6da4;
+    line-height: 1;
+  }
+  .cs-outcome-marker em {
+    color: #4a8fc7;
+    font-style: normal;
+  }
+  .cs-outcome-title {
     font-size: 15px;
+    font-weight: 700;
+    color: #f0ece2;
     letter-spacing: 0.3px;
-    color: rgba(240,236,226,0.88);
-    font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.3;
+  }
+  .cs-outcome-body {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.72);
+    line-height: 1.6;
+  }
+  .cs-outcome-tag {
+    margin-top: auto;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(74,143,199,0.6);
+  }
+
+  @media (max-width: 768px) {
+    .cs-outcomes-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .cs-outcome:nth-child(2) { border-right: none; }
+    .cs-outcome:nth-child(3) { border-top: 1px solid rgba(240,236,226,0.07); }
+    .cs-outcome:nth-child(4) { border-top: 1px solid rgba(240,236,226,0.07); border-right: none; }
   }
 
   /* Email form */
@@ -1249,18 +1357,23 @@ function FoundingBar({ count }) {
   const isFull = taken >= FOUNDING_LIMIT;
 
   return (
-    <a href="#founding-members" className="cs-founding-bar" style={{ textDecoration: 'none' }}>
+    <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">
           {isFull
-            ? 'Founding Member Exclusive Rewards — Closed'
-            : `${taken} / 100 Founding Member Spots Taken ↓`}
+            ? 'Early Access — Closed'
+            : `${taken} / 100 Early Access Spots Taken`}
         </div>
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
       </div>
-    </a>
+      {!isFull && (
+        <div style={{ fontSize: 12, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.45)', textTransform: 'uppercase', fontWeight: 600 }}>
+          If these fill — next availability: 4–5 months away
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1318,30 +1431,51 @@ export default function ComingSoon() {
 
         <header className="cs-topbar">
           <span className="cs-logo">SOLUM</span>
-          <div className="cs-badge">Launching Soon</div>
+          <div className="cs-badge">Limited Early Access</div>
         </header>
 
         {/* 1 — Hero */}
         <main className="cs-main">
-          <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
+          <div className="cs-eyebrow">The first body ritual built only for men.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Rough skin, a neglected back, a scalp that gets rinsed but never worked.
-            That's not laziness — nobody ever built a system to fix it.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> SOLUM does. You'll feel it from the first shower.</strong>
+            Fix body odour, rough skin, and a neglected back. 8 products. 10 minutes a day.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> You'll feel it from the first shower.</strong>
           </p>
 
-          {/* Scarcity bar */}
-          <div style={{ width: '100%', maxWidth: '480px', marginBottom: '14px' }}>
+          {/* Timeline */}
+          <div className="cs-timeline">
+            <div className="cs-tl-node">
+              <div className="cs-tl-dot" />
+              <div className="cs-tl-marker">Week 1</div>
+              <div className="cs-tl-text">Dead skin rolls off. Odour drops.</div>
+              <div className="cs-tl-sub">You'll see it in the shower</div>
+            </div>
+            <div className="cs-tl-node">
+              <div className="cs-tl-dot" />
+              <div className="cs-tl-marker">Week 3</div>
+              <div className="cs-tl-text">Skin holds moisture all day.</div>
+              <div className="cs-tl-sub">Not just after the shower</div>
+            </div>
+            <div className="cs-tl-node">
+              <div className="cs-tl-dot" />
+              <div className="cs-tl-marker">Day 66</div>
+              <div className="cs-tl-text">A habit. Part of your morning for good.</div>
+              <div className="cs-tl-sub">No willpower required</div>
+            </div>
+          </div>
+
+          {/* Scarcity bar — below timeline */}
+          <div style={{ width: '100%', maxWidth: '480px', marginTop: '20px', marginBottom: '0' }}>
             <FoundingBar count={waitlistCount} />
           </div>
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="Claim Your Spot" onSuccess={handleSuccess} />
-            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+            <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
+            <div className="cs-privacy">Launch price locked · First to ship · No spam.</div>
           </div>
 
           {/* Countdown — below form */}
@@ -1351,150 +1485,42 @@ export default function ComingSoon() {
 
         </main>
 
+        {/* Outcomes — moved above box so it's seen early */}
+        <div className="cs-outcomes">
+          <div className="cs-outcomes-eyebrow">What you'll notice</div>
+          <div className="cs-outcomes-heading">Most men have never actually been clean.<br />Here's what changes.</div>
+          <div className="cs-outcomes-grid">
+            <div className="cs-outcome">
+              <div className="cs-outcome-marker">Week<br /><em>1</em></div>
+              <div className="cs-outcome-title">Dead skin rolls off in the shower.</div>
+              <div className="cs-outcome-body">You'll see it. Grey sheets lifting off skin that rinsing alone never reached. It's been building for years — you just didn't have the right tool.</div>
+              <div className="cs-outcome-tag">Visible · Day 1</div>
+            </div>
+            <div className="cs-outcome">
+              <div className="cs-outcome-marker">Week<br /><em>2</em></div>
+              <div className="cs-outcome-title">Body odour drops — without more deodorant.</div>
+              <div className="cs-outcome-body">Dead cells are what feed odour-causing bacteria, not sweat. Clear them daily and the source goes. Less smell. Same sweat.</div>
+              <div className="cs-outcome-tag">Noticeable · You & Others</div>
+            </div>
+            <div className="cs-outcome">
+              <div className="cs-outcome-marker">Week<br /><em>3</em></div>
+              <div className="cs-outcome-title">Skin that holds moisture all day.</div>
+              <div className="cs-outcome-body">Not just soft after the shower — still soft at midday. Exfoliated skin absorbs lotion properly instead of sitting on top of a dead layer.</div>
+              <div className="cs-outcome-tag">All Day · Not Just Post-Shower</div>
+            </div>
+            <div className="cs-outcome">
+              <div className="cs-outcome-marker">Day<br /><em>66</em></div>
+              <div className="cs-outcome-title">The ritual runs itself.</div>
+              <div className="cs-outcome-body">66 days is how long a habit takes to become automatic. You don't decide to do it anymore. You just do it. That's the point — a system, not a routine you have to remember.</div>
+              <div className="cs-outcome-tag">Permanent · No Willpower Required</div>
+            </div>
+          </div>
+        </div>
+
         {/* Box reveal */}
         <div className="cs-box-reveal">
           <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
           <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
-        </div>
-
-        {/* Stats */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 24px', borderBottom: '1px solid rgba(240,236,226,0.055)' }}>
-          <div className="cs-stats-intro">Here's what actually happens when you do it right:</div>
-          <div className="cs-stats">
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 1</div>
-              <div className="cs-stat-label">dead skin you didn't know<br />existed rolls off</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 2</div>
-              <div className="cs-stat-label">body odour reduces —<br />dead cells feed bacteria, not sweat</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Week 3</div>
-              <div className="cs-stat-label">skin holds moisture<br />past midday</div>
-            </div>
-            <div className="cs-stat">
-              <div className="cs-stat-num">Day 66</div>
-              <div className="cs-stat-label">the ritual is automatic.<br />you don't think about it.</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 2 — Founding Member benefits */}
-        <div className="cs-founding" id="founding-members">
-          <div className="cs-founding-eyebrow">Founding Members Only · First 100</div>
-          <h2 className="cs-founding-title">
-            The First <em>100</em> Own<br />Part of What They Build
-          </h2>
-          <p className="cs-founding-sub">
-            Locked price. First access. Real equity in Solum.
-            The people who show up at the start don't just use it — they own part of it.
-          </p>
-
-          {/* Stat strip */}
-          <div className="cs-f-stats">
-            <div className="cs-f-stat">
-              <div className="cs-f-stat-num"><em>100</em></div>
-              <div className="cs-f-stat-lbl">spots. ever.</div>
-            </div>
-            <div className="cs-f-stat">
-              <div className="cs-f-stat-num"><em>Equity</em></div>
-              <div className="cs-f-stat-lbl">real ownership</div>
-            </div>
-            <div className="cs-f-stat">
-              <div className="cs-f-stat-num"><em>Locked</em></div>
-              <div className="cs-f-stat-lbl">price forever</div>
-            </div>
-            <div className="cs-f-stat">
-              <div className="cs-f-stat-num"><em>First</em></div>
-              <div className="cs-f-stat-lbl">every product</div>
-            </div>
-          </div>
-
-          <div className="cs-founding-grid">
-            {/* Card 1 — Equity */}
-            <div className="cs-founding-item">
-              <div className="cs-founding-item-label">Equity</div>
-              <div className="cs-founding-item-title">A Real Stake in Solum.</div>
-              <div className="cs-founding-item-body">
-                Founding members receive actual equity in Solum — not a discount, not a voucher.
-                Real ownership that vests as the company grows. The full details live inside the members portal.
-              </div>
-              {/* Visual growth arc */}
-              <div style={{ marginTop: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 56, marginBottom: 6 }}>
-                  {[
-                    { h: 8,  color: 'rgba(74,143,199,0.20)' },
-                    { h: 18, color: 'rgba(74,143,199,0.35)' },
-                    { h: 32, color: 'rgba(74,143,199,0.55)' },
-                    { h: 44, color: '#2E6DA4' },
-                    { h: 56, color: '#4A8FC7' },
-                  ].map((b, i) => (
-                    <div key={i} style={{ flex: 1, height: b.h, background: b.color }} />
-                  ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(240,236,226,0.35)', fontWeight: 600 }}>Launch</span>
-                  <span style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: '#4A8FC7', fontWeight: 600 }}>Unicorn ★</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 — Price Lock */}
-            <div className="cs-founding-item">
-              <div className="cs-founding-item-label">Price Lock</div>
-              <div className="cs-founding-item-title">Founding Price. Forever.</div>
-              <div className="cs-founding-item-body">
-                Whatever you pay at launch is your price permanently. As the range grows
-                and prices rise, yours never does.
-              </div>
-              <div className="cs-price-vis">
-                <div className="cs-price-row others">
-                  <span className="cs-price-who">Everyone else</span>
-                  <span className="cs-price-amount">Rises over time</span>
-                </div>
-                <div className="cs-price-row yours">
-                  <span className="cs-price-who yours">You</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span className="cs-price-amount yours">Launch price</span>
-                    <span className="cs-price-badge">Locked</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 — Direct Input */}
-            <div className="cs-founding-item">
-              <div className="cs-founding-item-label">Direct Input</div>
-              <div className="cs-founding-item-title">You Shape What Gets Built.</div>
-              <div className="cs-founding-item-body">
-                Formulas, fragrances, new products — your input goes directly into what
-                we build next. First access before public launch. Always.
-              </div>
-              <div className="cs-flow">
-                <div className="cs-flow-step">
-                  <div className="cs-flow-step-num">01</div>
-                  <div className="cs-flow-step-lbl">Your input</div>
-                </div>
-                <div className="cs-flow-arrow">›</div>
-                <div className="cs-flow-step">
-                  <div className="cs-flow-step-num">02</div>
-                  <div className="cs-flow-step-lbl">We build it</div>
-                </div>
-                <div className="cs-flow-arrow">›</div>
-                <div className="cs-flow-step">
-                  <div className="cs-flow-step-num">03</div>
-                  <div className="cs-flow-step-lbl">You get it first</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="cs-founding-note">
-            <strong>This is not a discount code.</strong> Founding Member status is permanent —
-            tied to your account, not a campaign. Once the 100 spots are gone, this tier closes. It will not reopen.{' '}
-            <a href="/founding-100" style={{ color: '#4A8FC7', textDecoration: 'none', fontWeight: 600 }}>Already a member? Enter the portal →</a>
-          </div>
         </div>
 
         {/* 4 — Provenance */}
@@ -1616,15 +1642,14 @@ export default function ComingSoon() {
 
         {/* 7 — CTA second */}
         <div className="cs-cta2">
-          <div className="cs-cta2-headline">100 Founding Members. That's the limit.</div>
+          <div className="cs-cta2-headline">Early access spots are going.</div>
           <div className="cs-cta2-sub">
-            Locked pricing. Free product upgrades. Direct input into what we build next.<br />
-            This tier closes permanently when it fills.
+            Be first in when we launch. One email. No spam.
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <FoundingBar count={waitlistCount} />
-            <WaitlistForm label="Claim My Founding Member Spot" onSuccess={handleSuccess} />
-            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+            <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
+            <div className="cs-privacy">Takes 10 seconds. No spam. Early access only.</div>
           </div>
         </div>
 
@@ -1655,7 +1680,6 @@ export default function ComingSoon() {
         <footer className="cs-footer">
           <span className="cs-footer-logo">SOLUM</span>
           <a href="mailto:contact@bysolum.com" className="cs-footer-contact">contact@bysolum.com</a>
-          <a href="#founding-members" className="cs-footer-founding">Founding 100 ↗</a>
           <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
