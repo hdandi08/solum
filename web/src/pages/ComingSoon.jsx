@@ -1048,10 +1048,10 @@ const styles = `
 
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
-    .cs-main { padding: 90px 24px 60px; gap: 18px; }
-    .cs-eyebrow { font-size: 13px; letter-spacing: 3px; margin-bottom: 16px; }
-    .cs-headline { font-size: 44px; line-height: 0.95; margin-bottom: 18px; }
-    .cs-subhead { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+    .cs-main { padding: 90px 24px 60px; gap: 16px; }
+    .cs-eyebrow { font-size: 13px; letter-spacing: 3px; margin-bottom: 0; }
+    .cs-headline { font-size: 34px; line-height: 0.95; margin-bottom: 0; }
+    .cs-subhead { font-size: 15px; line-height: 1.6; margin-bottom: 0; }
     .cs-founding-bar { padding: 12px 16px; gap: 8px; }
     .cs-founding-bar-note { display: none; }
     .cs-privacy { font-size: 13px; margin-top: 10px; }
@@ -1434,7 +1434,7 @@ export default function ComingSoon() {
 
         {/* 1 — Hero */}
         <main className="cs-main">
-          <div className="cs-eyebrow">The first guided shower routine built for men.</div>
+          <div className="cs-eyebrow">The only guided shower routine for men.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
