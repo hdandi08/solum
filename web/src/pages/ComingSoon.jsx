@@ -129,15 +129,16 @@ const styles = `
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 88px 24px 60px;
+    padding: 100px 24px 80px;
     text-align: center;
+    gap: 22px;
   }
   .cs-eyebrow {
     font-size: 13px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: rgba(240,236,226,0.75);
-    margin-bottom: 20px;
+    margin-bottom: 0;
     font-weight: 600;
   }
   .cs-headline {
@@ -146,16 +147,16 @@ const styles = `
     letter-spacing: 0.04em;
     line-height: 0.95;
     color: #f0ece2;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
   .cs-headline em { color: #4a8fc7; font-style: normal; }
   .cs-subhead {
-    font-size: clamp(15px, 2vw, 18px);
+    font-size: clamp(15px, 2vw, 17px);
     font-weight: 300;
     color: rgba(240,236,226,0.85);
-    max-width: 460px;
+    max-width: 520px;
     line-height: 1.6;
-    margin-bottom: 32px;
+    margin-bottom: 0;
   }
 
   /* Countdown */
@@ -258,20 +259,19 @@ const styles = `
   /* Hero timeline */
   .cs-timeline {
     width: 100%;
-    max-width: 480px;
-    margin-bottom: 0;
+    max-width: 460px;
     display: flex;
     position: relative;
-    padding-top: 6px;
+    padding-top: 0;
   }
   .cs-timeline::before {
     content: '';
     position: absolute;
-    top: 12px;
+    top: 15px;
     left: calc(100% / 6);
     right: calc(100% / 6);
     height: 1px;
-    background: linear-gradient(90deg, #2e6da4, #4a8fc7, #2e6da4);
+    background: linear-gradient(90deg, rgba(46,109,164,0.5), rgba(74,143,199,0.8), rgba(46,109,164,0.5));
     z-index: 0;
   }
   .cs-tl-node {
@@ -279,25 +279,32 @@ const styles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     position: relative;
   }
-  .cs-tl-dot {
-    width: 11px;
-    height: 11px;
+  .cs-tl-dot { display: none; }
+  .cs-tl-badge {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background: #4a8fc7;
-    border: 2px solid #08090b;
-    outline: 1.5px solid #4a8fc7;
+    background: #08090b;
+    border: 1.5px solid rgba(74,143,199,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    color: #4a8fc7;
     position: relative;
     z-index: 1;
     flex-shrink: 0;
   }
   .cs-tl-marker {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 15px;
-    letter-spacing: 0.08em;
-    color: #4a8fc7;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: rgba(74,143,199,0.75);
     line-height: 1;
     text-align: center;
   }
@@ -305,10 +312,10 @@ const styles = `
     font-size: 13px;
     font-weight: 600;
     color: #f0ece2;
-    line-height: 1.4;
-    letter-spacing: 0.2px;
+    line-height: 1.35;
+    letter-spacing: 0.1px;
     text-align: center;
-    padding: 0 6px;
+    padding: 0 4px;
   }
   .cs-tl-sub { display: none; }
 
@@ -1041,7 +1048,7 @@ const styles = `
 
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
-    .cs-main { padding: 84px 24px 48px; }
+    .cs-main { padding: 90px 24px 60px; gap: 18px; }
     .cs-eyebrow { font-size: 13px; letter-spacing: 3px; margin-bottom: 16px; }
     .cs-headline { font-size: 44px; line-height: 0.95; margin-bottom: 18px; }
     .cs-subhead { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
@@ -1053,7 +1060,7 @@ const styles = `
     .cs-countdown-wrap { gap: 6px; }
     .cs-cd-unit { min-width: 60px; padding: 10px 14px; }
     .cs-cd-num { font-size: 30px; }
-    .cs-cd-label { font-size: 9px; }
+    .cs-cd-label { font-size: 13px; }
     .cs-stats-intro { font-size: 15px; }
     .cs-stats { flex-direction: column; }
     .cs-stat { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.07); }
@@ -1459,35 +1466,31 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Neglected back. Dry skin. Itchy scalp. Body odour. Not laziness — nobody ever built men a proper routine.
-            So we built one. Step by step, head to toe, in 10 minutes.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> So you can finally feel confident in your own skin.</strong>
+            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> We've curated the formulations, the tools, and a guided step-by-step 10-minute routine — so you can finally feel confident in your own skin.</strong>
           </p>
 
           {/* Timeline */}
           <div className="cs-timeline">
             <div className="cs-tl-node">
-              <div className="cs-tl-dot" />
+              <div className="cs-tl-badge">01</div>
               <div className="cs-tl-marker">Week 1</div>
               <div className="cs-tl-text">Dead skin rolls off. Odour drops.</div>
-              <div className="cs-tl-sub">You'll see it in the shower</div>
             </div>
             <div className="cs-tl-node">
-              <div className="cs-tl-dot" />
+              <div className="cs-tl-badge">02</div>
               <div className="cs-tl-marker">Week 3</div>
-              <div className="cs-tl-text">Still smooth at noon. Not just post-shower.</div>
-              <div className="cs-tl-sub">Not just after the shower</div>
+              <div className="cs-tl-text">Dry skin stops coming back.</div>
             </div>
             <div className="cs-tl-node">
-              <div className="cs-tl-dot" />
+              <div className="cs-tl-badge">03</div>
               <div className="cs-tl-marker">Day 66</div>
-              <div className="cs-tl-text">A habit. Part of your morning for good.</div>
-              <div className="cs-tl-sub">No willpower required</div>
+              <div className="cs-tl-text">A habit. Automatic.</div>
             </div>
           </div>
 
           {/* Scarcity bar — below timeline */}
-          <div style={{ width: '100%', maxWidth: '480px', marginTop: '20px', marginBottom: '0' }}>
+          <div style={{ width: '100%', maxWidth: '460px' }}>
             <FoundingBar count={waitlistCount} />
           </div>
 
@@ -1495,14 +1498,9 @@ export default function ComingSoon() {
           <div className="cs-form-wrap">
             <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
             <div className="cs-privacy">Launch price locked · First to ship · No spam.</div>
-            <div style={{ marginTop: 16, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.55)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
+            <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
               Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
             </div>
-          </div>
-
-          {/* Countdown — below form */}
-          <div style={{ width: '100%', maxWidth: '480px', marginTop: '20px' }}>
-            <Countdown />
           </div>
 
         </main>
@@ -1511,6 +1509,10 @@ export default function ComingSoon() {
         <div className="cs-box-reveal">
           <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
           <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
+          {/* Countdown lives here — below fold, no viewport pressure */}
+          <div style={{ padding: '20px 24px 24px', display: 'flex', justifyContent: 'center' }}>
+            <Countdown />
+          </div>
         </div>
 
         {/* Outcomes */}
@@ -1532,8 +1534,8 @@ export default function ComingSoon() {
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Week<br /><em>3</em></div>
-              <div className="cs-outcome-title">Skin that holds moisture all day.</div>
-              <div className="cs-outcome-body">Not just soft after the shower — still soft at midday. Exfoliated skin absorbs lotion properly instead of sitting on top of a dead layer.</div>
+              <div className="cs-outcome-title">Dry skin stops coming back.</div>
+              <div className="cs-outcome-body">Not just after the shower — skin stays hydrated at midday too. Exfoliated skin absorbs lotion properly instead of it sitting on top of a dead layer.</div>
               <div className="cs-outcome-tag">All Day · Not Just Post-Shower</div>
             </div>
             <div className="cs-outcome">
