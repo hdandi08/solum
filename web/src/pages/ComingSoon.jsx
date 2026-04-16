@@ -1435,7 +1435,7 @@ export default function ComingSoon() {
           </h1>
           <p className="cs-subhead">
             Neglected back. Dry skin. Itchy scalp. Body odour. Not laziness — nobody ever built men a proper routine.
-            SOLUM is that routine. Step by step, head to toe, in 10 minutes.
+            So we built one. Step by step, head to toe, in 10 minutes.
             <strong style={{ color: '#f0ece2', fontWeight: 600 }}> So you can finally feel confident in your own skin.</strong>
           </p>
 
