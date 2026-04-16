@@ -1344,28 +1344,53 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
   );
 }
 
+const SOCIAL_PROOF_THRESHOLD = 5;
+
 function FoundingBar({ count }) {
+  // Don't show numeric bar until we have enough real signups for credible social proof
+  const hasNumbers = count !== null && count >= SOCIAL_PROOF_THRESHOLD;
   const taken = Math.min(FOUNDING_LIMIT, count || 0);
   const filled = Math.min(100, (taken / FOUNDING_LIMIT) * 100);
   const isFull = taken >= FOUNDING_LIMIT;
 
+  if (isFull) {
+    return (
+      <div className="cs-founding-bar">
+        <div className="cs-founding-bar-top">
+          <div className="cs-founding-bar-label">Early Access — Closed</div>
+        </div>
+        <div className="cs-progress-track">
+          <div className="cs-progress-fill" style={{ width: '100%' }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasNumbers) {
+    // Pre-threshold: show scarcity without a zero count
+    return (
+      <div className="cs-founding-bar">
+        <div className="cs-founding-bar-top">
+          <div className="cs-founding-bar-label">100 Early Access Spots · Limited</div>
+        </div>
+        <div style={{ fontSize: 13, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.65)', textTransform: 'uppercase', fontWeight: 600 }}>
+          If these fill — next availability: 4–5 months away
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
-        <div className="cs-founding-bar-label">
-          {isFull
-            ? 'Early Access — Closed'
-            : `${taken} / 100 Early Access Spots Taken`}
-        </div>
+        <div className="cs-founding-bar-label">{taken} / 100 Early Access Spots Taken</div>
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
       </div>
-      {!isFull && (
-        <div style={{ fontSize: 13, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.65)', textTransform: 'uppercase', fontWeight: 600 }}>
-          If these fill — next availability: 4–5 months away
-        </div>
-      )}
+      <div style={{ fontSize: 13, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.65)', textTransform: 'uppercase', fontWeight: 600 }}>
+        If these fill — next availability: 4–5 months away
+      </div>
     </div>
   );
 }
@@ -1424,7 +1449,7 @@ export default function ComingSoon() {
 
         <header className="cs-topbar">
           <span className="cs-logo">SOLUM</span>
-          <div className="cs-badge">Limited Early Access</div>
+          <div className="cs-badge">Launch Price Locked</div>
         </header>
 
         {/* 1 — Hero */}
@@ -1450,7 +1475,7 @@ export default function ComingSoon() {
             <div className="cs-tl-node">
               <div className="cs-tl-dot" />
               <div className="cs-tl-marker">Week 3</div>
-              <div className="cs-tl-text">Skin holds moisture all day.</div>
+              <div className="cs-tl-text">Still smooth at noon. Not just post-shower.</div>
               <div className="cs-tl-sub">Not just after the shower</div>
             </div>
             <div className="cs-tl-node">
@@ -1470,6 +1495,9 @@ export default function ComingSoon() {
           <div className="cs-form-wrap">
             <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
             <div className="cs-privacy">Launch price locked · First to ship · No spam.</div>
+            <div style={{ marginTop: 16, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.55)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
+              Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
+            </div>
           </div>
 
           {/* Countdown — below form */}
