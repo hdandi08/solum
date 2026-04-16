@@ -210,11 +210,11 @@ const styles = `
     max-width: 480px;
     background: rgba(26,74,120,0.12);
     border: 1px solid rgba(46,109,164,0.35);
-    padding: 10px 16px;
+    padding: 12px 16px;
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   .cs-founding-bar-top {
     display: flex;
@@ -453,9 +453,9 @@ const styles = `
     background: #2e6da4;
     color: #f0ece2;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     letter-spacing: 3px;
-    padding: 16px 32px;
+    padding: 13px 28px;
     border: none;
     cursor: crosshair;
     transition: background 0.2s;
@@ -1360,17 +1360,12 @@ function FoundingBar({ count }) {
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">
-          {isFull ? 'Early Access — Closed' : `${taken} / 100 Early Access Spots Taken`}
+          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 Limited Spots for Launch`}
         </div>
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
       </div>
-      {!isFull && (
-        <div style={{ fontSize: 13, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.65)', textTransform: 'uppercase', fontWeight: 600 }}>
-          If these fill — next availability: 4–5 months away
-        </div>
-      )}
     </div>
   );
 }
