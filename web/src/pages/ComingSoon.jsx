@@ -1461,13 +1461,12 @@ export default function ComingSoon() {
 
         {/* 1 — Hero */}
         <main className="cs-main">
-          <div className="cs-eyebrow">The first body ritual built only for men.</div>
+          <div className="cs-eyebrow">The first guided shower routine built for men.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> We've curated the formulations, the tools, and a guided step-by-step 10-minute routine — so you can finally feel confident in your own skin.</strong>
+            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use <span style={{color:'#4a8fc7'}}>shower gel and call it a day.</span> We've curated the right products and tools, with a <span style={{color:'#4a8fc7'}}>guided step-by-step routine</span> so you can finally <span style={{color:'#4a8fc7'}}>feel confident in your own skin.</span>
           </p>
 
           {/* Timeline */}
