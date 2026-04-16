@@ -1439,7 +1439,7 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use <span style={{color:'#4a8fc7'}}>shower gel and call it a day.</span> We've curated the right products and tools, with a <span style={{color:'#4a8fc7'}}>guided step-by-step routine</span> so you can finally <span style={{color:'#4a8fc7'}}>feel confident in your own skin.</span>
+            Neglected back. Dry skin. Itchy scalp. Body odour by noon. <span style={{color:'#4a8fc7'}}>Most men just use shower gel and call it a day.</span> We've developed the right products and tools, with a <span style={{color:'#4a8fc7'}}>guided step-by-step routine</span> so you can finally <span style={{color:'#4a8fc7'}}>feel confident in your own skin.</span>
           </p>
 
           {/* Timeline */}
@@ -1457,7 +1457,7 @@ export default function ComingSoon() {
             <div className="cs-tl-node">
               <div className="cs-tl-badge">03</div>
               <div className="cs-tl-marker">Day 66</div>
-              <div className="cs-tl-text">A habit. Automatic.</div>
+              <div className="cs-tl-text">People notice. You'd want to take your shirt off.</div>
             </div>
           </div>
 
@@ -1494,8 +1494,8 @@ export default function ComingSoon() {
           <div className="cs-outcomes-grid">
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Week<br /><em>1</em></div>
-              <div className="cs-outcome-title">Dead skin rolls off in the shower.</div>
-              <div className="cs-outcome-body">You'll see it. Grey sheets lifting off skin that rinsing alone never reached. It's been building for years — you just didn't have the right tool.</div>
+              <div className="cs-outcome-title">Dead skin rolls off. Itchy scalp clears up.</div>
+              <div className="cs-outcome-body">You'll see it. Grey sheets lifting off skin that rinsing alone never reached. The scalp massager clears the build-up that causes the itch — most men have never once properly cleaned their scalp.</div>
               <div className="cs-outcome-tag">Visible · Day 1</div>
             </div>
             <div className="cs-outcome">
@@ -1512,9 +1512,9 @@ export default function ComingSoon() {
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Day<br /><em>66</em></div>
-              <div className="cs-outcome-title">A habit. Part of your morning for good.</div>
-              <div className="cs-outcome-body">66 days is how long a habit takes to become automatic. You don't decide to do it anymore. You just do it. That's the point — a system, not a routine you have to remember.</div>
-              <div className="cs-outcome-tag">Permanent · No Willpower Required</div>
+              <div className="cs-outcome-title">People start to notice. Habit for life.</div>
+              <div className="cs-outcome-body">By day 66 you've gone through two full cycles of new skin — the results are visible. People comment. The routine is muscle memory now. You don't decide to do it. You just do it. You'd want to take your shirt off.</div>
+              <div className="cs-outcome-tag">Others Notice · Locked In For Life</div>
             </div>
           </div>
         </div>
