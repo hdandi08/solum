@@ -115,8 +115,8 @@ const styles = `
     font-size: 13px;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: #2e6da4;
-    border: 1px solid rgba(46,109,164,0.4);
+    color: #4a8fc7;
+    border: 1px solid rgba(74,143,199,0.4);
     padding: 6px 14px;
   }
 
@@ -167,10 +167,10 @@ const styles = `
     gap: 8px;
   }
   .cs-countdown-label {
-    font-size: 11px;
-    letter-spacing: 5px;
+    font-size: 13px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.5);
+    color: rgba(240,236,226,0.65);
     font-weight: 600;
   }
   .cs-countdown {
@@ -195,10 +195,10 @@ const styles = `
     line-height: 1;
   }
   .cs-cd-label {
-    font-size: 9px;
+    font-size: 13px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.45);
+    color: rgba(240,236,226,0.65);
     font-weight: 600;
     margin-top: 3px;
   }
@@ -310,14 +310,7 @@ const styles = `
     text-align: center;
     padding: 0 6px;
   }
-  .cs-tl-sub {
-    font-size: 12px;
-    font-weight: 300;
-    color: rgba(240,236,226,0.5);
-    line-height: 1.4;
-    text-align: center;
-    padding: 0 4px;
-  }
+  .cs-tl-sub { display: none; }
 
   /* Outcomes */
   .cs-outcomes {
@@ -330,10 +323,10 @@ const styles = `
     border-bottom: 1px solid rgba(240,236,226,0.055);
   }
   .cs-outcomes-eyebrow {
-    font-size: 11px;
-    letter-spacing: 5px;
+    font-size: 13px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: #2e6da4;
+    color: #4a8fc7;
     font-weight: 600;
     margin-bottom: 10px;
   }
@@ -389,11 +382,11 @@ const styles = `
   }
   .cs-outcome-tag {
     margin-top: auto;
-    font-size: 11px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     font-weight: 600;
-    color: rgba(74,143,199,0.6);
+    color: #4a8fc7;
   }
 
   @media (max-width: 768px) {
@@ -729,8 +722,8 @@ const styles = `
   .cs-ritual-col:first-child { border-right: 1px solid rgba(240,236,226,0.055); }
   .cs-ritual-header { display: flex; flex-direction: column; gap: 8px; }
   .cs-ritual-tag {
-    font-size: 11px;
-    letter-spacing: 5px;
+    font-size: 13px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     font-weight: 600;
   }
@@ -782,8 +775,8 @@ const styles = `
     line-height: 1.5;
   }
   .cs-step-prod {
-    font-size: 12px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     font-weight: 600;
     white-space: nowrap;
@@ -808,10 +801,10 @@ const styles = `
     border-right: 1px solid rgba(240,236,226,0.055);
   }
   .cs-sub-tag {
-    font-size: 11px;
-    letter-spacing: 5px;
+    font-size: 13px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: #2e6da4;
+    color: #4a8fc7;
     font-weight: 600;
   }
   .cs-sub-title {
@@ -1369,7 +1362,7 @@ function FoundingBar({ count }) {
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
       </div>
       {!isFull && (
-        <div style={{ fontSize: 12, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.45)', textTransform: 'uppercase', fontWeight: 600 }}>
+        <div style={{ fontSize: 13, letterSpacing: '1.5px', color: 'rgba(240,236,226,0.65)', textTransform: 'uppercase', fontWeight: 600 }}>
           If these fill — next availability: 4–5 months away
         </div>
       )}
@@ -1441,8 +1434,9 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Fix body odour, rough skin, and a neglected back. 8 products. 10 minutes a day.
-            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> You'll feel it from the first shower.</strong>
+            Neglected back. Dry skin. Itchy scalp. Body odour. Not laziness — nobody ever built men a proper routine.
+            SOLUM is that routine. Step by step, head to toe, in 10 minutes.
+            <strong style={{ color: '#f0ece2', fontWeight: 600 }}> So you can finally feel confident in your own skin.</strong>
           </p>
 
           {/* Timeline */}
@@ -1485,7 +1479,13 @@ export default function ComingSoon() {
 
         </main>
 
-        {/* Outcomes — moved above box so it's seen early */}
+        {/* Box reveal */}
+        <div className="cs-box-reveal">
+          <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
+          <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
+        </div>
+
+        {/* Outcomes */}
         <div className="cs-outcomes">
           <div className="cs-outcomes-eyebrow">What you'll notice</div>
           <div className="cs-outcomes-heading">Most men have never actually been clean.<br />Here's what changes.</div>
@@ -1510,17 +1510,11 @@ export default function ComingSoon() {
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Day<br /><em>66</em></div>
-              <div className="cs-outcome-title">The ritual runs itself.</div>
+              <div className="cs-outcome-title">A habit. Part of your morning for good.</div>
               <div className="cs-outcome-body">66 days is how long a habit takes to become automatic. You don't decide to do it anymore. You just do it. That's the point — a system, not a routine you have to remember.</div>
               <div className="cs-outcome-tag">Permanent · No Willpower Required</div>
             </div>
           </div>
-        </div>
-
-        {/* Box reveal */}
-        <div className="cs-box-reveal">
-          <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
-          <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
         </div>
 
         {/* 4 — Provenance */}
