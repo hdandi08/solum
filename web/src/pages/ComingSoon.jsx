@@ -1284,7 +1284,7 @@ export default function ComingSoon() {
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('checkout_status', 'waitlist')
-          .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")');
+          .not('email', 'in', '("test@bysolum.com")');
         setWaitlistCount(count || 0);
       } catch {
         // Silent fail — count just won't show
@@ -1315,7 +1315,7 @@ export default function ComingSoon() {
       .from('leads')
       .select('*', { count: 'exact', head: true })
       .eq('checkout_status', 'waitlist')
-      .not('email', 'in', '("harsha@bysolum.com","test@bysolum.com")')
+      .not('email', 'in', '("test@bysolum.com")')
       .then(({ count }) => setWaitlistCount(count || 0));
   }
 
