@@ -1053,7 +1053,6 @@ function Countdown() {
 
 function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
   const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [suggestion, setSuggestion] = useState(null);
@@ -1103,7 +1102,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
         },
         body: JSON.stringify({
           email: email.trim(),
-          first_name: firstName.trim() || null,
+          first_name: null,
           source,
           utm_medium: medium,
           utm_campaign: campaign,
@@ -1134,9 +1133,9 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
       <div className="cs-success">
         <div className="cs-success-title">
           {isFounder ? (
-            <>{firstName ? `${firstName}, you're` : "You're"} on the list — <em className="cs-success-num">#{position} of 100</em></>
+            <>You're on the list — <em className="cs-success-num">#{position} of 100</em></>
           ) : (
-            <>{firstName ? `${firstName}, you're` : "You're"} on the waitlist — <em className="cs-success-num">#{position}</em></>
+            <>You're on the waitlist — <em className="cs-success-num">#{position}</em></>
           )}
         </div>
         <div className="cs-success-body">
@@ -1223,15 +1222,6 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         <input
           className="cs-input"
-          type="text"
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
-          placeholder="First name (optional)"
-          autoComplete="given-name"
-        />
-        <input
-          className="cs-input"
-          style={{ borderTop: 'none' }}
           type="email"
           value={email}
           onChange={handleEmailChange}
