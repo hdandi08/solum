@@ -260,7 +260,7 @@ export default function CheckoutPage() {
         setLoading(false);
         return;
       }
-      if (!res.ok) throw new Error('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
+      if (!res.ok) throw new Error('Something went wrong. Please try again or contact contact@bysolum.com.');
       if (data.error) throw new Error(data.error);
       window.location.href = data.url;
     } catch (err) {

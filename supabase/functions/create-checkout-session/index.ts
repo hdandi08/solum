@@ -85,8 +85,8 @@ async function alertError(message: string, context: Record<string, unknown>) {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'SOLUM Alerts <alert@orders.bysolum.co.uk>',
-      to: 'harsha@bysolum.co.uk',
+      from: 'SOLUM Alerts <alert@orders.bysolum.com>',
+      to: 'harsha@bysolum.com',
       subject: '🚨 [SOLUM] Checkout Error — Action Required',
       html: `<h2 style="color:#c0392b">Checkout Error</h2>
              <p><strong>${message}</strong></p>
@@ -230,7 +230,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     await alertError(err.message, { kit_id, email, stack: err.stack });
     return new Response(
-      JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.co.uk.' }),
+      JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.com.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }

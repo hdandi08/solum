@@ -7,7 +7,7 @@
 
 **Brand:** SOLUM — men's body care system. Not face, not hair. Head to toe.
 **Tagline:** Your body. Done right.
-**Website:** bysolum.com (coming soon)
+**Website:** bysolum.co.uk (coming soon)
 **Category:** Men's body care — a category that doesn't exist yet as a system. That's the entire brand premise.
 
 **The single truth the brand owns:**
@@ -118,7 +118,7 @@ Every piece of content runs this ladder in order. Never skip a layer, never reor
 - Short sentences. Declarative. No fluff.
 - Always end with a question or CTA that earns a comment or save
 - Max 5 hashtags per post/reel. Mix: #mensgrooming #skincareformen #bodycare #menswellness #groomingtips
-- Never "buy now" in the awareness phase — CTA is always "link in bio" pointing to bysolum.com
+- Never "buy now" in the awareness phase — CTA is always "link in bio" pointing to bysolum.co.uk
 
 ### Funnel structure
 - Posts 1–6: Pure awareness. No products. Earn trust.
@@ -138,7 +138,7 @@ All reels follow the same 5-scene structure. 20–22 seconds total. No talking h
 | S2 — Setup | 3s | The Why or elaboration. Still big text. | Clean, minimal |
 | S3 — Hero | 7s | The Proof or Reveal. Most time, most drama. | Staggered list, scroll reveal, or contrast breakdown |
 | S4 — Statement | 4s | The damage or the fix. Two lines, staggered. | First line drops, second follows with delay |
-| S5 — CTA | 4s | SOLUM wordmark + product name + bysolum.com | Radial glow background, full brand lockup |
+| S5 — CTA | 4s | SOLUM wordmark + product name + bysolum.co.uk | Radial glow background, full brand lockup |
 
 ### Visual identity (locked — never change)
 **Fonts:**
@@ -294,7 +294,7 @@ You shower every day.
 Your body is still dirty.
 8 products. 10 minutes. One system.
 Your body. Done right.
-bysolum.com
+bysolum.co.uk
 ```
 
 ---
@@ -317,4 +317,4 @@ bysolum.com
 
 ---
 
-_SOLUM — Internal use only — bysolum.com — Last updated 2026-03-29_
+_SOLUM — Internal use only — bysolum.co.uk — Last updated 2026-03-29_

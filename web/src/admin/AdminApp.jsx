@@ -11,7 +11,7 @@ import OrdersPage from './pages/OrdersPage'
 import CostsPage from './pages/CostsPage'
 import './admin.css'
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.co.uk']
+const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
 
 export default function AdminApp() {
   const [session, setSession] = useState(undefined)

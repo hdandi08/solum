@@ -69,7 +69,7 @@ export default function LoginPage({ session }) {
                     id="email"
                     type="email"
                     className="input"
-                    placeholder="harsha@bysolum.co.uk"
+                    placeholder="harsha@bysolum.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

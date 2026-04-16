@@ -252,7 +252,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Email</span>
-                  <span className="terms-info-value">contact@bysolum.co.uk</span>
+                  <span className="terms-info-value">contact@bysolum.com</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Phone</span>
@@ -387,12 +387,12 @@ export default function TermsPage() {
               <p className="terms-p">You may cancel your subscription at any time by:</p>
               <ul className="terms-list">
                 <li>Logging into your account at bysolum.co.uk and selecting 'Cancel Subscription'</li>
-                <li>Emailing contact@bysolum.co.uk with the subject line "Cancel Subscription"</li>
+                <li>Emailing contact@bysolum.com with the subject line "Cancel Subscription"</li>
               </ul>
               <p className="terms-p">Cancellation takes effect from your next billing date. You will not be charged for any renewal after your cancellation is confirmed. You will continue to receive any box already paid for. We will acknowledge your cancellation by email within 24 hours.</p>
 
               <div className="terms-h3">Pausing Your Subscription</div>
-              <p className="terms-p">You may pause your subscription for up to 3 months by contacting us at contact@bysolum.co.uk. During a pause, no payments will be taken and no boxes will be dispatched.</p>
+              <p className="terms-p">You may pause your subscription for up to 3 months by contacting us at contact@bysolum.com. During a pause, no payments will be taken and no boxes will be dispatched.</p>
 
               <div className="terms-h3">Subscription Cooling-Off</div>
               <p className="terms-p">You have the right to cancel your subscription within 14 days of entering into the subscription agreement (your first order date) without giving any reason. See Section 7 for full cancellation rights.</p>
@@ -435,7 +435,7 @@ export default function TermsPage() {
               <p className="terms-p">Risk in the goods passes to you when they are delivered to the address provided at checkout. If you are not present at delivery, Royal Mail will follow their standard redelivery or collection process.</p>
 
               <div className="terms-h3">Delivery Failures</div>
-              <p className="terms-p">If your delivery is delayed beyond 5 working days from dispatch, please contact us at contact@bysolum.co.uk. If goods are lost in transit, we will arrange a replacement or refund. Claims for lost parcels must be raised within 28 days of the expected delivery date.</p>
+              <p className="terms-p">If your delivery is delayed beyond 5 working days from dispatch, please contact us at contact@bysolum.com. If goods are lost in transit, we will arrange a replacement or refund. Claims for lost parcels must be raised within 28 days of the expected delivery date.</p>
               <p className="terms-p">If you provide an incorrect delivery address, we are not liable for non-delivery but will attempt to assist you. Additional postage costs may apply for redelivery.</p>
             </section>
 
@@ -448,7 +448,7 @@ export default function TermsPage() {
               <p className="terms-p">Under the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013, you have the right to cancel your order within <strong>14 days</strong> of receiving your goods, without giving any reason.</p>
               <p className="terms-p">To exercise this right, you must notify us clearly before the 14-day period expires. You can do this by:</p>
               <ul className="terms-list">
-                <li>Emailing contact@bysolum.co.uk with "Order Cancellation" as the subject, including your order number and name</li>
+                <li>Emailing contact@bysolum.com with "Order Cancellation" as the subject, including your order number and name</li>
                 <li>Using the cancellation option in your account at bysolum.co.uk</li>
               </ul>
               <p className="terms-p">After notifying us, you must return the goods to us within 14 days. Return postage is at your cost unless the goods are faulty or were sent in error.</p>
@@ -465,12 +465,12 @@ export default function TermsPage() {
               <p className="terms-p">Once we receive and inspect your return, we will process your refund within <strong>14 days</strong>. Refunds are made to the original payment method (via Stripe). We cannot refund to a different card or account unless you consent to an alternative.</p>
 
               <div className="terms-h3">Faulty or Incorrect Goods</div>
-              <p className="terms-p">If your goods arrive faulty, damaged, or not as described, you have additional rights under the Consumer Rights Act 2015 (see Section 10). Please contact us within 30 days of receipt at contact@bysolum.co.uk with a description and photograph of the issue. We will arrange a replacement or full refund, including return postage, at no cost to you.</p>
+              <p className="terms-p">If your goods arrive faulty, damaged, or not as described, you have additional rights under the Consumer Rights Act 2015 (see Section 10). Please contact us within 30 days of receipt at contact@bysolum.com with a description and photograph of the issue. We will arrange a replacement or full refund, including return postage, at no cost to you.</p>
 
               <div className="terms-callout">
                 <p><strong>Model Cancellation Form:</strong> You may use the following to notify cancellation:</p>
                 <p style={{marginTop: '10px', fontStyle: 'italic', opacity: 0.8}}>
-                  "To SOLUM (Harsha Dandi), contact@bysolum.co.uk — I/We hereby give notice that I/We cancel my/our contract of sale of the following goods: [describe goods], ordered on [date], received on [date], Order Number [number]. Name: [name], Address: [address], Date: [date]."
+                  "To SOLUM (Harsha Dandi), contact@bysolum.com — I/We hereby give notice that I/We cancel my/our contract of sale of the following goods: [describe goods], ordered on [date], received on [date], Order Number [number]. Name: [name], Address: [address], Date: [date]."
                 </p>
               </div>
             </section>
@@ -489,7 +489,7 @@ export default function TermsPage() {
 
               <div className="terms-h3">Ingredients and Allergens</div>
               <p className="terms-p">Full ingredient lists are declared on each product label in INCI (International Nomenclature of Cosmetic Ingredients) format. Known allergens are highlighted in the ingredient list in accordance with UK labelling requirements.</p>
-              <p className="terms-p">If you have known allergies or sensitivities to any cosmetic ingredients, please review the full ingredient list on the product label before use. Contact us at contact@bysolum.co.uk if you need ingredient information before purchase.</p>
+              <p className="terms-p">If you have known allergies or sensitivities to any cosmetic ingredients, please review the full ingredient list on the product label before use. Contact us at contact@bysolum.com if you need ingredient information before purchase.</p>
 
               <div className="terms-h3">Patch Test Recommendation</div>
               <div className="terms-callout">
@@ -518,7 +518,7 @@ export default function TermsPage() {
               <ul className="terms-list">
                 <li>Stop using the product immediately</li>
                 <li>Seek medical advice if the reaction is severe or does not resolve</li>
-                <li>Contact us at contact@bysolum.co.uk so we can investigate and take appropriate action</li>
+                <li>Contact us at contact@bysolum.com so we can investigate and take appropriate action</li>
                 <li>If the reaction is serious, it may also be reported to the UK Medicines and Healthcare products Regulatory Agency (MHRA) via the Yellow Card scheme</li>
               </ul>
             </section>
@@ -541,7 +541,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Contact</span>
-                  <span className="terms-info-value">contact@bysolum.co.uk</span>
+                  <span className="terms-info-value">contact@bysolum.com</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Role</span>
@@ -632,7 +632,7 @@ export default function TermsPage() {
               <p className="terms-p">SOLUM (Harsha Dandi) is the data controller for personal data collected via bysolum.co.uk. We process your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
               <p className="terms-p">We collect and use your personal data to process and fulfil your orders, manage your subscription, send you order and renewal communications, and comply with our legal obligations.</p>
               <p className="terms-p">Your data is shared with Stripe (for payment processing) and Royal Mail (for delivery). We do not sell your personal data to third parties.</p>
-              <p className="terms-p">You have the right to access, correct, or delete your personal data, and the right to object to or restrict its processing. To exercise these rights, contact contact@bysolum.co.uk.</p>
+              <p className="terms-p">You have the right to access, correct, or delete your personal data, and the right to object to or restrict its processing. To exercise these rights, contact contact@bysolum.com.</p>
               <p className="terms-p">For full details of how we collect, use, store, and protect your data, please see our <strong>Privacy Policy</strong>, available at bysolum.co.uk/privacy.</p>
             </section>
 
@@ -653,7 +653,7 @@ export default function TermsPage() {
               <p className="terms-p">Any dispute arising out of or relating to these terms, any order, or any subscription shall be subject to the jurisdiction of the courts of England and Wales. Nothing in this clause prevents you from bringing proceedings in any other court of competent jurisdiction where required or permitted by applicable law.</p>
 
               <div className="terms-h3">Dispute Resolution</div>
-              <p className="terms-p">Before initiating any formal proceedings, we encourage you to contact us at contact@bysolum.co.uk to attempt to resolve any dispute informally. We will aim to respond within 5 business days and to resolve most issues within 14 business days.</p>
+              <p className="terms-p">Before initiating any formal proceedings, we encourage you to contact us at contact@bysolum.com to attempt to resolve any dispute informally. We will aim to respond within 5 business days and to resolve most issues within 14 business days.</p>
               <p className="terms-p">If informal resolution is not possible, you may pursue claims via:</p>
               <ul className="terms-list">
                 <li>The Small Claims Court (for claims up to £10,000)</li>
@@ -671,7 +671,7 @@ export default function TermsPage() {
               <div className="terms-info-block">
                 <div className="terms-info-row">
                   <span className="terms-info-label">Email</span>
-                  <span className="terms-info-value">contact@bysolum.co.uk</span>
+                  <span className="terms-info-value">contact@bysolum.com</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Phone</span>

@@ -6,7 +6,7 @@
 > Reference file for design language: `solum-ritual-card-full.html`
 >
 > **IMPORTANT:** Neither insert contains ritual steps or product instructions.
-> All instructional content lives at bysolum.com. The inserts drive the customer there.
+> All instructional content lives at bysolum.co.uk. The inserts drive the customer there.
 > This means we can update the ritual on the website without ever reprinting.
 
 ---
@@ -83,7 +83,7 @@ Google Fonts import: `https://fonts.googleapis.com/css2?family=Bebas+Neue&family
 
 ### BACK — QR + Brand
 
-This side has one job: get the customer to bysolum.com/ritual. Everything else is secondary.
+This side has one job: get the customer to bysolum.co.uk/ritual. Everything else is secondary.
 
 **Background:** `#08090B`. Padding 28px 26px.
 
@@ -96,7 +96,7 @@ This side has one job: get the customer to bysolum.com/ritual. Everything else i
 **Centre — QR block (the dominant element):**
 - Direction line above QR: `YOUR RITUAL IS INSIDE →` — Barlow Condensed 600, 8px, letterspacing 4px, uppercase, `#F0ECE2`, margin-bottom 16px, centred.
 - QR placeholder: 88px × 88px, centred. Render as a `#181C24` square, 1px border `#2E6DA4`, with a simple QR-pattern SVG inside (corner squares + dot fill — does not need to be scannable, this is a mockup). No label below the QR itself.
-- URL below QR: `bysolum.com/ritual` — Barlow Condensed 500, 10px, letterspacing 2px, `#4A8FC7`, margin-top 12px, centred.
+- URL below QR: `bysolum.co.uk/ritual` — Barlow Condensed 500, 10px, letterspacing 2px, `#4A8FC7`, margin-top 12px, centred.
 
 **Full-width rule** — same as above, margin 20px 0.
 
@@ -159,7 +159,7 @@ Vertically centred. Padding-left 44px.
 
 3. QR placeholder: 110px × 110px, centred. Same style as card back — `#181C24` fill, 1px border `#2E6DA4`, QR-pattern SVG inside.
 
-4. URL below: `bysolum.com/ritual` — Barlow Condensed 500, 10px, letterspacing 2px, `#4A8FC7`, margin-top 14px, centred.
+4. URL below: `bysolum.co.uk/ritual` — Barlow Condensed 500, 10px, letterspacing 2px, `#4A8FC7`, margin-top 14px, centred.
 
 5. Micro note below URL: `DAILY + WEEKLY RITUAL · VIDEO GUIDES · TIPS` — 6px, letterspacing 3px, uppercase, `#6A7380`, margin-top 6px, centred.
 
@@ -181,4 +181,4 @@ Vertically centred. Padding-left 44px.
 
 ---
 
-_SOLUM · Internal Use Only · bysolum.com_
+_SOLUM · Internal Use Only · bysolum.co.uk_
