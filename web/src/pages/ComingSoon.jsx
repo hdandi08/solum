@@ -129,9 +129,9 @@ const styles = `
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 100px 24px 80px;
+    padding: 100px 24px 96px;
     text-align: center;
-    gap: 22px;
+    gap: 32px;
   }
   .cs-eyebrow {
     font-size: 13px;
@@ -151,11 +151,11 @@ const styles = `
   }
   .cs-headline em { color: #4a8fc7; font-style: normal; }
   .cs-subhead {
-    font-size: clamp(15px, 2vw, 17px);
+    font-size: clamp(17px, 2.2vw, 20px);
     font-weight: 300;
     color: rgba(240,236,226,0.85);
-    max-width: 520px;
-    line-height: 1.6;
+    max-width: 540px;
+    line-height: 1.75;
     margin-bottom: 0;
   }
 
@@ -1354,7 +1354,7 @@ function FoundingBar({ count }) {
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">
-          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 spots — 20% off locked`}
+          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 spots — 20% off ends at launch`}
         </div>
       </div>
       <div className="cs-progress-track">
@@ -1423,12 +1423,12 @@ export default function ComingSoon() {
 
         {/* 1 — Hero */}
         <main className="cs-main">
-          <div className="cs-eyebrow">The only guided shower routine for men.</div>
+          <div className="cs-eyebrow">Most men wash wrong.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Body odour. Dry skin. Itchy scalp. <span style={{color:'#4a8fc7'}}>Most men wash wrong</span> — this is the <span style={{color:'#4a8fc7'}}>guided system</span> that fixes it.
+            Body odour. Dry skin. Itchy scalp. A step-by-step routine to make you feel confident in your own skin.
           </p>
 
           {/* Timeline */}
@@ -1436,12 +1436,12 @@ export default function ComingSoon() {
             <div className="cs-tl-node">
               <div className="cs-tl-badge">01</div>
               <div className="cs-tl-marker">First shower</div>
-              <div className="cs-tl-text">Skin actually feels clean.</div>
+              <div className="cs-tl-text">You actually feel clean.</div>
             </div>
             <div className="cs-tl-node">
               <div className="cs-tl-badge">02</div>
               <div className="cs-tl-marker">Week 1</div>
-              <div className="cs-tl-text">Dead skin rolls off. Odour drops.</div>
+              <div className="cs-tl-text">Dead skin comes off properly. Odour drops.</div>
             </div>
             <div className="cs-tl-node">
               <div className="cs-tl-badge">03</div>
@@ -1458,7 +1458,7 @@ export default function ComingSoon() {
           {/* CTA */}
           <div className="cs-form-wrap">
             <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
-            <div className="cs-privacy">20% off locked · First to ship · No spam.</div>
+            <div className="cs-privacy">Takes 10 seconds. Discount reserved instantly.</div>
             <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
               Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
             </div>
