@@ -1423,7 +1423,7 @@ export default function ComingSoon() {
 
         {/* 1 — Hero */}
         <main className="cs-main">
-          <div className="cs-eyebrow">Most men wash wrong.</div>
+          <div className="cs-eyebrow">You're not as clean as you think.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
