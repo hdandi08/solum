@@ -951,6 +951,10 @@ const styles = `
     vertical-align: middle;
     margin-left: 28px;
   }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
   @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
@@ -1336,6 +1340,9 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
             Did you mean <button type="button" className="cs-typo-btn" onClick={applySuggestion}>{suggestion}</button>?
           </div>
         )}
+        <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: '#c8a96e', fontWeight: 600, padding: '8px 0 4px', textAlign: 'center' }}>
+          Only a few spots left at this price
+        </div>
         <button type="submit" className="cs-submit" disabled={loading}>
           {loading ? 'Checking & securing your spot...' : label}
         </button>
@@ -1356,6 +1363,16 @@ function FoundingBar({ count }) {
         <div className="cs-founding-bar-label">
           {isFull ? 'Launch Spots — Closed' : `${taken} / 100 spots — 20% off ends at launch`}
         </div>
+        {!isFull && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+            <span style={{
+              display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
+              background: '#c8a96e', boxShadow: '0 0 6px #c8a96e',
+              animation: 'livePulse 1.6s ease-in-out infinite',
+            }} />
+            <span style={{ fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 700, color: '#c8a96e' }}>Live</span>
+          </div>
+        )}
       </div>
       <div className="cs-progress-track">
         <div className="cs-progress-fill" style={{ width: `${filled}%` }} />
@@ -1428,7 +1445,7 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Body odour. Dry skin. Itchy scalp. A step-by-step routine to make you feel confident in your own skin.
+            Fix body odour, dry skin, and rough skin — properly.
           </p>
 
           {/* Timeline */}
@@ -1450,6 +1467,11 @@ export default function ComingSoon() {
             </div>
           </div>
 
+          {/* Proof line */}
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', letterSpacing: '0.3px', textAlign: 'center' }}>
+            Built after trying everything that didn't work.
+          </p>
+
           {/* Scarcity bar — below timeline */}
           <div style={{ width: '100%', maxWidth: '460px' }}>
             <FoundingBar count={waitlistCount} />
@@ -1458,7 +1480,7 @@ export default function ComingSoon() {
           {/* CTA */}
           <div className="cs-form-wrap">
             <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
-            <div className="cs-privacy">Takes 10 seconds. Discount reserved instantly.</div>
+            <div className="cs-privacy">Takes 10 seconds. Your 20% discount is reserved instantly.</div>
             <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
               Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
             </div>
