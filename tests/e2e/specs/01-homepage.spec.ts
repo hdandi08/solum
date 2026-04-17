@@ -19,7 +19,7 @@ test.describe('Homepage', () => {
     await expect(kits.locator('.kit-name', { hasText: 'GROUND' }).first()).toBeVisible();
     await expect(kits.locator('.kit-name', { hasText: 'RITUAL' }).first()).toBeVisible();
     await expect(kits.locator('.kit-name', { hasText: 'SOVEREIGN' }).first()).toBeVisible();
-    await expect(kits.getByText('£55').first()).toBeVisible();
+    await expect(kits.getByText('£65').first()).toBeVisible();
     await expect(kits.getByText('£85').first()).toBeVisible();
     // SOVEREIGN is Coming Soon — price may not render
   });
