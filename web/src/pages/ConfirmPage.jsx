@@ -132,40 +132,6 @@ export default function ConfirmPage() {
               )}
             </div>
 
-            {/* Founding 100 teaser — founders only */}
-            {isFounder && (
-              <div style={{ marginTop: 20, background: '#181C24', border: '1px solid rgba(74,143,199,0.3)' }}>
-                {/* Header strip */}
-                <div style={{ borderBottom: '1px solid rgba(240,236,226,0.07)', padding: '12px 20px', fontSize: 11, letterSpacing: 5, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
-                  Founding 100 · Members Portal
-                </div>
-                {/* Body */}
-                <div style={{ padding: '20px 20px 0' }}>
-                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in Solum</div>
-                  <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
-                    A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
-                  </div>
-                </div>
-                {/* CTA */}
-                <a
-                  href="/founding-100"
-                  style={{
-                    display: 'block',
-                    background: '#2E6DA4',
-                    color: '#f0ece2',
-                    fontFamily: "'Bebas Neue', sans-serif",
-                    fontSize: 15,
-                    letterSpacing: '.15em',
-                    padding: '14px 20px',
-                    textDecoration: 'none',
-                    textAlign: 'center',
-                  }}
-                >
-                  Find Out More
-                </a>
-              </div>
-            )}
-
             {/* Instagram CTA — everyone */}
             <div style={{
               marginTop: 16,
@@ -204,6 +170,37 @@ export default function ConfirmPage() {
                 @bysolum.body
               </a>
             </div>
+
+            {/* Founding 100 teaser — founders only */}
+            {isFounder && (
+              <div style={{ marginTop: 12, background: '#181C24', border: '1px solid rgba(74,143,199,0.3)' }}>
+                <div style={{ borderBottom: '1px solid rgba(240,236,226,0.07)', padding: '12px 20px', fontSize: 11, letterSpacing: 5, textTransform: 'uppercase', fontWeight: 700, color: '#4A8FC7' }}>
+                  Founding 100 · Members Portal
+                </div>
+                <div style={{ padding: '20px 20px 0' }}>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in Solum</div>
+                  <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
+                    A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
+                  </div>
+                </div>
+                <a
+                  href="/founding-100"
+                  style={{
+                    display: 'block',
+                    background: '#2E6DA4',
+                    color: '#f0ece2',
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontSize: 15,
+                    letterSpacing: '.15em',
+                    padding: '14px 20px',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                  }}
+                >
+                  Find Out More
+                </a>
+              </div>
+            )}
 
             <div className="cp-divider" />
             <div className="cp-note">See you at launch.</div>
