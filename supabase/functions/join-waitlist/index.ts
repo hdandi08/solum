@@ -208,7 +208,7 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'SOLUM <no-reply@orders.bysolum.com>',
+          from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
           to: [normalised],
           subject,
           html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token, position),
