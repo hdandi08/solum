@@ -214,6 +214,8 @@ Deno.serve(async (req) => {
           html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token, position),
         }),
       }).catch(e => console.error('Resend error:', e))
+
+      return json({ success: true, position })
     }
 
     return json({ success: true, position })
