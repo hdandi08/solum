@@ -125,7 +125,11 @@ export default function ConfirmPage() {
             <div className="cp-tag success">Confirmed</div>
             <div className="cp-title">{name}You're in.</div>
             <div className="cp-body">
-              Your spot is locked. We'll send one email when we launch — nothing before that.
+              {isFounder ? (
+                <>Your <strong>20% launch discount is locked</strong>. You're also one of the <strong>first 100 people</strong> — which makes you eligible for the Founding Member programme below.</>
+              ) : (
+                <>Your <strong>20% launch discount is locked</strong>. We'll send one email when we launch — your discount code will be in it.</>
+              )}
             </div>
 
             {/* Founding 100 teaser — founders only */}
