@@ -1213,7 +1213,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
           first_name: null,
           source,
           utm_medium: medium,
-          utm_campaign: campaign,
+          utm_campaign: campaign || 'early_access_20',
           referred_by: refCode || null,
         }),
       });
@@ -1240,16 +1240,10 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
     return (
       <div className="cs-success">
         <div className="cs-success-title">
-          {isFounder ? (
-            <>You're on the list — <em className="cs-success-num">#{position} of 100</em></>
-          ) : (
-            <>You're on the waitlist — <em className="cs-success-num">#{position}</em></>
-          )}
+          Spot secured — <em className="cs-success-num">20% off locked</em>
         </div>
         <div className="cs-success-body">
-          {isFounder
-            ? <>You're one of the first 100 people. <strong style={{color:'#f0ece2'}}>Your price is locked forever</strong> — as the range grows and prices rise, yours never does. We'll send one email when we launch.</>
-            : "You're on the list. We'll email you the moment launch kits go live."}
+          You're <strong style={{color:'#f0ece2'}}>#{position} of 100</strong>. One email when we launch — your discount code will be in it. First to ship.
         </div>
 
         {/* Founding 100 teaser — founders only */}
@@ -1360,7 +1354,7 @@ function FoundingBar({ count }) {
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">
-          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 Limited Spots for Launch`}
+          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 spots — 20% off locked`}
         </div>
       </div>
       <div className="cs-progress-track">
@@ -1424,7 +1418,7 @@ export default function ComingSoon() {
 
         <header className="cs-topbar">
           <span className="cs-logo">SOLUM</span>
-          <div className="cs-badge">Launch Price Locked</div>
+          <div className="cs-badge">Early Access · 20% Off</div>
         </header>
 
         {/* 1 — Hero */}
@@ -1434,25 +1428,25 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Neglected back. Dry skin. Itchy scalp. Body odour by noon. <span style={{color:'#4a8fc7'}}>Most men just use shower gel and call it a day.</span> We've developed the right products and tools, with a <span style={{color:'#4a8fc7'}}>guided step-by-step routine</span> so you can finally <span style={{color:'#4a8fc7'}}>feel confident in your own skin.</span>
+            Body odour. Dry skin. Itchy scalp. <span style={{color:'#4a8fc7'}}>Most men wash wrong</span> — this is the <span style={{color:'#4a8fc7'}}>guided system</span> that fixes it.
           </p>
 
           {/* Timeline */}
           <div className="cs-timeline">
             <div className="cs-tl-node">
               <div className="cs-tl-badge">01</div>
+              <div className="cs-tl-marker">First shower</div>
+              <div className="cs-tl-text">Skin actually feels clean.</div>
+            </div>
+            <div className="cs-tl-node">
+              <div className="cs-tl-badge">02</div>
               <div className="cs-tl-marker">Week 1</div>
               <div className="cs-tl-text">Dead skin rolls off. Odour drops.</div>
             </div>
             <div className="cs-tl-node">
-              <div className="cs-tl-badge">02</div>
+              <div className="cs-tl-badge">03</div>
               <div className="cs-tl-marker">Week 3</div>
               <div className="cs-tl-text">Dry skin stops coming back.</div>
-            </div>
-            <div className="cs-tl-node">
-              <div className="cs-tl-badge">03</div>
-              <div className="cs-tl-marker">Day 66</div>
-              <div className="cs-tl-text">People notice. You'd want to take your shirt off.</div>
             </div>
           </div>
 
@@ -1463,8 +1457,8 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
-            <div className="cs-privacy">Launch price locked · First to ship · No spam.</div>
+            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
+            <div className="cs-privacy">20% off locked · First to ship · No spam.</div>
             <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
               Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
             </div>
@@ -1639,7 +1633,7 @@ export default function ComingSoon() {
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <FoundingBar count={waitlistCount} />
-            <WaitlistForm label="GET EARLY ACCESS" onSuccess={handleSuccess} />
+            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
             <div className="cs-privacy">Takes 10 seconds. No spam. Early access only.</div>
           </div>
         </div>
