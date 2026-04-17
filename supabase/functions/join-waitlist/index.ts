@@ -40,7 +40,6 @@ async function hasMxRecords(domain: string): Promise<boolean> {
 function buildConfirmEmail(email: string, firstName: string | null, token: string, position: number): string {
   const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.co.uk'
   const confirmUrl = `${siteUrl}/confirm?token=${token}`
-  const isFounder = position <= 100
   const greeting = firstName ? `${firstName},` : 'Hey,'
 
   return `<!DOCTYPE html>
@@ -48,7 +47,7 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Confirm your SOLUM spot</title>
+<title>Confirm your spot — 20% off waiting</title>
 </head>
 <body style="margin:0;padding:0;background:#08090b;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#08090b;padding:48px 24px;">
@@ -60,57 +59,90 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
         <span style="font-size:28px;letter-spacing:0.18em;color:#f0ece2;font-weight:700;">SOLUM</span>
       </td></tr>
 
-      <!-- Heading -->
-      <tr><td style="padding-bottom:8px;border-top:1px solid rgba(240,236,226,0.08);padding-top:36px;">
-        <p style="margin:0;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">
-          ${isFounder ? 'Founding Member' : 'Waitlist'}
-        </p>
+      <!-- Step indicator -->
+      <tr><td style="padding-bottom:32px;border-top:1px solid rgba(240,236,226,0.08);padding-top:32px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td align="center" width="33%" style="padding:0 4px;">
+              <div style="background:rgba(46,109,164,0.15);border:1px solid rgba(46,109,164,0.4);padding:12px 8px;text-align:center;">
+                <div style="font-size:22px;font-weight:700;color:#4a8fc7;line-height:1;">✓</div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#4a8fc7;font-weight:600;margin-top:4px;">Signed up</div>
+              </div>
+            </td>
+            <td align="center" width="33%" style="padding:0 4px;">
+              <div style="background:rgba(46,109,164,0.25);border:1px solid rgba(74,143,199,0.8);padding:12px 8px;text-align:center;">
+                <div style="font-size:22px;font-weight:700;color:#f0ece2;line-height:1;">2</div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;font-weight:600;margin-top:4px;">Confirm</div>
+              </div>
+            </td>
+            <td align="center" width="33%" style="padding:0 4px;">
+              <div style="background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.1);padding:12px 8px;text-align:center;">
+                <div style="font-size:22px;font-weight:700;color:rgba(240,236,226,0.3);line-height:1;">3</div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.3);font-weight:600;margin-top:4px;">20% off</div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </td></tr>
-      <tr><td style="padding-bottom:20px;">
-        <h1 style="margin:0;font-size:36px;letter-spacing:0.04em;color:#f0ece2;font-weight:700;line-height:1.1;">
-          ${isFounder ? 'Confirm your<br/>Founding Member spot.' : 'Confirm your<br/>place on the list.'}
+
+      <!-- Heading -->
+      <tr><td style="padding-bottom:12px;">
+        <p style="margin:0;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">Early Access · #${position} of 100</p>
+      </td></tr>
+      <tr><td style="padding-bottom:16px;">
+        <h1 style="margin:0;font-size:34px;letter-spacing:0.02em;color:#f0ece2;font-weight:700;line-height:1.1;">
+          Confirm your spot.<br/>Lock in 20% off.
         </h1>
       </td></tr>
 
       <!-- Body -->
       <tr><td style="padding-bottom:32px;">
-        <p style="margin:0;font-size:16px;color:rgba(240,236,226,0.82);line-height:1.65;">
-          ${greeting} you're ${isFounder ? `<strong style="color:#f0ece2;">Founding Member #${position}</strong>` : `<strong style="color:#f0ece2;">#${position} on the waitlist</strong>`}.
-          One click to confirm your email and lock it in.
+        <p style="margin:0;font-size:16px;color:rgba(240,236,226,0.78);line-height:1.65;">
+          ${greeting} one click below confirms your email and locks in your <strong style="color:#f0ece2;">20% launch discount</strong>. Your code arrives in a separate email the day we go live.
         </p>
       </td></tr>
 
       <!-- CTA -->
       <tr><td style="padding-bottom:36px;">
         <a href="${confirmUrl}"
-           style="display:inline-block;background:#2e6da4;color:#f0ece2;font-size:15px;
+           style="display:inline-block;background:#2e6da4;color:#f0ece2;font-size:14px;
                   letter-spacing:3px;text-transform:uppercase;font-weight:700;
                   padding:18px 40px;text-decoration:none;">
-          CONFIRM MY SPOT
+          CONFIRM &amp; LOCK IN 20% OFF
         </a>
       </td></tr>
 
-      ${isFounder ? `
-      <!-- Founder benefits reminder -->
-      <tr><td style="padding:24px;background:rgba(46,109,164,0.08);border:1px solid rgba(46,109,164,0.2);margin-bottom:32px;">
-        <p style="margin:0 0 12px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get as a Founding Member</p>
-        <p style="margin:0 0 6px;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Locked pricing forever</strong> — your launch price never increases
-        </p>
-        <p style="margin:0 0 6px;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Every new product</strong> — automatically in your next box, no charge
-        </p>
-        <p style="margin:0;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Direct input</strong> — fragrance, formula, product decisions
-        </p>
+      <!-- What's locked in -->
+      <tr><td style="padding-bottom:32px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid rgba(46,109,164,0.25);">
+          <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(240,236,226,0.07);">
+            <p style="margin:0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get</p>
+          </td></tr>
+          <tr><td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
+                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">20%</div>
+                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Off at launch</div>
+                </td>
+                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
+                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">#${position}</div>
+                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Of 100 spots</div>
+                </td>
+                <td width="33%" style="padding:20px 16px;text-align:center;vertical-align:top;">
+                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">1st</div>
+                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">To ship</div>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
       </td></tr>
-      <tr><td style="padding-bottom:0;height:32px;"></td></tr>
-      ` : ''}
 
       <!-- Footer -->
       <tr><td style="border-top:1px solid rgba(240,236,226,0.07);padding-top:24px;">
         <p style="margin:0 0 8px;font-size:12px;color:rgba(240,236,226,0.35);line-height:1.6;">
-          If you didn't sign up to SOLUM, ignore this email — nothing will happen.
+          If you didn't sign up to SOLUM, ignore this — nothing will happen.
         </p>
         <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
           bysolum.co.uk · contact@bysolum.com
@@ -199,10 +231,7 @@ Deno.serve(async (req) => {
     // Send confirmation email (non-blocking — don't fail the signup if email fails)
     const resendKey = Deno.env.get('RESEND_API_KEY')
     if (resendKey && inserted?.confirm_token) {
-      const isFounder = position <= 100
-      const subject = isFounder
-        ? `Confirm your Founding Member spot — #${position} of 100`
-        : `Confirm your SOLUM waitlist spot`
+      const subject = `Confirm your spot — 20% off waiting for you`
 
       fetch('https://api.resend.com/emails', {
         method: 'POST',
