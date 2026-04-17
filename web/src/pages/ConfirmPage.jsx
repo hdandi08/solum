@@ -161,7 +161,7 @@ export default function ConfirmPage() {
                     textAlign: 'center',
                   }}
                 >
-                  Enter the Founding 100 Portal
+                  Find Out More
                 </a>
               </div>
             )}
