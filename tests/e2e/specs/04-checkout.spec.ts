@@ -132,7 +132,7 @@ test.describe('Checkout — GROUND interstitial flow', () => {
 
     // Should now show mixing bowl step
     await expect(page.locator('.co-step')).toContainText(/mixing bowl/i);
-    await expect(page.locator('.co-addon-step-price')).toContainText('£15');
+    await expect(page.locator('.co-addon-step-price')).toContainText('£10');
   });
 
   test('declining upgrade + declining bowl sends to Stripe as GROUND', async ({ page }) => {
