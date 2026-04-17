@@ -1272,7 +1272,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
                 textAlign: 'center',
               }}
             >
-              Enter the Founding 100 Portal
+              Find Out More
             </a>
           </div>
         )}
