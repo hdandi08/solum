@@ -40,7 +40,6 @@ async function hasMxRecords(domain: string): Promise<boolean> {
 function buildConfirmEmail(email: string, firstName: string | null, token: string, position: number): string {
   const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.co.uk'
   const confirmUrl = `${siteUrl}/confirm?token=${token}`
-  const isFounder = position <= 100
   const greeting = firstName ? `${firstName},` : 'Hey,'
 
   return `<!DOCTYPE html>
@@ -63,20 +62,20 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
       <!-- Heading -->
       <tr><td style="padding-bottom:8px;border-top:1px solid rgba(240,236,226,0.08);padding-top:36px;">
         <p style="margin:0;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">
-          ${isFounder ? 'Founding Member' : 'Waitlist'}
+          Early Access
         </p>
       </td></tr>
       <tr><td style="padding-bottom:20px;">
         <h1 style="margin:0;font-size:36px;letter-spacing:0.04em;color:#f0ece2;font-weight:700;line-height:1.1;">
-          ${isFounder ? 'Confirm your<br/>Founding Member spot.' : 'Confirm your<br/>place on the list.'}
+          Confirm your spot.<br/>20% off locked.
         </h1>
       </td></tr>
 
       <!-- Body -->
       <tr><td style="padding-bottom:32px;">
         <p style="margin:0;font-size:16px;color:rgba(240,236,226,0.82);line-height:1.65;">
-          ${greeting} you're ${isFounder ? `<strong style="color:#f0ece2;">Founding Member #${position}</strong>` : `<strong style="color:#f0ece2;">#${position} on the waitlist</strong>`}.
-          One click to confirm your email and lock it in.
+          ${greeting} you're <strong style="color:#f0ece2;">#${position} of 100</strong>.
+          One click to confirm your email and lock in 20% off at launch.
         </p>
       </td></tr>
 
@@ -90,22 +89,17 @@ function buildConfirmEmail(email: string, firstName: string | null, token: strin
         </a>
       </td></tr>
 
-      ${isFounder ? `
-      <!-- Founder benefits reminder -->
+      <!-- What you get -->
       <tr><td style="padding:24px;background:rgba(46,109,164,0.08);border:1px solid rgba(46,109,164,0.2);margin-bottom:32px;">
-        <p style="margin:0 0 12px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get as a Founding Member</p>
+        <p style="margin:0 0 12px;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get</p>
         <p style="margin:0 0 6px;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Locked pricing forever</strong> — your launch price never increases
-        </p>
-        <p style="margin:0 0 6px;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Every new product</strong> — automatically in your next box, no charge
+          → <strong style="color:#f0ece2;">20% off at launch</strong> — discount code in your launch email
         </p>
         <p style="margin:0;font-size:14px;color:rgba(240,236,226,0.85);line-height:1.6;">
-          → <strong style="color:#f0ece2;">Direct input</strong> — fragrance, formula, product decisions
+          → <strong style="color:#f0ece2;">First to ship</strong> — limited to the first 100 spots
         </p>
       </td></tr>
-      <tr><td style="padding-bottom:0;height:32px;"></td></tr>
-      ` : ''}
+      <tr><td style="height:32px;"></td></tr>
 
       <!-- Footer -->
       <tr><td style="border-top:1px solid rgba(240,236,226,0.07);padding-top:24px;">
@@ -199,10 +193,7 @@ Deno.serve(async (req) => {
     // Send confirmation email (non-blocking — don't fail the signup if email fails)
     const resendKey = Deno.env.get('RESEND_API_KEY')
     if (resendKey && inserted?.confirm_token) {
-      const isFounder = position <= 100
-      const subject = isFounder
-        ? `Confirm your Founding Member spot — #${position} of 100`
-        : `Confirm your SOLUM waitlist spot`
+      const subject = `Confirm your SOLUM spot — 20% off locked`
 
       fetch('https://api.resend.com/emails', {
         method: 'POST',
