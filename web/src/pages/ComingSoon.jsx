@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+function track(event, props) {
+  if (window.plausible) window.plausible(event, { props });
+}
+
 // Common domains — used to suggest corrections for typos
 const COMMON_DOMAINS = [
   'gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com',
@@ -1163,7 +1167,7 @@ function Countdown() {
   );
 }
 
-function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
+function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId = 'unknown' }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -1230,6 +1234,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
       }
 
       setPosition(data.position);
+      track('Waitlist Signup', { cta: formId, position: String(data.position), source });
       onSuccess && onSuccess();
     } catch (err) {
       console.error(err);
@@ -1331,9 +1336,11 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess }) {
           type="email"
           value={email}
           onChange={handleEmailChange}
+          onFocus={() => track('Email Input Focus', { cta: formId })}
           placeholder="Your email address"
           required
           autoComplete="email"
+          data-clarity-mask="true"
         />
         {suggestion && (
           <div className="cs-typo-suggest">
@@ -1400,6 +1407,36 @@ export default function ComingSoon() {
     fetchCount();
   }, []);
 
+  // Scroll depth tracking — fires at 25 / 50 / 75 / 100%
+  useEffect(() => {
+    const fired = new Set();
+    function onScroll() {
+      const pct = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+      [25, 50, 75, 100].forEach(depth => {
+        if (!fired.has(depth) && pct >= depth / 100) {
+          fired.add(depth);
+          track('Scroll Depth', { percent: `${depth}%` });
+        }
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Section visibility — fires once per section when 40% in view
+  useEffect(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          track('Section Viewed', { section: e.target.dataset.track });
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('[data-track]').forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
   // Meta Pixel — fires PageView on waitlist page mount
   useEffect(() => {
     if (window.fbq) { window.fbq('track', 'PageView'); return; }
@@ -1439,7 +1476,7 @@ export default function ComingSoon() {
         </header>
 
         {/* 1 — Hero */}
-        <main className="cs-main">
+        <main className="cs-main" data-track="hero">
           <div className="cs-eyebrow">You're not as clean as you think.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
@@ -1479,7 +1516,7 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
+            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} formId="hero" />
             <div className="cs-privacy">Takes 10 seconds. Your 20% discount is reserved instantly.</div>
             <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
               Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
@@ -1489,7 +1526,7 @@ export default function ComingSoon() {
         </main>
 
         {/* Box reveal */}
-        <div className="cs-box-reveal">
+        <div className="cs-box-reveal" data-track="box-reveal">
           <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
           <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
           {/* Countdown lives here — below fold, no viewport pressure */}
@@ -1499,7 +1536,7 @@ export default function ComingSoon() {
         </div>
 
         {/* Outcomes */}
-        <div className="cs-outcomes">
+        <div className="cs-outcomes" data-track="outcomes">
           <div className="cs-outcomes-eyebrow">What you'll notice</div>
           <div className="cs-outcomes-heading">Most men have never actually been clean.<br />Here's what changes.</div>
           <div className="cs-outcomes-grid">
@@ -1531,7 +1568,7 @@ export default function ComingSoon() {
         </div>
 
         {/* 4 — Provenance */}
-        <div className="cs-provenance">
+        <div className="cs-provenance" data-track="provenance">
           <div className="cs-prov-item">
             <div className="cs-prov-flag">🇬🇧</div>
             <div className="cs-prov-country">United Kingdom</div>
@@ -1563,7 +1600,7 @@ export default function ComingSoon() {
         </div>
 
         {/* 5 — Ritual teaser */}
-        <div className="cs-ritual">
+        <div className="cs-ritual" data-track="ritual">
           <div className="cs-ritual-col">
             <div className="cs-ritual-header">
               <div className="cs-ritual-tag daily">Daily Ritual</div>
@@ -1618,7 +1655,7 @@ export default function ComingSoon() {
         </div>
 
         {/* 6 — Subscription */}
-        <div className="cs-sub">
+        <div className="cs-sub" data-track="subscription">
           <div className="cs-sub-left">
             <div className="cs-sub-tag">Subscription</div>
             <div className="cs-sub-title">Your system.<br />On autopilot.</div>
@@ -1648,20 +1685,20 @@ export default function ComingSoon() {
         </div>
 
         {/* 7 — CTA second */}
-        <div className="cs-cta2">
+        <div className="cs-cta2" data-track="second-cta">
           <div className="cs-cta2-headline">Early access spots are going.</div>
           <div className="cs-cta2-sub">
             Be first in when we launch. One email. No spam.
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <FoundingBar count={waitlistCount} />
-            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} />
+            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} formId="bottom-cta" />
             <div className="cs-privacy">Takes 10 seconds. No spam. Early access only.</div>
           </div>
         </div>
 
         {/* 8 — Product pills */}
-        <div className="cs-products-wrap">
+        <div className="cs-products-wrap" data-track="product-lineup">
           <div className="cs-products-label">8 Products · The Complete System</div>
           <div className="cs-products">
             {PRODUCTS.map(p => (
