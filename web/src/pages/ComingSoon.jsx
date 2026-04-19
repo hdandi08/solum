@@ -1504,10 +1504,11 @@ export default function ComingSoon() {
         <div className="cs-box-reveal" data-track="box-reveal">
           <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
           <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
-          {/* Countdown lives here — below fold, no viewport pressure */}
+          {/* Countdown — commented out, re-enable if needed
           <div style={{ padding: '20px 24px 24px', display: 'flex', justifyContent: 'center' }}>
             <Countdown />
           </div>
+          */}
         </div>
 
         {/* Outcomes */}
