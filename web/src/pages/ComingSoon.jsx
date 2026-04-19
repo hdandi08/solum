@@ -508,9 +508,9 @@ const styles = `
   }
   .cs-scarcity-hint:hover { color: #f0ece2; }
   .cs-privacy {
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 1.5px;
-    color: rgba(240,236,226,0.7);
+    color: rgba(240,236,226,0.45);
     text-transform: uppercase;
     margin-top: 8px;
   }
@@ -1483,7 +1483,10 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, textAlign: 'center' }}>Don't miss out — Spaces filling up fast</div>
+            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#c8a96e', boxShadow: '0 0 6px #c8a96e', animation: 'livePulse 1.6s ease-in-out infinite', flexShrink: 0 }} />
+              Don't miss out — Spaces filling up fast
+            </div>
             <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="hero" />
             <div className="cs-privacy">No spam. One email when we launch.</div>
             <div style={{ marginTop: 20, padding: '14px 20px', borderTop: '1px solid rgba(240,236,226,0.10)' }}>
@@ -1491,7 +1494,7 @@ export default function ComingSoon() {
                 <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
                 <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.6, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored."</div>
+              <div style={{ fontSize: 'clamp(16px, 2vw, 18px)', fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.7, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored."</div>
             </div>
           </div>
 
