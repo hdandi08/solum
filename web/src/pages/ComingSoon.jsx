@@ -1469,7 +1469,6 @@ export default function ComingSoon() {
 
         <header className="cs-topbar">
           <span className="cs-logo">SOLUM</span>
-          <div className="cs-badge">Early Access · 20% Off</div>
         </header>
 
         {/* 1 — Hero */}
