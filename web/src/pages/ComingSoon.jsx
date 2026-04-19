@@ -1491,7 +1491,7 @@ export default function ComingSoon() {
                 <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
                 <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.6, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored."</div>
+              <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.6, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored."</div>
             </div>
           </div>
 
