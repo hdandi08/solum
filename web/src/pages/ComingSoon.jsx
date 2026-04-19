@@ -1483,8 +1483,9 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="CLAIM YOUR SPOT" onSuccess={handleSuccess} formId="hero" />
-            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, textAlign: 'center' }}>Don't miss out — Spaces filling up fast</div>
+            <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="hero" />
+            <div className="cs-privacy">No spam. One email when we launch.</div>
             <div style={{ marginTop: 20, padding: '14px 20px', borderTop: '1px solid rgba(240,236,226,0.10)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}>
                 <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
@@ -1663,7 +1664,7 @@ export default function ComingSoon() {
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <FoundingBar count={waitlistCount} />
-            <WaitlistForm label="CLAIM YOUR SPOT" onSuccess={handleSuccess} formId="bottom-cta" />
+            <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="bottom-cta" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
         </div>
