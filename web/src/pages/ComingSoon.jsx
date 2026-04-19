@@ -1487,7 +1487,7 @@ export default function ComingSoon() {
             <WaitlistForm label="CLAIM YOUR SPOT" onSuccess={handleSuccess} formId="hero" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
             <div style={{ marginTop: 20, padding: '14px 20px', borderTop: '1px solid rgba(240,236,226,0.10)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}>
                 <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
                 <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
               </div>
