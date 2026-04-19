@@ -133,9 +133,9 @@ const styles = `
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 100px 24px 96px;
+    padding: 80px 24px 40px;
     text-align: center;
-    gap: 32px;
+    gap: 20px;
   }
   .cs-eyebrow {
     font-size: 13px;
@@ -1249,10 +1249,10 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
     return (
       <div className="cs-success">
         <div className="cs-success-title">
-          Spot secured — <em className="cs-success-num">20% off locked</em>
+          <em className="cs-success-num">Spot secured.</em>
         </div>
         <div className="cs-success-body">
-          You're <strong style={{color:'#f0ece2'}}>#{position} of 100</strong>. One email when we launch — your discount code will be in it. First to ship.
+          You're <strong style={{color:'#f0ece2'}}>#{position} of 100</strong>. One email when we launch. First to ship.
         </div>
 
         {/* Instagram follow CTA — everyone */}
@@ -1347,9 +1347,6 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
             Did you mean <button type="button" className="cs-typo-btn" onClick={applySuggestion}>{suggestion}</button>?
           </div>
         )}
-        <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: '#c8a96e', fontWeight: 600, padding: '8px 0 4px', textAlign: 'center' }}>
-          Only a few spots left at this price
-        </div>
         <button type="submit" className="cs-submit" disabled={loading}>
           {loading ? 'Checking & securing your spot...' : label}
         </button>
@@ -1368,7 +1365,7 @@ function FoundingBar({ count }) {
     <div className="cs-founding-bar">
       <div className="cs-founding-bar-top">
         <div className="cs-founding-bar-label">
-          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 spots — 20% off ends at launch`}
+          {isFull ? 'Launch Spots — Closed' : `${taken} / 100 Founding Member Spots Taken ↓`}
         </div>
         {!isFull && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
@@ -1477,49 +1474,24 @@ export default function ComingSoon() {
 
         {/* 1 — Hero */}
         <main className="cs-main" data-track="hero">
-          <div className="cs-eyebrow">You're not as clean as you think.</div>
+          <div className="cs-eyebrow">Men shower. Men don't actually clean.</div>
           <h1 className="cs-headline">
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Fix body odour, dry skin, and rough skin — properly.
+            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day. Follow the routine — your body stays clean all day. Desk to dinner. Odour doesn't creep back. Just confidence.
           </p>
-
-          {/* Timeline */}
-          <div className="cs-timeline">
-            <div className="cs-tl-node">
-              <div className="cs-tl-badge">01</div>
-              <div className="cs-tl-marker">First shower</div>
-              <div className="cs-tl-text">You actually feel clean.</div>
-            </div>
-            <div className="cs-tl-node">
-              <div className="cs-tl-badge">02</div>
-              <div className="cs-tl-marker">Week 1</div>
-              <div className="cs-tl-text">Dead skin comes off properly. Odour drops.</div>
-            </div>
-            <div className="cs-tl-node">
-              <div className="cs-tl-badge">03</div>
-              <div className="cs-tl-marker">Week 3</div>
-              <div className="cs-tl-text">Dry skin stops coming back.</div>
-            </div>
-          </div>
-
-          {/* Proof line */}
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', letterSpacing: '0.3px', textAlign: 'center' }}>
-            Built after trying everything that didn't work.
-          </p>
-
-          {/* Scarcity bar — below timeline */}
-          <div style={{ width: '100%', maxWidth: '460px' }}>
-            <FoundingBar count={waitlistCount} />
-          </div>
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} formId="hero" />
-            <div className="cs-privacy">Takes 10 seconds. Your 20% discount is reserved instantly.</div>
-            <div style={{ marginTop: 14, fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.50)', textAlign: 'center', letterSpacing: '0.3px', lineHeight: 1.5 }}>
-              Built in London by someone who couldn't find a routine that actually worked. — Harsha, Founder
+            <WaitlistForm label="CLAIM YOUR SPOT" onSuccess={handleSuccess} formId="hero" />
+            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
+            <div style={{ marginTop: 20, padding: '14px 20px', borderTop: '1px solid rgba(240,236,226,0.10)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}>
+                <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
+                <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.6, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored."</div>
             </div>
           </div>
 
@@ -1692,8 +1664,8 @@ export default function ComingSoon() {
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
             <FoundingBar count={waitlistCount} />
-            <WaitlistForm label="GET EARLY ACCESS + 20% OFF" onSuccess={handleSuccess} formId="bottom-cta" />
-            <div className="cs-privacy">Takes 10 seconds. No spam. Early access only.</div>
+            <WaitlistForm label="CLAIM YOUR SPOT" onSuccess={handleSuccess} formId="bottom-cta" />
+            <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
           </div>
         </div>
 
@@ -1733,6 +1705,10 @@ export default function ComingSoon() {
             @bysolum.body
           </a>
         </footer>
+
+        <div style={{ textAlign: 'center', padding: '20px 24px', borderTop: '1px solid rgba(240,236,226,0.10)', fontSize: 14, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(240,236,226,0.70)', fontWeight: 600 }}>
+          © {new Date().getFullYear()} Bysolum Limited
+        </div>
       </div>
     </>
   );
