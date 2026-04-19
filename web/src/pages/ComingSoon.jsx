@@ -1059,7 +1059,7 @@ const styles = `
     .cs-main { padding: 90px 24px 60px; gap: 16px; }
     .cs-eyebrow { font-size: 13px; letter-spacing: 3px; margin-bottom: 0; }
     .cs-headline { font-size: 34px; line-height: 0.95; margin-bottom: 0; }
-    .cs-subhead { font-size: 15px; line-height: 1.6; margin-bottom: 0; }
+    .cs-subhead { font-size: 17px; line-height: 1.7; margin-bottom: 0; }
     .cs-founding-bar { padding: 12px 16px; gap: 8px; }
     .cs-founding-bar-note { display: none; }
     .cs-privacy { font-size: 13px; margin-top: 10px; }
@@ -1483,8 +1483,7 @@ export default function ComingSoon() {
 
           {/* CTA */}
           <div className="cs-form-wrap">
-            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#c8a96e', boxShadow: '0 0 6px #c8a96e', animation: 'livePulse 1.6s ease-in-out infinite', flexShrink: 0 }} />
+            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, marginTop: 20, textAlign: 'center' }}>
               Don't miss out — Spaces filling up fast
             </div>
             <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="hero" />
