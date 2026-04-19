@@ -1221,7 +1221,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
           first_name: null,
           source,
           utm_medium: medium,
-          utm_campaign: campaign || 'early_access_20',
+          utm_campaign: campaign || null,
           referred_by: refCode || null,
         }),
       });
