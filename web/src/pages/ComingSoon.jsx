@@ -1708,6 +1708,16 @@ export default function ComingSoon() {
             Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day. Follow the routine and your body stays clean all day. Desk to dinner. Odour doesn't creep back. Just confidence.
           </p>
 
+          <a
+            href="#product-lineup"
+            onClick={e => { e.preventDefault(); document.querySelector('[data-track="product-lineup"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+            style={{ fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: 'rgba(240,236,226,0.55)', textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={e => e.target.style.color = '#f0ece2'}
+            onMouseLeave={e => e.target.style.color = 'rgba(240,236,226,0.55)'}
+          >
+            Explore our products →
+          </a>
+
           {/* CTA */}
           <div className="cs-form-wrap">
             <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, marginTop: 20, textAlign: 'center' }}>
@@ -1729,7 +1739,7 @@ export default function ComingSoon() {
         {/* Products */}
         <div className="cs-products-wrap" data-track="product-lineup">
           <div className="cs-products-label">The Complete System</div>
-          <div className="cs-products-heading">9 Products. Two Rituals.</div>
+          <div className="cs-products-heading">Developed by SOLUM to maximise what your body can actually achieve.</div>
           <div className="cs-products-grid">
             {PRODUCTS.filter(p => !p.comingSoon).map(p => {
               const isWeekly = p.tag.toLowerCase().includes('weekly');
@@ -1815,8 +1825,8 @@ export default function ComingSoon() {
         {/* 5 — Ritual teaser (gated) */}
         <div className="cs-ritual cs-ritual-gate" data-track="ritual">
           <div className="cs-ritual-section-header">
-            <div className="cs-ritual-section-eyebrow">The Ritual</div>
-            <div className="cs-ritual-section-title">Two routines.<br />Every product explained.</div>
+            <div className="cs-ritual-section-eyebrow">The Body Routine</div>
+            <div className="cs-ritual-section-title">How to use every product.<br />Maximum results. Minimum time.</div>
             <div className="cs-ritual-section-sub">
               <span className="cs-ritual-section-pill">Step by step guide</span>
               <span className="cs-ritual-section-pill">Video walkthroughs</span>
