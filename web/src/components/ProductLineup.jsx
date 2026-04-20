@@ -18,6 +18,12 @@ const CSS = `
 .prod-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(46,109,164,0.07),transparent 65%);}
 .prod-visual.weekly::before{background:radial-gradient(circle at 50% 30%,rgba(200,169,110,0.07),transparent 65%);}
 .prod-visual svg{width:65%;height:65%;opacity:.75;position:relative;z-index:1;}
+.prod-visual img{width:100%;height:100%;object-fit:cover;object-position:center;position:relative;z-index:1;transition:transform .4s ease;}
+.product-card:hover .prod-visual img{transform:scale(1.03);}
+.prod-tagline{font-size:13px;font-weight:600;color:var(--bone);letter-spacing:.5px;margin-bottom:6px;}
+.prod-benefits{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:3px;}
+.prod-benefits li{font-size:13px;color:var(--mist);line-height:1.5;padding-left:12px;position:relative;}
+.prod-benefits li::before{content:'';position:absolute;left:0;top:5px;width:4px;height:4px;border-radius:50%;background:var(--blue);}
 .prod-soon-badge{position:absolute;top:12px;left:12px;font-size:9px;letter-spacing:3px;text-transform:uppercase;background:var(--blue);color:var(--bone);padding:3px 8px;font-weight:700;z-index:2;}
 .prod-body-tag{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
 .pbt-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
@@ -37,8 +43,9 @@ const SVGS = {
   '06': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="32" y="60" width="36" height="78" rx="5" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="40" y="40" width="20" height="22" rx="3" stroke="#4a8fc7" strokeWidth="1.2"/><ellipse cx="50" cy="36" rx="10" ry="6" stroke="#4a8fc7" strokeWidth="1.2"/><line x1="50" y1="18" x2="50" y2="30" stroke="#4a8fc7" strokeWidth="1.2"/><circle cx="50" cy="16" r="3" stroke="#4a8fc7" strokeWidth="1.2"/><text x="50" y="80" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ARGAN</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">COLD PRESSED</text></svg>,
   '07': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34,145 L30,60 Q30,50 50,48 Q70,50 70,60 L66,145 Z" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="38" y="36" width="24" height="14" rx="4" stroke="#4a8fc7" strokeWidth="1.3"/><line x1="32" y1="85" x2="68" y2="85" stroke="#2e6da4" strokeWidth="0.8" opacity="0.5"/><text x="50" y="94" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">400ml</text><text x="50" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">BODY ONLY</text></svg>,
   '08': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="38" width="56" height="84" rx="8" stroke="#4a8fc7" strokeWidth="1.5"/><rect x="30" y="46" width="40" height="68" rx="5" stroke="#2e6da4" strokeWidth="0.8" opacity="0.4"/><line x1="30" y1="58" x2="70" y2="58" stroke="#2e6da4" strokeWidth="0.6" opacity="0.45"/><line x1="30" y1="70" x2="70" y2="70" stroke="#2e6da4" strokeWidth="0.6" opacity="0.4"/><line x1="30" y1="82" x2="70" y2="82" stroke="#2e6da4" strokeWidth="0.6" opacity="0.35"/><line x1="30" y1="94" x2="70" y2="94" stroke="#2e6da4" strokeWidth="0.6" opacity="0.3"/><text x="50" y="30" textAnchor="middle" fontFamily="sans-serif" fontSize="6" fill="#4a8fc7" opacity="0.7" letterSpacing="1">BAMBOO</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">ULTRA SOFT</text></svg>,
-  '09': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25,90 Q22,60 30,40 Q38,20 50,22 Q62,20 70,40 Q78,60 75,90 Q72,120 50,130 Q28,120 25,90Z" stroke="#4a8fc7" strokeWidth="1.5" strokeDasharray="4 2"/><text x="50" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.5" letterSpacing="1">ARTISAN</text><text x="50" y="150" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">TURKEY</text></svg>,
-  '10': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="48" width="44" height="64" rx="4" stroke="#4a8fc7" strokeWidth="1.5" strokeDasharray="4 2"/><text x="50" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.5" letterSpacing="1">BLACK SOAP</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">TURKEY</text></svg>,
+  '09': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="85" rx="34" ry="22" stroke="#4a8fc7" strokeWidth="1.5"/><path d="M16,85 Q16,65 50,62 Q84,65 84,85" stroke="#4a8fc7" strokeWidth="1.5"/><text x="50" y="88" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">SILICONE</text><text x="50" y="150" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.6" letterSpacing="1">MIXING BOWL</text></svg>,
+  '10': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25,90 Q22,60 30,40 Q38,20 50,22 Q62,20 70,40 Q78,60 75,90 Q72,120 50,130 Q28,120 25,90Z" stroke="#4a8fc7" strokeWidth="1.5" strokeDasharray="4 2"/><text x="50" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.5" letterSpacing="1">ARTISAN</text><text x="50" y="150" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">TURKEY</text></svg>,
+  '11': <svg viewBox="0 0 100 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="48" width="44" height="64" rx="4" stroke="#4a8fc7" strokeWidth="1.5" strokeDasharray="4 2"/><text x="50" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="7" fill="#4a8fc7" opacity="0.5" letterSpacing="1">BLACK SOAP</text><text x="50" y="148" textAnchor="middle" fontFamily="sans-serif" fontSize="6.5" fill="#4a8fc7" opacity="0.5" letterSpacing="1">TURKEY</text></svg>,
 };
 
 export default function ProductLineup() {
@@ -49,12 +56,12 @@ export default function ProductLineup() {
         <div className="products-header reveal">
           <div>
             <div className="p-sec-tag">The Products</div>
-            <h2 className="p-sec-title">Ten Products.<br />One Body System.</h2>
+            <h2 className="p-sec-title">Eleven Products.<br />One Body System.</h2>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <p className="p-sec-body">
-              Each product is numbered 01–10 and used in sequence. All ten address the body — not the face.
-              Sourced from the country that does each tradition best. Products 09 and 10 are coming soon.
+              Each product is numbered 01–11 and used in sequence. All eleven address the body — not the face.
+              Sourced from the country that does each tradition best. Products 10 and 11 are coming soon.
             </p>
           </div>
         </div>
@@ -68,12 +75,21 @@ export default function ProductLineup() {
                 <div className="prod-name">{p.name}</div>
                 <div className={`prod-visual${isWeekly ? ' weekly' : ''}`}>
                   {p.comingSoon && <div className="prod-soon-badge">Soon</div>}
-                  {SVGS[p.num]}
+                  {p.image
+                    ? <img src={p.image} alt={p.fullName} loading="lazy" />
+                    : SVGS[p.num]
+                  }
                 </div>
                 <div className="prod-body-tag">
                   <div className={`pbt-dot${isWeekly ? ' weekly' : ''}`} />
                   <span className={`pbt-text${isWeekly ? ' weekly' : ''}`}>{p.tag}</span>
                 </div>
+                {p.tagline && !p.comingSoon && <div className="prod-tagline">{p.tagline}</div>}
+                {p.benefits && p.benefits.length > 0 && (
+                  <ul className="prod-benefits">
+                    {p.benefits.slice(0, 3).map(b => <li key={b}>{b}</li>)}
+                  </ul>
+                )}
                 <div className="prod-desc">{p.desc}</div>
               </div>
             );

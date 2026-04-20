@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { PRODUCTS } from '../data/products';
 
 function track(event, props) {
   if (window.plausible) window.plausible(event, { props });
@@ -720,9 +721,11 @@ const styles = `
   .cs-ritual {
     position: relative;
     z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     border-bottom: 1px solid rgba(240,236,226,0.055);
+  }
+  .cs-ritual-blur {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
   }
   .cs-ritual-col {
     padding: 52px 44px;
@@ -731,6 +734,15 @@ const styles = `
     gap: 32px;
   }
   .cs-ritual-col:first-child { border-right: 1px solid rgba(240,236,226,0.055); }
+  .cs-ritual-col:nth-child(2) { border-right: 1px solid rgba(240,236,226,0.055); }
+  .cs-tool-lifespan {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #2e6da4;
+    margin-top: 2px;
+  }
   .cs-ritual-header { display: flex; flex-direction: column; gap: 8px; }
   .cs-ritual-tag {
     font-size: 13px;
@@ -894,14 +906,11 @@ const styles = `
     letter-spacing: 0.3px;
   }
 
-  /* Product pills */
+  /* Product showcase */
   .cs-products-wrap {
     position: relative;
     z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 48px 24px;
+    padding: 72px 24px;
     border-bottom: 1px solid rgba(240,236,226,0.055);
   }
   .cs-products-label {
@@ -910,19 +919,130 @@ const styles = `
     text-transform: uppercase;
     color: rgba(240,236,226,0.6);
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+    text-align: center;
   }
-  .cs-products { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 640px; }
-  .cs-pill {
+  .cs-products-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 3.5vw, 44px);
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 48px;
+  }
+  .cs-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(240,236,226,0.06);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .cs-prod-card {
+    background: #0c0e12;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .cs-prod-img-wrap {
+    width: 100%;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: #111317;
+    position: relative;
+  }
+  .cs-prod-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .cs-prod-card:hover .cs-prod-img-wrap img { transform: scale(1.04); }
+  .cs-prod-info {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+  .cs-prod-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cs-prod-benefits li {
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    color: rgba(240,236,226,0.82);
+    font-weight: 400;
+    padding-left: 12px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .cs-prod-benefits li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #2e6da4;
+  }
+  .cs-prod-num {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #2e6da4;
+    font-weight: 700;
+  }
+  .cs-prod-name {
     font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f0ece2;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .cs-prod-tagline {
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.72);
+    line-height: 1.5;
+  }
+  .cs-prod-freq {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  .cs-prod-freq-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cs-prod-freq-dot.daily { background: #2e6da4; }
+  .cs-prod-freq-dot.weekly { background: #c8a96e; }
+  .cs-prod-freq-label {
+    font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.88);
-    border: 1px solid rgba(240,236,226,0.12);
-    padding: 8px 16px;
-    font-weight: 600;
+    font-weight: 700;
   }
-  .cs-pill span { color: #2e6da4; margin-right: 6px; }
+  .cs-prod-freq-label.daily { color: #4a8fc7; }
+  .cs-prod-freq-label.weekly { color: #c8a96e; }
+  @media (max-width: 768px) {
+    .cs-products-grid { grid-template-columns: repeat(2, 1fr); }
+    .cs-products-wrap { padding: 52px 16px; }
+  }
 
   /* Marquee */
   .cs-marquee-wrap {
@@ -1033,26 +1153,138 @@ const styles = `
     z-index: 1;
     background: #0c0e12;
     border-bottom: 1px solid rgba(240,236,226,0.055);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .cs-box-panel {
+    position: relative;
     overflow: hidden;
+  }
+  .cs-box-panel:first-child {
+    border-right: 1px solid rgba(240,236,226,0.055);
   }
   .cs-box-img {
     width: 100%;
-    max-width: 960px;
+    height: 100%;
     display: block;
     object-fit: cover;
+    object-position: center;
   }
   .cs-box-caption {
-    padding: 14px 24px 20px;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 20px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(240,236,226,0.45);
+    font-weight: 600;
+    background: linear-gradient(transparent, rgba(8,9,11,0.7));
+  }
+  @media (max-width: 768px) {
+    .cs-box-reveal { grid-template-columns: 1fr; }
+    .cs-box-panel:first-child { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.055); }
+    .cs-box-img { max-height: 60vw; }
+  }
+
+  /* Ritual teaser */
+  .cs-ritual-gate {
+    position: relative;
+  }
+  .cs-ritual-section-header {
+    padding: 56px 48px 40px;
+    border-bottom: 1px solid rgba(240,236,226,0.055);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cs-ritual-section-eyebrow {
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #4a8fc7;
+    font-weight: 600;
+  }
+  .cs-ritual-section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    line-height: 1;
+  }
+  .cs-ritual-section-sub {
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(240,236,226,0.72);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cs-ritual-section-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(74,143,199,0.3);
+    padding: 4px 12px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #4a8fc7;
+  }
+  @media (max-width: 768px) {
+    .cs-ritual-section-header { padding: 40px 24px 28px; }
+  }
+  .cs-ritual-blur {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .cs-ritual-blur-overlay {
+    position: absolute;
+    top: 38%; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(transparent, rgba(8,9,11,0.96) 22%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 32px;
+    gap: 12px;
+  }
+  .cs-ritual-gate-label {
     font-size: 11px;
     letter-spacing: 5px;
     text-transform: uppercase;
-    color: rgba(240,236,226,0.40);
+    color: rgba(240,236,226,0.6);
     font-weight: 600;
-    text-align: center;
   }
+  .cs-ritual-gate-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(24px, 3vw, 36px);
+    letter-spacing: 0.06em;
+    color: #f0ece2;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .cs-ritual-gate-cta {
+    display: inline-block;
+    background: #2e6da4;
+    color: #f0ece2;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 3px;
+    padding: 13px 32px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    margin-top: 4px;
+  }
+  .cs-ritual-gate-cta:hover { background: #4a8fc7; }
 
   @media (max-width: 768px) {
     .cs-topbar { padding: 0 20px; }
@@ -1092,9 +1324,14 @@ const styles = `
     .cs-prov-item:nth-child(4) { border-top: 1px solid rgba(240,236,226,0.055); border-right: none; }
     .cs-prov-tradition { font-size: 22px; }
     .cs-prov-body { font-size: 14px; }
-    .cs-ritual { grid-template-columns: 1fr; }
-    .cs-ritual-col:first-child { border-right: none; border-bottom: 1px solid rgba(240,236,226,0.055); }
-    .cs-ritual-col { padding: 40px 24px; }
+    .cs-ritual-blur { grid-template-columns: 1fr; }
+    .cs-ritual-col:nth-child(2),
+    .cs-ritual-col-tools { display: none !important; }
+    .cs-ritual-col:first-child { border-right: none; border-bottom: none; }
+    .cs-ritual-col { padding: 32px 24px; }
+    .cs-ritual-blur-overlay { top: 42%; padding-top: 24px; }
+    .cs-ritual-gate-title { font-size: 22px; }
+    .cs-ritual-gate-cta { font-size: 13px; letter-spacing: 2px; padding: 12px 24px; }
     .cs-ritual-title { font-size: 36px; }
     .cs-step-name { font-size: 15px; }
     .cs-step-note { font-size: 14px; }
@@ -1114,26 +1351,16 @@ const MARQUEE_ITEMS = [
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
   '8 Products · One System',
-  'Body Care — Not Face. Not Hair.',
+  'Body Care. Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
   'The Ritual Men Were Never Taught',
   'UK · Korea · Morocco · Turkey',
   '10 Minutes Daily',
   '8 Products · One System',
-  'Body Care — Not Face. Not Hair.',
+  'Body Care. Not Face. Not Hair.',
   'Monthly. Automatic. Never Run Out.',
 ];
 
-const PRODUCTS = [
-  { num: '01', name: 'Body Wash' },
-  { num: '02', name: 'Italy Towel Mitt' },
-  { num: '03', name: 'Exfoliating Cloth' },
-  { num: '04', name: 'Scalp Massager' },
-  { num: '05', name: 'Atlas Clay' },
-  { num: '06', name: 'Body Oil' },
-  { num: '07', name: 'Body Lotion' },
-  { num: '08', name: 'Bamboo Cloth' },
-];
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -1270,7 +1497,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#f0ece2', marginBottom: 2 }}>Follow us while you wait</div>
             <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.65)' }}>
-              Sneak previews, formulas, rituals — before anyone else sees them.
+              Sneak previews, formulas, rituals. Before anyone else sees them.
             </div>
           </div>
           <a
@@ -1303,7 +1530,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
             <div style={{ padding: '20px 20px 0' }}>
               <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: '.06em', color: '#f0ece2', marginBottom: 10 }}>Real equity in Solum</div>
               <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.75)', lineHeight: 1.65, marginBottom: 20 }}>
-                A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong> — whichever comes first. Shape products, track growth, see what it could be worth.
+                A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong>, whichever comes first. Shape products, track growth, see what it could be worth.
               </div>
             </div>
             <a
@@ -1478,13 +1705,13 @@ export default function ComingSoon() {
             You Shower Every Day.<br /><em>Your Body Is Still Dirty.</em>
           </h1>
           <p className="cs-subhead">
-            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day. Follow the routine — your body stays clean all day. Desk to dinner. Odour doesn't creep back. Just confidence.
+            Neglected back. Dry skin. Itchy scalp. Body odour by noon. Most men just use shower gel and call it a day. Follow the routine and your body stays clean all day. Desk to dinner. Odour doesn't creep back. Just confidence.
           </p>
 
           {/* CTA */}
           <div className="cs-form-wrap">
             <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, marginTop: 20, textAlign: 'center' }}>
-              Don't miss out — Spaces filling up fast
+              Don't miss out. Spaces filling up fast.
             </div>
             <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="hero" />
             <div className="cs-privacy">No spam. One email when we launch.</div>
@@ -1493,21 +1720,64 @@ export default function ComingSoon() {
                 <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
                 <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
               </div>
-              <div style={{ fontSize: 'clamp(16px, 2vw, 18px)', fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.7, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo — still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming — it doesn't."</div>
+              <div style={{ fontSize: 'clamp(16px, 2vw, 18px)', fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.7, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo. Still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming. It doesn't."</div>
             </div>
           </div>
 
         </main>
 
+        {/* Products */}
+        <div className="cs-products-wrap" data-track="product-lineup">
+          <div className="cs-products-label">The Complete System</div>
+          <div className="cs-products-heading">9 Products. Two Rituals.</div>
+          <div className="cs-products-grid">
+            {PRODUCTS.filter(p => !p.comingSoon).map(p => {
+              const isWeekly = p.tag.toLowerCase().includes('weekly');
+              return (
+                <div key={p.num} className="cs-prod-card">
+                  <div className="cs-prod-img-wrap">
+                    {p.image && <img src={p.image} alt={p.fullName} loading="lazy" />}
+                  </div>
+                  <div className="cs-prod-info">
+                    <div className="cs-prod-num">{p.num}</div>
+                    <div className="cs-prod-name">{p.name}</div>
+                    <div className="cs-prod-tagline">{p.tagline}</div>
+                    {p.benefits && p.benefits.length > 0 && (
+                      <ul className="cs-prod-benefits">
+                        {p.benefits.map(b => <li key={b}>{b}</li>)}
+                      </ul>
+                    )}
+                    <div className="cs-prod-freq" style={{ marginTop: 'auto', paddingTop: 8 }}>
+                      <div className={`cs-prod-freq-dot ${isWeekly ? 'weekly' : 'daily'}`} />
+                      <span className={`cs-prod-freq-label ${isWeekly ? 'weekly' : 'daily'}`}>
+                        {isWeekly ? 'Weekly' : 'Daily'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="cs-prod-card cs-prod-cta-card" onClick={() => document.getElementById('signup-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} style={{ cursor: 'pointer', background: '#0d1117', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 28px', gap: 16 }}>
+              <div style={{ fontSize: 11, letterSpacing: 5, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Early Access</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(24px, 2.5vw, 34px)', letterSpacing: '0.06em', color: '#f0ece2', lineHeight: 1, textAlign: 'center' }}>Spaces filling fast.</div>
+              <div style={{ fontSize: 13, fontWeight: 300, color: 'rgba(240,236,226,0.65)', textAlign: 'center', lineHeight: 1.6 }}>One email when we launch. No spam.</div>
+              <div style={{ marginTop: 8, background: '#2e6da4', color: '#f0ece2', fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: 3, padding: '13px 32px' }}>
+                Sign Up
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Box reveal */}
         <div className="cs-box-reveal" data-track="box-reveal">
-          <img src="/solum-box-open-v4.png" alt="SOLUM — Your Body. Done Right." className="cs-box-img" />
-          <div className="cs-box-caption">8 products · two rituals · everything your body actually needs</div>
-          {/* Countdown — commented out, re-enable if needed
-          <div style={{ padding: '20px 24px 24px', display: 'flex', justifyContent: 'center' }}>
-            <Countdown />
+          <div className="cs-box-panel">
+            <img src="/box-exterior.png" alt="SOLUM box" className="cs-box-img" />
+            <div className="cs-box-caption">The System</div>
           </div>
-          */}
+          <div className="cs-box-panel">
+            <img src="/box-interior.png" alt="SOLUM — everything your body actually needs" className="cs-box-img" />
+            <div className="cs-box-caption">9 products · two rituals · everything your body actually needs</div>
+          </div>
         </div>
 
         {/* Outcomes */}
@@ -1518,26 +1788,120 @@ export default function ComingSoon() {
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Week<br /><em>1</em></div>
               <div className="cs-outcome-title">Dead skin rolls off. Itchy scalp clears up.</div>
-              <div className="cs-outcome-body">You'll see it. Grey sheets lifting off skin that rinsing alone never reached. The scalp massager clears the build-up that causes the itch — most men have never once properly cleaned their scalp.</div>
+              <div className="cs-outcome-body">You'll see it. Grey sheets lifting off skin that rinsing alone never reached. The scalp massager clears the build-up that causes the itch. Most men have never once properly cleaned their scalp.</div>
               <div className="cs-outcome-tag">Visible · Day 1</div>
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Week<br /><em>2</em></div>
-              <div className="cs-outcome-title">Body odour drops — without more deodorant.</div>
+              <div className="cs-outcome-title">Body odour drops. No extra deodorant needed.</div>
               <div className="cs-outcome-body">Dead cells are what feed odour-causing bacteria, not sweat. Clear them daily and the source goes. Less smell. Same sweat.</div>
               <div className="cs-outcome-tag">Noticeable · You & Others</div>
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Week<br /><em>3</em></div>
               <div className="cs-outcome-title">Dry skin stops coming back.</div>
-              <div className="cs-outcome-body">Not just after the shower — skin stays hydrated at midday too. Exfoliated skin absorbs lotion properly instead of it sitting on top of a dead layer.</div>
+              <div className="cs-outcome-body">Not just after the shower. Skin stays hydrated at midday too. Exfoliated skin absorbs lotion properly instead of it sitting on top of a dead layer.</div>
               <div className="cs-outcome-tag">All Day · Not Just Post-Shower</div>
             </div>
             <div className="cs-outcome">
               <div className="cs-outcome-marker">Day<br /><em>66</em></div>
               <div className="cs-outcome-title">People start to notice. Habit for life.</div>
-              <div className="cs-outcome-body">By day 66 you've gone through two full cycles of new skin — the results are visible. People comment. The routine is muscle memory now. You don't decide to do it. You just do it. You'd want to take your shirt off.</div>
+              <div className="cs-outcome-body">By day 66 you've gone through two full cycles of new skin. The results are visible. People comment. The routine is muscle memory now. You don't decide to do it. You just do it. You'd want to take your shirt off.</div>
               <div className="cs-outcome-tag">Others Notice · Locked In For Life</div>
+            </div>
+          </div>
+        </div>
+
+        {/* 5 — Ritual teaser (gated) */}
+        <div className="cs-ritual cs-ritual-gate" data-track="ritual">
+          <div className="cs-ritual-section-header">
+            <div className="cs-ritual-section-eyebrow">The Ritual</div>
+            <div className="cs-ritual-section-title">Two routines.<br />Every product explained.</div>
+            <div className="cs-ritual-section-sub">
+              <span className="cs-ritual-section-pill">Step by step guide</span>
+              <span className="cs-ritual-section-pill">Video walkthroughs</span>
+              <span className="cs-ritual-section-pill">Tool care</span>
+            </div>
+          </div>
+          <div className="cs-ritual-blur">
+            <div className="cs-ritual-col">
+              <div className="cs-ritual-header">
+                <div className="cs-ritual-tag daily">Daily Ritual</div>
+                <div className="cs-ritual-title">10 Minutes.<br />Every Shower.</div>
+                <div className="cs-ritual-time">5 steps · in the shower you already take</div>
+              </div>
+              <div className="cs-ritual-steps">
+                {[
+                  { n: '1', name: 'Scalp Massage', prod: '04' },
+                  { n: '2', name: 'Body Wash', prod: '01' },
+                  { n: '3', name: 'Antibacterial Shower Towel', prod: '03' },
+                  { n: '4', name: 'Cleansing Cloth', prod: '08' },
+                  { n: '5', name: 'Body Lotion', prod: '07' },
+                ].map(s => (
+                  <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>
+                    <div className="cs-step-num daily">{s.n}</div>
+                    <div className="cs-step-body">
+                      <div className="cs-step-name">{s.name}</div>
+                      {s.n <= '2' && <div className="cs-step-note" style={{ color: 'rgba(240,236,226,0.45)', fontSize: 13 }}>Sign up to unlock execution guide</div>}
+                    </div>
+                    <div className="cs-step-prod daily">{s.prod}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="cs-ritual-col">
+              <div className="cs-ritual-header">
+                <div className="cs-ritual-tag weekly">Weekly Ritual</div>
+                <div className="cs-ritual-title">18 Minutes.<br />Once a Week.</div>
+                <div className="cs-ritual-time">5 steps · goes deeper than daily</div>
+              </div>
+              <div className="cs-ritual-steps">
+                {[
+                  { n: '1', name: 'Deep Scalp Massage', prod: '04' },
+                  { n: '2', name: 'Atlas Clay Mask', prod: '05' },
+                  { n: '3', name: 'Italy Towel Mitt', prod: '02' },
+                  { n: '4', name: 'Cleansing Cloth', prod: '08' },
+                  { n: '5', name: 'Argan Body Oil', prod: '06' },
+                ].map(s => (
+                  <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>
+                    <div className="cs-step-num weekly">{s.n}</div>
+                    <div className="cs-step-body">
+                      <div className="cs-step-name">{s.name}</div>
+                      {s.n <= '2' && <div className="cs-step-note" style={{ color: 'rgba(240,236,226,0.45)', fontSize: 13 }}>Sign up to unlock execution guide</div>}
+                    </div>
+                    <div className="cs-step-prod weekly">{s.prod}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="cs-ritual-col cs-ritual-col-tools">
+              <div className="cs-ritual-steps">
+                {[
+                  { name: 'Italy Towel Mitt', care: 'Rinse after every use. Hang to dry fully before storing.', life: 'Replace every 3 months', n: '1' },
+                  { name: 'Antibacterial Shower Towel', care: 'Rinse and hang flat. Silver prevents bacteria growth between uses.', life: 'Replace every 6 months', n: '2' },
+                  { name: 'Scalp Massager', care: 'Rinse under water after every use. Air dry silicone.', life: 'Lasts 12+ months', n: '3' },
+                  { name: 'Cleansing Cloth', care: 'Single use per session. Replace each month without exception.', life: 'Replace every 30 days', n: '4' },
+                  { name: 'Mixing Bowl', care: 'Rinse clean in seconds after each clay session.', life: 'Silicone lasts indefinitely', n: '5' },
+                ].map(s => (
+                  <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>
+                    <div className="cs-step-body">
+                      <div className="cs-step-name">{s.name}</div>
+                      <div className="cs-step-note">{s.care}</div>
+                      <div className="cs-tool-lifespan">{s.life}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="cs-ritual-blur-overlay">
+              <div className="cs-ritual-gate-label">Step by step guide · Video walkthroughs · Tool care</div>
+              <div className="cs-ritual-gate-title">The full ritual guide + videos.<br />Every step. Every tool. Every detail.</div>
+              <a href="#signup" className="cs-ritual-gate-cta" onClick={e => { e.preventDefault(); document.getElementById('signup-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>
+                Sign Up to Unlock the Full Guide
+              </a>
             </div>
           </div>
         </div>
@@ -1548,7 +1912,7 @@ export default function ComingSoon() {
             <div className="cs-prov-flag">🇬🇧</div>
             <div className="cs-prov-country">United Kingdom</div>
             <div className="cs-prov-tradition">British Formulation</div>
-            <div className="cs-prov-body">Cleans without stripping. Most body washes use sulphates that remove dirt and your skin barrier at the same time. Amino acid surfactants don't. pH balanced, skin barrier safe — formulated in the UK.</div>
+            <div className="cs-prov-body">Cleans without stripping. Most body washes use sulphates that remove dirt and your skin barrier at the same time. Amino acid surfactants don't. pH balanced, skin barrier safe. Formulated in the UK.</div>
             <div className="cs-prov-products">Products 01 · 07</div>
           </div>
           <div className="cs-prov-item">
@@ -1574,61 +1938,6 @@ export default function ComingSoon() {
           </div>
         </div>
 
-        {/* 5 — Ritual teaser */}
-        <div className="cs-ritual" data-track="ritual">
-          <div className="cs-ritual-col">
-            <div className="cs-ritual-header">
-              <div className="cs-ritual-tag daily">Daily Ritual</div>
-              <div className="cs-ritual-title">10 Minutes.<br />Every Shower.</div>
-              <div className="cs-ritual-time">5 steps · Products 01 03 04 07 08</div>
-            </div>
-            <div className="cs-ritual-steps">
-              {[
-                { n: '1', name: 'Scalp Massage', note: 'Small firm circles, hairline to back. 2–3 minutes. Your scalp stops being an afterthought.', prod: '04' },
-                { n: '2', name: 'Body Wash', note: 'Amino acid formula. No sulphates. Cleans without stripping your skin barrier — no tightness after.', prod: '01' },
-                { n: '3', name: 'Exfoliating Cloth', note: 'Both handles, drape over shoulder, saw back and forth. The only way to actually reach your back.', prod: '03' },
-                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other tools are not. Nothing left uncleaned.', prod: '08' },
-                { n: '5', name: 'Body Lotion', note: 'Within 3 minutes of towelling, skin absorbs 70% more moisture. Smooth past midday — not just after the shower.', prod: '07' },
-              ].map(s => (
-                <div key={s.n} className="cs-ritual-step">
-                  <div className="cs-step-num daily">{s.n}</div>
-                  <div className="cs-step-body">
-                    <div className="cs-step-name">{s.name}</div>
-                    <div className="cs-step-note">{s.note}</div>
-                  </div>
-                  <div className="cs-step-prod daily">{s.prod}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="cs-ritual-col">
-            <div className="cs-ritual-header">
-              <div className="cs-ritual-tag weekly">Weekly Ritual</div>
-              <div className="cs-ritual-title">18 Minutes.<br />Once a Week.</div>
-              <div className="cs-ritual-time">5 steps · Products 02 04 05 06 08</div>
-            </div>
-            <div className="cs-ritual-steps">
-              {[
-                { n: '1', name: 'Deep Scalp Massage', note: '5 minutes, more pressure than daily. The scalp treatment most men have never once had.', prod: '04' },
-                { n: '2', name: 'Atlas Clay Mask', note: 'Apply head to toe on damp skin. Leave 8–10 minutes. Pulls out what daily washing never reaches.', prod: '05' },
-                { n: '3', name: 'Italy Towel Mitt', note: 'Firm slow strokes top to bottom. Dead skin rolls off. You\'ll see it. First time, every time.', prod: '02' },
-                { n: '4', name: 'Bamboo Cloth', note: 'For sensitive areas. Gentle enough where other tools are not. Nothing left uncleaned.', prod: '08' },
-                { n: '5', name: 'Body Oil', note: 'Stay damp. 10–15 drops pressed into freshly exfoliated skin. Absorbs completely. No lotion needed today.', prod: '06' },
-              ].map(s => (
-                <div key={s.n} className="cs-ritual-step">
-                  <div className="cs-step-num weekly">{s.n}</div>
-                  <div className="cs-step-body">
-                    <div className="cs-step-name">{s.name}</div>
-                    <div className="cs-step-note">{s.note}</div>
-                  </div>
-                  <div className="cs-step-prod weekly">{s.prod}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* 6 — Subscription */}
         <div className="cs-sub" data-track="subscription">
           <div className="cs-sub-left">
@@ -1636,51 +1945,41 @@ export default function ComingSoon() {
             <div className="cs-sub-title">Your system.<br />On autopilot.</div>
             <div className="cs-sub-body">
               The tools last months. The consumables run out. Your monthly
-              refill arrives automatically — body wash, lotion, clay, oil —
-              so the ritual never stops. You never have to think about it.
+              refill arrives automatically: body wash, lotion, clay, oil.
+              The ritual never stops. You never have to think about it.
             </div>
           </div>
           <div className="cs-sub-right">
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">First Box</div>
               <div className="cs-sub-item-title">Your ritual starts day one</div>
-              <div className="cs-sub-item-body">All 8 products arrive together — tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
+              <div className="cs-sub-item-body">All 9 products arrive together. Tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Monthly Refill</div>
               <div className="cs-sub-item-title">The ritual never stops</div>
-              <div className="cs-sub-item-body">Consumables replenished automatically before you run out. Body wash, lotion, clay, oil. The tools stay in your bathroom — they last 6–12 months.</div>
+              <div className="cs-sub-item-body">Consumables replenished automatically before you run out. Body wash, lotion, clay, oil. The tools stay in your bathroom. They last 6–12 months.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Built to stay</div>
               <div className="cs-sub-item-title">66 days and it's automatic</div>
-              <div className="cs-sub-item-body">That's how long it takes for a habit to become permanent. By then, the ritual isn't something you do — it's just how you start the day.</div>
+              <div className="cs-sub-item-body">That's how long it takes for a habit to become permanent. By then, the ritual isn't something you do. It's just how you start the day.</div>
             </div>
           </div>
         </div>
 
         {/* 7 — CTA second */}
-        <div className="cs-cta2" data-track="second-cta">
+        <div className="cs-cta2" data-track="second-cta" id="signup-form">
           <div className="cs-cta2-headline">Early access spots are going.</div>
           <div className="cs-cta2-sub">
-            Be first in when we launch. One email. No spam.
+            Your box ships first. Everyone else waits.
           </div>
           <div className="cs-form-wrap" style={{ marginBottom: 0 }}>
-            <FoundingBar count={waitlistCount} />
+            <div style={{ fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 500, color: '#c8a96e', marginBottom: 10, textAlign: 'center' }}>
+              Don't miss out. Spaces filling up fast.
+            </div>
             <WaitlistForm label="SIGN UP" onSuccess={handleSuccess} formId="bottom-cta" />
             <div className="cs-privacy">No spam. One email when we launch. Unsubscribe any time.</div>
-          </div>
-        </div>
-
-        {/* 8 — Product pills */}
-        <div className="cs-products-wrap" data-track="product-lineup">
-          <div className="cs-products-label">8 Products · The Complete System</div>
-          <div className="cs-products">
-            {PRODUCTS.map(p => (
-              <div key={p.num} className="cs-pill">
-                <span>{p.num}</span>{p.name}
-              </div>
-            ))}
           </div>
         </div>
 
