@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { DAILY_STEPS, WEEKLY_STEPS } from '../data/rituals.js';
+import { PRODUCTS } from '../data/products.js';
 
 const CSS = `
 .ritual-section{background:var(--char);border-top:1px solid var(--line);padding:80px 48px 56px;}
@@ -35,16 +36,18 @@ const CSS = `
 .step-warning{font-size:12px;color:#c8a96e;letter-spacing:1px;margin-top:4px;font-style:italic;}
 .ritual-visual{position:relative;display:flex;align-items:center;justify-content:center;}
 .ritual-canvas{width:100%;aspect-ratio:1;background:var(--dark);border:1px solid var(--lineb);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.ritual-canvas.daily::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(46,109,164,0.1),transparent 60%);}
-.ritual-canvas.weekly::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(200,169,110,0.08),transparent 60%);}
-.ritual-big-num{font-family:'Bebas Neue',sans-serif;font-size:220px;line-height:1;letter-spacing:-6px;color:transparent;user-select:none;pointer-events:none;position:absolute;}
+.ritual-canvas.daily::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(46,109,164,0.1),transparent 60%);z-index:1;}
+.ritual-canvas.weekly::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(200,169,110,0.08),transparent 60%);z-index:1;}
+.ritual-big-num{font-family:'Bebas Neue',sans-serif;font-size:220px;line-height:1;letter-spacing:-6px;color:transparent;user-select:none;pointer-events:none;position:absolute;z-index:2;}
+.ritual-prod-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.22;transition:opacity .4s;}
+.ritual-canvas:hover .ritual-prod-img{opacity:0.32;}
 .ritual-big-num.daily{-webkit-text-stroke:1px rgba(46,109,164,0.12);}
 .ritual-big-num.weekly{-webkit-text-stroke:1px rgba(200,169,110,0.12);}
-.ritual-step-name{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:rgba(240,236,226,.7);}
-.ritual-timer{position:absolute;top:24px;right:28px;font-size:11px;letter-spacing:4px;text-transform:uppercase;}
+.ritual-step-name{position:absolute;bottom:32px;left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:rgba(240,236,226,.7);z-index:3;}
+.ritual-timer{position:absolute;top:24px;right:28px;font-size:11px;letter-spacing:4px;text-transform:uppercase;z-index:3;}
 .ritual-timer.daily{color:var(--blue);}
 .ritual-timer.weekly{color:#c8a96e;}
-.ritual-zone{position:absolute;top:24px;left:28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
+.ritual-zone{position:absolute;top:24px;left:28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);z-index:3;}
 @media(max-width:768px){.ritual-content{grid-template-columns:1fr;}.ritual-visual{display:none;}.ritual-section{padding:60px 24px;}}
 `;
 
@@ -77,6 +80,7 @@ export default function RitualSection() {
   };
 
   const step = steps[activeStep];
+  const stepProduct = PRODUCTS.find(p => p.num === step.num);
 
   return (
     <>
@@ -135,6 +139,9 @@ export default function RitualSection() {
 
             <div className="ritual-visual reveal">
               <div className={`ritual-canvas ${activeTab}`}>
+                {stepProduct?.image && (
+                  <img src={stepProduct.image} alt={stepProduct.name} className="ritual-prod-img" loading="lazy" />
+                )}
                 <div className={`ritual-big-num ${activeTab}`}>{step.num}</div>
                 <div className="ritual-zone">{step.zone}</div>
                 <div className="ritual-step-name">{step.name}</div>

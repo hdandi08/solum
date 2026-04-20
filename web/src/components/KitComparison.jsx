@@ -24,8 +24,10 @@ const CSS = `
 .kit-price-sub span{color:var(--blit);font-weight:500;}
 .kit-divider{width:100%;height:1px;background:var(--line);margin-bottom:24px;}
 .kit-products{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;flex:1;}
-.kit-product{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mist);font-weight:300;}
-.kit-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:24px;}
+.kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
+.kit-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:20px;}
+.kit-product-thumb{width:32px;height:40px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
+.kit-product-thumb-placeholder{width:32px;height:40px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
 .kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
@@ -73,6 +75,10 @@ export default function KitComparison() {
                   <div className="kit-products">
                     {products.map(p => (
                       <div key={p.num} className={`kit-product${p.comingSoon ? ' kit-product-coming' : ''}`}>
+                        {p.image
+                          ? <img src={p.image} alt={p.name} className="kit-product-thumb" loading="lazy" />
+                          : <div className="kit-product-thumb-placeholder" />
+                        }
                         <span className="kit-product-num">{p.num}</span>
                         <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
                       </div>

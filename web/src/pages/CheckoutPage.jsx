@@ -63,6 +63,8 @@ const CSS = `
 .co-product-list{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;}
 .co-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
 .co-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:22px;}
+.co-product-thumb{width:32px;height:40px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
+.co-product-thumb-placeholder{width:32px;height:40px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
 .co-product.dimmed{opacity:.45;}
 .co-soon-note{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
 /* Our Promise block */
@@ -570,6 +572,10 @@ export default function CheckoutPage() {
           <div className="co-product-list">
             {products.map(p => (
               <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
+                {p.image
+                  ? <img src={p.image} alt={p.name} className="co-product-thumb" loading="lazy" />
+                  : <div className="co-product-thumb-placeholder" />
+                }
                 <span className="co-product-num">{p.num}</span>
                 <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
               </div>

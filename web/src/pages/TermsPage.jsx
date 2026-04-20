@@ -274,7 +274,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s2">
               <span className="terms-section-num">Section 02</span>
               <h2 className="terms-section-title">The Products</h2>
-              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered 01–08 and sold as kits (GROUND, RITUAL, SOVEREIGN) or as subscription refills.</p>
+              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered 01–09 and sold as kits (GROUND, RITUAL, SOVEREIGN) or as subscription refills.</p>
 
               <div className="terms-h3">Cosmetic Products (regulated under UK Cosmetics Regulation)</div>
               <p className="terms-p">The following products are cosmetic products within the meaning of the UK Cosmetics Regulation (retained EU Regulation (EC) No 1223/2009) and have been assessed under a Cosmetic Product Safety Report (CPSR):</p>

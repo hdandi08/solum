@@ -643,8 +643,8 @@ function MissionsTab({ jobs, completions, session, onComplete }) {
 function PriceLock() {
   const kits = [
     { name: 'GROUND',    first: '£65', monthly: '£38', products: 'Products 01 02 03 04 07' },
-    { name: 'RITUAL',    first: '£85', monthly: '£48', products: 'Products 01–07', highlight: true },
-    { name: 'SOVEREIGN', first: '£130', monthly: '£58', products: 'All 10 products' },
+    { name: 'RITUAL',    first: '£85', monthly: '£48', products: 'Products 01–08', highlight: true },
+    { name: 'SOVEREIGN', first: '£130', monthly: '£58', products: 'All 9 products' },
   ];
   return (
     <div style={{ border: '1px solid rgba(240,236,226,0.07)', marginBottom: 24 }}>
