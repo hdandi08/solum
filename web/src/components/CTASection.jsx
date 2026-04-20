@@ -24,7 +24,7 @@ export default function CTASection() {
           The system that should have existed twenty years ago. It exists now.
         </p>
         <div className="cta-offer">
-          Sign up now → 20% off your first box at launch · GROUND from £44 · RITUAL from £68
+          Spaces are filling fast · GROUND from £65 · RITUAL from £85
         </div>
         <div className="cta-btns">
           <a href="#kits" className="cta-btn-primary">Choose Your Kit</a>

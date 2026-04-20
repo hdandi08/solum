@@ -15,7 +15,7 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Confirm your spot — 20% off waiting</title>
+<title>Confirm your spot — spaces filling fast</title>
 </head>
 <body style="margin:0;padding:0;background:#08090b;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#08090b;padding:48px 24px;">
@@ -46,7 +46,7 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
             <td align="center" width="33%" style="padding:0 4px;">
               <div style="background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.1);padding:12px 8px;text-align:center;">
                 <div style="font-size:22px;font-weight:700;color:rgba(240,236,226,0.3);line-height:1;">3</div>
-                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.3);font-weight:600;margin-top:4px;">20% off</div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.3);font-weight:600;margin-top:4px;">Ship first</div>
               </div>
             </td>
           </tr>
@@ -59,14 +59,14 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
       </td></tr>
       <tr><td style="padding-bottom:16px;">
         <h1 style="margin:0;font-size:34px;letter-spacing:0.02em;color:#f0ece2;font-weight:700;line-height:1.1;">
-          Confirm your spot.<br/>Lock in 20% off.
+          Spaces are filling fast.<br/>Confirm your spot.
         </h1>
       </td></tr>
 
       <!-- Body -->
       <tr><td style="padding-bottom:32px;">
         <p style="margin:0;font-size:16px;color:rgba(240,236,226,0.78);line-height:1.65;">
-          ${greeting} one click below confirms your email and locks in your <strong style="color:#f0ece2;">20% launch discount</strong>. Your code arrives in a separate email the day we go live.
+          ${greeting} confirm your spot now and you'll be first to ship — before we open to everyone else.
         </p>
       </td></tr>
 
@@ -76,7 +76,7 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
            style="display:inline-block;background:#2e6da4;color:#f0ece2;font-size:14px;
                   letter-spacing:3px;text-transform:uppercase;font-weight:700;
                   padding:18px 40px;text-decoration:none;">
-          CONFIRM &amp; LOCK IN 20% OFF
+          CONFIRM MY SPOT
         </a>
       </td></tr>
 
@@ -84,22 +84,22 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
       <tr><td style="padding-bottom:32px;">
         <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid rgba(46,109,164,0.25);">
           <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(240,236,226,0.07);">
-            <p style="margin:0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get</p>
+            <p style="margin:0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What confirming gets you</p>
           </td></tr>
           <tr><td style="padding:0;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
-                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">20%</div>
-                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Off at launch</div>
-                </td>
-                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
                   <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">#${position}</div>
                   <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Of 100 spots</div>
                 </td>
-                <td width="33%" style="padding:20px 16px;text-align:center;vertical-align:top;">
+                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
                   <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">1st</div>
                   <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">To ship</div>
+                </td>
+                <td width="33%" style="padding:20px 16px;text-align:center;vertical-align:top;">
+                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">100</div>
+                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Spaces total</div>
                 </td>
               </tr>
             </table>
@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
         to: [lead.email],
-        subject: 'Confirm your spot — 20% off waiting for you',
+        subject: 'Spaces are filling fast — confirm your spot',
         html: buildConfirmEmail(lead.confirm_token, position, lead.first_name),
       }),
     })
