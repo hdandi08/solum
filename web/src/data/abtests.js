@@ -82,7 +82,7 @@ export const AB_TESTS = {
     hypothesis: 'Athlete-specific messaging at /athletes drives higher checkout conversion from sports/fitness ad traffic than the generic homepage.',
     metric: 'checkout_started',
     result: null,
-    notes: 'Track via Plausible: filter checkout_started where athlete_page_viewed fired in same session. Ad UTMs: utm_source=meta&utm_campaign=athlete-segment. Compare vs generic traffic.',
+    notes: 'Track via PostHog: funnel athlete_page_viewed → checkout_started. Ad UTMs: utm_source=meta&utm_campaign=athlete-segment. Compare vs generic traffic.',
   },
 
   // ─── CHECKOUT ───────────────────────────────────────────────────────────
