@@ -2,7 +2,7 @@
 export const DAILY_STEPS = [
   { num: '04', name: 'Scalp Massager', time: '2–3 MIN', zone: 'SCALP', desc: 'Small firm circles, hairline to back. 2–3 minutes.' },
   { num: '01', name: 'Body Wash', time: '1 MIN', zone: 'FULL BODY', desc: 'Amino acid formula. No sulphates. Cleans without stripping.' },
-  { num: '03', name: 'Antibacterial Shower Towel', time: '1 MIN', zone: 'BACK', desc: 'Both handles, drape over shoulder, saw back and forth. The only way to reach your back.' },
+  { num: '03', name: 'Back Scrub Cloth', time: '1 MIN', zone: 'BACK', desc: 'Both handles, drape over shoulder, saw back and forth. The only way to reach your back.' },
   { num: '08', name: 'Bamboo Cloth', time: '30 SEC', zone: 'SENSITIVE AREAS', desc: 'For sensitive areas. Nothing left uncleaned.' },
   { num: '07', name: 'Body Lotion', time: '1 MIN', zone: 'FULL BODY', desc: 'Within 3 minutes of towelling. Skin absorbs 70% more moisture.' },
 ];

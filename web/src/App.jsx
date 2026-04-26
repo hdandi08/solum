@@ -13,6 +13,7 @@ import GuideArticle from './pages/GuideArticle';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import Founding100Page from './pages/Founding100Page';
+import AthletePage from './pages/AthletePage';
 import './styles/global.css';
 
 // Auth pages that handle their own session callbacks — do not redirect these.
@@ -32,12 +33,14 @@ function AuthRedirectGuard() {
   return null
 }
 
+const IS_LIVE = import.meta.env.VITE_LAUNCH_MODE === 'live';
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthRedirectGuard />
       <Routes>
-        <Route path="/" element={<ComingSoon />} />
+        <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
         <Route path="/full" element={<FullSite />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<SuccessPage />} />
@@ -49,6 +52,8 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/confirm" element={<ConfirmPage />} />
         <Route path="/founding-100" element={<Founding100Page />} />
+        <Route path="/athletes" element={<AthletePage />} />
+        <Route path="/sports" element={<AthletePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

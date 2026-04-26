@@ -13,6 +13,7 @@ import SocialProof from '../components/SocialProof.jsx';
 import FAQ from '../components/FAQ.jsx';
 import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
+import ABDevPanel from '../components/ABDevPanel.jsx';
 
 export default function FullSite() {
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function FullSite() {
       <FAQ />
       <CTASection />
       <SolumFooter />
+      <ABDevPanel />
     </>
   );
 }

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — Labels · Front & Back · 01 + 07</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --black: #08090B;
+  --bone: #F0ECE2;
+  --stone: #6a7380;
+  --blue: #2E6DA4;
+  --blit: #4A8FC7;
+  --gold: #C8A96E;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #111316;
+  font-family: 'Barlow Condensed', sans-serif;
+  padding: 60px 40px;
+  color: var(--bone);
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: var(--stone);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.page-sub {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-align: center;
+  margin-bottom: 64px;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+/* ── PRODUCT SECTION ── */
+.product-section {
+  max-width: 1100px;
+  margin: 0 auto 80px;
+}
+.product-title {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.6;
+  margin-bottom: 24px;
+}
+.label-pair {
+  display: flex;
+  gap: 2px;
+  align-items: flex-start;
+}
+.label-pair-gap {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* ── LABEL PANEL ── */
+.panel {
+  background: var(--black);
+  border: 1px solid rgba(240,236,226,0.07);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accent stripe at top */
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.p-blue::before  { background: var(--blue); }
+.p-blit::before  { background: var(--blit); }
+
+/* Front panel — taller, narrower */
+.front {
+  width: 180px;
+  height: 360px;
+  padding: 28px 18px 18px;
+}
+/* Back panel — same height, slightly wider */
+.back {
+  width: 200px;
+  height: 360px;
+  padding: 20px 16px 16px;
+}
+
+/* ── SHARED ELEMENTS ── */
+.prod-num {
+  font-size: 7px;
+  letter-spacing: 4px;
+  color: var(--stone);
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+.wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  line-height: 1;
+}
+.prod-name {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 600;
+  margin-top: 3px;
+}
+.div {
+  height: 1px;
+  background: rgba(240,236,226,0.07);
+  margin: 10px 0;
+}
+
+/* ── HERO LINE ── */
+.hero {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  color: var(--bone);
+  margin: 14px 0 10px;
+}
+.hero.blue { color: var(--blit); }
+.hero.blit { color: var(--blit); }
+
+/* ── FREQUENCY BADGE ── */
+.freq-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  padding: 4px 10px;
+  margin-bottom: 4px;
+}
+.freq-daily { background: var(--blue); color: #fff; }
+
+/* ── CLAIMS ── */
+.claims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 8px;
+}
+.claim {
+  font-size: 6.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 2px 5px;
+  border: 1px solid;
+}
+.cb { border-color: rgba(74,143,199,0.4); color: var(--blit); }
+
+/* ── VOLUME (front bottom right) ── */
+.front-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid rgba(240,236,226,0.06);
+}
+.vol-large {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  line-height: 1;
+}
+.origin-small {
+  font-size: 6.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone);
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* ── BACK LABEL ── */
+.back-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.back-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  opacity: 0.5;
+  line-height: 1;
+}
+.back-prod-name {
+  font-size: 7px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.6;
+  text-align: right;
+  margin-top: 2px;
+}
+.back-vol {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: rgba(240,236,226,0.4);
+  text-align: right;
+  line-height: 1;
+}
+
+/* ── INGREDIENTS BLOCK ── */
+.ing-label {
+  font-size: 6.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.ing {
+  font-size: 6px;
+  color: var(--stone);
+  line-height: 1.7;
+  font-style: italic;
+  opacity: 0.7;
+  letter-spacing: 0.2px;
+}
+
+/* ── HOW TO USE ── */
+.use-label {
+  font-size: 6.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.use-text {
+  font-size: 6.5px;
+  color: var(--stone);
+  line-height: 1.65;
+  opacity: 0.7;
+  letter-spacing: 0.1px;
+}
+
+/* ── BACK FOOTER ── */
+.back-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(240,236,226,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.legal {
+  font-size: 5.8px;
+  letter-spacing: 0.2px;
+  color: var(--stone);
+  line-height: 1.7;
+  opacity: 0.55;
+}
+.legal strong { color: rgba(240,236,226,0.35); font-style: normal; }
+
+/* PAO icon row */
+.pao-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pao-icon {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 6.5px;
+  color: var(--stone);
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+}
+/* Open jar PAO symbol */
+.pao-jar {
+  width: 14px;
+  height: 12px;
+  border: 1px solid rgba(240,236,226,0.25);
+  border-radius: 1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pao-jar::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 3px;
+  right: 3px;
+  height: 3px;
+  border: 1px solid rgba(240,236,226,0.25);
+  border-radius: 2px 2px 0 0;
+  border-bottom: none;
+}
+.pao-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  color: rgba(240,236,226,0.4);
+}
+
+/* Recycle */
+.recycle {
+  font-size: 9px;
+  color: rgba(240,236,226,0.3);
+}
+
+/* Barcode placeholder */
+.barcode {
+  display: flex;
+  gap: 1px;
+  align-items: flex-end;
+  height: 20px;
+  margin-top: 4px;
+}
+.barcode-bar {
+  background: rgba(240,236,226,0.25);
+  flex-shrink: 0;
+}
+
+/* ── DOWNLOAD BUTTONS ── */
+.dl-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue);
+  color: var(--bone);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  padding: 9px 18px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dl-btn:hover { background: var(--blit); }
+
+.panel-label {
+  font-size: 7px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.5;
+  margin-bottom: 6px;
+}
+
+.pair-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+</style>
+</head>
+<body>
+
+<h1>SOLUM — LABEL SYSTEM · FRONT & BACK</h1>
+<div class="page-sub">Products 01 · 07 · Front Panel + Back Panel · INCI Pending Where Noted</div>
+
+<!-- ══════════════════════════════════════════
+     01 — BODY WASH · 250ml
+══════════════════════════════════════════ -->
+<div class="product-section">
+  <div class="product-title">01 · Body Wash · 250ml · Tall Bottle · Matte Black Label · White Ink + Blue Accent</div>
+
+  <div class="label-pair-gap">
+
+    <!-- FRONT -->
+    <div class="pair-wrap">
+      <div class="panel-label">Front Panel</div>
+      <div class="panel front p-blue" id="bw-front">
+
+        <div>
+          <div class="prod-num">PRODUCT · 01</div>
+          <div class="wordmark">SOLUM</div>
+          <div class="prod-name">Body Wash</div>
+        </div>
+
+        <div class="freq-badge freq-daily">● Daily Use</div>
+
+        <div class="hero blue">CLEANS.<br>DOESN'T<br>STRIP.</div>
+
+        <div class="claims">
+          <span class="claim cb">Sulphate-Free</span>
+          <span class="claim cb">pH Balanced</span>
+          <span class="claim cb">Skin Barrier Safe</span>
+          <span class="claim cb">No Harsh Detergents</span>
+        </div>
+
+        <div class="front-footer">
+          <div class="vol-large">250<br><span style="font-size:11px;letter-spacing:1px;">ML</span></div>
+          <div class="origin-small">Made in<br>United Kingdom</div>
+        </div>
+
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bw-front','SOLUM-01-bodywash-FRONT.png')">↓ Download Front</button>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="pair-wrap">
+      <div class="panel-label">Back Panel</div>
+      <div class="panel back p-blue" id="bw-back">
+
+        <div class="back-header">
+          <div>
+            <div class="back-wordmark">SOLUM</div>
+            <div class="back-prod-name">Body Wash</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="back-vol">250 ML</div>
+            <div class="prod-num" style="text-align:right;margin-top:4px;">Product · 01</div>
+          </div>
+        </div>
+
+        <div class="div"></div>
+
+        <div class="ing-label">Ingredients</div>
+        <div class="ing">[INCI — pending Cosmiko]<br>
+        Aqua · Sodium Cocoyl Glutamate · Aloe Barbadensis Leaf Juice · Caprylyl Glucoside · Parfum (Cedarwood, Vetiver) · Preservative · Citric Acid</div>
+
+        <div class="div" style="margin:10px 0;"></div>
+
+        <div class="use-label">How to Use</div>
+        <div class="use-text">Apply to wet skin. Work into lather with exfoliating mitt. Rinse thoroughly. Use daily.</div>
+
+        <div class="div" style="margin:10px 0;"></div>
+
+        <div class="use-label">Warnings</div>
+        <div class="use-text">External use only. Avoid contact with eyes — rinse with water if contact occurs. Discontinue use if irritation develops. Keep out of reach of children.</div>
+
+        <div class="back-footer">
+          <div class="pao-row">
+            <div class="pao-icon">
+              <div class="pao-jar">
+                <div class="pao-num">12M</div>
+              </div>
+            </div>
+            <span class="recycle">♻</span>
+            <div class="pao-icon">Batch [XX] · Best before: see base</div>
+          </div>
+          <div class="legal">
+            <strong>Responsible Person:</strong> SOLUM, [Address], London, UK<br>
+            bysolum.co.uk · contact@bysolum.co.uk
+          </div>
+          <div class="barcode">
+            <!-- Barcode placeholder bars -->
+            <div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:3px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:3px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:3px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bw-back','SOLUM-01-bodywash-BACK.png')">↓ Download Back</button>
+      </div>
+    </div>
+
+    <!-- BOTH TOGETHER -->
+    <div class="pair-wrap">
+      <div class="panel-label">Front + Back · Joined</div>
+      <div style="display:flex;gap:2px;" id="bw-both">
+        <div class="panel front p-blue">
+          <div>
+            <div class="prod-num">PRODUCT · 01</div>
+            <div class="wordmark">SOLUM</div>
+            <div class="prod-name">Body Wash</div>
+          </div>
+          <div class="freq-badge freq-daily">● Daily Use</div>
+          <div class="hero blue">CLEANS.<br>DOESN'T<br>STRIP.</div>
+          <div class="claims">
+            <span class="claim cb">Sulphate-Free</span>
+            <span class="claim cb">pH Balanced</span>
+            <span class="claim cb">Skin Barrier Safe</span>
+            <span class="claim cb">No Harsh Detergents</span>
+          </div>
+          <div class="front-footer">
+            <div class="vol-large">250<br><span style="font-size:11px;letter-spacing:1px;">ML</span></div>
+            <div class="origin-small">Made in<br>United Kingdom</div>
+          </div>
+        </div>
+        <div class="panel back p-blue">
+          <div class="back-header">
+            <div>
+              <div class="back-wordmark">SOLUM</div>
+              <div class="back-prod-name">Body Wash</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="back-vol">250 ML</div>
+              <div class="prod-num" style="text-align:right;margin-top:4px;">Product · 01</div>
+            </div>
+          </div>
+          <div class="div"></div>
+          <div class="ing-label">Ingredients</div>
+          <div class="ing">[INCI — pending Cosmiko]<br>Aqua · Sodium Cocoyl Glutamate · Aloe Barbadensis Leaf Juice · Caprylyl Glucoside · Parfum (Cedarwood, Vetiver) · Preservative · Citric Acid</div>
+          <div class="div"></div>
+          <div class="use-label">How to Use</div>
+          <div class="use-text">Apply to wet skin. Work into lather with exfoliating mitt. Rinse thoroughly. Use daily.</div>
+          <div class="div"></div>
+          <div class="use-label">Warnings</div>
+          <div class="use-text">External use only. Avoid contact with eyes — rinse with water if contact occurs. Discontinue use if irritation develops. Keep out of reach of children.</div>
+          <div class="back-footer">
+            <div class="pao-row">
+              <div class="pao-icon"><div class="pao-jar"><div class="pao-num">12M</div></div></div>
+              <span class="recycle">♻</span>
+              <div class="pao-icon">Batch [XX] · Best before: see base</div>
+            </div>
+            <div class="legal">
+              <strong>Responsible Person:</strong> SOLUM, [Address], London, UK<br>
+              bysolum.co.uk · contact@bysolum.co.uk
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bw-both','SOLUM-01-bodywash-FRONT-BACK.png')">↓ Download Both Panels</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     07 — BODY LOTION · 400ml
+══════════════════════════════════════════ -->
+<div class="product-section">
+  <div class="product-title">07 · Body Lotion · 400ml · Pump Bottle · Matte Black Label · White Ink + Sky Blue Accent</div>
+
+  <div class="label-pair-gap">
+
+    <!-- FRONT -->
+    <div class="pair-wrap">
+      <div class="panel-label">Front Panel</div>
+      <div class="panel front p-blit" id="bl-front">
+
+        <div>
+          <div class="prod-num">PRODUCT · 07</div>
+          <div class="wordmark">SOLUM</div>
+          <div class="prod-name">Body Lotion</div>
+        </div>
+
+        <div class="freq-badge freq-daily">● Daily Use</div>
+
+        <div class="hero blit">THE<br>3-MINUTE<br>WINDOW.</div>
+
+        <div class="claims">
+          <span class="claim cb">Apply Within 3 Min</span>
+          <span class="claim cb">Fast Absorbing</span>
+          <span class="claim cb">No Residue</span>
+          <span class="claim cb">No Greasy Film</span>
+        </div>
+
+        <div class="front-footer">
+          <div class="vol-large">400<br><span style="font-size:11px;letter-spacing:1px;">ML</span></div>
+          <div class="origin-small">Made in<br>United Kingdom</div>
+        </div>
+
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bl-front','SOLUM-07-lotion-FRONT.png')">↓ Download Front</button>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="pair-wrap">
+      <div class="panel-label">Back Panel</div>
+      <div class="panel back p-blit" id="bl-back">
+
+        <div class="back-header">
+          <div>
+            <div class="back-wordmark">SOLUM</div>
+            <div class="back-prod-name">Body Lotion</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="back-vol">400 ML</div>
+            <div class="prod-num" style="text-align:right;margin-top:4px;">Product · 07</div>
+          </div>
+        </div>
+
+        <div class="div"></div>
+
+        <div class="ing-label">Ingredients</div>
+        <div class="ing">[INCI — pending Cosmiko]<br>
+        Aqua · Helianthus Annuus Seed Oil · Olea Europaea Fruit Oil · Prunus Armeniaca Kernel Oil · Sodium Hyaluronate · Aloe Barbadensis Leaf Juice · Tocopheryl Acetate · Parfum (Cedarwood, Vetiver) · Preservative · Citric Acid</div>
+
+        <div class="div"></div>
+
+        <div class="use-label">How to Use</div>
+        <div class="use-text">Apply within 3 minutes of towelling. Skin absorbs 70% more moisture while still warm. Two pumps. Press into skin — do not rub. Use daily.</div>
+
+        <div class="div"></div>
+
+        <div class="use-label">Warnings</div>
+        <div class="use-text">External use only. Avoid contact with eyes. Discontinue use if irritation develops. Keep out of reach of children.</div>
+
+        <div class="back-footer">
+          <div class="pao-row">
+            <div class="pao-icon">
+              <div class="pao-jar">
+                <div class="pao-num">12M</div>
+              </div>
+            </div>
+            <span class="recycle">♻</span>
+            <div class="pao-icon">Batch [XX] · Best before: see base</div>
+          </div>
+          <div class="legal">
+            <strong>Responsible Person:</strong> SOLUM, [Address], London, UK<br>
+            bysolum.co.uk · contact@bysolum.co.uk
+          </div>
+          <div class="barcode">
+            <div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:3px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:3px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:3px;height:14px;"></div><div class="barcode-bar" style="width:1px;height:18px;"></div><div class="barcode-bar" style="width:1px;height:14px;"></div><div class="barcode-bar" style="width:2px;height:18px;"></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bl-back','SOLUM-07-lotion-BACK.png')">↓ Download Back</button>
+      </div>
+    </div>
+
+    <!-- BOTH TOGETHER -->
+    <div class="pair-wrap">
+      <div class="panel-label">Front + Back · Joined</div>
+      <div style="display:flex;gap:2px;" id="bl-both">
+        <div class="panel front p-blit">
+          <div>
+            <div class="prod-num">PRODUCT · 07</div>
+            <div class="wordmark">SOLUM</div>
+            <div class="prod-name">Body Lotion</div>
+          </div>
+          <div class="freq-badge freq-daily">● Daily Use</div>
+          <div class="hero blit">THE<br>3-MINUTE<br>WINDOW.</div>
+          <div class="claims">
+            <span class="claim cb">Apply Within 3 Min</span>
+            <span class="claim cb">Fast Absorbing</span>
+            <span class="claim cb">No Residue</span>
+            <span class="claim cb">No Greasy Film</span>
+          </div>
+          <div class="front-footer">
+            <div class="vol-large">400<br><span style="font-size:11px;letter-spacing:1px;">ML</span></div>
+            <div class="origin-small">Made in<br>United Kingdom</div>
+          </div>
+        </div>
+        <div class="panel back p-blit">
+          <div class="back-header">
+            <div>
+              <div class="back-wordmark">SOLUM</div>
+              <div class="back-prod-name">Body Lotion</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="back-vol">400 ML</div>
+              <div class="prod-num" style="text-align:right;margin-top:4px;">Product · 07</div>
+            </div>
+          </div>
+          <div class="div"></div>
+          <div class="ing-label">Ingredients</div>
+          <div class="ing">[INCI — pending Cosmiko]<br>Aqua · Helianthus Annuus Seed Oil · Olea Europaea Fruit Oil · Prunus Armeniaca Kernel Oil · Sodium Hyaluronate · Aloe Barbadensis Leaf Juice · Tocopheryl Acetate · Parfum (Cedarwood, Vetiver) · Preservative · Citric Acid</div>
+          <div class="div"></div>
+          <div class="use-label">How to Use</div>
+          <div class="use-text">Apply within 3 minutes of towelling. Skin absorbs 70% more moisture while still warm. Two pumps. Press into skin — do not rub. Use daily.</div>
+          <div class="div"></div>
+          <div class="use-label">Warnings</div>
+          <div class="use-text">External use only. Avoid contact with eyes. Discontinue use if irritation develops. Keep out of reach of children.</div>
+          <div class="back-footer">
+            <div class="pao-row">
+              <div class="pao-icon"><div class="pao-jar"><div class="pao-num">12M</div></div></div>
+              <span class="recycle">♻</span>
+              <div class="pao-icon">Batch [XX] · Best before: see base</div>
+            </div>
+            <div class="legal">
+              <strong>Responsible Person:</strong> SOLUM, [Address], London, UK<br>
+              bysolum.co.uk · contact@bysolum.co.uk
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dl-row">
+        <button class="dl-btn" onclick="dlPanel('bl-both','SOLUM-07-lotion-FRONT-BACK.png')">↓ Download Both Panels</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function dlPanel(id, filename) {
+  const el = document.getElementById(id);
+  html2canvas(el, {
+    scale: 3,
+    useCORS: true,
+    backgroundColor: '#08090B',
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+</script>
+
+</body>
+</html>

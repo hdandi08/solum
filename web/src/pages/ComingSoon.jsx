@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { PRODUCTS } from '../data/products';
 
-function track(event, props) {
-  if (window.plausible) window.plausible(event, { props });
-}
+import { capture } from '../lib/analytics';
 
 // Common domains — used to suggest corrections for typos
 const COMMON_DOMAINS = [
@@ -1461,7 +1459,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
       }
 
       setPosition(data.position);
-      track('Waitlist Signup', { cta: formId, position: String(data.position), source });
+      capture('Waitlist Signup', { cta: formId, position: String(data.position), source });
       onSuccess && onSuccess();
     } catch (err) {
       console.error(err);
@@ -1563,7 +1561,7 @@ function WaitlistForm({ label = 'Claim Founding Member Spot', onSuccess, formId 
           type="email"
           value={email}
           onChange={handleEmailChange}
-          onFocus={() => track('Email Input Focus', { cta: formId })}
+          onFocus={() => capture('Email Input Focus', { cta: formId })}
           placeholder="Your email address"
           required
           autoComplete="email"
@@ -1639,7 +1637,7 @@ export default function ComingSoon() {
       [25, 50, 75, 100].forEach(depth => {
         if (!fired.has(depth) && pct >= depth / 100) {
           fired.add(depth);
-          track('Scroll Depth', { percent: `${depth}%` });
+          capture('Scroll Depth', { percent: `${depth}%` });
         }
       });
     }
@@ -1652,7 +1650,7 @@ export default function ComingSoon() {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          track('Section Viewed', { section: e.target.dataset.track });
+          capture('Section Viewed', { section: e.target.dataset.track });
           obs.unobserve(e.target);
         }
       });

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Launch Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #08090B;
+    --charcoal: #181C24;
+    --deep-blue: #1A4A78;
+    --steel-blue: #2E6DA4;
+    --sky-blue: #4A8FC7;
+    --bone: #F0ECE2;
+    --bone-dim: rgba(240,236,226,0.45);
+    --red: #C0392B;
+    --amber: #D4A017;
+    --green: #27AE60;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 1px solid var(--steel-blue);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+
+  .wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.15em;
+    color: var(--bone);
+    line-height: 1;
+    display: block;
+  }
+
+  .doc-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--steel-blue);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .target-banner {
+    margin-top: 24px;
+    background: var(--deep-blue);
+    border-left: 3px solid var(--sky-blue);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .target-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+  }
+
+  .target-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+  }
+
+  .target-sub {
+    font-size: 13px;
+    color: var(--bone-dim);
+    font-weight: 400;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-bottom: 40px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  .progress-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    color: var(--sky-blue);
+  }
+
+  .progress-bar-bg {
+    background: var(--charcoal);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--deep-blue), var(--sky-blue));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(46,109,164,0.3);
+  }
+
+  .section-tag {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--steel-blue);
+    background: rgba(46,109,164,0.15);
+    padding: 2px 8px;
+    border: 1px solid rgba(46,109,164,0.4);
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--bone);
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--bone-dim);
+  }
+
+  .section-note {
+    font-size: 12px;
+    color: var(--bone-dim);
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    border-left: 2px solid var(--deep-blue);
+    font-weight: 400;
+  }
+
+  /* Items */
+  .item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--charcoal);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .item:hover {
+    background: #1f2535;
+  }
+
+  .item.done {
+    opacity: 0.45;
+  }
+
+  .item.done .item-text {
+    text-decoration: line-through;
+    text-decoration-color: var(--bone-dim);
+  }
+
+  .item-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba(46,109,164,0.6);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .item.done .item-check {
+    background: var(--steel-blue);
+    border-color: var(--steel-blue);
+  }
+
+  .item-check::after {
+    content: '';
+    width: 10px;
+    height: 7px;
+    border-left: 2px solid var(--bone);
+    border-bottom: 2px solid var(--bone);
+    transform: rotate(-45deg) translate(1px, -1px);
+    display: none;
+  }
+
+  .item.done .item-check::after {
+    display: block;
+  }
+
+  .item-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--bone);
+    line-height: 1.4;
+  }
+
+  .item-sub {
+    font-size: 11px;
+    color: var(--bone-dim);
+    font-weight: 300;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .badge-blocker {
+    background: rgba(192,57,43,0.2);
+    color: #E74C3C;
+    border: 1px solid rgba(192,57,43,0.5);
+  }
+
+  .badge-urgent {
+    background: rgba(212,160,23,0.15);
+    color: #F0C040;
+    border: 1px solid rgba(212,160,23,0.5);
+  }
+
+  .badge-ready {
+    background: rgba(39,174,96,0.15);
+    color: #2ECC71;
+    border: 1px solid rgba(39,174,96,0.4);
+  }
+
+  /* Strategy box */
+  .strategy-box {
+    background: var(--charcoal);
+    border: 1px solid var(--deep-blue);
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+
+  .strategy-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 16px;
+  }
+
+  .math-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .math-cell {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(26,74,120,0.3);
+    padding: 12px 16px;
+    border-top: 2px solid var(--deep-blue);
+  }
+
+  .math-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 4px;
+  }
+
+  .math-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    color: var(--bone);
+  }
+
+  .math-note {
+    font-size: 11px;
+    color: var(--bone-dim);
+    margin-top: 2px;
+  }
+
+  .tactic-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tactic-list li {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--bone);
+    line-height: 1.5;
+  }
+
+  .tactic-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: var(--sky-blue);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    width: 18px;
+    margin-top: 1px;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(46,109,164,0.2);
+    font-size: 11px;
+    color: var(--bone-dim);
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid rgba(46,109,164,0.4);
+    color: var(--bone-dim);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--steel-blue);
+    color: var(--bone);
+  }
+
+  @media (max-width: 600px) {
+    .math-row { flex-direction: column; }
+    .target-banner { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="wordmark">SOLUM</span>
+    <div class="doc-title">Launch Checklist — 150 Subscriptions in 14 Days</div>
+    <div class="target-banner">
+      <div>
+        <div class="target-label">Target</div>
+        <div class="target-value">150 SUBS</div>
+      </div>
+      <div>
+        <div class="target-label">Window</div>
+        <div class="target-value">14 DAYS</div>
+      </div>
+      <div>
+        <div class="target-label">Kit mix</div>
+        <div class="target-value">RITUAL-FIRST</div>
+      </div>
+      <div>
+        <div class="target-label">Revenue at target</div>
+        <div class="target-value">~£7,650</div>
+        <div class="target-sub">50×GROUND £55 + 100×RITUAL £85</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">Overall Progress</span>
+      <span class="progress-count" id="progress-count">0 / 0</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- SECTION A: COMPLIANCE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">A</span>
+      <span class="section-title">Compliance — Legal Blockers</span>
+      <span class="section-count" id="count-a"></span>
+    </div>
+    <div class="section-note">Cannot legally sell products 01, 05, 06, 07 in the UK without CPSR. These gate everything. Do these first, today.</div>
+    <ul class="item-list" id="list-a">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Chase Cosmiko for INCI lists — products 01 (Body Wash) + 07 (Body Lotion)</div>
+          <div class="item-sub">Email hello@cosmiko.co.uk · 01937 844105 · INCI needed before CPSR can be submitted</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Get INCI list from Moroccan supplier — products 05 (Clay) + 06 (Argan Oil)</div>
+          <div class="item-sub">Argan Oil is single-ingredient so likely trivial · Clay needs full INCI from Moroccan Organica or Fatima's Garden</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Commission CPSR assessor — all 4 cosmetics submitted together</div>
+          <div class="item-sub">Recommended: Larchwood Consulting · Bellis Safety · Cosmetag · Budget: £800–1,000 · Turnaround: 4–6 weeks</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Register as UK Responsible Person</div>
+          <div class="item-sub">Harsha's UK address · Required for all cosmetics placed on UK market</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Stability testing — all 4 cosmetic products</div>
+          <div class="item-sub">Required alongside CPSR · Larchwood or Bellis can coordinate</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Microbial testing — Product 05 (Rhassoul Clay)</div>
+          <div class="item-sub">Clay paste specifically requires microbial challenge test on top of stability</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">SCPN notification on UK Submit system — all 4 cosmetics</div>
+          <div class="item-sub">Do this after CPSR is approved · Cosmetic Product Safety Report must be filed before sale</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION B: INVENTORY -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">B</span>
+      <span class="section-title">Inventory — Physical Products</span>
+      <span class="section-count" id="count-b"></span>
+    </div>
+    <div class="section-note">Need 150 fully assembled kits ready to ship on day 1. All products must be in hand before launch.</div>
+    <ul class="item-list" id="list-b">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Place Morocco order — Fatima's Garden (clay + argan, MOQ 12)</div>
+          <div class="item-sub">contact@fatimasgarden.com · +212 638 876677 · Email drafted, not yet sent · Order enough for 200 kits (buffer)</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Contact Jennifer's Hamam — Kese Mitt order (MOQ 30–50)</div>
+          <div class="item-sub">jennifershamam@gmail.com · +90 212 516 3022 · 2–3 week lead time · SOVEREIGN tier only, buy with SOLUM hang tag</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Confirm Korea order status — COOLFIN A (Scalp Massager 04)</div>
+          <div class="item-sub">Logo + packaging brief sent · Confirm delivery date · Need 150+ units for launch</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Confirm Korea tools — Italy Towel Mitt (02) + Back Scrub Cloth (03)</div>
+          <div class="item-sub">White-labelled China manufacture · 2–4 week lead time · Woven SOLUM label tag · Order 200 units</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Confirm Cosmiko order status — Body Wash (01) + Lotion (07)</div>
+          <div class="item-sub">hello@cosmiko.co.uk · 4–6 week lead time · Email sent · Chase for confirmation + delivery date</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Confirm lotion bottle dimensions from Cosmiko before ordering packaging</div>
+          <div class="item-sub">Box insert/foam must fit exactly · Do not bulk-order packaging before you have actual product dimensions</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Order Alibaba box samples — A4 footprint, 8cm + 10cm depth, matte black magnetic debossed</div>
+          <div class="item-sub">Search: "black rigid gift box magnetic matte debossed MOQ 100" · Est. £0.80–1.20/unit · Order samples first</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Order Foldabox samples as UK backup</div>
+          <div class="item-sub">foldabox.co.uk/collections/sample-black-gift-boxes · Est. £3.00–3.80/unit · Faster delivery, higher cost</div>
+        </div>
+        <span class="badge badge-ready">Ready</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Order packaging components — tissue, ribbon, foam inserts, mailers</div>
+          <div class="item-sub">Black tissue (Foldabox/Amazon £0.20) · Steel blue ribbon Berisfords (£0.10) · Foam sheets Amazon (£0.20) · Kite Packaging mailers (£0.55)</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Finalise and print labels — all 8 products</div>
+          <div class="item-sub">Labels v3 designed · Matte black waterproof stock, white ink · Min 6pt font · Print at Printed.com</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Print ritual cards (Printed.com, 400gsm matte A5 folded)</div>
+          <div class="item-sub">Ritual card v3 designed · Est. £0.45/unit · Print 250 — enough for buffer · Ritual card v3 = solum-ritual-card-full.html</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">QC 10 fully assembled kits end-to-end before bulk assembly</div>
+          <div class="item-sub">Check: labels aligned, products fit foam, no leaks, unboxing experience matches brief · Fix issues before assembling 150</div>
+        </div>
+        <span class="badge badge-ready">Ready</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Assemble 150 launch kits (GROUND + RITUAL split)</div>
+          <div class="item-sub">GROUND: 01, 02, 03, 04, 07 · RITUAL: 01, 02, 03, 04, 05, 06, 07 · Recommended mix: ~50 GROUND / ~100 RITUAL</div>
+        </div>
+        <span class="badge badge-ready">Ready</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION C: BUSINESS & LEGAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">C</span>
+      <span class="section-title">Business & Legal</span>
+      <span class="section-count" id="count-c"></span>
+    </div>
+    <ul class="item-list" id="list-c">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Register bysolum.co.uk domain — do this today</div>
+          <div class="item-sub">Not yet registered · 123-reg or Namecheap · Also register bysolum.com · Without this the website has no address</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up business email — harsha@bysolum.co.uk and orders@bysolum.co.uk</div>
+          <div class="item-sub">Google Workspace £4.60/mo or Zoho free · orders@ needed for Resend confirmation emails</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Open business bank account — Starling or HSBC</div>
+          <div class="item-sub">Starling Business instant approval, Stripe pays out to UK account · Separate from personal before real revenue hits</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Decide: launch as sole trader or LTD — document the decision</div>
+          <div class="item-sub">Sole trader = simpler, can launch immediately · LTD = credibility + liability protection · LTD registration takes 24hrs on Companies House online</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Privacy Policy + Terms + Cookie Policy on bysolum.co.uk</div>
+          <div class="item-sub">Legal requirement for ecommerce in UK · Use iubenda or Termly to generate — takes 20 minutes · Stripe requires this</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Verify Stripe account is fully activated (bank account + ID verified)</div>
+          <div class="item-sub">Stripe will hold payouts if not verified · Do this now, before any live transactions</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION D: TECH / PAYMENTS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">D</span>
+      <span class="section-title">Tech & Payments</span>
+      <span class="section-count" id="count-d"></span>
+    </div>
+    <div class="section-note">Checkout is fully built and tested in Stripe test mode. Just need the live key swap + domain setup.</div>
+    <ul class="item-list" id="list-d">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Connect bysolum.co.uk custom domain to Amplify production app</div>
+          <div class="item-sub">AWS Amplify → Custom domains → add bysolum.co.uk + www.bysolum.co.uk · SSL auto-provisioned</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Register Stripe live webhook endpoint — all 18 events</div>
+          <div class="item-sub">Stripe Dashboard → Developers → Webhooks → Add endpoint → paste Supabase function URL · See project_stripe_webhook_setup.md for full event list</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Swap Stripe to live mode — 4 values to update</div>
+          <div class="item-sub">Supabase: STRIPE_SECRET_KEY → sk_live_... · Supabase: STRIPE_WEBHOOK_SECRET → whsec_live_... · amplify.yml: VITE_STRIPE_PUBLISHABLE_KEY → pk_live_...</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Verify orders.bysolum.co.uk in Resend — must show green</div>
+          <div class="item-sub">Resend Dashboard → Domains → verify DNS records · Without this confirmation emails won't send</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Configure Supabase Auth for production URL</div>
+          <div class="item-sub">Authentication → URL Configuration → Site URL: https://bysolum.co.uk · Redirect URLs: add https://bysolum.co.uk/account</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Do one live test order with a real card — full end-to-end</div>
+          <div class="item-sub">Confirm: row in customers table · confirmation email arrives · lead marked completed · Stripe live payment shows · then refund yourself</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Test full checkout on mobile — iPhone + Android</div>
+          <div class="item-sub">Most TikTok traffic is mobile · Check: form fills, Stripe card input, success page, email received on phone</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Build shipping confirmation email — with tracking number field</div>
+          <div class="item-sub">Currently missing · Required for good CX · Send when you print Royal Mail label · Template can be simple</div>
+        </div>
+        <span class="badge badge-ready">Build</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Build abandoned checkout retargeting email — leads table is ready</div>
+          <div class="item-sub">Edge function captures all initiated checkouts · Email 24hr later if not completed · Estimated 15–25% recovery rate</div>
+        </div>
+        <span class="badge badge-ready">Build</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up Plausible tracking on bysolum.co.uk</div>
+          <div class="item-sub">Plausible already wired · Confirm pageviews are recording · Set up conversion goals: /checkout and /success</div>
+        </div>
+        <span class="badge badge-ready">Ready</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION E: MARKETING -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">E</span>
+      <span class="section-title">Marketing — Pre-Launch &amp; Launch</span>
+      <span class="section-count" id="count-e"></span>
+    </div>
+    <div class="section-note">Champion ad: Reel 03 "You shower every day. You still smell." at £0.20 CPV. Use this as base — test challengers in parallel.</div>
+    <ul class="item-list" id="list-e">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Build email waitlist — collect signups before launch</div>
+          <div class="item-sub">Simple landing page or Typeform + Mailchimp · Post "early access opens [date]" reels 1 week before · Warm audience converts at 3–4× paid traffic</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Post pre-launch content sequence — 5–7 days before launch</div>
+          <div class="item-sub">Use 8-post Instagram launch sequence from solum-instagram-strategy.md · First 3 posts = education, not product · Build awareness before selling</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Test untested reels before launch — identify second champion</div>
+          <div class="item-sub">Priority: Reel 09 (Since 14), Reel 08 (Skin reset), Reel 12 (Dead skin back), Reel 13 (You've been showering) · Run 48hr tests at £30/day each</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up 3-campaign ad structure for launch week</div>
+          <div class="item-sub">Campaign 1: Champion (Reel 03) £200/day · Campaign 2: Challenger (best untested) £100/day · Campaign 3: Video view retargeting £50/day</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Install Meta Pixel + TikTok Pixel on bysolum.co.uk</div>
+          <div class="item-sub">Required for retargeting and lookalike audiences · Add to Amplify build · Fire pixel on /success for purchase event · Critical for ROAS tracking</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Frame launch as limited first production run — 150 kits, first to ship</div>
+          <div class="item-sub">Real scarcity is real. State in all launch comms: "150 kits · First batch · Spaces filling fast." Copy already approved in messaging framework.</div>
+        </div>
+        <span class="badge badge-ready">Copy</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Post organic content every day during launch 2 weeks</div>
+          <div class="item-sub">Organic views = free top-of-funnel that feeds paid retargeting · 1 reel per day minimum · Use backlog in reel pipeline · Mix shame/consequence + education hooks</div>
+        </div>
+        <span class="badge badge-ready">Cadence</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Build "White Towel Test" reel (Concept 9) — highest visual impact</div>
+          <div class="item-sub">Close-up towel wipes damp forearm → grey smudge · 9s · No voiceover · Ad candidate: high · Production brief in reel pipeline memory</div>
+        </div>
+        <span class="badge badge-ready">Build</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Email waitlist on launch day — first access, limited stock message</div>
+          <div class="item-sub">Send before ads go live · Subject: "SOLUM is live. 150 kits. First to ship." · Give waitlist 2hr head start on public launch</div>
+        </div>
+        <span class="badge badge-ready">Day 1</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Update website hero copy to reflect launch — "Spaces filling fast"</div>
+          <div class="item-sub">Most recent commit already removed 20% off and added "spaces filling fast" messaging · Verify this is live on production</div>
+        </div>
+        <span class="badge badge-ready">Verify</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION F: OPERATIONS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">F</span>
+      <span class="section-title">Operations & Fulfilment</span>
+      <span class="section-count" id="count-f"></span>
+    </div>
+    <ul class="item-list" id="list-f">
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up Royal Mail Click &amp; Drop account — test a label before launch</div>
+          <div class="item-sub">Tracked 48, Small Parcel (up to 2kg) = £3.85/box · Click &amp; Drop auto-imports orders from Stripe · Print label, book collection</div>
+        </div>
+        <span class="badge badge-blocker">Blocker</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up packing station — label printer, tape, void fill, all components to hand</div>
+          <div class="item-sub">Thermal label printer (Rollo or DYMO) saves time vs inkjet · Have all box components accessible · Set target: pack one kit in under 4 minutes</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Define and test the end-to-end fulfilment process — order to shipped</div>
+          <div class="item-sub">Order comes in → kit assembled → label printed → Click &amp; Drop booked → tracking number emailed to customer · Do a dry run before launch</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Define monthly subscription fulfilment process — what ships, when</div>
+          <div class="item-sub">Billing anchored to 1st of month · Monthly: 01 Body Wash + 07 Lotion + 08 Bamboo Cloth · Quarterly: 02, 03, 05, 06 · 6-monthly: 04 Scalp Massager</div>
+        </div>
+        <span class="badge badge-ready">Define</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Set up customer support inbox — respond within 24hr SLA</div>
+          <div class="item-sub">harsha@bysolum.co.uk works for now · Set up canned replies for: delivery query, returns, cancel subscription · Good CX drives reviews + referrals</div>
+        </div>
+        <span class="badge badge-ready">Ready</span>
+      </li>
+      <li class="item" onclick="toggle(this)">
+        <div class="item-check"></div>
+        <div class="item-body">
+          <div class="item-text">Define returns policy — and add it to the website</div>
+          <div class="item-sub">UK Consumer Rights Act: 14-day return right on unused goods · Cosmetics exception for hygiene — opened products not returnable · Document this clearly</div>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Strategy Box -->
+  <div class="strategy-box">
+    <div class="strategy-title">The 150-Sub Math — What It Actually Takes</div>
+
+    <div class="math-row">
+      <div class="math-cell">
+        <div class="math-label">Ad spend (14 days)</div>
+        <div class="math-value">£4,900</div>
+        <div class="math-note">£350/day · Champion + challenger</div>
+      </div>
+      <div class="math-cell">
+        <div class="math-label">CAC at launch</div>
+        <div class="math-value">~£35</div>
+        <div class="math-note">Slightly above base £28 — no social proof yet</div>
+      </div>
+      <div class="math-cell">
+        <div class="math-label">From paid ads</div>
+        <div class="math-value">~120</div>
+        <div class="math-note">Remaining 30 from organic + waitlist</div>
+      </div>
+      <div class="math-cell">
+        <div class="math-label">Payback</div>
+        <div class="math-value">Month 1</div>
+        <div class="math-note">First box covers CAC — model self-funds</div>
+      </div>
+    </div>
+
+    <ul class="tactic-list">
+      <li>
+        <span class="tactic-num">1</span>
+        <span><strong>Waitlist first.</strong> Launch to your email list 2 hours before ads go live. Even 200 signups at 20% conversion = 40 subs with zero ad spend. Those early orders create social proof and stock urgency.</span>
+      </li>
+      <li>
+        <span class="tactic-num">2</span>
+        <span><strong>Push RITUAL, not GROUND.</strong> At £85 vs £55, RITUAL adds £30 per customer in first-box revenue and attracts a more committed buyer with lower churn. Frame GROUND as the starter, RITUAL as "the one worth doing".</span>
+      </li>
+      <li>
+        <span class="tactic-num">3</span>
+        <span><strong>Run retargeting from day 1.</strong> Video viewers who've seen 50%+ of Reel 03 convert at 3–5× the rate of cold traffic. This is free reach you've already paid for — don't leave it on the table.</span>
+      </li>
+      <li>
+        <span class="tactic-num">4</span>
+        <span><strong>Scarcity is real — say it.</strong> 150 kits is a real constraint. "150 kits · Spaces filling fast" is not a dark pattern — it's honest. Use it in ads, on the site, in emails.</span>
+      </li>
+      <li>
+        <span class="tactic-num">5</span>
+        <span><strong>Post organic every day.</strong> Organic views seed your retargeting pool at zero cost. Each reel you post = more people who've heard of SOLUM before they see a paid ad. Compound effect builds within days.</span>
+      </li>
+      <li>
+        <span class="tactic-num">6</span>
+        <span><strong>Kill dead creatives fast.</strong> Reel 07 and Reel 11 were dead within 48hrs. Don't let bad ads run for 5 days hoping they improve. Cut at 48hr if CPV is above £0.40. Redeploy budget to champion.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>SOLUM · Internal Use Only · bysolum.co.uk · April 2026</span>
+    <button class="reset-btn" onclick="resetAll()">Reset All</button>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'solum-launch-checklist-v1';
+
+  function getSavedState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  }
+
+  function saveState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function toggle(item) {
+    item.classList.toggle('done');
+    persistAndUpdate();
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all checkboxes?')) return;
+    document.querySelectorAll('.item.done').forEach(i => i.classList.remove('done'));
+    saveState({});
+    update();
+  }
+
+  function persistAndUpdate() {
+    const state = {};
+    document.querySelectorAll('.item').forEach((item, i) => {
+      state[i] = item.classList.contains('done');
+    });
+    saveState(state);
+    update();
+  }
+
+  function restoreState() {
+    const state = getSavedState();
+    document.querySelectorAll('.item').forEach((item, i) => {
+      if (state[i]) item.classList.add('done');
+    });
+  }
+
+  function update() {
+    const sections = ['a', 'b', 'c', 'd', 'e', 'f'];
+    let totalDone = 0, totalAll = 0;
+
+    sections.forEach(s => {
+      const list = document.getElementById('list-' + s);
+      const counter = document.getElementById('count-' + s);
+      if (!list || !counter) return;
+      const items = list.querySelectorAll('.item');
+      const done = list.querySelectorAll('.item.done').length;
+      counter.textContent = done + ' / ' + items.length + ' done';
+      totalDone += done;
+      totalAll += items.length;
+    });
+
+    document.getElementById('progress-count').textContent = totalDone + ' / ' + totalAll;
+    const pct = totalAll > 0 ? (totalDone / totalAll * 100) : 0;
+    document.getElementById('progress-bar').style.width = pct.toFixed(1) + '%';
+  }
+
+  restoreState();
+  update();
+</script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useVariant } from '../hooks/useVariant';
+
+const CTA_COPY = { control: 'Choose Your Kit', ritual: 'Build Your Ritual' };
 
 const CSS = `
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(8,9,11,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--lineb);}
@@ -33,6 +36,8 @@ export default function Nav() {
   const [activeNav, setActiveNav] = useState('');
   const [user, setUser] = useState(null);
   const { pathname } = useLocation();
+  const ctaVariant = useVariant('hero-cta-copy');
+  const ctaLabel = CTA_COPY[ctaVariant] ?? CTA_COPY.control;
   const onFullSite = pathname === '/full';
 
   const resolve = (href) => href.startsWith('#') && !onFullSite ? `/full${href}` : href;
@@ -82,7 +87,7 @@ export default function Nav() {
               <span>Account</span>
             )}
           </a>
-          <a href={resolve('#kits')} className="nav-cta">Choose Your Kit</a>
+          <a href={resolve('#kits')} className="nav-cta">{ctaLabel}</a>
         </div>
       </nav>
     </>

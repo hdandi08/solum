@@ -5,30 +5,34 @@ const CSS = `
 .proof-header .pr-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .proof-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;}
 .proof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);}
-.proof-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:16px;}
-.proof-stars{color:var(--blue);font-size:16px;letter-spacing:2px;}
-.proof-quote{font-size:16px;font-weight:300;color:var(--mist);line-height:1.7;font-style:italic;}
-.proof-author{display:flex;flex-direction:column;gap:3px;margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
-.proof-name{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;}
-.proof-info{font-size:13px;color:var(--stone);letter-spacing:1px;}
+.proof-card{background:var(--black);padding:40px 32px;display:flex;flex-direction:column;gap:0;}
+.proof-week{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:16px;}
+.proof-outcome{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,2.5vw,40px);letter-spacing:.04em;color:var(--bone);line-height:1.05;margin-bottom:20px;}
+.proof-detail{font-size:15px;font-weight:300;color:var(--mist);line-height:1.75;flex:1;}
+.proof-zone{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line);}
+.proof-zone-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.proof-zone-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;}
 @media(max-width:768px){.proof-grid{grid-template-columns:1fr;}.proof-section{padding:60px 24px;}}
 `;
 
-const REVIEWS = [
+const OUTCOMES = [
   {
-    quote: "Week one. Back. I'd never properly cleaned it once in my life. The difference after one session was embarrassing.",
-    name: 'James T.',
-    info: 'RITUAL subscriber · Month 4',
+    week: 'Session One',
+    outcome: 'Your Back. For The First Time.',
+    detail: 'The back scrub cloth reaches what no shower ever has. In 60 seconds. The difference is immediate — you will feel skin that has never been touched by a proper clean.',
+    zone: 'Back · Dead Skin',
   },
   {
-    quote: "I used to think body lotion was for women. Turns out I was just not doing basic maintenance. The 3-minute rule changed everything.",
-    name: 'Marcus R.',
-    info: 'GROUND subscriber · Month 2',
+    week: 'Week Two',
+    outcome: 'Skin That Holds Moisture Past Midday.',
+    detail: 'The 3-minute lotion window is real. Once you start applying it warm and on cleared skin, you stop needing to reapply. Your skin stops losing moisture through the day.',
+    zone: 'Full Body · Hydration',
   },
   {
-    quote: "The ritual card is brilliant. It tells you exactly what to do and for how long. There's nothing to figure out.",
-    name: 'Daniel K.',
-    info: 'RITUAL subscriber · Month 6',
+    week: 'Month Two',
+    outcome: 'It Stops Feeling Like Effort.',
+    detail: 'Ten minutes. Muscle memory. You stop thinking about each step and start noticing when you skip it. That is the point at which the ritual is yours.',
+    zone: 'Scalp · Skin · Habit',
   },
 ];
 
@@ -39,17 +43,18 @@ export default function SocialProof() {
       <section className="proof-section" id="proof">
         <div className="proof-inner">
           <div className="proof-header reveal">
-            <div className="pr-sec-tag">Here's What Actually Happens When You Do It Right</div>
+            <div className="pr-sec-tag">What To Expect When You Do It Right</div>
             <h2>The Results<br />Speak Plainly.</h2>
           </div>
           <div className="proof-grid reveal">
-            {REVIEWS.map(r => (
-              <div key={r.name} className="proof-card">
-                <div className="proof-stars">★★★★★</div>
-                <p className="proof-quote">"{r.quote}"</p>
-                <div className="proof-author">
-                  <div className="proof-name">{r.name}</div>
-                  <div className="proof-info">{r.info}</div>
+            {OUTCOMES.map(o => (
+              <div key={o.week} className="proof-card">
+                <div className="proof-week">{o.week}</div>
+                <div className="proof-outcome">{o.outcome}</div>
+                <p className="proof-detail">{o.detail}</p>
+                <div className="proof-zone">
+                  <span className="proof-zone-dot" />
+                  <span className="proof-zone-label">{o.zone}</span>
                 </div>
               </div>
             ))}

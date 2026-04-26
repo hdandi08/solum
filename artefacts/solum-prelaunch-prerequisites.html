@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Pre-Launch Prerequisites</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --black:#08090B;--char:#181C24;--blue:#2E6DA4;--sky:#4A8FC7;--bone:#F0ECE2;
+    --mist:#B8B4A8;--stone:#6B6860;--line:rgba(255,255,255,0.07);
+    --red:#C0392B;--amber:#D4860A;--green:#27AE60;
+  }
+  body{background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;font-weight:300;min-height:100vh;padding:60px 48px 120px;}
+
+  /* Header */
+  .doc-header{max-width:1100px;margin:0 auto 64px;padding-bottom:40px;border-bottom:1px solid var(--line);}
+  .doc-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .doc-eyebrow::before{content:'';width:28px;height:1px;background:var(--blue);}
+  .doc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6vw,88px);letter-spacing:.05em;line-height:.9;margin-bottom:24px;}
+  .doc-sub{font-size:17px;font-weight:300;color:var(--mist);max-width:640px;line-height:1.6;margin-bottom:32px;}
+  .doc-meta{display:flex;gap:32px;flex-wrap:wrap;}
+  .doc-meta-item{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:500;}
+  .doc-meta-item span{color:var(--sky);}
+
+  /* Progress bar */
+  .launch-score{max-width:1100px;margin:0 auto 56px;background:var(--char);border:1px solid var(--line);padding:28px 32px;}
+  .score-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .score-label{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+  .score-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--bone);letter-spacing:.05em;}
+  .score-bar{height:4px;background:rgba(255,255,255,0.06);position:relative;}
+  .score-fill{height:100%;background:linear-gradient(to right,var(--blue),var(--sky));width:28%;transition:width .6s ease;}
+  .score-note{margin-top:12px;font-size:12px;color:var(--stone);font-weight:400;}
+
+  /* Tier sections */
+  .tier{max-width:1100px;margin:0 auto 56px;}
+  .tier-header{display:flex;align-items:center;gap:20px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--line);}
+  .tier-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.1em;padding:6px 14px;border:1px solid;}
+  .tier-badge.blocker{border-color:var(--red);color:var(--red);}
+  .tier-badge.critical{border-color:var(--amber);color:var(--amber);}
+  .tier-badge.important{border-color:var(--blue);color:var(--blue);}
+  .tier-badge.nice{border-color:var(--stone);color:var(--stone);}
+  .tier-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.05em;}
+  .tier-desc{font-size:14px;color:var(--stone);font-weight:400;margin-left:auto;max-width:320px;line-height:1.5;text-align:right;}
+
+  /* Cards */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+  .card{background:var(--char);padding:32px 28px;display:flex;flex-direction:column;gap:0;}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;}
+  .card-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--stone);}
+  .card-status{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:4px 10px;border:1px solid;}
+  .card-status.done{border-color:var(--green);color:var(--green);}
+  .card-status.pending{border-color:var(--amber);color:var(--amber);}
+  .card-status.blocker{border-color:var(--red);color:var(--red);}
+  .card-status.inprogress{border-color:var(--blue);color:var(--blue);}
+  .card h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;margin-bottom:10px;line-height:1.1;}
+  .card p{font-size:14px;font-weight:300;color:var(--mist);line-height:1.65;margin-bottom:16px;flex:1;}
+  .card-why{background:rgba(46,109,164,0.07);border-left:2px solid var(--blue);padding:10px 14px;margin-bottom:12px;}
+  .card-why-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:4px;}
+  .card-why p{font-size:13px;color:var(--stone);margin-bottom:0;line-height:1.5;}
+  .card-action{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--sky);font-weight:600;margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
+
+  /* Photo shoot section */
+  .photo-section{max-width:1100px;margin:0 auto 56px;background:var(--char);border:1px solid var(--line);}
+  .photo-header{padding:28px 32px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;}
+  .photo-header h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;}
+  .photo-header .tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:4px 10px;font-weight:600;}
+  .photo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);}
+  .photo-card{background:var(--char);padding:24px 20px;}
+  .photo-num{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.03em;color:rgba(46,109,164,0.2);line-height:1;margin-bottom:8px;}
+  .photo-card h4{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;margin-bottom:8px;}
+  .photo-card p{font-size:13px;font-weight:300;color:var(--mist);line-height:1.6;margin-bottom:12px;}
+  .photo-why{font-size:12px;color:var(--blue);font-weight:500;font-style:italic;}
+
+  /* Conversion stats bar */
+  .stats-bar{max-width:1100px;margin:0 auto 56px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:var(--line);}
+  .stat{background:var(--char);padding:24px 20px;text-align:center;}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.03em;color:var(--sky);line-height:1;margin-bottom:6px;}
+  .stat-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:500;line-height:1.4;}
+
+  /* Copy section */
+  .copy-section{max-width:1100px;margin:0 auto 56px;background:var(--char);border:1px solid var(--line);}
+  .copy-header{padding:28px 32px;border-bottom:1px solid var(--line);}
+  .copy-header h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;}
+  .copy-header p{font-size:14px;color:var(--stone);margin-top:8px;font-weight:300;}
+  .copy-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  .copy-col{padding:28px 32px;}
+  .copy-col:first-child{border-right:1px solid var(--line);}
+  .copy-col h4{font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:600;margin-bottom:16px;}
+  .copy-col h4.do{color:var(--green);}
+  .copy-col h4.dont{color:var(--red);}
+  .copy-list{list-style:none;}
+  .copy-list li{font-size:14px;font-weight:300;color:var(--mist);padding:10px 0;border-bottom:1px solid var(--line);line-height:1.5;display:flex;align-items:flex-start;gap:10px;}
+  .copy-list li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+  .copy-list.do li::before{background:var(--green);}
+  .copy-list.dont li::before{background:var(--red);}
+
+  /* Timeline */
+  .timeline{max-width:1100px;margin:0 auto 56px;}
+  .timeline-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.05em;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--line);}
+  .timeline-items{display:flex;flex-direction:column;gap:0;}
+  .t-item{display:grid;grid-template-columns:120px 1fr;gap:0;background:var(--char);border:1px solid var(--line);border-bottom:none;}
+  .t-item:last-child{border-bottom:1px solid var(--line);}
+  .t-week{padding:20px 20px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;}
+  .t-week-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;margin-bottom:4px;}
+  .t-week-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em;}
+  .t-body{padding:20px 24px;}
+  .t-body h4{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.05em;margin-bottom:6px;}
+  .t-tasks{display:flex;flex-wrap:wrap;gap:8px;}
+  .t-task{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;padding:4px 10px;border:1px solid var(--line);color:var(--mist);}
+  .t-task.done{border-color:rgba(39,174,96,0.3);color:var(--green);}
+  .t-task.photo{border-color:rgba(192,57,43,0.3);color:var(--red);}
+  .t-task.web{border-color:rgba(46,109,164,0.3);color:var(--sky);}
+  .t-task.ops{border-color:rgba(212,134,10,0.3);color:var(--amber);}
+
+  @media(max-width:768px){
+    body{padding:40px 20px 80px;}
+    .cards{grid-template-columns:1fr;}
+    .photo-grid{grid-template-columns:1fr 1fr;}
+    .stats-bar{grid-template-columns:1fr 1fr;}
+    .copy-grid{grid-template-columns:1fr;}
+    .copy-col:first-child{border-right:none;border-bottom:1px solid var(--line);}
+    .tier-desc{display:none;}
+    .doc-meta{gap:16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-eyebrow">SOLUM · Internal</div>
+  <h1 class="doc-title">Pre-Launch<br>Prerequisites</h1>
+  <p class="doc-sub">Everything required before bysolum.co.uk goes live. Based on DTC conversion research across comparable subscription grooming brands. Ranked by impact on launch day conversion.</p>
+  <div class="doc-meta">
+    <div class="doc-meta-item">Target · <span>150 Subscriptions in 2 Weeks</span></div>
+    <div class="doc-meta-item">Launch Window · <span>TBC</span></div>
+    <div class="doc-meta-item">Current Route · <span>/full (not live yet)</span></div>
+    <div class="doc-meta-item">Email List · <span>~200 signups pre-launch</span></div>
+  </div>
+</div>
+
+<!-- CONVERSION STATS FROM RESEARCH -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">3×</div>
+    <div class="stat-label">Conversion gap between fast vs slow mobile load</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">270%</div>
+    <div class="stat-label">Higher conversion with 5+ customer reviews visible</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">85%</div>
+    <div class="stat-label">Mobile cart abandonment rate — every friction point compounds</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">40%</div>
+    <div class="stat-label">Average conversion rate for a 3-question quiz CTA vs 4% for "Shop Now"</div>
+  </div>
+</div>
+
+<!-- TIER 1: HARD BLOCKERS -->
+<div class="tier">
+  <div class="tier-header">
+    <div class="tier-badge blocker">Tier 1</div>
+    <div class="tier-title">Hard Blockers — Cannot Launch Without</div>
+    <div class="tier-desc">If any of these are missing on launch day, conversion will be materially harmed or the launch will fail legally / operationally.</div>
+  </div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">01</div>
+        <div class="card-status done">Done</div>
+      </div>
+      <h3>CPSR Compliance (All 4 Cosmetics)</h3>
+      <p>Cosmetic Product Safety Report required for Products 01, 05, 06, 07 before any UK sale. INCI lists from Cosmiko and Moroccan supplier needed first. Assessors: Larchwood, Bellis Safety, Cosmetag.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>Selling cosmetics without a CPSR in the UK is a criminal offence. No workaround.</p>
+      </div>
+      <div class="card-action">Confirmed complete</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">02</div>
+        <div class="card-status done">Done</div>
+      </div>
+      <h3>Stripe Live Keys Active</h3>
+      <p>Stripe test keys must be swapped to live keys in production. Subscription billing, webhook events, and the checkout flow must all be verified end-to-end in live mode before the first real customer hits the checkout.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>Without live keys, no payment can be taken. No launch.</p>
+      </div>
+      <div class="card-action">Confirmed complete</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">03</div>
+        <div class="card-status blocker">Blocker</div>
+      </div>
+      <h3>Domain: bysolum.co.uk Registered</h3>
+      <p>Domain not yet registered. Amplify deployment is pointing to a subdomain until this is live. All email campaign links, social bio links, and ad URLs depend on this being live.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>You cannot send 200 email subscribers to a domain that doesn't exist. Register immediately — GoDaddy, Namecheap, or 123-reg.</p>
+      </div>
+      <div class="card-action">Register at namecheap.com — ~£10/year</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">04</div>
+        <div class="card-status blocker">Blocker</div>
+      </div>
+      <h3>Photography: 6 Ritual Action Shots</h3>
+      <p>Current hero uses box-exterior.png as a placeholder. Research shows ritual-in-action imagery converts significantly better than box shots — a black box communicates nothing about what the system does. You have an agency. This shoot must happen before launch.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>The hero visual is the first thing visitors see. A box shot loses attention in the first 3 seconds. Lifestyle imagery increases AOV by 22% and is the single highest-impact creative investment pre-launch.</p>
+      </div>
+      <div class="card-action">Brief agency — 6 shots listed below</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">05</div>
+        <div class="card-status blocker">Blocker</div>
+      </div>
+      <h3>Inventory: First 150 Units Packed</h3>
+      <p>150 full RITUAL kits must be picked, packed, and ready to ship before launch day. Suppliers: Cosmiko (01+07), China/viscose (02+03), COOLFIN A Korea (04), Morocco (05+06), Jennifer's Hamam (08 if SOVEREIGN), packaging from Alibaba or Foldabox.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>Selling before inventory is ready means delayed shipments, refund requests, and trust damage on week 1 — the hardest week to recover from.</p>
+      </div>
+      <div class="card-action">Confirm all lead times — longest is 8–12 weeks (Japan body wash)</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">06</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Legal: Cancel Anytime — One Click</h3>
+      <p>UK Consumer Contracts Regulations 2013 requires cancellation to be as easy as subscription. The account page has a two-step retention flow (legal — shows value before confirm). CTA must say "Cancel subscription" and complete in one screen without phone calls or waiting periods.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why it blocks launch</div>
+        <p>CMA actively investigates subscription dark patterns. A complaint in week 1 from a single frustrated customer can trigger an investigation. The flow on the account page is already compliant — verify it end-to-end in live mode.</p>
+      </div>
+      <div class="card-action">End-to-end test cancellation flow in live Stripe</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHOTOGRAPHY SHOOT BRIEF -->
+<div class="photo-section">
+  <div class="photo-header">
+    <h2>Photography Shoot Brief — 6 Required Shots</h2>
+    <div class="tag">Pre-Launch Blocker</div>
+  </div>
+  <div style="padding:20px 32px;border-bottom:1px solid var(--line);">
+    <p style="font-size:14px;color:var(--mist);line-height:1.65;">Style direction: Shot on SOLUM Black (#08090B). Tight framing — hands, skin, texture. No full face. No studio smiling. Skin that looks like the outcome — clean, fed, properly treated. This is what the hero, ads, Instagram, and product pages all pull from. One shoot, reused everywhere.</p>
+  </div>
+  <div class="photo-grid">
+    <div class="photo-card">
+      <div class="photo-num">01</div>
+      <h4>Back Scrub Cloth In Use</h4>
+      <p>Cloth draped over a man's back, both handles visible, mid-stroke. Steam optional. Back skin visible and clean.</p>
+      <div class="photo-why">Hero candidate — the only tool that cleans the back. Core SOLUM claim.</div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-num">02</div>
+      <h4>Scalp Massager On Wet Scalp</h4>
+      <p>Hand gripping the scalp massager, water/suds visible. Shot from behind or above. Firm pressure suggested by body language.</p>
+      <div class="photo-why">Daily ritual anchor. Differentiates from every other body wash brand.</div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-num">03</div>
+      <h4>Italy Towel Mitt — Exfoliation</h4>
+      <p>Mitt on forearm, mid-stroke. Dead skin rolling visible if possible. Skin texture clear. On SOLUM Black background.</p>
+      <div class="photo-why">The proof shot. "Gross but converts" — makes the exfoliation claim real.</div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-num">04</div>
+      <h4>Body Wash Applied To Chest</h4>
+      <p>Hand applying body wash, lather visible on chest/forearm. Clean water. Shot tight — not a full body shot. Product bottle in frame or out.</p>
+      <div class="photo-why">Anchors the "Cleans. Doesn't Strip." hero line to a human moment.</div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-num">05</div>
+      <h4>Clay Mask — Full Application</h4>
+      <p>Mask applied to torso/arm, texture visible — the Atlas clay grey tone against skin. Damp skin. Weekly ritual positioning.</p>
+      <div class="photo-why">Weekly differentiation. No other men's body brand does this. Strong stop-scroll shot for ads.</div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-num">06</div>
+      <h4>Lotion — The 3-Minute Window</h4>
+      <p>Towel visible on shoulder, lotion pump being pressed. Skin still visibly damp. Clock or timer optional for concept. Bathroom environment.</p>
+      <div class="photo-why">Makes the core education claim ("apply within 3 minutes") physical and memorable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 2: CONVERSION ESSENTIALS -->
+<div class="tier">
+  <div class="tier-header">
+    <div class="tier-badge critical">Tier 2</div>
+    <div class="tier-title">Conversion Essentials — Significant Impact</div>
+    <div class="tier-desc">Missing these won't kill the launch but will meaningfully reduce conversion. Each represents 8–25% lift based on research data.</div>
+  </div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">07</div>
+        <div class="card-status blocker">Blocker</div>
+      </div>
+      <h3>Minimum Viable Social Proof</h3>
+      <p>Research: products with 5+ reviews convert at 270% higher rates than zero reviews. Star ratings in the hero add 8–18% lift. Launch without any social proof and the site will feel unproven — especially for a subscription product asking for monthly commitment.</p>
+      <div class="card-why">
+        <div class="card-why-label">The fix</div>
+        <p>Send RITUAL kits to 10–15 beta users before launch. Collect honest written reviews. Even 8 genuine reviews in the hero section transform conversion. Do not fabricate or fake reviews (UK ASA violation).</p>
+      </div>
+      <div class="card-action">Beta kit programme — target 10–15 users, 2 weeks before launch</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">08</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Outcome Headline Above Fold (Mobile)</h3>
+      <p>Current H1: "You Shower Every Day. Your Body Is Still Dirty." — this is good, it's a problem statement. But it needs to be the FIRST thing on mobile, above the image, above the subheadline. Research confirms: headline converts, image supports.</p>
+      <div class="card-why">
+        <div class="card-why-label">Mobile hierarchy</div>
+        <p>1. Headline 2. Social proof (star rating) 3. Single CTA 4. Visual. On mobile, anything pushed below fold loses 60% of viewers.</p>
+      </div>
+      <div class="card-action">Verify mobile layout — H1 must be above fold on iPhone 14</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">09</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Meta Pixel on /full (FullSite)</h3>
+      <p>Meta Pixel ID 690345887768095 is installed on the ComingSoon waitlist page but NOT on the /full marketing site. Every visitor who lands on the full site during launch is currently invisible to Facebook/Instagram retargeting.</p>
+      <div class="card-why">
+        <div class="card-why-label">Why this matters</div>
+        <p>Most launch day visitors will not convert on first visit. Retargeting brings them back at 3–5× the conversion rate of cold traffic. Without the pixel, you can't retarget any of your launch email list visitors.</p>
+      </div>
+      <div class="card-action">Add Meta Pixel to FullSite — one script tag in index.html</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">10</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Single CTA — "Build Your Ritual"</h3>
+      <p>Current hero has two competing CTAs: "Choose Your Kit" and "Why It Matters". Research is clear: two CTAs in the hero reduce conversion vs one. The secondary ghost link dilutes attention. "Build your ritual" tests better than "Shop Now" for subscription products.</p>
+      <div class="card-why">
+        <div class="card-why-label">The fix</div>
+        <p>Make "Choose Your Kit" (or "Build your ritual") the primary. Remove or heavily deprioritise the secondary link. Every additional CTA reduces the primary CTA conversion rate.</p>
+      </div>
+      <div class="card-action">Hero CTA audit — one primary, secondary text-only or removed</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">11</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Subscription Savings Visible Near CTA</h3>
+      <p>The recurring price (from £38/month) should be visible near the primary CTA as a trust signal — not buried in the kit section. Research shows pre-selected subscription with savings visible increases conversion vs letting users opt in later.</p>
+      <div class="card-why">
+        <div class="card-why-label">Exact copy</div>
+        <p>"Then from £38/month — skip or cancel anytime." This de-risks the commitment and surfaces the real monthly cost before they hit checkout.</p>
+      </div>
+      <div class="card-action">Add subscription trust line beneath hero CTA</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">12</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Mobile Performance: LCP Under 2.4s</h3>
+      <p>Pages loading in 2.4s convert at 1.9%. At 5.7s that drops to 0.6% — a 3× gap. Mobile cart abandonment is already 85%. The box-exterior.png is 5.5MB. This will kill mobile LCP without compression.</p>
+      <div class="card-why">
+        <div class="card-why-label">The fix</div>
+        <p>Compress all hero images to WebP, max 200KB. Lazy-load everything below fold. Test LCP with PageSpeed Insights before launch. Target: under 2.5s on mobile 4G.</p>
+      </div>
+      <div class="card-action">Compress box-exterior.png (5.5MB → target 150KB WebP)</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- COPY DO / DON'T -->
+<div class="copy-section">
+  <div class="copy-header">
+    <h2>Copy Rules — What Research Confirms Converts</h2>
+    <p>Applied to hero, product pages, email, and ads. Every line should pass these tests.</p>
+  </div>
+  <div class="copy-grid">
+    <div class="copy-col">
+      <h4 class="do">Do — Converts</h4>
+      <ul class="copy-list do">
+        <li>Outcome headlines: "Properly clean for the first time." Names what changes.</li>
+        <li>Problem framing: "Most men have never had a proper back clean." Creates recognition.</li>
+        <li>System language: "The 10-minute routine most men never got taught." Positions as a gap.</li>
+        <li>Specific claims: "Apply within 3 minutes — skin absorbs 70% more." Concrete numbers.</li>
+        <li>De-risk language: "Skip or cancel anytime. One click. No penalty." Removes commitment fear.</li>
+        <li>Body confidence framing: "Skin that stays fed all day." Describes the outcome, not the product.</li>
+        <li>Ritual framing: "Muscle memory by week four." Makes the system feel achievable.</li>
+      </ul>
+    </div>
+    <div class="copy-col">
+      <h4 class="dont">Don't — Damages Conversion</h4>
+      <ul class="copy-list dont">
+        <li>Shame language: "You smell" or "You have a hygiene problem." Closes people off.</li>
+        <li>Luxury signalling: "Elevate your grooming ritual." Signals high price, not value.</li>
+        <li>Vague benefits: "Feel your best every day." Forgettable. Converts nothing.</li>
+        <li>Fake social proof: "Marcus R., RITUAL subscriber" without verified review. UK ASA violation.</li>
+        <li>Fabricated claims: "99.9% antibacterial" unless you have test data. Legal risk.</li>
+        <li>Complexity above the fold: Showing all 8 products and 2 ritual tiers in the hero. Decision fatigue bounces mobile visitors.</li>
+        <li>Two competing hero CTAs: Splits attention, reduces primary CTA conversion.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 3: IMPORTANT -->
+<div class="tier">
+  <div class="tier-header">
+    <div class="tier-badge important">Tier 3</div>
+    <div class="tier-title">Important — Build Before or During Launch</div>
+    <div class="tier-desc">These don't block launch day but missing them limits how far the first wave of traffic converts.</div>
+  </div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">13</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Beta Kit Programme (10–15 Units)</h3>
+      <p>Send RITUAL kits to 10–15 men before launch — friends, family, colleagues who match the target. Give them 2 weeks. Collect honest written feedback. Use best responses as hero social proof.</p>
+      <div class="card-why">
+        <div class="card-why-label">Dual benefit</div>
+        <p>Generates genuine reviews AND gives you real user feedback on the ritual before 150 paying customers experience it. You also get UGC photography potential.</p>
+      </div>
+      <div class="card-action">Start beta programme 3 weeks before launch target</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">14</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Launch Email to Waitlist (200 Signups)</h3>
+      <p>The 200 waitlist signups are the warmest possible audience. A structured launch email sequence (3 emails over 5 days: announcement → ritual story → last chance) will convert this list far above cold traffic.</p>
+      <div class="card-why">
+        <div class="card-why-label">Expected performance</div>
+        <p>Warm list email conversion 5–15% vs cold paid traffic 1–3%. 200 signups × 10% = 20 subscriptions from email alone before spending a penny on ads.</p>
+      </div>
+      <div class="card-action">Draft 3-email sequence — write before launch week</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">15</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Abandoned Checkout Email</h3>
+      <p>The checkout page already has a UI placeholder for abandoned checkout retargeting but the email flow is not built. Industry average recovery rate is 5–15% of abandoned carts with a single follow-up email within 1 hour.</p>
+      <div class="card-why">
+        <div class="card-why-label">ROI</div>
+        <p>On launch week with 150 target subscriptions, if 60% of visitors reach checkout and 70% abandon, a 10% recovery rate = 6–9 additional subscriptions at zero ad cost.</p>
+      </div>
+      <div class="card-action">Build Supabase edge function → Resend abandoned cart email</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">16</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>Founding 100 Offer (If Spots Remain)</h3>
+      <p>If the Founding 100 spots are still available at launch, this is a powerful time-pressure conversion tool. A banner on the site and in the launch email showing remaining spots drives urgency without manufactured scarcity.</p>
+      <div class="card-why">
+        <div class="card-why-label">Messaging</div>
+        <p>"XX of 100 Founding spaces remaining — price locks in at £38/month forever." Real scarcity. Real urgency. This is the honest version of every countdown timer on the internet.</p>
+      </div>
+      <div class="card-action">Confirm remaining Founding 100 spots before launch email goes out</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">17</div>
+        <div class="card-status pending">Pending</div>
+      </div>
+      <h3>TikTok Pixel + Shop Setup</h3>
+      <p>Reel ad data shows TikTok is already driving profile visits. The TikTok shop integration and pixel for retargeting are not yet connected to the checkout flow. TikTok Shop allows in-app purchase — removes redirect friction entirely.</p>
+      <div class="card-why">
+        <div class="card-why-label">Priority note</div>
+        <p>Lower priority than Meta Pixel but if TikTok is a primary ad channel, the pixel must be live before launch day to start building retargeting audiences from day one.</p>
+      </div>
+      <div class="card-action">TikTok for Business → pixel setup → connect to Shopify or checkout URL</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-num">18</div>
+        <div class="card-status inprogress">In Progress</div>
+      </div>
+      <h3>Reel Ad Creative — 3 Launch Variants</h3>
+      <p>Three hook variants to test at launch: (1) Problem hook "You shower every day..." (2) Revelation hook "Nobody ever showed men how to..." (3) Outcome hook "Your back, properly clean for the first time." Each sends to the same landing page.</p>
+      <div class="card-why">
+        <div class="card-why-label">Testing model</div>
+        <p>Champion/challenger: run all 3 with £10/day each. After 3 days, cut losers, push budget to winner. Reel content pipeline is already built and in production.</p>
+      </div>
+      <div class="card-action">3 launch reels ready before launch day — pull from pipeline</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LAUNCH TIMELINE -->
+<div class="timeline">
+  <div class="timeline-title">Recommended Launch Sequence</div>
+  <div class="timeline-items">
+
+    <div class="t-item">
+      <div class="t-week">
+        <div class="t-week-label">Now</div>
+        <div class="t-week-name">Week 0</div>
+      </div>
+      <div class="t-body">
+        <h4>Photography Brief + Domain Registration</h4>
+        <div class="t-tasks">
+          <span class="t-task photo">Brief photography agency (6 shots)</span>
+          <span class="t-task ops">Register bysolum.co.uk</span>
+          <span class="t-task ops">Send beta kits to 10–15 users</span>
+          <span class="t-task ops">Contact Fatima's Garden (Morocco)</span>
+          <span class="t-task ops">Contact Jennifer's Hamam (Turkey)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="t-item">
+      <div class="t-week">
+        <div class="t-week-label">Week</div>
+        <div class="t-week-name">Week 1</div>
+      </div>
+      <div class="t-body">
+        <h4>Tech + Compliance Sprint</h4>
+        <div class="t-tasks">
+          <span class="t-task web">Add Meta Pixel to /full</span>
+          <span class="t-task web">Compress all hero images to WebP</span>
+          <span class="t-task web">Build abandoned checkout email</span>
+          <span class="t-task web">Mobile LCP audit (target &lt;2.5s)</span>
+          <span class="t-task web">Single CTA hero update</span>
+          <span class="t-task ops">Photo shoot happens</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="t-item">
+      <div class="t-week">
+        <div class="t-week-label">Week</div>
+        <div class="t-week-name">Week 2</div>
+      </div>
+      <div class="t-body">
+        <h4>Social Proof + Copy Finalisation</h4>
+        <div class="t-tasks">
+          <span class="t-task web">Update hero with action photography</span>
+          <span class="t-task ops">Collect beta user reviews (target 8+)</span>
+          <span class="t-task web">Add star rating + review count to hero</span>
+          <span class="t-task web">Write 3-email launch sequence</span>
+          <span class="t-task ops">Confirm inventory packed and ready</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="t-item">
+      <div class="t-week">
+        <div class="t-week-label">Week</div>
+        <div class="t-week-name">Week 3</div>
+      </div>
+      <div class="t-body">
+        <h4>Pre-Launch Final Check</h4>
+        <div class="t-tasks">
+          <span class="t-task web">E2E test full checkout in Stripe live mode</span>
+          <span class="t-task web">Test cancellation flow end-to-end</span>
+          <span class="t-task web">Verify Meta + TikTok pixels firing</span>
+          <span class="t-task web">PageSpeed mobile score check</span>
+          <span class="t-task ops">3 launch reels ready and scheduled</span>
+          <span class="t-task ops">Founding 100 count confirmed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="t-item" style="border-top:2px solid var(--blue);">
+      <div class="t-week">
+        <div class="t-week-label">Launch</div>
+        <div class="t-week-name">Day 1</div>
+      </div>
+      <div class="t-body">
+        <h4>Go Live — Email + Ads Simultaneously</h4>
+        <div class="t-tasks">
+          <span class="t-task web">Switch / route to FullSite</span>
+          <span class="t-task ops">Email 1: Launch announcement to 200 signups</span>
+          <span class="t-task ops">Activate 3 reel ad variants (£30/day total)</span>
+          <span class="t-task ops">Monitor Plausible + Stripe dashboard</span>
+          <span class="t-task ops">Respond to every DM and comment personally</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="max-width:1100px;margin:0 auto;padding:32px;background:var(--char);border:1px solid var(--line);">
+  <div style="font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:12px;">The One Number That Matters</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,4vw,52px);letter-spacing:.03em;color:var(--bone);margin-bottom:12px;">150 Subscriptions. 2 Weeks. £0.00 Refunds.</div>
+  <p style="font-size:15px;font-weight:300;color:var(--mist);line-height:1.7;max-width:700px;">The launch goal is not 150 sales — it's 150 subscriptions with zero refunds and zero cancellations in week one. Every item on this checklist exists to serve that outcome. The photography, the social proof, the mobile performance, the cancellation flow — all of it maps back to a subscriber who feels they got exactly what was promised.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOLUM — TikTok Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #08090B;
+  --charcoal: #181C24;
+  --deep-blue: #1A4A78;
+  --steel: #2E6DA4;
+  --sky: #4A8FC7;
+  --bone: #F0ECE2;
+  --mist: rgba(240,236,226,0.82);
+  --stone: rgba(240,236,226,0.5);
+  --lineb: rgba(240,236,226,0.08);
+  --tiktok-bg: #000000;
+  --tiktok-surface: #121212;
+  --tiktok-red: #FE2C55;
+  --tiktok-border: rgba(255,255,255,0.12);
+}
+
+body {
+  background: #0a0a0a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  gap: 48px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.doc-title {
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(240,236,226,0.25);
+  font-weight: 600;
+}
+
+/* ─── PROFILE PICTURE ─── */
+.section-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(240,236,226,0.3);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pfp-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pfp-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pfp-size-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240,236,226,0.25);
+  font-weight: 600;
+}
+
+.pfp {
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pfp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(46,109,164,0.18) 0%, transparent 65%);
+}
+
+.pfp-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+.pfp-circle {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* TikTok adds a red/cyan gradient ring for creator accounts */
+.pfp-tiktok-ring {
+  padding: 3px;
+  background: linear-gradient(135deg, #FE2C55, #25F4EE);
+  border-radius: 50%;
+}
+
+/* ─── PHONE MOCKUP ─── */
+.phone-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.phone-row {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.phone {
+  width: 375px;
+  background: var(--tiktok-bg);
+  border-radius: 40px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 32px 64px rgba(0,0,0,0.8);
+}
+
+/* Status bar */
+.phone-status {
+  height: 44px;
+  background: var(--tiktok-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+.phone-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+}
+.phone-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.phone-icon {
+  width: 17px;
+  height: 12px;
+  border: 1.5px solid #fff;
+  border-radius: 2px;
+  position: relative;
+}
+.phone-icon::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px;
+  height: 6px;
+  background: #fff;
+  border-radius: 0 1px 1px 0;
+}
+.phone-battery-fill {
+  position: absolute;
+  inset: 1.5px;
+  background: #fff;
+  border-radius: 1px;
+  width: 75%;
+}
+
+/* TikTok nav */
+.tiktok-nav {
+  background: var(--tiktok-bg);
+  padding: 4px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tiktok-back {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tiktok-back svg { width: 20px; height: 20px; }
+.tiktok-nav-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+}
+.tiktok-nav-icons {
+  display: flex;
+  gap: 16px;
+}
+.tiktok-nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile header */
+.profile-header {
+  background: var(--tiktok-bg);
+  padding: 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FE2C55, #25F4EE);
+  padding: 2.5px;
+  flex-shrink: 0;
+}
+
+.profile-pic-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-pic-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(46,109,164,0.22) 0%, transparent 65%);
+}
+
+.profile-pic-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  color: var(--bone);
+  position: relative;
+  z-index: 1;
+}
+
+.profile-handle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  letter-spacing: -0.2px;
+}
+
+/* Stats row */
+.profile-stats {
+  display: flex;
+  gap: 24px;
+  padding: 12px 0 4px;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.stat-num {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  letter-spacing: -0.3px;
+}
+
+.stat-lbl {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  font-family: -apple-system, sans-serif;
+}
+
+/* Bio */
+.profile-bio {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  line-height: 1.5;
+  padding: 0 8px;
+  font-family: -apple-system, sans-serif;
+  max-width: 300px;
+}
+
+.profile-bio strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.profile-link {
+  font-size: 14px;
+  color: #25F4EE;
+  font-family: -apple-system, sans-serif;
+  letter-spacing: -0.1px;
+}
+
+/* Buttons */
+.profile-btns {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.btn-follow {
+  flex: 1;
+  height: 36px;
+  background: var(--tiktok-red);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+}
+
+.btn-message {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+}
+
+.btn-arrow {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tab bar */
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin: 0 0 2px;
+}
+
+.profile-tab {
+  flex: 1;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-tab.active {
+  border-bottom: 1.5px solid #fff;
+}
+
+/* Video grid */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+.video-thumb {
+  aspect-ratio: 9/16;
+  background: var(--tiktok-surface);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.video-thumb-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-thumb-label {
+  position: relative;
+  z-index: 1;
+  padding: 6px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  letter-spacing: -0.1px;
+}
+
+.video-thumb-views {
+  position: absolute;
+  bottom: 4px;
+  left: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ─── COPY SHEET ─── */
+.copy-sheet {
+  width: 100%;
+  max-width: 700px;
+  background: #111;
+  border: 1px solid rgba(240,236,226,0.07);
+}
+
+.copy-block {
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(240,236,226,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.copy-block:last-child { border-bottom: none; }
+
+.copy-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sky);
+  font-weight: 600;
+}
+
+.copy-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--bone);
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
+
+.copy-note {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.5;
+}
+
+.copy-char-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(74,143,199,0.6);
+  letter-spacing: 1px;
+}
+
+/* Pinned strategy */
+.pinned-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 20px 28px;
+}
+
+.pinned-card {
+  background: rgba(46,109,164,0.06);
+  border: 1px solid rgba(46,109,164,0.2);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pinned-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: var(--steel);
+  line-height: 1;
+}
+
+.pinned-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bone);
+  letter-spacing: 0.2px;
+  line-height: 1.3;
+}
+
+.pinned-hook {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.pinned-tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--sky);
+}
+
+/* ─── HASHTAG STRATEGY ─── */
+.hashtag-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 20px 28px;
+}
+
+.hashtag-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bone);
+  border: 1px solid rgba(240,236,226,0.1);
+  padding: 6px 12px;
+  letter-spacing: 0.3px;
+}
+
+.hashtag-pill.big { border-color: rgba(74,143,199,0.4); color: var(--sky); }
+.hashtag-pill.mid { border-color: rgba(240,236,226,0.15); }
+.hashtag-pill.niche { border-color: rgba(240,236,226,0.08); color: var(--stone); }
+
+.hashtag-legend {
+  display: flex;
+  gap: 20px;
+  padding: 0 28px 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--stone);
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.legend-dot.big { background: var(--sky); }
+.legend-dot.mid { background: rgba(240,236,226,0.4); }
+.legend-dot.niche { background: rgba(240,236,226,0.2); }
+
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--steel);
+  color: var(--bone);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  padding: 10px 22px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dl-btn:hover { background: var(--sky); }
+.dl-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="doc-title">SOLUM · TikTok Profile · 2026</div>
+
+<!-- ─── PROFILE PICTURE ─── -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:700px;">
+  <div class="section-label">Profile Picture · Sizes</div>
+  <div class="pfp-row">
+    <!-- Large source -->
+    <div class="pfp-wrap">
+      <div class="pfp-size-label">200 × 200 · Source</div>
+      <div class="pfp" id="pfp-200" style="width:200px;height:200px;">
+        <div class="pfp-wordmark" style="font-size:48px;">SOLUM</div>
+      </div>
+    </div>
+    <!-- Circle preview with TikTok ring -->
+    <div class="pfp-wrap">
+      <div class="pfp-size-label">App view · with ring</div>
+      <div class="pfp-tiktok-ring">
+        <div class="pfp pfp-circle" style="width:88px;height:88px;">
+          <div class="pfp-wordmark" style="font-size:21px;">SOLUM</div>
+        </div>
+      </div>
+    </div>
+    <!-- Small -->
+    <div class="pfp-wrap">
+      <div class="pfp-size-label">Feed thumb</div>
+      <div class="pfp-tiktok-ring" style="padding:2px;">
+        <div class="pfp pfp-circle" style="width:40px;height:40px;">
+          <div class="pfp-wordmark" style="font-size:10px;letter-spacing:0.08em;">SOLUM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PHONE MOCKUP ─── -->
+<div class="phone-section">
+  <div class="section-label">Profile Preview · Mobile</div>
+  <div class="phone-row">
+    <div class="phone">
+      <!-- Status bar -->
+      <div class="phone-status">
+        <span class="phone-time">9:41</span>
+        <div class="phone-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="white" opacity="0.9">
+            <rect x="0" y="3" width="3" height="9" rx="0.5"/>
+            <rect x="4.5" y="2" width="3" height="10" rx="0.5"/>
+            <rect x="9" y="0.5" width="3" height="11.5" rx="0.5"/>
+            <rect x="13.5" y="0" width="2.5" height="12" rx="0.5" opacity="0.3"/>
+          </svg>
+          <svg width="16" height="12" viewBox="0 0 24 24" fill="white" opacity="0.9">
+            <path d="M1.5 8.5C5.5 4.5 18.5 4.5 22.5 8.5M5 12C8 9 16 9 19 12M8.5 15.5C10.5 13.5 13.5 13.5 15.5 15.5M12 19h.01" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div class="phone-icon">
+            <div class="phone-battery-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="tiktok-nav">
+        <div class="tiktok-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+        </div>
+        <span class="tiktok-nav-title">bysolum</span>
+        <div class="tiktok-nav-icons">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Profile header -->
+      <div class="profile-header">
+        <div class="profile-pic-wrap">
+          <div class="profile-pic-inner">
+            <div class="profile-pic-wordmark">SOLUM</div>
+          </div>
+        </div>
+        <div class="profile-handle">@bysolum</div>
+
+        <div class="profile-stats">
+          <div class="stat-col">
+            <span class="stat-num">0</span>
+            <span class="stat-lbl">Following</span>
+          </div>
+          <div class="stat-col">
+            <span class="stat-num">—</span>
+            <span class="stat-lbl">Followers</span>
+          </div>
+          <div class="stat-col">
+            <span class="stat-num">—</span>
+            <span class="stat-lbl">Likes</span>
+          </div>
+        </div>
+
+        <div class="profile-bio">
+          You shower every day.<br>
+          You're not as clean as you think.<br>
+          Body care for men. 🇬🇧
+        </div>
+
+        <a class="profile-link">bysolum.co.uk · Early access open</a>
+      </div>
+
+      <!-- Buttons -->
+      <div class="profile-btns">
+        <div class="btn-follow">Follow</div>
+        <div class="btn-message">Message</div>
+        <div class="btn-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="profile-tabs">
+        <div class="profile-tab active">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/>
+            <rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>
+          </svg>
+        </div>
+        <div class="profile-tab">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <div class="profile-tab">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Video grid — first 6 videos planned -->
+      <div class="video-grid">
+        <!-- V1 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#0d1a10 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(46,109,164,0.15);border:1px solid rgba(46,109,164,0.3);"></div>
+          </div>
+          <div class="video-thumb-label">This comes off your skin even after a shower.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 1
+          </div>
+        </div>
+        <!-- V2 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#1a0d0d 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(164,46,46,0.1);border:1px solid rgba(164,46,46,0.25);"></div>
+          </div>
+          <div class="video-thumb-label">Why you still smell after a shower.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 2
+          </div>
+        </div>
+        <!-- V3 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#0d0d1a 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(46,46,164,0.1);border:1px solid rgba(46,46,164,0.25);"></div>
+          </div>
+          <div class="video-thumb-label">Nobody has ever properly cleaned your back.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 3
+          </div>
+        </div>
+        <!-- V4 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#1a150d 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(164,120,46,0.1);border:1px solid rgba(164,120,46,0.25);"></div>
+          </div>
+          <div class="video-thumb-label">Koreans have done this for 500 years.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 4
+          </div>
+        </div>
+        <!-- V5 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#0d1a1a 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(46,164,164,0.08);border:1px solid rgba(46,164,164,0.2);"></div>
+          </div>
+          <div class="video-thumb-label">Your scalp has never actually been clean.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 5
+          </div>
+        </div>
+        <!-- V6 -->
+        <div class="video-thumb">
+          <div class="video-thumb-bg" style="background:linear-gradient(160deg,#1a1a1a 0%,#111a0d 100%);">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(46,109,164,0.12);border:1px solid rgba(46,109,164,0.25);"></div>
+          </div>
+          <div class="video-thumb-label">I built the routine men were never given.</div>
+          <div class="video-thumb-views">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            Video 6
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /phone -->
+  </div>
+</div>
+
+<!-- ─── COPY SHEET ─── -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:700px;">
+  <div class="section-label">Profile Copy · Locked</div>
+  <div class="copy-sheet">
+
+    <div class="copy-block">
+      <div class="copy-label">Handle</div>
+      <div class="copy-value">@bysolum</div>
+      <div class="copy-note">Short, clean, searchable. Matches domain bysolum.co.uk. Do not use @bysolum.body — the dot reads as a spam signal to TikTok's algorithm on new accounts.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-label">Display Name</div>
+      <div class="copy-value">SOLUM — Men's Body Care</div>
+      <div class="copy-note">TikTok indexes display name for search. "Men's Body Care" gets picked up when people search the category. All caps wordmark locked per brand rules.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-label">Bio · 80 character limit</div>
+      <div class="copy-value" style="font-size:15px;line-height:1.6;">
+        You shower every day.<br>
+        You're not as clean as you think.<br>
+        Body care for men. 🇬🇧
+      </div>
+      <div class="copy-char-count">77 / 80 characters</div>
+      <div class="copy-note">Line 1 + 2: the hook — exactly the eyebrow copy from the landing page, so Instagram → TikTok feels consistent. Line 3: category + UK origin signal. Tight, punchy, every word earns its place.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-label">Link in Bio</div>
+      <div class="copy-value">bysolum.co.uk</div>
+      <div class="copy-note">Direct. No link-in-bio aggregator (Linktree etc.) — they add a click and kill conversion. One destination: the waitlist.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-label">Category</div>
+      <div class="copy-value">Beauty & Personal Care</div>
+      <div class="copy-note">Not "Health & Wellness" — Beauty & Personal Care gets your content into the grooming discovery feed where the audience actually is.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-label">Posting cadence</div>
+      <div class="copy-value">3× per week · Mon / Wed / Fri</div>
+      <div class="copy-note">TikTok's algorithm penalises accounts that post then go quiet. Consistent 3× beats irregular 7×. First 30 days are critical — the algorithm is deciding whether to push you.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── PINNED VIDEOS ─── -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:700px;">
+  <div class="section-label">3 Pinned Videos · In Order</div>
+  <div class="copy-sheet">
+    <div style="padding:20px 28px 12px;">
+      <div class="copy-note" style="color:rgba(240,236,226,0.6);">TikTok allows 3 pinned videos. These are the first thing every new visitor sees — they must answer: what is this account, why should I follow, what will I get. Pin in this order.</div>
+    </div>
+    <div class="pinned-grid">
+      <div class="pinned-card">
+        <div class="pinned-num">PIN 1</div>
+        <div class="pinned-title">The Dead Skin Video</div>
+        <div class="pinned-hook">"This comes off your skin even AFTER a shower. Watch."</div>
+        <div class="pinned-tag">Hook · Proof · Shock</div>
+      </div>
+      <div class="pinned-card">
+        <div class="pinned-num">PIN 2</div>
+        <div class="pinned-title">The Back Problem</div>
+        <div class="pinned-hook">"Nobody has ever properly cleaned your back. I'll prove it."</div>
+        <div class="pinned-tag">Relatable · Problem</div>
+      </div>
+      <div class="pinned-card">
+        <div class="pinned-num">PIN 3</div>
+        <div class="pinned-title">The System Reveal</div>
+        <div class="pinned-hook">"I spent 18 months building the routine men were never given."</div>
+        <div class="pinned-tag">Brand · CTA · Follow</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HASHTAG STRATEGY ─── -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:700px;">
+  <div class="section-label">Hashtag Pool · Use 4–6 per video</div>
+  <div class="copy-sheet">
+    <div style="padding:16px 28px 8px;">
+      <div class="copy-note" style="color:rgba(240,236,226,0.5);">Never use the same set twice. Rotate from this pool. Mix 1–2 big + 2–3 mid + 1 niche per video.</div>
+    </div>
+    <div class="hashtag-legend">
+      <div class="legend-item"><div class="legend-dot big"></div> Big (100M+)</div>
+      <div class="legend-item"><div class="legend-dot mid"></div> Mid (1–50M)</div>
+      <div class="legend-item"><div class="legend-dot niche"></div> Niche (&lt;1M)</div>
+    </div>
+    <div class="hashtag-pool">
+      <div class="hashtag-pill big">#shower</div>
+      <div class="hashtag-pill big">#skincare</div>
+      <div class="hashtag-pill big">#mensskincare</div>
+      <div class="hashtag-pill big">#hygiene</div>
+      <div class="hashtag-pill mid">#italytowel</div>
+      <div class="hashtag-pill mid">#exfoliation</div>
+      <div class="hashtag-pill mid">#bodycare</div>
+      <div class="hashtag-pill mid">#mensgrooming</div>
+      <div class="hashtag-pill mid">#menshygiene</div>
+      <div class="hashtag-pill mid">#deadskincells</div>
+      <div class="hashtag-pill mid">#showertips</div>
+      <div class="hashtag-pill mid">#bodywash</div>
+      <div class="hashtag-pill mid">#cleanskin</div>
+      <div class="hashtag-pill mid">#groomingformen</div>
+      <div class="hashtag-pill niche">#koreanbathhouse</div>
+      <div class="hashtag-pill niche">#jjimjilbang</div>
+      <div class="hashtag-pill niche">#rhassoulclay</div>
+      <div class="hashtag-pill niche">#scalpcare</div>
+      <div class="hashtag-pill niche">#bodyroutine</div>
+      <div class="hashtag-pill niche">#bysolum</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RULES ─── -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:700px;padding-bottom:48px;">
+  <div class="section-label">TikTok Account Rules · Never Break</div>
+  <div class="copy-sheet">
+    <div class="copy-block">
+      <div class="copy-label">Video format</div>
+      <div class="copy-value" style="font-size:15px;">9:16 vertical · 1080×1920 · 15–60 seconds</div>
+      <div class="copy-note">Sweet spot is 20–35 seconds. Long enough to land the point, short enough to replay. TikTok rewards replays heavily in the first hour.</div>
+    </div>
+    <div class="copy-block">
+      <div class="copy-label">Captions</div>
+      <div class="copy-value" style="font-size:15px;">Always on. Auto-captions enabled.</div>
+      <div class="copy-note">85% of TikTok is watched without sound first. Captions are not optional — they are the hook delivery mechanism. TikTok's auto-caption is good enough. Turn it on every video.</div>
+    </div>
+    <div class="copy-block">
+      <div class="copy-label">First frame rule</div>
+      <div class="copy-value" style="font-size:15px;">The hook must be visible in frame 1. No intro. No logo. No music bed.</div>
+      <div class="copy-note">The thumbnail IS frame 1. If frame 1 doesn't stop the scroll, the video dies regardless of what comes after. Start mid-action or with bold text overlay.</div>
+    </div>
+    <div class="copy-block">
+      <div class="copy-label">Posting time</div>
+      <div class="copy-value" style="font-size:15px;">6–9am GMT · Or 7–10pm GMT</div>
+      <div class="copy-note">UK audience. Morning commute scroll or evening wind-down. Avoid 12–5pm — lowest engagement window for this demographic.</div>
+    </div>
+    <div class="copy-block">
+      <div class="copy-label">Following count</div>
+      <div class="copy-value" style="font-size:15px;">Follow 0 accounts. Permanently.</div>
+      <div class="copy-note">Brand accounts that follow nobody signal authority. Following back is a consumer behaviour. SOLUM is a brand, not a person — it doesn't follow.</div>
+    </div>
+    <div class="copy-block" style="border-bottom:none;">
+      <div class="copy-label">Brand voice on TikTok</div>
+      <div class="copy-value" style="font-size:15px;">Harsha on camera. Unpolished. Direct. No voiceover.</div>
+      <div class="copy-note">TikTok users distrust brand-produced content. Harsha as founder talking directly to camera outperforms any produced reel. Authenticity is the production value. Save the polished content for Instagram.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Download buttons -->
+<div class="dl-row">
+  <button class="dl-btn" onclick="dlElement('pfp-200', 'SOLUM-tiktok-pfp-200x200.png', 200, 200)">
+    ↓ Download Profile Picture (200×200)
+  </button>
+  <button class="dl-btn" onclick="dlElement('pfp-200', 'SOLUM-tiktok-pfp-400x400.png', 400, 400)">
+    ↓ Download Profile Picture (400×400)
+  </button>
+</div>
+
+<script>
+function dlElement(id, filename, w, h) {
+  const el = document.getElementById(id);
+  const scale = w / el.offsetWidth;
+  html2canvas(el, {
+    scale: scale,
+    useCORS: true,
+    backgroundColor: '#08090B',
+    width: el.offsetWidth,
+    height: el.offsetHeight,
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+</script>
+
+</body>
+</html>

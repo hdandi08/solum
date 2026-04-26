@@ -1,3 +1,7 @@
+import { useVariant, trackGoal } from '../hooks/useVariant';
+
+const CTA_COPY = { control: 'Choose Your Kit', ritual: 'Build Your Ritual' };
+
 const CSS = `
 .cta-section{background:var(--char);border-top:1px solid var(--lineb);text-align:center;padding:140px 48px;position:relative;overflow:hidden;}
 .cta-section::before{content:'SOLUM';pointer-events:none;user-select:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(200px,28vw,380px);letter-spacing:-4px;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.04);white-space:nowrap;}
@@ -8,12 +12,13 @@ const CSS = `
 .cta-btns{display:flex;justify-content:center;gap:16px;position:relative;}
 .cta-btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--bone);color:var(--black);padding:16px 40px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;}
 .cta-btn-primary:hover{background:#fff;transform:translateY(-1px);}
-.cta-btn-ghost{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;}
-.cta-btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
 @media(max-width:768px){.cta-section{padding:80px 24px;}.cta-btns{flex-direction:column;align-items:center;}}
 `;
 
 export default function CTASection() {
+  const ctaVariant = useVariant('hero-cta-copy');
+  const ctaLabel = CTA_COPY[ctaVariant] ?? CTA_COPY.control;
+
   return (
     <>
       <style>{CSS}</style>
@@ -27,8 +32,7 @@ export default function CTASection() {
           Spaces are filling fast · GROUND from £65 · RITUAL from £85
         </div>
         <div className="cta-btns">
-          <a href="#kits" className="cta-btn-primary">Choose Your Kit</a>
-          <a href="#truth" className="cta-btn-ghost">Why It Matters</a>
+          <a href="#kits" className="cta-btn-primary" onClick={() => trackGoal('bottom_cta_clicked', { variant: ctaVariant })}>{ctaLabel}</a>
         </div>
       </section>
     </>
