@@ -5,7 +5,6 @@ const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
 export function initAnalytics() {
   if (!KEY) return;
-  if (!window.location.hostname.includes('bysolum.co.uk')) return;
   posthog.init(KEY, {
     api_host: HOST,
     ui_host: 'https://eu.posthog.com',
