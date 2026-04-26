@@ -14,6 +14,7 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import Founding100Page from './pages/Founding100Page';
 import AthletePage from './pages/AthletePage';
+import AthleteComingSoon from './pages/AthleteComingSoon';
 import './styles/global.css';
 
 // Auth pages that handle their own session callbacks — do not redirect these.
@@ -52,8 +53,8 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/confirm" element={<ConfirmPage />} />
         <Route path="/founding-100" element={<Founding100Page />} />
-        <Route path="/athletes" element={<AthletePage />} />
-        <Route path="/sports" element={<AthletePage />} />
+        <Route path="/athletes" element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
+        <Route path="/sports"   element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
