@@ -10,6 +10,8 @@ frontend:
         - echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> web/.env
         - echo "VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY" >> web/.env
         - echo "VITE_AXON_PIXEL_ID=$VITE_AXON_PIXEL_ID" >> web/.env
+        - echo "VITE_POSTHOG_KEY=$VITE_POSTHOG_KEY" >> web/.env
+        - echo "VITE_POSTHOG_HOST=$VITE_POSTHOG_HOST" >> web/.env
         - npm --prefix web run build
   artifacts:
     baseDirectory: web/dist
