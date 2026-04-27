@@ -22,11 +22,13 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Allow both confirmed founding members AND invited-but-not-yet-pledged people.
+  // is_founding_member is only set true AFTER the pledge is signed.
   const { data } = await supabase
     .from('customers')
     .select('id')
     .eq('email', email.trim().toLowerCase())
-    .eq('is_founding_member', true)
+    .or('is_founding_member.eq.true,founding_invited_at.not.is.null')
     .is('exit_at', null)
     .maybeSingle();
 

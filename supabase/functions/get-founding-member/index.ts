@@ -29,12 +29,12 @@ Deno.serve(async (req) => {
 
   const email = user.email!.trim().toLowerCase();
 
-  // Try fast lookup by supabase_user_id first
+  // Try fast lookup by supabase_user_id first (invited OR confirmed members)
   let { data: customer } = await supabase
     .from('customers')
     .select('id, email, first_name, last_name, founding_member_since, pledge_signed_at, sessions_completed, last_session_at, exit_at, supabase_user_id')
     .eq('supabase_user_id', user.id)
-    .eq('is_founding_member', true)
+    .or('is_founding_member.eq.true,founding_invited_at.not.is.null')
     .maybeSingle();
 
   // First login: find by email and link supabase_user_id
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       .from('customers')
       .select('id, email, first_name, last_name, founding_member_since, pledge_signed_at, sessions_completed, last_session_at, exit_at, supabase_user_id')
       .eq('email', email)
-      .eq('is_founding_member', true)
+      .or('is_founding_member.eq.true,founding_invited_at.not.is.null')
       .is('exit_at', null)
       .maybeSingle();
     customer = data;

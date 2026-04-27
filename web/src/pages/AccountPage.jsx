@@ -728,22 +728,21 @@ function LoginView({ phase, setPhase }) {
     setSending(true);
     const normalisedEmail = email.trim().toLowerCase();
     try {
-      const checkRes = await fetch(`${SUPABASE_URL}/functions/v1/check-customer`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-account-magic-link`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
         body: JSON.stringify({ email: normalisedEmail }),
       });
-      const { exists } = await checkRes.json();
-      if (!exists) {
-        setError('No account found for this email. If you think this is wrong, email contact@bysolum.com.');
+      const data = await res.json();
+      if (!data.ok) {
+        if (data.reason === 'no_account') {
+          setError('No account found for this email. If you think this is wrong, email contact@bysolum.co.uk.');
+        } else {
+          setError('Something went wrong. Please try again.');
+        }
         setSending(false);
         return;
       }
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: normalisedEmail,
-        options: { emailRedirectTo: `${window.location.origin}/account` },
-      });
-      if (otpError) throw otpError;
       setPhase('sent');
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');

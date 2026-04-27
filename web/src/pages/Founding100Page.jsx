@@ -1261,22 +1261,21 @@ function LandingView({ phase, setPhase }) {
     setSending(true);
     const normEmail = email.trim().toLowerCase();
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/check-founding-member`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-founding-magic-link`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
         body:    JSON.stringify({ email: normEmail }),
       });
-      const { is_member } = await res.json();
-      if (!is_member) {
-        setError("This email isn't on our founding member list. Join the waitlist below to apply.");
+      const data = await res.json();
+      if (!data.ok) {
+        if (data.reason === 'not_invited') {
+          setError("This email isn't on our founding member list. Join the waitlist below to apply.");
+        } else {
+          setError('Something went wrong. Please try again.');
+        }
         setSending(false);
         return;
       }
-      const { error: otpErr } = await supabase.auth.signInWithOtp({
-        email: normEmail,
-        options: { emailRedirectTo: `${window.location.origin}/founding-100` },
-      });
-      if (otpErr) throw otpErr;
       setPhase('sent');
     } catch (e) {
       setError(e.message || 'Something went wrong. Please try again.');
