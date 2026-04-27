@@ -6,7 +6,7 @@ const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 // Axon pixel is initialised via inline script in index.html.
 // This helper fires named events once the pixel scripts have loaded.
 export function axonEvent(name, props = {}) {
-  if (window.axon) window.axon("event", name, props);
+  if (window.axon) window.axon("track", name, props);
 }
 
 export function initAnalytics() {
