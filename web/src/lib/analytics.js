@@ -8,7 +8,20 @@ const AXON_ID = import.meta.env.VITE_AXON_PIXEL_ID;
 function initAxon() {
   if (!AXON_ID) return;
   window.AXON_EVENT_KEY = AXON_ID;
-  !function(e,r){var t=["https://s.axon.ai/pixel.js","https://res4.applovin.com/p/l/loader.iife.js"];if(!e.axon){var a=e.axon=function(){a.performOperation?a.performOperation.apply(a,arguments):a.operationQueue.push(arguments)};a.operationQueue=[],a.ts=Date.now(),a.eventKey=AXON_ID;for(var n=r.getElementsByTagName("script")[0],o=0;o<t.length;o++){var i=r.createElement("script");i.async=!0,i.src=t[o],n.parentNode.insertBefore(i,n)}}}(window,document);
+  if (!window.axon) {
+    const a = window.axon = function() {
+      a.performOperation ? a.performOperation.apply(a, arguments) : a.operationQueue.push(arguments);
+    };
+    a.operationQueue = [];
+    a.ts = Date.now();
+    a.eventKey = AXON_ID;
+    ["https://s.axon.ai/pixel.js", "https://res4.applovin.com/p/l/loader.iife.js"].forEach(src => {
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = src;
+      document.head.appendChild(s);
+    });
+  }
   window.axon("init");
   window.axon("event", "page_view");
 }
