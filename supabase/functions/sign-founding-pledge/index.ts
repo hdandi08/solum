@@ -28,11 +28,18 @@ Deno.serve(async (req) => {
 
   const now = new Date().toISOString();
 
+  // Sets is_founding_member = true at the moment of pledge — invited people become
+  // confirmed members only by accepting the terms.
   const { error } = await supabase
     .from('customers')
-    .update({ pledge_signed_at: now, updated_at: now })
+    .update({
+      pledge_signed_at:      now,
+      is_founding_member:    true,
+      founding_member_since: now,
+      updated_at:            now,
+    })
     .eq('email', user.email!.trim().toLowerCase())
-    .eq('is_founding_member', true)
+    .or('is_founding_member.eq.true,founding_invited_at.not.is.null')
     .is('exit_at', null)
     .is('pledge_signed_at', null); // idempotent — only sets once
 
