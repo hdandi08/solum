@@ -3,6 +3,7 @@ import Nav from '../components/Nav.jsx';
 import KitComparison from '../components/KitComparison.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import { trackGoal } from '../hooks/useVariant';
+import { axonEvent } from '../lib/analytics';
 
 const IS_LIVE = import.meta.env.VITE_LAUNCH_MODE === 'live';
 const PRIMARY_CTA = IS_LIVE ? '#kits' : '#athlete-waitlist';
@@ -580,6 +581,7 @@ function AthleteWaitlistForm() {
       setPosition(data.position);
       trackGoal('Waitlist Signup', { cta: 'athlete-page', source: 'athlete', position: String(data.position) });
       if (window.fbq) window.fbq('track', 'Lead');
+      axonEvent('generate_lead', { email: email.trim() });
     } catch {
       setError('Something went wrong. Try again.');
     } finally {
