@@ -3,35 +3,13 @@ import posthog from 'posthog-js';
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
-const AXON_ID = import.meta.env.VITE_AXON_PIXEL_ID;
-
-function initAxon() {
-  if (!AXON_ID) return;
-  window.AXON_EVENT_KEY = AXON_ID;
-  if (!window.axon) {
-    const a = window.axon = function() {
-      a.performOperation ? a.performOperation.apply(a, arguments) : a.operationQueue.push(arguments);
-    };
-    a.operationQueue = [];
-    a.ts = Date.now();
-    a.eventKey = AXON_ID;
-    ["https://s.axon.ai/pixel.js", "https://res4.applovin.com/p/l/loader.iife.js"].forEach(src => {
-      const s = document.createElement("script");
-      s.async = true;
-      s.src = src;
-      document.head.appendChild(s);
-    });
-  }
-  window.axon("init");
-  window.axon("event", "page_view");
-}
-
+// Axon pixel is initialised via inline script in index.html.
+// This helper fires named events once the pixel scripts have loaded.
 export function axonEvent(name, props = {}) {
   if (window.axon) window.axon("event", name, props);
 }
 
 export function initAnalytics() {
-  initAxon();
   if (!KEY) return;
   posthog.init(KEY, {
     api_host: HOST,

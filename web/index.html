@@ -62,7 +62,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
-    <!-- Analytics: PostHog + Axon pixel (initialised in src/lib/analytics.js via VITE_POSTHOG_KEY / VITE_AXON_PIXEL_ID) -->
+    <!-- Axon (AppLovin) pixel -->
+    <script>var AXON_EVENT_KEY="3aa55867-1b0d-429d-9f35-2cf83fefdddc";
+      !function(e,r){var t=["https://s.axon.ai/pixel.js","https://res4.applovin.com/p/l/loader.iife.js"];if(!e.axon){var a=e.axon=function(){a.performOperation?a.performOperation.apply(a,arguments):a.operationQueue.push(arguments)};a.operationQueue=[],a.ts=Date.now(),a.eventKey=AXON_EVENT_KEY;for(var n=r.getElementsByTagName("script")[0],o=0;o<t.length;o++){var i=r.createElement("script");i.async=!0,i.src=t[o],n.parentNode.insertBefore(i,n)}}}(window,document);
+      axon("init");
+    </script>
+    <!-- Analytics: PostHog (initialised in src/lib/analytics.js via VITE_POSTHOG_KEY) -->
   </head>
   <body>
     <div id="root"></div>
