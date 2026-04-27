@@ -258,7 +258,7 @@ export default function PrivacyPage() {
 
               <div className="privacy-h3">Information Collected Automatically</div>
               <ul className="privacy-list">
-                <li><strong>Usage data:</strong> Pages visited, time on site, referral source — collected via Plausible Analytics (see Section 8)</li>
+                <li><strong>Usage data:</strong> Pages visited, time on site, referral source — collected via PostHog Analytics (see Section 8)</li>
                 <li><strong>Technical data:</strong> IP address, browser type, device type — collected in anonymised or aggregated form only</li>
               </ul>
 
@@ -321,7 +321,7 @@ export default function PrivacyPage() {
                   </tr>
                   <tr>
                     <td><strong>Improve our website and understand usage</strong></td>
-                    <td>Anonymised usage data (Plausible Analytics — no personal data)</td>
+                    <td>Anonymised usage data (PostHog Analytics — no personal data)</td>
                     <td>Legitimate interest</td>
                   </tr>
                   <tr>
@@ -394,8 +394,8 @@ export default function PrivacyPage() {
                     <td>UK</td>
                   </tr>
                   <tr>
-                    <td><strong>Plausible Analytics</strong></td>
-                    <td>Website analytics — no personal data, no cookies, fully anonymised</td>
+                    <td><strong>PostHog</strong></td>
+                    <td>Website analytics and session recording — data hosted in EU, no cross-site tracking</td>
                     <td>EU</td>
                   </tr>
                   <tr>
@@ -497,16 +497,16 @@ export default function PrivacyPage() {
               <span className="privacy-section-num">Section 08</span>
               <h2 className="privacy-section-title">Cookies &amp; Analytics</h2>
 
-              <div className="privacy-h3">Analytics — Plausible</div>
-              <p className="privacy-p">We use <strong>Plausible Analytics</strong> to understand how visitors use bysolum.co.uk. Plausible is a privacy-friendly analytics tool that:</p>
+              <div className="privacy-h3">Analytics — PostHog</div>
+              <p className="privacy-p">We use <strong>PostHog</strong> to understand how visitors use bysolum.co.uk. PostHog is a privacy-friendly analytics platform that:</p>
               <ul className="privacy-list">
-                <li>Does not use cookies</li>
-                <li>Does not collect or store any personal data</li>
+                <li>Stores data exclusively in the EU (Frankfurt)</li>
                 <li>Does not track visitors across sites</li>
-                <li>Is fully compliant with UK GDPR, PECR, and ePrivacy Directive without requiring consent</li>
-                <li>Data is hosted in the EU</li>
+                <li>Does not sell data to third parties</li>
+                <li>Session recordings mask all form inputs by default (passwords and card numbers always masked)</li>
+                <li>Is fully compliant with UK GDPR, PECR, and ePrivacy Directive</li>
               </ul>
-              <p className="privacy-p">Because Plausible uses no cookies and collects no personal data, we do not display a cookie consent banner for analytics purposes.</p>
+              <p className="privacy-p">PostHog uses a first-party cookie for session continuity. This cookie does not track you across other websites and is used solely to understand how our own site is used. We do not display a cookie consent banner for first-party analytics cookies under PECR.</p>
 
               <div className="privacy-h3">Strictly Necessary Functionality</div>
               <p className="privacy-p">Our website may use minimal session-based storage (not tracking cookies) to maintain your login session and shopping cart state. This storage is essential for the website to function and does not require consent under PECR.</p>
