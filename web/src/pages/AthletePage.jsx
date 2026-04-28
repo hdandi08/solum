@@ -581,7 +581,11 @@ function AthleteWaitlistForm() {
       setPosition(data.position);
       trackGoal('Waitlist Signup', { cta: 'athlete-page', source: 'athlete', position: String(data.position) });
       if (window.fbq) window.fbq('track', 'Lead');
-      axonEvent('generate_lead', { email: email.trim() });
+      axonEvent('generate_lead', {
+        currency: 'GBP',
+        value: 85,
+        user_data: { email: email.trim() },
+      });
     } catch {
       setError('Something went wrong. Try again.');
     } finally {

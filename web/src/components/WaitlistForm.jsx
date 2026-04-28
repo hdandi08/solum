@@ -252,7 +252,11 @@ export default function WaitlistForm({
 
       setPosition(data.position);
       capture('Waitlist Signup', { cta: formId, position: String(data.position), source });
-      axonEvent('generate_lead', { email: email.trim() });
+      axonEvent('generate_lead', {
+        currency: 'GBP',
+        value: 85,
+        user_data: { email: email.trim() },
+      });
       onSuccess && onSuccess();
     } catch {
       setError('Something went wrong. Try again.');
