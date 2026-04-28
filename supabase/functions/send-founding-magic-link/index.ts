@@ -166,10 +166,7 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       type: 'magiclink',
       email,
-      // Supabase validates redirect_to against the allowed list by stripping query params,
-      // so ?founding=1 on the root domain passes validation. AuthRedirectGuard reads the
-      // param and routes to /founding-100 instead of /account.
-      redirect_to: `${SITE_URL}?founding=1`,
+      redirect_to: `${SITE_URL}/founding-100`,
     }),
   });
 

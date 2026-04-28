@@ -130,15 +130,32 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Generate magic link via admin API
-  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email,
-    options: { redirectTo: `${SITE_URL}/account` },
+  const genRes = await fetch(`${Deno.env.get('SUPABASE_URL')}/auth/v1/admin/generate_link`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+      'apikey': Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: 'magiclink',
+      email,
+      redirect_to: `${SITE_URL}/account`,
+    }),
   });
 
-  if (linkErr || !linkData?.properties?.action_link) {
-    console.error('[send-account-magic-link] generateLink error:', linkErr);
+  if (!genRes.ok) {
+    const err = await genRes.text();
+    console.error('[send-account-magic-link] generate_link error:', err);
+    return new Response(JSON.stringify({ ok: false, reason: 'link_generation_failed' }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const genData = await genRes.json();
+  const magicLink: string = genData.action_link;
+  if (!magicLink) {
+    console.error('[send-account-magic-link] no action_link in response:', JSON.stringify(genData));
     return new Response(JSON.stringify({ ok: false, reason: 'link_generation_failed' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -158,12 +175,7 @@ Deno.serve(async (req) => {
       from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
       to: [email],
       subject: 'Your SOLUM account login link',
-      html: buildEmail((() => {
-        // Force redirect_to — generateLink ignores options.redirectTo and uses the project Site URL.
-        const u = new URL(linkData.properties.action_link);
-        u.searchParams.set('redirect_to', `${SITE_URL}/account`);
-        return u.toString();
-      })()),
+      html: buildEmail(magicLink),
     }),
   });
 
