@@ -21,14 +21,16 @@ import './styles/global.css';
 const AUTH_DESTINATIONS = ['/account', '/founding-100'];
 
 // If Supabase drops auth tokens on the wrong page (e.g. site root instead of /account),
-// pick them up and forward to /account so the session can be established.
+// pick them up and forward to the right destination so the session can be established.
+// founding=1 query param means the link came from the founding-100 portal email.
 function AuthRedirectGuard() {
   useEffect(() => {
     const hash   = window.location.hash
     const params = new URLSearchParams(window.location.search)
     const isAuthCallback = hash.includes('access_token') || hash.includes('error_description') || params.has('code')
     if (isAuthCallback && !AUTH_DESTINATIONS.includes(window.location.pathname)) {
-      window.location.replace('/account' + window.location.search + window.location.hash)
+      const dest = params.has('founding') ? '/founding-100' : '/account'
+      window.location.replace(dest + window.location.hash)
     }
   }, [])
   return null
