@@ -254,7 +254,7 @@ export default function WaitlistForm({
       capture('Waitlist Signup', { cta: formId, position: String(data.position), source });
       axonEvent('generate_lead', {
         currency: 'GBP',
-        value: 85,
+        value: 65,
         user_data: { email: email.trim() },
       });
       onSuccess && onSuccess();

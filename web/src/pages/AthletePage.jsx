@@ -583,7 +583,7 @@ function AthleteWaitlistForm() {
       if (window.fbq) window.fbq('track', 'Lead');
       axonEvent('generate_lead', {
         currency: 'GBP',
-        value: 85,
+        value: 65,
         user_data: { email: email.trim() },
       });
     } catch {
