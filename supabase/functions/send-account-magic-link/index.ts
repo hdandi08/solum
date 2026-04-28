@@ -158,7 +158,12 @@ Deno.serve(async (req) => {
       from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
       to: [email],
       subject: 'Your SOLUM account login link',
-      html: buildEmail(linkData.properties.action_link),
+      html: buildEmail((() => {
+        // Force redirect_to — generateLink ignores options.redirectTo and uses the project Site URL.
+        const u = new URL(linkData.properties.action_link);
+        u.searchParams.set('redirect_to', `${SITE_URL}/account`);
+        return u.toString();
+      })()),
     }),
   });
 
