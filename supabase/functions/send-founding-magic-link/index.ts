@@ -168,7 +168,12 @@ Deno.serve(async (req) => {
     });
   }
 
-  const magicLink = linkData.properties.action_link;
+  // Supabase admin generateLink ignores options.redirectTo and uses the project Site URL.
+  // Force the correct redirect by replacing the redirect_to param directly in the URL.
+  // The token is not affected — redirect_to is a plain URL param, not part of the signature.
+  const actionUrl = new URL(linkData.properties.action_link);
+  actionUrl.searchParams.set('redirect_to', `${SITE_URL}/founding-100`);
+  const magicLink = actionUrl.toString();
 
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) {
