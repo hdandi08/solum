@@ -154,26 +154,38 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Generate magic link via admin API
-  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email,
-    options: { redirectTo: `${SITE_URL}/founding-100` },
+  // Call the auth REST API directly — the JS SDK ignores options.redirectTo in generateLink,
+  // but the underlying GoTrue API supports redirect_to as a top-level body field.
+  const genRes = await fetch(`${Deno.env.get('SUPABASE_URL')}/auth/v1/admin/generate_link`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+      'apikey': Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: 'magiclink',
+      email,
+      redirect_to: `${SITE_URL}/founding-100`,
+    }),
   });
 
-  if (linkErr || !linkData?.properties?.action_link) {
-    console.error('[send-founding-magic-link] generateLink error:', linkErr);
+  if (!genRes.ok) {
+    const err = await genRes.text();
+    console.error('[send-founding-magic-link] generate_link error:', err);
     return new Response(JSON.stringify({ ok: false, reason: 'link_generation_failed' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
-  // Supabase admin generateLink ignores options.redirectTo and uses the project Site URL.
-  // Force the correct redirect by replacing the redirect_to param directly in the URL.
-  // The token is not affected — redirect_to is a plain URL param, not part of the signature.
-  const actionUrl = new URL(linkData.properties.action_link);
-  actionUrl.searchParams.set('redirect_to', `${SITE_URL}/founding-100`);
-  const magicLink = actionUrl.toString();
+  const genData = await genRes.json();
+  const magicLink: string = genData.action_link;
+  if (!magicLink) {
+    console.error('[send-founding-magic-link] no action_link in response:', JSON.stringify(genData));
+    return new Response(JSON.stringify({ ok: false, reason: 'link_generation_failed' }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
 
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) {

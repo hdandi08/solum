@@ -20,15 +20,15 @@ import './styles/global.css';
 // Auth pages that handle their own session callbacks — do not redirect these.
 const AUTH_DESTINATIONS = ['/account', '/founding-100'];
 
-// If Supabase drops auth tokens on the wrong page (e.g. site root instead of /account),
-// pick them up and forward to /account so the session can be established.
+// If Supabase drops auth tokens on the wrong page, forward to /account.
+// AUTH_DESTINATIONS handle their own session callbacks and are excluded.
 function AuthRedirectGuard() {
   useEffect(() => {
     const hash   = window.location.hash
     const params = new URLSearchParams(window.location.search)
     const isAuthCallback = hash.includes('access_token') || hash.includes('error_description') || params.has('code')
     if (isAuthCallback && !AUTH_DESTINATIONS.includes(window.location.pathname)) {
-      window.location.replace('/account' + window.location.search + window.location.hash)
+      window.location.replace('/account' + window.location.hash)
     }
   }, [])
   return null
