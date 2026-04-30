@@ -398,7 +398,7 @@ export default function CheckoutPage() {
 
         {/* ── LEFT — FORM ── */}
         <div className="co-left">
-          <a className="co-back" href="/full#kits">← Choose a different kit</a>
+          <a className="co-back" href="/#kits">← Choose a different kit</a>
           <div className="co-eyebrow">{kit.name} · £{kit.firstBoxPrice} first box</div>
           {inventoryAvailable !== false && <>
             <div className="co-heading">Start Your Ritual.</div>
