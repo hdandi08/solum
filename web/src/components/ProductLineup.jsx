@@ -56,12 +56,12 @@ export default function ProductLineup() {
         <div className="products-header reveal">
           <div>
             <div className="p-sec-tag">The Products</div>
-            <h2 className="p-sec-title">Eleven Products.<br />One Body System.</h2>
+            <h2 className="p-sec-title">Ten Products.<br />One Body System.</h2>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <p className="p-sec-body">
-              Each product is numbered 01–11 and used in sequence. All eleven address the body — not the face.
-              Sourced from the country that does each tradition best. Products 10 and 11 are coming soon.
+              Each product is numbered 01–10 and used in sequence. All ten address the body — not the face.
+              Sourced from the country that does each tradition best. Products 09 and 10 are coming soon.
             </p>
           </div>
         </div>
