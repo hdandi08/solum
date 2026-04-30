@@ -1,7 +1,7 @@
 const CSS = `
 footer.solum-footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48px 32px;}
 .footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
-.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.18em;color:var(--bone);margin-bottom:10px;display:block;}
+.footer-logo{display:block;margin-bottom:10px;}.footer-logo img{height:24px;width:auto;display:block;}
 .footer-tagline{font-size:13px;color:var(--stone);letter-spacing:2px;font-style:italic;margin-bottom:8px;}
 .footer-scope{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:600;}
 .footer-col-title{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
@@ -24,7 +24,7 @@ export default function SolumFooter() {
       <footer className="solum-footer">
         <div className="footer-inner">
           <div>
-            <span className="footer-logo">SOLUM</span>
+            <div className="footer-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></div>
             <div className="footer-tagline">Your body. Done right.</div>
             <div className="footer-scope">Body Care · Men</div>
           </div>

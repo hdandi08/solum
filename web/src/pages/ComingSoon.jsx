@@ -61,10 +61,13 @@ const styles = `
     border-bottom: 1px solid rgba(240,236,226,0.055);
   }
   .cs-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 0.18em;
-    color: #f0ece2;
+    display: flex;
+    align-items: center;
+  }
+  .cs-logo img {
+    height: 22px;
+    width: auto;
+    display: block;
   }
   .cs-badge {
     font-size: 13px;
@@ -1044,10 +1047,14 @@ const styles = `
     justify-content: space-between;
   }
   .cs-footer-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.18em;
-    color: rgba(240,236,226,0.88);
+    display: flex;
+    align-items: center;
+    opacity: 0.88;
+  }
+  .cs-footer-logo img {
+    height: 14px;
+    width: auto;
+    display: block;
   }
   .cs-footer-contact {
     font-size: 13px;
@@ -1428,7 +1435,7 @@ export default function ComingSoon() {
         <div className="cs-glow" />
 
         <header className="cs-topbar">
-          <span className="cs-logo">SOLUM</span>
+          <span className="cs-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></span>
         </header>
 
         {/* 1 — Hero */}
@@ -1739,7 +1746,7 @@ export default function ComingSoon() {
 
         {/* Footer */}
         <footer className="cs-footer">
-          <span className="cs-footer-logo">SOLUM</span>
+          <span className="cs-footer-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></span>
           <a href="mailto:contact@bysolum.com" className="cs-footer-contact">contact@bysolum.com</a>
           <a href="https://instagram.com/bysolum.body" target="_blank" rel="noopener noreferrer" className="cs-footer-ig">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">

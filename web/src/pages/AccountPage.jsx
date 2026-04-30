@@ -52,7 +52,7 @@ const CSS = `
 /* ── Dashboard header ── */
 .ac-dash-head{background:var(--char);border-bottom:1px solid var(--lineb);padding:32px 40px;}
 .ac-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.ac-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.15em;color:var(--bone);text-decoration:none;}
+.ac-logo{display:flex;align-items:center;text-decoration:none;}.ac-logo img{height:16px;width:auto;display:block;}
 .ac-signout{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;padding:0;transition:color .2s;}
 .ac-signout:hover{color:var(--bone);}
 .ac-greeting{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,52px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:12px;}
@@ -532,7 +532,7 @@ function Dashboard({ session, customer, sub, address, setAddress, setSub, setCus
             <img src="/solum-box-open-v4.png" alt="" aria-hidden="true" />
           </div>
           <div className="ac-head-top" style={{position:'relative',zIndex:1}}>
-            <a href="/" className="ac-logo">SOLUM</a>
+            <a href="/" className="ac-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></a>
             <button className="ac-signout" onClick={() => { setPhase('login'); supabase.auth.signOut(); }}>
               Sign out
             </button>

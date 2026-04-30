@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
 
-const LAST_UPDATED = '11 April 2026';
+const LAST_UPDATED = '30 April 2026';
 
 const CSS = `
 .terms-page { background: var(--black); min-height: 100vh; padding-top: 64px; }
@@ -248,7 +248,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Address</span>
-                  <span className="terms-info-value">[Business address — to be completed on registration]</span>
+                  <span className="terms-info-value">Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Email</span>
@@ -264,7 +264,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">VAT</span>
-                  <span className="terms-info-value">Not currently VAT registered. All prices shown are VAT-inclusive. [Update on registration]</span>
+                  <span className="terms-info-value">Not currently VAT registered. All prices shown are inclusive of any applicable taxes.</span>
                 </div>
               </div>
               <p className="terms-p">These Terms and Conditions, together with any order confirmation and our Privacy Policy, form the entire agreement between you and SOLUM. By placing an order, you agree to be bound by these terms.</p>
@@ -274,7 +274,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s2">
               <span className="terms-section-num">Section 02</span>
               <h2 className="terms-section-title">The Products</h2>
-              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered 01–09 and sold as kits (GROUND, RITUAL, SOVEREIGN) or as subscription refills.</p>
+              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered 01–10 and sold as kits (GROUND, RITUAL, SOVEREIGN) or as subscription refills. Products 09 and 10 are currently listed as coming soon and are not yet available for purchase.</p>
 
               <div className="terms-h3">Cosmetic Products (regulated under UK Cosmetics Regulation)</div>
               <p className="terms-p">The following products are cosmetic products within the meaning of the UK Cosmetics Regulation (retained EU Regulation (EC) No 1223/2009) and have been assessed under a Cosmetic Product Safety Report (CPSR):</p>
@@ -390,6 +390,7 @@ export default function TermsPage() {
                 <li>Emailing contact@bysolum.com with the subject line "Cancel Subscription"</li>
               </ul>
               <p className="terms-p">Cancellation takes effect from your next billing date. You will not be charged for any renewal after your cancellation is confirmed. You will continue to receive any box already paid for. We will acknowledge your cancellation by email within 24 hours.</p>
+              <p className="terms-p"><strong>Monthly subscription payments are non-refundable for the current billing period.</strong> If you cancel mid-cycle, you will not receive a prorated refund for the remaining days of your current subscription month. Your cancellation takes effect at the end of the period you have already paid for.</p>
 
               <div className="terms-h3">Pausing Your Subscription</div>
               <p className="terms-p">You may pause your subscription for up to 3 months by contacting us at contact@bysolum.com. During a pause, no payments will be taken and no boxes will be dispatched.</p>
@@ -399,6 +400,9 @@ export default function TermsPage() {
 
               <div className="terms-h3">Product Changes</div>
               <p className="terms-p">Where a product in your monthly refill is temporarily unavailable or has been reformulated, we may substitute an equivalent product of the same or greater value. We will notify you of any substitution. If you are not satisfied, you may return the substituted item for a full refund without cancelling your subscription.</p>
+
+              <div className="terms-h3">Inability to Fulfil</div>
+              <p className="terms-p">If we are unable to fulfil a subscription month — for example due to supply disruption, stock shortage, or circumstances beyond our reasonable control — we will notify you by email as soon as reasonably practicable. In such circumstances, we will either pause your billing for the affected month and delay dispatch until stock is available, or issue a credit to your account to the value of that month's subscription. We will not charge you for a month in which no goods are dispatched.</p>
             </section>
 
             {/* 6 — Delivery */}
@@ -464,8 +468,17 @@ export default function TermsPage() {
               <div className="terms-h3">Refund Process</div>
               <p className="terms-p">Once we receive and inspect your return, we will process your refund within <strong>14 days</strong>. Refunds are made to the original payment method (via Stripe). We cannot refund to a different card or account unless you consent to an alternative.</p>
 
+              <div className="terms-h3">Goods Damaged in Transit</div>
+              <p className="terms-p">If your order arrives with visible damage to the outer packaging or to the products inside, please notify us within <strong>5 working days</strong> of delivery by emailing contact@bysolum.com with:</p>
+              <ul className="terms-list">
+                <li>Your order number</li>
+                <li>A description of the damage</li>
+                <li>Photographs of the damaged outer packaging and of any affected products</li>
+              </ul>
+              <p className="terms-p">After 5 working days we cannot reasonably distinguish transit damage from damage that occurred after delivery. We will not be able to process transit damage claims raised outside this window, without prejudice to your rights under the Consumer Rights Act 2015 for goods that are not of satisfactory quality.</p>
+
               <div className="terms-h3">Faulty or Incorrect Goods</div>
-              <p className="terms-p">If your goods arrive faulty, damaged, or not as described, you have additional rights under the Consumer Rights Act 2015 (see Section 10). Please contact us within 30 days of receipt at contact@bysolum.com with a description and photograph of the issue. We will arrange a replacement or full refund, including return postage, at no cost to you.</p>
+              <p className="terms-p">If your goods arrive faulty (other than transit damage), not as described, or if you receive incorrect items, you have additional rights under the Consumer Rights Act 2015 (see Section 10). Please contact us within 30 days of receipt at contact@bysolum.com with a description and photograph of the issue. We will arrange a replacement or full refund, including return postage, at no cost to you.</p>
 
               <div className="terms-callout">
                 <p><strong>Model Cancellation Form:</strong> You may use the following to notify cancellation:</p>
@@ -537,7 +550,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Address</span>
-                  <span className="terms-info-value">[UK business address — to be completed]</span>
+                  <span className="terms-info-value">Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Contact</span>
@@ -679,7 +692,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Post</span>
-                  <span className="terms-info-value">SOLUM (Harsha Dandi), [Business address — to be completed]</span>
+                  <span className="terms-info-value">SOLUM (Harsha Dandi), Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Response Time</span>
