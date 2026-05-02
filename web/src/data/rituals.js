@@ -8,9 +8,35 @@ export const DAILY_STEPS = [
 ];
 
 export const WEEKLY_STEPS = [
-  { num: '04', name: 'Deep Scalp Massage', time: '5 MIN', zone: 'SCALP', desc: '5 minutes. More pressure than daily. Stimulates follicles.' },
-  { num: '05', name: 'Atlas Clay Mask', time: '8–10 MIN', zone: 'HEAD TO TOE', desc: 'Apply head to toe on damp skin. Leave 8–10 minutes. Draws out what body wash cannot reach.' },
-  { num: '02', name: 'Italy Towel Mitt', time: '3 MIN', zone: 'FULL BODY', desc: 'Weekend use only — viscose rayon is too aggressive for daily use. Firm slow strokes. Dead skin rolls off.' },
-  { num: '08', name: 'Bamboo Cloth', time: '30 SEC', zone: 'SENSITIVE AREAS', desc: 'For sensitive areas.' },
-  { num: '06', name: 'Argan Body Oil', time: '2 MIN', zone: 'FULL BODY', desc: 'Stay damp. 10–15 drops pressed in. No lotion needed today.' },
+  {
+    num: '05',
+    name: 'Apply Clay',
+    time: '3 MIN',
+    zone: 'FULL BODY',
+    desc: '1/4 clay + 2–3 drops argan oil for weekly. Use 1/2 clay for the full experience — makes it bi-weekly. Apply head to toe, face included. Avoid eyes. Yes, it\'s messy. That\'s the point.',
+  },
+  {
+    num: '04',
+    name: 'Scalp Oil Massage',
+    time: '8–10 MIN',
+    zone: 'SCALP',
+    desc: 'While the clay works on your body — apply argan oil generously to the scalp and use the massager for the full 8–10 minutes. Don\'t rush this window.',
+  },
+  {
+    num: '02',
+    name: 'Scrub Off Clay',
+    time: '4–5 MIN',
+    zone: 'FULL BODY',
+    desc: 'Wet the Italy Towel Mitt and scrub the clay off from neck to toe. The clay lubricates the mitt — this is the hammam technique. Dead skin rolls off. Rinse thoroughly after.',
+  },
+  {
+    num: '06',
+    name: 'Seal With Argan Oil',
+    time: '2–3 MIN',
+    zone: 'FULL BODY',
+    desc: 'Towel lightly — stay damp. Press 10–15 drops in from feet upward. No lotion needed today.',
+  },
 ];
+
+// Explicit product list for weekly — body wash is used in step 1 but isn't a standalone step card
+export const WEEKLY_PRODUCT_NUMS = ['05', '06', '04', '02', '11'];

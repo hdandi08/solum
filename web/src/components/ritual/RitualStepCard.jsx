@@ -26,12 +26,19 @@ const CSS = `
 .rsc-step-row:last-child{border-bottom:none;}
 .rsc-step-n{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--stone);line-height:1.4;}
 .rsc-step-t{font-size:15px;font-weight:300;color:var(--bone);line-height:1.65;}
-.rsc-tip{margin-bottom:20px;border-left:2px solid var(--blue);background:rgba(46,109,164,0.05);padding:14px 16px;}
+.rsc-tip{margin-bottom:12px;border-left:2px solid var(--blue);background:rgba(46,109,164,0.05);padding:14px 16px;}
 .rsc-tip.weekly{border-left-color:#c8a96e;background:rgba(200,169,110,0.05);}
 .rsc-tip-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
 .rsc-tip-label.daily{color:var(--blit);}
 .rsc-tip-label.weekly{color:#c8a96e;}
 .rsc-tip-body{font-size:14px;font-weight:300;color:var(--mist);line-height:1.65;}
+.rsc-warning{margin-bottom:12px;border-left:2px solid #e05c3a;background:rgba(224,92,58,0.06);padding:14px 16px;}
+.rsc-warning-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:#e05c3a;margin-bottom:6px;}
+.rsc-warning-body{font-size:14px;font-weight:300;color:var(--mist);line-height:1.65;}
+.rsc-upgrade{margin-bottom:12px;border:1px solid rgba(200,169,110,0.35);background:rgba(200,169,110,0.05);padding:14px 16px;}
+.rsc-upgrade-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;color:#c8a96e;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.rsc-upgrade-arrow{font-size:14px;}
+.rsc-upgrade-body{font-size:14px;font-weight:300;color:var(--mist);line-height:1.65;}
 .rsc-why{font-size:14px;font-weight:300;color:var(--mist);line-height:1.65;}
 @media(max-width:900px){
   .rsc-body{grid-template-columns:1fr;}
@@ -84,10 +91,27 @@ export default function RitualStepCard({ position, step, detail, variant }) {
               </>
             )}
 
+            {detail?.warning && (
+              <div className="rsc-warning">
+                <div className="rsc-warning-label">⚠ Warning</div>
+                <div className="rsc-warning-body">{detail.warning}</div>
+              </div>
+            )}
+
             {detail?.tip && (
               <div className={`rsc-tip ${variant}`}>
                 <div className={`rsc-tip-label ${variant}`}>Tip</div>
                 <div className="rsc-tip-body">{detail.tip}</div>
+              </div>
+            )}
+
+            {detail?.upgrade && (
+              <div className="rsc-upgrade">
+                <div className="rsc-upgrade-label">
+                  <span className="rsc-upgrade-arrow">↑</span>
+                  {detail.upgrade.label}
+                </div>
+                <div className="rsc-upgrade-body">{detail.upgrade.body}</div>
               </div>
             )}
 

@@ -144,7 +144,7 @@ async function sendConfirmationEmail(
     method: 'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'SOLUM <no-reply@orders.bysolum.com>',
+      from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
       to: email,
       subject: `Order confirmed — your ${kitName} Kit is on its way`,
       html,
@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
         const stripe_subscription_id = session.subscription as string;
 
         // Upsert customer
-        const { data: customer } = await supabase
+        const { data: customer, error: customerErr } = await supabase
           .from('customers')
           .upsert({
             email,
@@ -204,6 +204,8 @@ Deno.serve(async (req) => {
           }, { onConflict: 'email' })
           .select()
           .single();
+
+        if (!customer) throw new Error(`customer_upsert_failed: ${customerErr?.message} — email=${email} stripe_cid=${stripe_customer_id}`);
 
         // Look up any previous subscriptions for this customer to track returning customers
         const { data: previousSubs } = await supabase

@@ -47,48 +47,46 @@ export const DAILY_DETAILS = {
 };
 
 export const WEEKLY_DETAILS = {
-  '04': {
-    steps: [
-      'Same circular technique as daily, but slower and more deliberate',
-      'Work in rows front to back — 5 full minutes',
-      'More pressure than daily is fine. You\'re doing a deep clean.',
-    ],
-    tip: 'Take your time here. The extra 2–3 minutes makes a real difference to scalp health.',
-    why: 'Extended stimulation promotes follicle health and clears a full week of buildup.',
-  },
   '05': {
     steps: [
-      'Apply to damp (not dry) skin — head to toe',
-      'Leave on for 8–10 minutes while you complete the scalp massage and back cloth steps',
-      'Rinse off completely with warm water before moving to the mitt',
+      'Scoop out roughly 1/4 of the jar. Mix in 2–3 drops of argan oil — easier to spread and richer on the skin',
+      'Apply to damp skin head to toe — chest, stomach, arms, legs, back. Face is fine — stop at the brow line',
+      'Leave it on. The clay is working. Move straight to the scalp step.',
     ],
-    tip: 'The clay does the work — give it the full time. Rinse thoroughly or it will leave residue.',
-    why: 'Atlas Mountain rhassoul clay draws out impurities and excess sebum that body wash can\'t reach.',
+    warning: 'Do not apply near eyes. Clay on the face is fine — stop at the brow line and keep clear of the eye area.',
+    tip: 'Mix the clay in the bowl before applying — easier to distribute evenly. Clay is messy, worth it. After the session, fill the bowl with water and use it to pour over the shower walls and floor to shift the clay — then finish with the showerhead. Extended bi-weekly session: you\'ll need both.',
+    upgrade: {
+      label: 'BI-WEEKLY UPGRADE',
+      body: 'Use 1/2 the jar instead of 1/4 for a full luxurious treatment. Richer coverage, deeper draw. Makes this a bi-weekly ritual rather than weekly — one session every two weeks.',
+    },
+    why: 'Atlas Mountain rhassoul clay draws out sebum and impurities that body wash can\'t reach. The argan oil in the mix keeps skin from drying out while the clay works.',
+  },
+  '04': {
+    steps: [
+      'Apply argan oil generously to the scalp — more than you think you need',
+      'Place the massager flat at the hairline. Small firm circles, front to back',
+      'You have 8–10 minutes while the clay works — use all of it. Slow, deliberate coverage of every zone.',
+    ],
+    tip: 'This is the productive part of waiting for the clay. Your scalp gets the oil treatment while your body gets the clay treatment. Two jobs at once.',
+    why: 'Argan oil on the scalp loosens buildup and feeds the follicles. Extended massage at this intensity makes a visible difference to scalp health over time.',
   },
   '02': {
     steps: [
-      'Wet the mitt thoroughly — never use dry',
-      'Add a small amount of body wash. Firm, slow strokes top to bottom',
-      'Arms, chest, stomach, legs. Watch the dead skin roll off.',
+      'Wet the Italy Towel Mitt thoroughly under warm water',
+      'Scrub the clay off from neck to toe — firm, slow strokes downward',
+      'The clay acts as lubricant for the mitt — this is the hammam technique. You\'ll see dead skin rolling off. That\'s exactly right.',
+      'Rinse off completely. Then use the showerhead to rinse the shower walls and floor.',
     ],
-    tip: 'Weekly only. Viscose rayon is too aggressive for daily use — once a week is exactly right.',
-    why: 'Physically removes dead skin cells. The visible result — skin rolling off — confirms it\'s working.',
-  },
-  '08': {
-    steps: [
-      'Wet the cloth, small amount of body wash',
-      'Sensitive areas — same as daily',
-    ],
-    tip: 'Don\'t skip this even on weekly days. The mitt doesn\'t go everywhere.',
-    why: 'Completes the weekly ritual. Nothing uncleaned.',
+    tip: 'Don\'t add extra body wash here — the clay is doing the job. Wet mitt on clay-covered skin is all you need.',
+    why: 'Scrubbing off clay with the mitt is the traditional hammam sequence — black soap or clay applied, then kese to remove. The clay softens and loosens everything the mitt then takes off. More effective than mitt alone.',
   },
   '06': {
     steps: [
-      'After rinsing, towel off lightly — stay damp, not dry',
-      '10–15 drops in your palm. Section by section: legs, torso, arms',
+      'Rinse thoroughly, then towel off lightly — stay damp, not dry',
+      '10–15 drops in your palm. Start at the feet, work upward in sections',
       'Press and hold each section for 3 seconds. Don\'t rub. No lotion needed today.',
     ],
-    tip: 'Pressing rather than rubbing allows the oil to penetrate rather than sit on the surface.',
-    why: 'Certified organic argan oil absorbs fastest on damp skin. Single ingredient — nothing added, nothing stripped.',
+    tip: 'Your skin has just been deeply exfoliated — absorption is at its peak. The oil goes in, not on top.',
+    why: 'Certified organic argan oil on freshly cleared skin is as effective as it gets. Single ingredient — nothing added, nothing to interfere.',
   },
 };
