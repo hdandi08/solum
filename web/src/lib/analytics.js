@@ -3,12 +3,6 @@ import posthog from 'posthog-js';
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
-// Axon pixel is initialised via inline script in index.html.
-// This helper fires named events once the pixel scripts have loaded.
-export function axonEvent(name, props = {}) {
-  if (window.axon) window.axon("track", name, props);
-}
-
 export function initAnalytics() {
   if (!KEY) return;
   posthog.init(KEY, {
@@ -37,6 +31,13 @@ export function identify(userId, traits = {}) {
   if (posthog.__loaded) {
     posthog.identify(userId, traits);
   }
+}
+
+const IS_PROD = window.location.hostname.includes('bysolum');
+
+// eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added
+export function fbLead(eventId) {
+  if (IS_PROD && window.fbq) window.fbq('track', 'Lead', {}, { eventID: eventId });
 }
 
 export { posthog };
