@@ -252,7 +252,7 @@ export default function WaitlistForm({
 
       setPosition(data.position);
       capture('Waitlist Signup', { cta: formId, position: String(data.position), source });
-      fbLead(String(data.position));
+      fbLead(String(data.position), email);
       onSuccess && onSuccess();
     } catch {
       setError('Something went wrong. Try again.');

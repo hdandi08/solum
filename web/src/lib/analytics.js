@@ -36,8 +36,11 @@ export function identify(userId, traits = {}) {
 const IS_PROD = window.location.hostname.includes('bysolum');
 
 // eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added
-export function fbLead(eventId) {
-  if (IS_PROD && window.fbq) window.fbq('track', 'Lead', {}, { eventID: eventId });
+export function fbLead(eventId, email) {
+  if (IS_PROD && window.fbq) {
+    const userData = email ? { em: email.trim().toLowerCase() } : {};
+    window.fbq('track', 'Lead', userData, { eventID: eventId });
+  }
 }
 
 export { posthog };
