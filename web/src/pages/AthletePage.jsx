@@ -580,7 +580,7 @@ function AthleteWaitlistForm() {
       if (!res.ok) { setError(data.error || 'Something went wrong. Try again.'); return; }
       setPosition(data.position);
       trackGoal('Waitlist Signup', { cta: 'athlete-page', source: 'athlete', position: String(data.position) });
-      fbLead(String(data.position));
+      fbLead(String(data.position), email);
     } catch {
       setError('Something went wrong. Try again.');
     } finally {
