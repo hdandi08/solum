@@ -140,6 +140,22 @@ export const PRODUCTS = [
     comingSoon: false,
   },
   {
+    num: '11',
+    name: 'Clay Mixing Bowl',
+    fullName: 'SOLUM Clay Mixing Bowl',
+    origin: '',
+    tag: 'Weekly · Tool',
+    tagline: 'Mix. Apply. Done right.',
+    benefits: [
+      'Mix clay with argan oil evenly before applying',
+      'Prevents mess on bathroom surfaces',
+      'Sized for the right amount of clay per session',
+    ],
+    desc: 'Used to mix the clay with argan oil drops before applying. Keeps the process clean and controlled.',
+    image: '/products/09-mixing-bowl.png',
+    comingSoon: false,
+  },
+  {
     num: '09',
     name: 'Turkish Kese Mitt',
     fullName: 'Artisan Turkish Kese Mitt',

@@ -62,11 +62,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
-    <!-- Axon (AppLovin) pixel -->
-    <script>var AXON_EVENT_KEY="3aa55867-1b0d-429d-9f35-2cf83fefdddc";
-      !function(e,r){var t=["https://s.axon.ai/pixel.js","https://res4.applovin.com/p/l/loader.iife.js"];if(!e.axon){var a=e.axon=function(){a.performOperation?a.performOperation.apply(a,arguments):a.operationQueue.push(arguments)};a.operationQueue=[],a.ts=Date.now(),a.eventKey=AXON_EVENT_KEY;for(var n=r.getElementsByTagName("script")[0],o=0;o<t.length;o++){var i=r.createElement("script");i.async=!0,i.src=t[o],n.parentNode.insertBefore(i,n)}}}(window,document);
-      axon("init");
-      axon("track", "page_view");
+    <!-- Meta Pixel — production only (bysolum.co.uk) -->
+    <script>
+      if(location.hostname.includes('bysolum')){
+        !function(f,b,e,v,n,t,s){
+          if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
+        }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init','690345887768095');
+        fbq('track','PageView');
+      }
     </script>
     <!-- Analytics: PostHog (initialised in src/lib/analytics.js via VITE_POSTHOG_KEY) -->
   </head>
