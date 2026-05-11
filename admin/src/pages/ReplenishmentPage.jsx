@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
@@ -22,9 +22,18 @@ function StatusBadge({ status }) {
   )
 }
 
+function runwayColor(daysRunway, restockDays) {
+  if (daysRunway == null) return 'var(--bone-muted)'
+  if (daysRunway < restockDays / 2) return 'var(--critical)'
+  if (daysRunway < restockDays) return 'var(--warning)'
+  return 'var(--ok)'
+}
+
 export default function ReplenishmentPage() {
+  const { config } = useEnv()
   const [orders, setOrders] = useState([])
   const [products, setProducts] = useState([])
+  const [subscribers, setSubscribers] = useState({ total: 0, by_kit: {} })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -51,10 +60,10 @@ export default function ReplenishmentPage() {
     setLoading(true)
     setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
 
       // Fetch supplier orders directly from Supabase
-      const { data: ordersData } = await supabase
+      const { data: ordersData } = await config.client
         .from('supplier_orders')
         .select('*, products(name, sku)')
         .order('order_date', { ascending: false })
@@ -62,13 +71,13 @@ export default function ReplenishmentPage() {
 
       // Fetch products list from admin-dashboard
       const dashRes = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        `${config.url}/functions/v1/admin-dashboard`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({}),
         }
@@ -76,13 +85,14 @@ export default function ReplenishmentPage() {
       if (dashRes.ok) {
         const dashJson = await dashRes.json()
         setProducts(dashJson.products || [])
+        setSubscribers(dashJson.subscribers || { total: 0, by_kit: {} })
       }
     } catch (err) {
       setError(err.message || 'Failed to load replenishment data.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [config])
 
   useEffect(() => {
     fetchData()
@@ -92,15 +102,15 @@ export default function ReplenishmentPage() {
     setDelivering(orderId)
     setDeliverError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-confirm-delivery`,
+        `${config.url}/functions/v1/admin-confirm-delivery`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({ supplier_order_id: orderId }),
         }
@@ -126,15 +136,15 @@ export default function ReplenishmentPage() {
     setSubmitSuccess(false)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-supplier-order`,
+        `${config.url}/functions/v1/admin-supplier-order`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({
             supplier_name: orderForm.supplier_name,
@@ -201,6 +211,86 @@ export default function ReplenishmentPage() {
   return (
     <div>
       <h1 className="page-title">Replenishment</h1>
+
+      {/* Demand Forecast */}
+      <div className="section">
+        <div className="section-title">Monthly Demand Forecast</div>
+        <div style={{ fontSize: '12px', color: 'var(--bone-muted)', marginBottom: '12px' }}>
+          Based on {subscribers.total} active subscriber{subscribers.total !== 1 ? 's' : ''}.
+          Monthly demand = subscribers on each kit × refill quantity.
+          Stock reorder lead time (set per-product on the Inventory page) — if runway is less than the reorder lead time, reorder now.
+        </div>
+        <div className="card" style={{ padding: 0 }}>
+          <div className="table-wrapper">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Monthly Demand</th>
+                  <th>Current Stock</th>
+                  <th>Days Runway</th>
+                  <th>Reorder Lead</th>
+                  <th>Action</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.filter(p => p.is_active).length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="no-data">No products found.</td>
+                  </tr>
+                ) : (
+                  products
+                    .filter(p => p.is_active)
+                    .sort((a, b) => {
+                      // Sort: reorder-needed first, then by days runway ascending
+                      const ra = a.days_runway ?? Infinity
+                      const rb = b.days_runway ?? Infinity
+                      return ra - rb
+                    })
+                    .map(p => {
+                      const restockDays = p.consumer_cycle_days ?? 60
+                      const needsReorder = p.days_runway != null && p.days_runway < restockDays
+                      return (
+                        <tr key={p.id}>
+                          <td style={{ fontWeight: 500 }}>{p.name}</td>
+                          <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                            {p.monthly_burn > 0
+                              ? `${Math.ceil(p.monthly_burn).toLocaleString()} units/mo`
+                              : <span style={{ color: 'var(--bone-muted)' }}>No subscribers</span>}
+                          </td>
+                          <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                            {p.current_stock.toLocaleString()}
+                          </td>
+                          <td style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600, color: runwayColor(p.days_runway, restockDays) }}>
+                            {p.days_runway != null ? `${p.days_runway} days` : '—'}
+                          </td>
+                          <td style={{ color: 'var(--bone-dim)' }}>
+                            {restockDays} days
+                          </td>
+                          <td>
+                            {needsReorder ? (
+                              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--critical)', letterSpacing: '0.05em' }}>
+                                REORDER NOW
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '12px', color: 'var(--bone-muted)' }}>OK</span>
+                            )}
+                          </td>
+                          <td>
+                            <span className={`risk-badge ${p.risk_level || 'no-data'}`}>
+                              {p.risk_level?.replace('_', ' ') || 'no data'}
+                            </span>
+                          </td>
+                        </tr>
+                      )
+                    })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       {/* Orders Table */}
       <div className="section">

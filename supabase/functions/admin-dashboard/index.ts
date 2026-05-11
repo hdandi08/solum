@@ -43,16 +43,20 @@ Deno.serve(async (req) => {
     }
     const totalSubscribers = Object.values(subscribersByKit).reduce((a, b) => a + b, 0)
 
-    // 2. Kit composition (refill quantities per product)
+    // 2. Kit composition + shipment cycle per product
     const { data: kitProducts } = await db
       .from('kit_products')
-      .select('kit_id, product_id, refill_qty')
+      .select('kit_id, product_id, refill_qty, products(shipment_cycle_days)')
 
-    // 3. Monthly burn per product
+    // 3. Monthly burn — adjusted for shipment frequency
+    // e.g. back scrub (90-day cycle) = 0.33 units/sub/month; scalp massager (365-day) = 0.082/sub/month
     const monthlyBurn: Record<string, number> = {}
     for (const kp of kitProducts ?? []) {
+      if (kp.refill_qty === 0) continue
       if (!monthlyBurn[kp.product_id]) monthlyBurn[kp.product_id] = 0
-      monthlyBurn[kp.product_id] += kp.refill_qty * (subscribersByKit[kp.kit_id] ?? 0)
+      const cycleDays = (kp.products as any)?.shipment_cycle_days || 30
+      const unitsPerSubPerMonth = kp.refill_qty * (30 / cycleDays)
+      monthlyBurn[kp.product_id] += unitsPerSubPerMonth * (subscribersByKit[kp.kit_id] ?? 0)
     }
 
     // 4. All products with calculated runway
@@ -63,16 +67,20 @@ Deno.serve(async (req) => {
 
     const productsWithMetrics = (products ?? []).map((p) => {
       const burn = monthlyBurn[p.id] ?? 0
-      const weeksRunway = burn > 0 ? (p.current_stock / burn) * 4.33 : null
+      const daysRunway = burn > 0 ? (p.current_stock / burn) * 30 : null
+      const weeksRunway = daysRunway != null ? daysRunway / 7 : null
+      // restock_lead_days = how long it takes to get new stock from supplier
+      // If runway < restock_lead_days, we need to reorder now
+      const restockDays = p.restock_lead_days ?? 60
 
       let riskLevel: string
       if (p.current_stock === 0) {
         riskLevel = 'out_of_stock'
-      } else if (weeksRunway === null) {
+      } else if (daysRunway === null) {
         riskLevel = 'no_data'
-      } else if (weeksRunway < 4) {
+      } else if (daysRunway < restockDays / 2) {
         riskLevel = 'critical'
-      } else if (weeksRunway < p.reorder_weeks) {
+      } else if (daysRunway < restockDays) {
         riskLevel = 'low'
       } else {
         riskLevel = 'ok'
@@ -81,6 +89,7 @@ Deno.serve(async (req) => {
       return {
         ...p,
         monthly_burn: burn,
+        days_runway: daysRunway ? Math.round(daysRunway) : null,
         weeks_runway: weeksRunway ? Math.round(weeksRunway * 10) / 10 : null,
         risk_level: riskLevel,
       }

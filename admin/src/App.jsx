@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { supabase } from './lib/supabase'
+import { EnvProvider, useEnv } from './context/EnvContext'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import InventoryPage from './pages/InventoryPage'
@@ -14,16 +14,19 @@ import './admin.css'
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
 
-export default function App() {
+function AppInner() {
+  const { env, config } = useEnv()
   const [session, setSession] = useState(undefined)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Re-check auth whenever the active environment changes
+    setSession(undefined)
+    config.client.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = config.client.auth.onAuthStateChange((event, session) => {
       if (event !== 'INITIAL_SESSION') setSession(session)
     })
     return () => subscription.unsubscribe()
-  }, [])
+  }, [env, config.client])
 
   if (session === undefined) return null
 
@@ -54,5 +57,13 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+  )
+}
+
+export default function App() {
+  return (
+    <EnvProvider>
+      <AppInner />
+    </EnvProvider>
   )
 }

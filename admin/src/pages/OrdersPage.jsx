@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 const PAGE_SIZE = 25
 
@@ -12,9 +12,18 @@ const CARRIERS = [
   { value: 'other',       label: 'Other',         url: null },
 ]
 
-const BOX_PRODUCT = {
-  first_box: 'box-first-kit',
-  refill:    'box-monthly-refill',
+// One box used for all shipments + fitment determined by kit + order type
+const FITMENT_ID = {
+  ground_first_box:  'fitment-ground-first',
+  ritual_first_box:  'fitment-ritual-first',
+  sovereign_first_box: 'fitment-ritual-first', // sovereign uses ritual fitment
+  ground_refill:     'fitment-ground-refill',
+  ritual_refill:     'fitment-ritual-refill',
+  sovereign_refill:  'fitment-ritual-refill',
+}
+
+function getFitmentId(kitId, orderType) {
+  return FITMENT_ID[`${kitId}_${orderType}`] || null
 }
 
 function getCarrier(value) {
@@ -53,6 +62,7 @@ function fmt(d) {
 }
 
 export default function OrdersPage() {
+  const { config } = useEnv()
   const [orders, setOrders]           = useState([])
   const [loading, setLoading]         = useState(true)
   const [error, setError]             = useState('')
@@ -69,7 +79,7 @@ export default function OrdersPage() {
     setLoading(true)
     setError('')
     try {
-      let q = supabase
+      let q = config.client
         .from('orders')
         .select('*, customers(first_name, last_name, email)', { count: 'exact' })
         .order('created_at', { ascending: false })
@@ -84,7 +94,7 @@ export default function OrdersPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, statusFilter])
+  }, [page, statusFilter, config])
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
@@ -96,25 +106,29 @@ export default function OrdersPage() {
     setInputs(p => ({ ...p, [orderId]: { ...getInput(orderId), [key]: val } }))
   }
 
-  async function deductBox(orderType) {
-    const productId = BOX_PRODUCT[orderType]
-    if (!productId) return
-    const { data: product } = await supabase
+  async function deductBoxAndFitment(order) {
+    const fitmentId = getFitmentId(order.kit_id, order.order_type)
+    const toDeduct = ['box', fitmentId].filter(Boolean)
+
+    const { data: products } = await config.client
       .from('products')
-      .select('current_stock')
-      .eq('id', productId)
-      .single()
-    if (!product) return
-    const newStock = Math.max(0, (product.current_stock ?? 0) - 1)
-    await supabase.from('products').update({ current_stock: newStock }).eq('id', productId)
-    await supabase.from('inventory_transactions').insert({
-      product_id: productId,
-      transaction_type: 'outbound_order',
-      quantity: -1,
-      reference_type: 'dispatch',
-      notes: `Dispatched ${orderType === 'first_box' ? 'first kit box' : 'refill mailer'}`,
-      created_by: 'admin',
-    })
+      .select('id, current_stock')
+      .in('id', toDeduct)
+
+    const stockMap = Object.fromEntries((products || []).map(p => [p.id, p.current_stock ?? 0]))
+
+    for (const pid of toDeduct) {
+      const newStock = Math.max(0, (stockMap[pid] ?? 0) - 1)
+      await config.client.from('products').update({ current_stock: newStock }).eq('id', pid)
+      await config.client.from('inventory_transactions').insert({
+        product_id: pid,
+        transaction_type: 'outbound_order',
+        quantity: -1,
+        reference_type: 'dispatch',
+        notes: `Dispatched ${order.order_type === 'first_box' ? 'first box' : 'refill'} — ${order.kit_id} kit`,
+        created_by: 'admin',
+      })
+    }
   }
 
   async function handleDispatch(order) {
@@ -122,7 +136,7 @@ export default function OrdersPage() {
     setSaving(order.id)
     setSaveError('')
     try {
-      const { error: err } = await supabase
+      const { error: err } = await config.client
         .from('orders')
         .update({
           dispatch_status: 'dispatched',
@@ -132,7 +146,7 @@ export default function OrdersPage() {
         })
         .eq('id', order.id)
       if (err) throw err
-      await deductBox(order.order_type)
+      await deductBoxAndFitment(order)
       await fetchOrders()
     } catch (err) {
       setSaveError(err.message)
@@ -145,7 +159,7 @@ export default function OrdersPage() {
     setSaving(orderId)
     setSaveError('')
     try {
-      const { error: err } = await supabase
+      const { error: err } = await config.client
         .from('orders')
         .update({ dispatch_status: 'delivered' })
         .eq('id', orderId)

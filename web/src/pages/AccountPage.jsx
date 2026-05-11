@@ -16,10 +16,10 @@ const PRODUCT_IMAGES = {
   'Atlas Clay Mask': '/products/05-atlas-clay.png',
   'Argan Body Oil':  '/products/06-argan-oil.png',
   'Body Lotion':     '/products/07-body-lotion.png',
-  'Bamboo Cloth':    '/products/08-cleansing-cloth.png',
+  'Cleansing Cloth': '/products/08-cleansing-cloth.png',
 };
 
-const MONTHLY_ITEMS = ['Body Wash', 'Body Lotion', 'Bamboo Cloth'];
+const MONTHLY_ITEMS = ['Body Wash', 'Body Lotion', 'Cleansing Cloth'];
 const QUARTERLY_ITEMS = ['Italy Towel Mitt', 'Back Scrub Cloth', 'Atlas Clay Mask'];
 const RITUAL_QUARTERLY = ['Argan Body Oil'];
 

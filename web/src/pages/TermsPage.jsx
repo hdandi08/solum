@@ -280,9 +280,9 @@ export default function TermsPage() {
               <p className="terms-p">The following products are cosmetic products within the meaning of the UK Cosmetics Regulation (retained EU Regulation (EC) No 1223/2009) and have been assessed under a Cosmetic Product Safety Report (CPSR):</p>
               <ul className="terms-list">
                 <li><strong>Product 01 — Amino Acid Body Wash 250ml</strong> — rinse-off cosmetic, made in UK</li>
-                <li><strong>Product 05 — Rhassoul Clay Body Mask 200g</strong> — rinse-off cosmetic, sourced from Morocco</li>
+                <li><strong>Product 05 — Atlas Clay Mask 300g</strong> — rinse-off cosmetic, sourced from Morocco</li>
                 <li><strong>Product 06 — Organic Argan Body Oil 50ml</strong> — leave-on cosmetic, sourced from Morocco</li>
-                <li><strong>Product 07 — Fast-Absorb Body Lotion 400ml</strong> — leave-on cosmetic, made in UK</li>
+                <li><strong>Product 07 — Daily Restore Body Lotion 200ml</strong> — leave-on cosmetic, made in UK</li>
               </ul>
 
               <div className="terms-h3">Physical Tools (non-cosmetic)</div>
@@ -290,7 +290,7 @@ export default function TermsPage() {
                 <li><strong>Product 02 — Exfoliating Mitt</strong> — 100% viscose rayon textile tool</li>
                 <li><strong>Product 03 — Back Scrub Cloth 70cm</strong> — 100% viscose textile tool</li>
                 <li><strong>Product 04 — Silicone Scalp Massager</strong> — silicone grooming tool, made in South Korea</li>
-                <li><strong>Product 08 — Bamboo Cloth</strong> — textile tool</li>
+                <li><strong>Product 08 — Cleansing Cloth</strong> — textile tool</li>
               </ul>
 
               <p className="terms-p">All products are intended for personal care use only and are not medical devices or medicinal products. See Section 8 for full safety information.</p>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 import RiskBadge from '../components/RiskBadge'
 
 // Monthly units consumed per subscription tier
@@ -51,6 +51,7 @@ function calcBurnAndRunway(products, subs) {
 }
 
 export default function ProjectionsPage() {
+  const { config } = useEnv()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -62,15 +63,15 @@ export default function ProjectionsPage() {
     setLoading(true)
     setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        `${config.url}/functions/v1/admin-dashboard`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({}),
         }
@@ -88,7 +89,7 @@ export default function ProjectionsPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [config])
 
   useEffect(() => {
     fetchData()

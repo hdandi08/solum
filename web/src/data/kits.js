@@ -15,7 +15,7 @@ export const KITS = [
     name: 'RITUAL',
     firstBoxPrice: 85,
     monthlyPrice: 48,
-    productNums: ['01','02','03','04','05','06','07','08'],
+    productNums: ['01','02','03','04','05','06','07','08','11'],
     tagline: 'Everything in GROUND plus the oil ritual. Skin that stays fed all day — the step most men say they wish they\'d started with.',
     popular: true,
     comingSoon: false,
@@ -26,7 +26,7 @@ export const KITS = [
     firstBoxPrice: 130,
     monthlyPrice: 58,
     // 02 replaced by 09 — Italy Towel Mitt → Turkish Kese Mitt
-    productNums: ['01','03','04','05','06','07','08','09','10'],
+    productNums: ['01','03','04','05','06','07','08','09','10','11'],
     replacedProducts: { '02': '09' },
     tagline: 'The full system plus hand-woven Turkish silk. The deepest exfoliation available. For men who want everything.',
     popular: false,

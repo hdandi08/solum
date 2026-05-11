@@ -20,21 +20,22 @@ test.describe('Account — authenticated', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/account');
     await page.waitForLoadState('networkidle');
-    // Wait for dashboard to load (not the login/loading view)
-    await expect(page.locator('.ac-heading')).toBeVisible({ timeout: 10_000 });
+    // .ac-greeting is only rendered on the dashboard (not loading or login views)
+    await expect(page.locator('.ac-greeting')).toBeVisible({ timeout: 10_000 });
   });
 
   test('dashboard loads with user info', async ({ page }) => {
-    // Heading shows "Your Account." and greeting shows seeded first name
-    await expect(page.getByText(/your account/i)).toBeVisible();
-    await expect(page.getByText(/hello.*test/i)).toBeVisible();
+    // Greeting shows seeded customer first_name ("Test.")
+    await expect(page.locator('.ac-greeting')).toContainText('Test');
+    // Kit badge shows "RITUAL" (seeded subscription)
+    await expect(page.locator('.ac-kit-badge')).toContainText('RITUAL');
   });
 
   test('subscription panel is visible with active status', async ({ page }) => {
     // Subscription panel label is always rendered
     await expect(page.getByText('Subscription').first()).toBeVisible();
     // Setup seeds an active ritual subscription
-    await expect(page.locator('.ac-badge-active')).toBeVisible();
+    await expect(page.locator('.ac-status-active')).toBeVisible();
   });
 
   test('address panel is visible and Add button opens form', async ({ page }) => {
@@ -46,12 +47,18 @@ test.describe('Account — authenticated', () => {
     await expect(page.locator('input.ac-form-input').first()).toBeVisible({ timeout: 5_000 });
   });
 
-  test('cancel subscription button opens confirmation', async ({ page }) => {
+  test('cancel subscription flow shows confirmation', async ({ page }) => {
     // Setup seeds an active subscription so this panel renders
-    const cancelBtn = page.getByRole('button', { name: /cancel subscription/i });
+    const cancelBtn = page.getByRole('button', { name: /I want to cancel/i });
     await expect(cancelBtn).toBeVisible();
     await cancelBtn.click();
-    // Confirmation box appears with the "Yes, cancel" danger button
-    await expect(page.getByRole('button', { name: /yes.*cancel/i })).toBeVisible();
+
+    // Retention screen appears first — must click through to final confirm
+    const proceedBtn = page.getByRole('button', { name: /still want to cancel/i });
+    await expect(proceedBtn).toBeVisible({ timeout: 5_000 });
+    await proceedBtn.click();
+
+    // Final confirmation screen with danger button
+    await expect(page.getByRole('button', { name: /yes, cancel/i })).toBeVisible({ timeout: 5_000 });
   });
 });
