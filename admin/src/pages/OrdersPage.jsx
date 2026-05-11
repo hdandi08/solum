@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 const PAGE_SIZE = 25
 
@@ -53,6 +53,7 @@ function fmt(d) {
 }
 
 export default function OrdersPage() {
+  const { config } = useEnv()
   const [orders, setOrders]           = useState([])
   const [loading, setLoading]         = useState(true)
   const [error, setError]             = useState('')
@@ -106,8 +107,8 @@ export default function OrdersPage() {
       .single()
     if (!product) return
     const newStock = Math.max(0, (product.current_stock ?? 0) - 1)
-    await supabase.from('products').update({ current_stock: newStock }).eq('id', productId)
-    await supabase.from('inventory_transactions').insert({
+    await config.client.from('products').update({ current_stock: newStock }).eq('id', productId)
+    await config.client.from('inventory_transactions').insert({
       product_id: productId,
       transaction_type: 'outbound_order',
       quantity: -1,

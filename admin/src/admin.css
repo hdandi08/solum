@@ -149,6 +149,207 @@ textarea {
   line-height: 1.4;
 }
 
+/* ─── Environment CSS Variables (set per-env on .layout) ─── */
+:root {
+  --env-prod-color:     #e07070;
+  --env-prod-bg:        rgba(200, 92, 92, 0.15);
+  --env-prod-border:    rgba(200, 92, 92, 0.35);
+  --env-dev-color:      #c8a84b;
+  --env-dev-bg:         rgba(200, 168, 75, 0.12);
+  --env-dev-border:     rgba(200, 168, 75, 0.3);
+}
+
+/* ─── Layout env tinting ─── */
+.layout-env-prod .sidebar {
+  border-right-color: var(--env-prod-border);
+}
+.layout-env-prod .sidebar-top {
+  border-bottom-color: var(--env-prod-border);
+  background: rgba(200, 92, 92, 0.06);
+}
+.layout-env-prod .sidebar-wordmark {
+  color: var(--env-prod-color);
+}
+
+.layout-env-dev .sidebar {
+  border-right-color: var(--env-dev-border);
+}
+.layout-env-dev .sidebar-top {
+  border-bottom-color: var(--env-dev-border);
+  background: rgba(200, 168, 75, 0.05);
+}
+.layout-env-dev .sidebar-wordmark {
+  color: var(--env-dev-color);
+}
+
+/* ─── Env Pill (in sidebar) ─── */
+.env-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: transparent;
+}
+
+.env-pill:hover {
+  background: var(--surface-hover);
+}
+
+.layout-env-prod .env-pill {
+  color: var(--env-prod-color);
+  background: var(--env-prod-bg);
+  border-bottom-color: var(--env-prod-border);
+}
+.layout-env-prod .env-pill:hover {
+  background: rgba(200, 92, 92, 0.22);
+}
+
+.layout-env-dev .env-pill {
+  color: var(--env-dev-color);
+  background: var(--env-dev-bg);
+  border-bottom-color: var(--env-dev-border);
+}
+.layout-env-dev .env-pill:hover {
+  background: rgba(200, 168, 75, 0.2);
+}
+
+.env-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: env-pulse 2s ease-in-out infinite;
+}
+
+@keyframes env-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.layout-env-prod .env-dot { background: var(--env-prod-color); }
+.layout-env-dev  .env-dot { background: var(--env-dev-color); }
+
+.env-label { flex: 1; text-align: left; }
+
+.env-switch-hint {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.5;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+/* ─── Env Banner (top of main content) ─── */
+.env-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: -32px -32px 28px -32px;
+  padding: 10px 32px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.layout-env-prod .env-banner {
+  background: var(--env-prod-bg);
+  color: var(--env-prod-color);
+  border-bottom: 2px solid var(--env-prod-border);
+}
+
+.layout-env-dev .env-banner {
+  background: var(--env-dev-bg);
+  color: var(--env-dev-color);
+  border-bottom: 2px solid var(--env-dev-border);
+}
+
+.env-banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.layout-env-prod .env-banner-dot { background: var(--env-prod-color); }
+.layout-env-dev  .env-banner-dot { background: var(--env-dev-color); }
+
+.env-banner-switch {
+  margin-left: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  opacity: 0.6;
+  padding: 0;
+}
+
+.layout-env-prod .env-banner-switch { color: var(--env-prod-color); }
+.layout-env-dev  .env-banner-switch { color: var(--env-dev-color); }
+
+.env-banner-switch:hover { opacity: 1; }
+
+/* ─── Modal ─── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 11, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 28px 32px;
+  max-width: 420px;
+  width: 90%;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bone);
+  margin-bottom: 12px;
+}
+
+.modal-body {
+  font-size: 13px;
+  color: var(--bone-dim);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-warning {
+  background: var(--env-dev-color);
+  color: #08090B;
+}
+
 /* ─── Main Content ─── */
 .main-content {
   flex: 1;
@@ -597,6 +798,28 @@ textarea {
   text-transform: uppercase;
   color: var(--bone-muted);
   margin-top: -24px;
+}
+
+.login-env-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.login-env-prod {
+  background: var(--env-prod-bg);
+  color: var(--env-prod-color);
+  border: 1px solid var(--env-prod-border);
+}
+
+.login-env-dev {
+  background: var(--env-dev-bg);
+  color: var(--env-dev-color);
+  border: 1px solid var(--env-dev-border);
 }
 
 .login-card {

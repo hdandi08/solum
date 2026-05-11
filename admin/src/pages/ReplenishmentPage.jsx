@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
@@ -23,6 +23,7 @@ function StatusBadge({ status }) {
 }
 
 export default function ReplenishmentPage() {
+  const { config } = useEnv()
   const [orders, setOrders] = useState([])
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -51,7 +52,7 @@ export default function ReplenishmentPage() {
     setLoading(true)
     setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
 
       // Fetch supplier orders directly from Supabase
       const { data: ordersData } = await supabase
@@ -62,13 +63,13 @@ export default function ReplenishmentPage() {
 
       // Fetch products list from admin-dashboard
       const dashRes = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        `${config.url}/functions/v1/admin-dashboard`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({}),
         }
@@ -82,7 +83,7 @@ export default function ReplenishmentPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [config])
 
   useEffect(() => {
     fetchData()
@@ -92,15 +93,15 @@ export default function ReplenishmentPage() {
     setDelivering(orderId)
     setDeliverError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-confirm-delivery`,
+        `${config.url}/functions/v1/admin-confirm-delivery`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({ supplier_order_id: orderId }),
         }
@@ -126,15 +127,15 @@ export default function ReplenishmentPage() {
     setSubmitSuccess(false)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-supplier-order`,
+        `${config.url}/functions/v1/admin-supplier-order`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({
             supplier_name: orderForm.supplier_name,

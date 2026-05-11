@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 export default function LoginPage() {
+  const { config, env } = useEnv()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -12,7 +13,7 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { error: authError } = await config.client.auth.signInWithPassword({
       email: email.trim(),
       password,
     })
@@ -28,6 +29,9 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center' }}>
           <div className="login-wordmark">SOLUM</div>
           <div className="login-subtitle">Admin Panel</div>
+          <div className={`login-env-badge login-env-${env}`}>
+            {env === 'prod' ? '⬤ PRODUCTION' : '⚠ DEVELOPMENT'}
+          </div>
         </div>
 
         <div className="login-card">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 const PAGE_SIZE = 25
 
@@ -36,6 +36,7 @@ function QtyDisplay({ qty, type }) {
 }
 
 export default function EventsPage() {
+  const { config } = useEnv()
   const [transactions, setTransactions] = useState([])
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -55,17 +56,17 @@ export default function EventsPage() {
     setLoading(true)
     setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
 
       // Try edge function first
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-events`,
+        `${config.url}/functions/v1/admin-events`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({
             product_id: currentFilters.product_id || null,
@@ -91,7 +92,7 @@ export default function EventsPage() {
     } finally {
       setLoading(false)
     }
-  }, []) // eslint-disable-line
+  }, [config]) // eslint-disable-line
 
   const fetchDirect = async (currentFilters, currentPage) => {
     try {
@@ -132,15 +133,15 @@ export default function EventsPage() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        `${config.url}/functions/v1/admin-dashboard`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({}),
         }
@@ -152,7 +153,7 @@ export default function EventsPage() {
     } catch {
       // Non-critical — product filter still usable as text
     }
-  }, [])
+  }, [config])
 
   useEffect(() => {
     fetchProducts()

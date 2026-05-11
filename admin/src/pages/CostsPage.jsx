@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 
 // ── Kit definitions (mirrors seed data) ────────────────────────────────────
 // first_box: all product_ids shipped in first box
@@ -79,6 +79,7 @@ function TrendArrow({ prev, curr }) {
 }
 
 export default function CostsPage() {
+  const { config } = useEnv()
   const [orders, setOrders]   = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
@@ -98,7 +99,7 @@ export default function CostsPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [config])
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 

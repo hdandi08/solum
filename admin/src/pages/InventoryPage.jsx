@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useEnv } from '../context/EnvContext'
 import RiskBadge from '../components/RiskBadge'
 
 function getRiskLevel(runway, stock) {
@@ -17,6 +17,7 @@ const ADJUSTMENT_TYPES = [
 ]
 
 export default function InventoryPage() {
+  const { config } = useEnv()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -34,15 +35,15 @@ export default function InventoryPage() {
     setLoading(true)
     setError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-dashboard`,
+        `${config.url}/functions/v1/admin-dashboard`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({}),
         }
@@ -60,7 +61,7 @@ export default function InventoryPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [config])
 
   useEffect(() => {
     fetchProducts()
@@ -88,15 +89,15 @@ export default function InventoryPage() {
     setAdjusting(true)
     setAdjustError('')
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await config.client.auth.getSession()
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-adjust-stock`,
+        `${config.url}/functions/v1/admin-adjust-stock`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({
             product_id: productId,
