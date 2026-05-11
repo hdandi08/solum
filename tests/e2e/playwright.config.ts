@@ -31,7 +31,7 @@ export default defineConfig({
     },
     {
       name: 'public',
-      testMatch: /specs\/(0[1-4])-.*\.spec\.ts/,
+      testMatch: /specs\/(0[1-4]|06)-.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
       teardown: 'teardown',
