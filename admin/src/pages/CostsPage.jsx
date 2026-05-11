@@ -1,13 +1,40 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useEnv } from '../context/EnvContext'
 
-// ── Kit definitions (mirrors seed data) ────────────────────────────────────
-// first_box: all product_ids shipped in first box
-// refill: product_ids shipped every month
+// ── Box + fitment IDs per kit/order type ────────────────────────────────────
+const KIT_PACKAGING = {
+  ground:   { first: ['box', 'fitment-ground-first'],  refill: ['box', 'fitment-ground-refill']  },
+  ritual:   { first: ['box', 'fitment-ritual-first'],  refill: ['box', 'fitment-ritual-refill']  },
+  sovereign:{ first: ['box', 'fitment-ritual-first'],  refill: ['box', 'fitment-ritual-refill']  },
+}
+
+// ── Product name map — exact fullNames from web/src/data/products.js ────────
+const PRODUCT_NAMES = {
+  'product-01': 'Skin Protect Body Wash 250ml',
+  'product-02': 'Italy Towel Mitt',
+  'product-03': 'Back Scrub Cloth 70cm',
+  'product-04': 'Silicone Scalp Massager',
+  'product-05': 'Atlas Clay Mask 300g',
+  'product-06': 'Organic Argan Body Oil 50ml',
+  'product-07': 'Daily Restore Body Lotion 200ml',
+  'product-08': 'Cleansing Cloth',
+  'product-09': 'Artisan Turkish Kese Mitt',
+  'product-10': 'Beidi Black Soap',
+  'product-11': 'SOLUM Clay Mixing Bowl',
+  'box':                   'SOLUM Box',
+  'fitment-ground-first':  'Ground First Box Fitment',
+  'fitment-ritual-first':  'Ritual First Box Fitment',
+  'fitment-ground-refill': 'Ground Refill Fitment',
+  'fitment-ritual-refill': 'Ritual Refill Fitment',
+}
+
+// ── Kit definitions (mirrors web/src/data/kits.js + DB migration) ───────────
+// first_box: products shipped in first box
+// refill: consumables shipped every month (refill_qty > 0 in kit_products)
 const KITS = {
   ground: {
     label: 'GROUND',
-    rrp: 55,
+    rrp: 65,
     sub_price: 38,
     first_box: ['product-01', 'product-02', 'product-03', 'product-04', 'product-05', 'product-07', 'product-08'],
     refill:    ['product-01', 'product-05', 'product-07'],
@@ -16,14 +43,14 @@ const KITS = {
     label: 'RITUAL',
     rrp: 85,
     sub_price: 48,
-    first_box: ['product-01', 'product-02', 'product-03', 'product-04', 'product-05', 'product-06', 'product-07', 'product-08'],
+    first_box: ['product-01', 'product-02', 'product-03', 'product-04', 'product-05', 'product-06', 'product-07', 'product-08', 'product-11'],
     refill:    ['product-01', 'product-05', 'product-06', 'product-07'],
   },
   sovereign: {
     label: 'SOVEREIGN',
     rrp: 130,
     sub_price: 58,
-    first_box: ['product-01', 'product-03', 'product-04', 'product-05', 'product-06', 'product-07', 'product-08', 'product-09', 'product-10'],
+    first_box: ['product-01', 'product-03', 'product-04', 'product-05', 'product-06', 'product-07', 'product-08', 'product-09', 'product-10', 'product-11'],
     refill:    ['product-01', 'product-05', 'product-06', 'product-07', 'product-10'],
   },
 }
@@ -88,7 +115,7 @@ export default function CostsPage() {
     setLoading(true)
     setError('')
     try {
-      const { data, error: err } = await supabase
+      const { data, error: err } = await config.client
         .from('supplier_orders')
         .select('*, products(id, name, sku)')
         .order('order_date', { ascending: true })
@@ -150,10 +177,14 @@ export default function CostsPage() {
   }
 
   const kitRows = Object.entries(KITS).map(([kitId, kit]) => {
-    const firstBoxCogs   = kitCogs(kit.first_box)
-    const monthlyRefCogs = kitCogs(kit.refill)
+    const packaging    = KIT_PACKAGING[kitId] || {}
+    const firstPackIds = packaging.first  || []
+    const refillPackIds= packaging.refill || []
 
-    // First box: one-time sale
+    const firstBoxCogs   = kitCogs([...kit.first_box, ...firstPackIds])
+    const monthlyRefCogs = kitCogs([...kit.refill,    ...refillPackIds])
+
+    // First box: one-time sale (packaging included in COGS, postage separate)
     const firstBoxTotal  = firstBoxCogs != null ? firstBoxCogs + POSTAGE : null
     const firstBoxGp     = firstBoxTotal != null ? kit.rrp - firstBoxTotal : null
 
@@ -253,31 +284,61 @@ export default function CostsPage() {
           </div>
         </div>
 
-        {/* COGS breakdown per kit */}
+        {/* COGS breakdown per kit — first box + refill */}
         <div style={{ marginTop: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {kitRows.map(({ kitId, kit, monthlyRefCogs }) => (
-            <div key={kitId} className="card" style={{ flex: '1 1 220px', minWidth: 0 }}>
-              <div style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-dim)', marginBottom: '12px' }}>
-                {kit.label} — refill breakdown
-              </div>
-              {kit.refill.map(pid => (
-                <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
-                  <span style={{ color: 'var(--bone-muted)' }}>{byProduct[pid]?.name || pid}</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    {blended[pid] != null ? gbp(blended[pid]) : <span style={{ color: 'var(--bone-muted)' }}>no data</span>}
-                  </span>
+          {kitRows.map(({ kitId, kit, firstBoxTotal, monthlyRefCogs }) => (
+            <div key={kitId} style={{ flex: '1 1 260px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+              {/* First box breakdown */}
+              <div className="card">
+                <div style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-dim)', marginBottom: '12px' }}>
+                  {kit.label} — first box
                 </div>
-              ))}
-              <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span style={{ color: 'var(--bone-muted)' }}>Postage</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{gbp(POSTAGE)}</span>
-              </div>
-              {monthlyRefCogs != null && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700, marginTop: '6px' }}>
-                  <span>Total</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--sky-blue)' }}>{gbp(monthlyRefCogs + POSTAGE)}</span>
+                {[...kit.first_box, ...(KIT_PACKAGING[kitId]?.first || [])].map(pid => (
+                  <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--bone-muted)' }}>{PRODUCT_NAMES[pid] || pid}</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                      {blended[pid] != null ? gbp(blended[pid]) : <span style={{ color: 'var(--bone-muted)' }}>no data</span>}
+                    </span>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                  <span style={{ color: 'var(--bone-muted)' }}>Postage</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{gbp(POSTAGE)}</span>
                 </div>
-              )}
+                {firstBoxTotal != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700, marginTop: '6px' }}>
+                    <span>Total</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--sky-blue)' }}>{gbp(firstBoxTotal)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Refill breakdown */}
+              <div className="card">
+                <div style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-dim)', marginBottom: '12px' }}>
+                  {kit.label} — monthly refill
+                </div>
+                {[...kit.refill, ...(KIT_PACKAGING[kitId]?.refill || [])].map(pid => (
+                  <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--bone-muted)' }}>{PRODUCT_NAMES[pid] || pid}</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                      {blended[pid] != null ? gbp(blended[pid]) : <span style={{ color: 'var(--bone-muted)' }}>no data</span>}
+                    </span>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid var(--border)', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                  <span style={{ color: 'var(--bone-muted)' }}>Postage</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{gbp(POSTAGE)}</span>
+                </div>
+                {monthlyRefCogs != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700, marginTop: '6px' }}>
+                    <span>Total</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--sky-blue)' }}>{gbp(monthlyRefCogs + POSTAGE)}</span>
+                  </div>
+                )}
+              </div>
+
             </div>
           ))}
         </div>

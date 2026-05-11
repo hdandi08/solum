@@ -1,5 +1,14 @@
 include .env.supabase
 
+# ─── LOCAL DEV ────────────────────────────────────────────────────────────────
+
+dev:
+	@echo "→ Starting web (localhost:5173) and admin (localhost:5174)"
+	@trap 'kill 0' SIGINT; \
+	  cd web && npm run dev & \
+	  cd admin && npm run dev & \
+	  wait
+
 # ─── DATABASE MIGRATIONS ───────────────────────────────────────────────────────
 
 db-push-prod:
@@ -70,4 +79,4 @@ secrets-list-dev:
 	@[ -n "$(DEV_PROJECT_REF)" ] || (echo "Error: DEV_PROJECT_REF not set in .env.supabase" && exit 1)
 	supabase secrets list --project-ref $(DEV_PROJECT_REF)
 
-.PHONY: db-push-prod db-push-dev functions-deploy-prod functions-deploy-dev deploy-prod deploy-dev secrets-list-prod secrets-list-dev
+.PHONY: dev db-push-prod db-push-dev functions-deploy-prod functions-deploy-dev deploy-prod deploy-dev secrets-list-prod secrets-list-dev

@@ -299,13 +299,13 @@ export const ARTICLES = [
         h2: 'Sourcing',
         paras: [
           "SOLUM rhassoul clay is sourced from Morocco — where it originates, where the mineral composition is strongest, and where the hammam tradition that surrounds its use is still active. Moroccan Organica or Fatima's Garden, both Atlas Mountain sources.",
-          "200g jar. Enough for weekly use for 3 to 4 months.",
+          "300g jar. Enough for weekly use for 3 to 4 months.",
         ],
       },
     ],
     cta: {
       heading: 'Product 05 — Rhassoul Clay Mask',
-      body: 'In the RITUAL and SOVEREIGN kits. Weekly use. 200g, sourced from Morocco.',
+      body: 'In the RITUAL and SOVEREIGN kits. Weekly use. 300g, sourced from Morocco.',
       link: '/full#products',
       label: 'See the Products',
     },
@@ -350,20 +350,20 @@ export const ARTICLES = [
         paras: [
           "Fast-absorbing — no greasy finish or white residue that transfers to clothes.",
           "Fragrance that works with your body wash. Using the same scent profile in both — cedar, sandalwood, vetiver — keeps the result clean and intentional rather than layered and confused.",
-          "Large format. Body lotion runs out faster than you'd expect with daily use. A 400ml bottle at monthly subscription pricing is the right anchor.",
+          "Large format. Body lotion runs out faster than you'd expect with daily use. A 200ml bottle at monthly subscription pricing is the right anchor.",
         ],
       },
       {
         h2: 'SOLUM Body Lotion',
         paras: [
-          "400ml. Cosmiko CS0902 base. Cedarwood and sandalwood fragrance — the same profile as the body wash. Fast-absorbing, no residue. Made in the UK.",
+          "200ml. Cosmiko CS0902 base. Cedarwood and sandalwood fragrance — the same profile as the body wash. Fast-absorbing, no residue. Made in the UK.",
           "Designed specifically for the 3-minute window. Absorbed within 90 seconds. No transfer.",
         ],
       },
     ],
     cta: {
       heading: 'Product 07 — SOLUM Body Lotion',
-      body: 'Included in every SOLUM kit. 400ml, fast-absorbing, made in the UK.',
+      body: 'Included in every SOLUM kit. 200ml, fast-absorbing, made in the UK.',
       link: '/full#products',
       label: 'See the Products',
     },

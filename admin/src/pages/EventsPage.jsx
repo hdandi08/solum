@@ -96,7 +96,7 @@ export default function EventsPage() {
 
   const fetchDirect = async (currentFilters, currentPage) => {
     try {
-      let query = supabase
+      let query = config.client
         .from('inventory_transactions')
         .select('*, products(name)', { count: 'exact' })
         .order('created_at', { ascending: false })

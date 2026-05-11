@@ -66,7 +66,7 @@ export default function Layout({ session }) {
         </div>
       </aside>
 
-      <main className="main-content">
+      <div className="main-column">
         <div className="env-banner">
           <span className="env-banner-dot" />
           {isProd
@@ -77,8 +77,10 @@ export default function Layout({ session }) {
           </button>
         </div>
 
-        <Outlet />
-      </main>
+        <main className="main-content">
+          <Outlet />
+        </main>
+      </div>
 
       {confirmOpen && (
         <div className="modal-backdrop" onClick={closeConfirm}>

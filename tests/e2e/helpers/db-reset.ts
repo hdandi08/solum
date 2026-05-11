@@ -12,10 +12,10 @@ const RITUAL_PRODUCT_SPECS = [
   { id: 'product-02', name: 'Italy Towel Mitt',              sku: 'SOLUM-02', reorder_weeks: 12, unit_cost_pence: 45,  is_consumable: false, is_active: true },
   { id: 'product-03', name: 'Back Scrub Cloth 70cm',         sku: 'SOLUM-03', reorder_weeks: 12, unit_cost_pence: 80,  is_consumable: false, is_active: true },
   { id: 'product-04', name: 'Silicone Scalp Massager',       sku: 'SOLUM-04', reorder_weeks: 12, unit_cost_pence: 200, is_consumable: false, is_active: true },
-  { id: 'product-05', name: 'Atlas Clay Mask 200g',          sku: 'SOLUM-05', reorder_weeks: 8,  unit_cost_pence: 350, is_consumable: true,  is_active: true },
+  { id: 'product-05', name: 'Atlas Clay Mask 300g',          sku: 'SOLUM-05', reorder_weeks: 8,  unit_cost_pence: 350, is_consumable: true,  is_active: true },
   { id: 'product-06', name: 'Organic Argan Body Oil 50ml',   sku: 'SOLUM-06', reorder_weeks: 8,  unit_cost_pence: 550, is_consumable: true,  is_active: true },
-  { id: 'product-07', name: 'Fast-Absorb Body Lotion 400ml', sku: 'SOLUM-07', reorder_weeks: 8,  unit_cost_pence: 440, is_consumable: true,  is_active: true },
-  { id: 'product-08', name: 'Bamboo Cloth',                  sku: 'SOLUM-08', reorder_weeks: 12, unit_cost_pence: 0,   is_consumable: false, is_active: true },
+  { id: 'product-07', name: 'Daily Restore Body Lotion 200ml', sku: 'SOLUM-07', reorder_weeks: 8,  unit_cost_pence: 440, is_consumable: true,  is_active: true },
+  { id: 'product-08', name: 'Cleansing Cloth',               sku: 'SOLUM-08', reorder_weeks: 12, unit_cost_pence: 0,   is_consumable: false, is_active: true },
 ];
 
 /** Wipe all transactional records for the test user. Auth user + Stripe customer are preserved. */

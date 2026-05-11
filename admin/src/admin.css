@@ -64,8 +64,8 @@ textarea {
 .layout {
   display: flex;
   flex-direction: row;
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* ─── Sidebar ─── */
@@ -254,15 +254,12 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: -32px -32px 28px -32px;
-  padding: 10px 32px;
+  padding: 9px 32px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .layout-env-prod .env-banner {
@@ -350,12 +347,20 @@ textarea {
   color: #08090B;
 }
 
+/* ─── Main Column (banner + scrollable content) ─── */
+.main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* ─── Main Content ─── */
 .main-content {
   flex: 1;
   padding: 32px;
   overflow-y: auto;
-  min-height: 100vh;
   background: var(--black);
 }
 
@@ -797,29 +802,54 @@ textarea {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--bone-muted);
-  margin-top: -24px;
+  margin-top: 4px;
 }
 
-.login-env-badge {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 10px;
+.login-env-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.login-env-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--bone-muted);
 }
 
-.login-env-prod {
+.login-env-btn:hover { color: var(--bone); border-color: var(--bone-dim); }
+
+.login-env-btn-active-prod {
   background: var(--env-prod-bg);
   color: var(--env-prod-color);
-  border: 1px solid var(--env-prod-border);
+  border-color: var(--env-prod-border);
 }
 
-.login-env-dev {
+.login-env-btn-active-dev {
   background: var(--env-dev-bg);
   color: var(--env-dev-color);
-  border: 1px solid var(--env-dev-border);
+  border-color: var(--env-dev-border);
+}
+
+.btn-login-prod {
+  background: var(--env-prod-color);
+  color: #08090B;
+  border: none;
+}
+
+.btn-login-dev {
+  background: var(--env-dev-color);
+  color: #08090B;
+  border: none;
 }
 
 .login-card {

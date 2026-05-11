@@ -27,7 +27,7 @@ const CSS = `
 const CADENCE = [
   {
     label: 'Every Month',
-    products: 'Body Wash · Body Lotion · Bamboo Cloth',
+    products: 'Body Wash · Body Lotion · Cleansing Cloth',
     note: null,
     copy: 'The daily essentials. Always there when you need them.',
   },

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useEnv } from '../context/EnvContext'
 
 export default function LoginPage() {
-  const { config, env } = useEnv()
+  const { config, env, switchEnv } = useEnv()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -20,22 +20,41 @@ export default function LoginPage() {
 
     setLoading(false)
     if (authError) setError(authError.message || 'Invalid email or password.')
-    // On success, App.jsx re-renders with the new session automatically
   }
+
+  const isProd = env === 'prod'
 
   return (
     <div className="login-page">
       <div className="login-box">
         <div style={{ textAlign: 'center' }}>
-          <div className="login-wordmark">SOLUM</div>
-          <div className="login-subtitle">Admin Panel</div>
-          <div className={`login-env-badge login-env-${env}`}>
-            {env === 'prod' ? '⬤ PRODUCTION' : '⚠ DEVELOPMENT'}
+          <div className="login-wordmark" style={{ color: isProd ? 'var(--env-prod-color)' : 'var(--env-dev-color)' }}>
+            SOLUM
           </div>
+          <div className="login-subtitle">Admin Panel</div>
         </div>
 
         <div className="login-card">
-          <div className="login-card-title">Sign in</div>
+          <div className="login-env-switcher">
+            <button
+              className={`login-env-btn ${isProd ? 'login-env-btn-active-prod' : 'login-env-btn-prod'}`}
+              onClick={() => switchEnv('prod')}
+              type="button"
+            >
+              ⬤ PROD
+            </button>
+            <button
+              className={`login-env-btn ${!isProd ? 'login-env-btn-active-dev' : 'login-env-btn-dev'}`}
+              onClick={() => switchEnv('dev')}
+              type="button"
+            >
+              ⚠ DEV
+            </button>
+          </div>
+
+          <div className="login-card-title">
+            Sign in to {isProd ? 'Production' : 'Development'}
+          </div>
 
           {error && <div className="login-error">{error}</div>}
 
@@ -69,11 +88,11 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="btn btn-primary"
+              className={`btn ${isProd ? 'btn-login-prod' : 'btn-login-dev'}`}
               disabled={loading}
               style={{ width: '100%', justifyContent: 'center', padding: '11px 18px' }}
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Signing in...' : `Sign In to ${isProd ? 'PROD' : 'DEV'}`}
             </button>
           </form>
         </div>

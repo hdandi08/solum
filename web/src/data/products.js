@@ -15,6 +15,7 @@ export const PRODUCTS = [
     ],
     desc: 'Amino acid surfactants. No sulphates. Cleans without stripping. Skin stays balanced, never tight.',
     image: '/products/01-body-wash.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -32,6 +33,7 @@ export const PRODUCTS = [
     ],
     desc: 'Inspired by Korean bathhouses. 100% viscose material engineered for the deepest clean possible. Removes what body wash alone can never reach.',
     image: '/products/02-italy-towel-mitt.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -49,6 +51,7 @@ export const PRODUCTS = [
     ],
     desc: '70cm length with handles at each end. One handle each hand, drape over your shoulder, saw back and forth. The only tool that properly cleans the back.',
     image: '/products/03-back-scrub-cloth.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -66,12 +69,13 @@ export const PRODUCTS = [
     ],
     desc: 'Best-grade silicone made in Korea. Perfect bristles designed to stimulate blood flow, break up scalp buildup, and distribute product properly. Built to last.',
     image: '/products/04-scalp-massager.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
     num: '05',
     name: 'Atlas Clay Mask',
-    fullName: 'Atlas Clay Mask 200g',
+    fullName: 'Atlas Clay Mask 300g',
     origin: '🇲🇦 Morocco',
     tag: 'Body · Weekly',
     tagline: 'Deep. Every week.',
@@ -84,6 +88,7 @@ export const PRODUCTS = [
     ],
     desc: 'Atlas mountain rhassoul clay. Draws out body impurities that daily washing never reaches. Applied head to toe. Leave 8–10 minutes.',
     image: '/products/05-atlas-clay.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -102,12 +107,13 @@ export const PRODUCTS = [
     ],
     desc: 'Cold-pressed. 100% certified organic. One ingredient. Applied on damp skin after weekly exfoliation. Absorption peaks on freshly cleared skin.',
     image: '/products/06-argan-oil.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
     num: '07',
     name: 'Body Lotion',
-    fullName: 'Daily Restore Body Lotion 400ml',
+    fullName: 'Daily Restore Body Lotion 200ml',
     origin: '🇬🇧 United Kingdom',
     tag: 'Body · Daily',
     tagline: 'Restore. Every day.',
@@ -120,12 +126,13 @@ export const PRODUCTS = [
     ],
     desc: 'Apply within 3 minutes of towelling. Skin absorbs 70% more moisture while still warm. No residue. Hydration that lasts past midday.',
     image: '/products/07-body-lotion.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
     num: '08',
     name: 'Cleansing Cloth',
-    fullName: 'Soft Cleansing Cloth',
+    fullName: 'Cleansing Cloth',
     origin: '🌿 Bamboo & Cotton',
     tag: 'Sensitive Areas · Daily',
     tagline: 'Sensitive areas. Deep hygiene.',
@@ -135,8 +142,9 @@ export const PRODUCTS = [
       'Made with bamboo and cotton',
       'Natural and biodegradable',
     ],
-    desc: 'For sensitive areas other tools never reach. Deep cleaning hygiene every day. Made with bamboo and cotton. Natural, biodegradable, ultra-soft. Replace every 30 days.',
+    desc: 'For sensitive areas other tools never reach. Deep cleaning hygiene every day. Made with bamboo and cotton. Natural, biodegradable, ultra-soft.',
     image: '/products/08-cleansing-cloth.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -153,6 +161,7 @@ export const PRODUCTS = [
     ],
     desc: 'Used to mix the clay with argan oil drops before applying. Keeps the process clean and controlled.',
     image: '/products/09-mixing-bowl.png',
+    replacementCycleDays: 60,
     comingSoon: false,
   },
   {
@@ -165,6 +174,7 @@ export const PRODUCTS = [
     benefits: [],
     desc: 'Hand-woven raw silk by artisans in Istanbul. Rougher than the Italy Towel Mitt — for the deepest weekly exfoliation. SOVEREIGN tier only.',
     image: null,
+    replacementCycleDays: 60,
     comingSoon: true,
   },
   {
@@ -177,6 +187,7 @@ export const PRODUCTS = [
     benefits: [],
     desc: 'Traditional hammam black soap from Turkey. Used for centuries. SOVEREIGN tier only.',
     image: null,
+    replacementCycleDays: 60,
     comingSoon: true,
   },
 ];
