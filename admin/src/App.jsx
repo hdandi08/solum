@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react'
 import { EnvProvider, useEnv } from './context/EnvContext'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
-import InventoryPage from './pages/InventoryPage'
-import ReplenishmentPage from './pages/ReplenishmentPage'
-import ProjectionsPage from './pages/ProjectionsPage'
-import EventsPage from './pages/EventsPage'
 import OrdersPage from './pages/OrdersPage'
-import CostsPage from './pages/CostsPage'
+import StockPage from './pages/StockPage'
+import PaymentsPage from './pages/PaymentsPage'
+import BookkeepingPage from './pages/BookkeepingPage'
+import SubscribersPage from './pages/SubscribersPage'
 import LoginPage from './pages/LoginPage'
 import './admin.css'
 
@@ -19,7 +18,6 @@ function AppInner() {
   const [session, setSession] = useState(undefined)
 
   useEffect(() => {
-    // Re-check auth whenever the active environment changes
     setSession(undefined)
     config.client.auth.getSession().then(({ data: { session } }) => setSession(session))
     const { data: { subscription } } = config.client.auth.onAuthStateChange((event, session) => {
@@ -47,12 +45,11 @@ function AppInner() {
       <Routes>
         <Route path="/" element={<Layout session={session} />}>
           <Route index element={<DashboardPage />} />
-          <Route path="inventory" element={<InventoryPage />} />
-          <Route path="replenishment" element={<ReplenishmentPage />} />
-          <Route path="costs" element={<CostsPage />} />
-          <Route path="projections" element={<ProjectionsPage />} />
           <Route path="orders" element={<OrdersPage />} />
-          <Route path="events" element={<EventsPage />} />
+          <Route path="payments" element={<PaymentsPage />} />
+          <Route path="stock" element={<StockPage />} />
+          <Route path="bookkeeping" element={<BookkeepingPage />} />
+          <Route path="subscribers" element={<SubscribersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
