@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
-import CheckoutPage from './pages/CheckoutPage';
+import CheckoutPage from './pages/checkout/CheckoutPage';
 import SuccessPage from './pages/SuccessPage';
 import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
