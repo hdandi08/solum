@@ -13,21 +13,70 @@ const CARRIERS = [
   { value: 'other',       label: 'Other',         url: null },
 ]
 
-const FITMENT_ID = {
-  ground_first_box:    'fitment-ground-first',
-  ritual_first_box:    'fitment-ritual-first',
-  sovereign_first_box: 'fitment-ritual-first',
-  ground_refill:       'fitment-ground-refill',
-  ritual_refill:       'fitment-ritual-refill',
-  sovereign_refill:    'fitment-ritual-refill',
+// ── Box code system ────────────────────────────────────────────────────────
+
+const PRODUCT_NAMES = {
+  '01': 'Body Wash',
+  '02': 'Italy Towel Mitt',
+  '03': 'Back Scrub Cloth',
+  '04': 'Scalp Massager',
+  '05': 'Atlas Clay',
+  '06': 'Body Oil',
+  '07': 'Body Lotion',
+  '08': 'Cleansing Cloth',
+  '11': 'Clay Mixing Bowl',
 }
 
-function getCarrier(value) { return CARRIERS.find(c => c.value === value) || CARRIERS[0] }
+const BOX_MANIFESTS = {
+  GS:  { label: 'GROUND Starter',            products: ['01','02','03','04','05','07','08'] },
+  RS:  { label: 'RITUAL Starter',             products: ['01','02','03','04','05','06','07','08','11'] },
+  GR:  { label: 'GROUND Refill',              products: ['01','02','05','07','08'] },
+  RR:  { label: 'RITUAL Refill',              products: ['01','02','05','06','07','08'] },
+  GR3: { label: 'GROUND Refill + Back Cloth', products: ['01','02','03','05','07','08'] },
+  RR3: { label: 'RITUAL Refill + Back Cloth', products: ['01','02','03','05','06','07','08'] },
+  GR6: { label: 'GROUND Refill + Scalp',      products: ['01','02','04','05','07','08'] },
+  RR6: { label: 'RITUAL Refill + Scalp',      products: ['01','02','04','05','06','07','08'] },
+}
+
+function getBoxCode(order) {
+  const kit = order.kit_id === 'ritual' ? 'R' : 'G'
+  if (order.order_type === 'first_box') return `${kit}S`
+  const box = order.box_number ?? 1
+  if (box === 3) return `${kit}R3`
+  if (box === 6) return `${kit}R6`
+  return `${kit}R`
+}
+
+// ── Dispatch window ────────────────────────────────────────────────────────
+// Thu (cutoff Wed 12pm) · Mon (cutoff Sun 12pm)
+
+function getDispatchWindow(fromDate) {
+  const d = new Date(fromDate)
+  const day = d.getDay()
+  const isBeforeNoon = d.getHours() < 12
+  const result = new Date(d)
+  result.setHours(0, 0, 0, 0)
+  const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 }
+  if (day in daysToAdd) {
+    result.setDate(result.getDate() + daysToAdd[day])
+  } else if (day === 3) {
+    result.setDate(result.getDate() + (isBeforeNoon ? 1 : 5))
+  } else {
+    result.setDate(result.getDate() + (isBeforeNoon ? 1 : 4))
+  }
+  return result
+}
+
+function fmtDispatch(date) {
+  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+}
 
 function fmt(d) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
+
+function getCarrier(value) { return CARRIERS.find(c => c.value === value) || CARRIERS[0] }
 
 function TrackingLink({ carrier, tracking }) {
   const c = getCarrier(carrier)
@@ -49,9 +98,45 @@ function AddressBlock({ address }) {
   )
 }
 
+function BatchSummary({ batches }) {
+  if (!batches.length) return null
+  const now = new Date()
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
+      {batches.map(batch => {
+        const isOverdue = new Date(batch.dateKey) < now
+        return (
+          <div key={batch.dateKey} className="card" style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+            <div style={{ minWidth: 100 }}>
+              {isOverdue && <div style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--critical)', marginBottom: 2 }}>Overdue</div>}
+              <div style={{ fontWeight: 600, fontSize: 15, color: isOverdue ? 'var(--critical)' : 'var(--bone)' }}>{batch.dateLabel}</div>
+            </div>
+            <div style={{ minWidth: 60 }}>
+              <div style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 2 }}>Boxes</div>
+              <div style={{ fontWeight: 700, fontSize: 18, color: 'var(--sky-blue)' }}>{batch.total}</div>
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+              {Object.entries(batch.codes).sort().map(([code, count]) => (
+                <span key={code} style={{
+                  fontSize: 13, fontFamily: 'monospace', fontWeight: 600,
+                  background: 'rgba(74,143,199,0.1)', border: '1px solid rgba(74,143,199,0.25)',
+                  padding: '3px 10px', color: 'var(--sky-blue)',
+                }}>
+                  {count}× {code}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function OrdersPage() {
   const { config } = useEnv()
   const [orders, setOrders]             = useState([])
+  const [batches, setBatches]           = useState([])
   const [loading, setLoading]           = useState(true)
   const [error, setError]               = useState('')
   const [page, setPage]                 = useState(0)
@@ -59,11 +144,30 @@ export default function OrdersPage() {
   const [typeFilter, setTypeFilter]     = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [expanded, setExpanded]         = useState({})
-
-  const [inputs, setInputs]       = useState({})
-  const [saving, setSaving]       = useState(null)
-  const [saveError, setSaveError] = useState('')
+  const [inputs, setInputs]             = useState({})
+  const [saving, setSaving]             = useState(null)
+  const [saveError, setSaveError]       = useState('')
   const [selectedCustomerId, setSelectedCustomerId] = useState(null)
+
+  const fetchBatches = useCallback(async () => {
+    try {
+      const { data } = await config.client
+        .from('orders')
+        .select('kit_id, order_type, box_number, created_at')
+        .eq('dispatch_status', 'pending')
+      if (!data) return
+      const map = {}
+      for (const o of data) {
+        const code = getBoxCode(o)
+        const win  = getDispatchWindow(o.created_at)
+        const key  = win.toISOString().slice(0, 10)
+        if (!map[key]) map[key] = { dateKey: key, dateLabel: fmtDispatch(win), total: 0, codes: {} }
+        map[key].total++
+        map[key].codes[code] = (map[key].codes[code] || 0) + 1
+      }
+      setBatches(Object.values(map).sort((a, b) => a.dateKey.localeCompare(b.dateKey)))
+    } catch { /* non-critical */ }
+  }, [config])
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
@@ -81,10 +185,11 @@ export default function OrdersPage() {
       if (statusFilter) q = q.eq('dispatch_status', statusFilter)
       const { data, count, error: err } = await q
       if (err) throw err
-      // Attach only the current address per customer
       const rows = (data || []).map(o => ({
         ...o,
-        address: (o.customers?.addresses || []).find(a => a.is_current) || o.customers?.addresses?.[0] || null,
+        address:    (o.customers?.addresses || []).find(a => a.is_current) || o.customers?.addresses?.[0] || null,
+        boxCode:    getBoxCode(o),
+        dispatchBy: getDispatchWindow(o.created_at),
       }))
       setOrders(rows)
       setTotal(count || 0)
@@ -95,21 +200,12 @@ export default function OrdersPage() {
     }
   }, [page, typeFilter, statusFilter, config])
 
+  useEffect(() => { fetchBatches() }, [fetchBatches])
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
   function getInput(id) { return inputs[id] || { tracking: '', carrier: 'royal-mail' } }
   function setInput(id, key, val) { setInputs(p => ({ ...p, [id]: { ...getInput(id), [key]: val } })) }
   function toggleExpand(id) { setExpanded(p => ({ ...p, [id]: !p[id] })) }
-
-  async function deductBoxAndFitment(order) {
-    const fitmentId = FITMENT_ID[`${order.kit_id}_${order.order_type}`]
-    const ids = ['box', fitmentId].filter(Boolean)
-    const { data: products } = await config.client.from('products').select('id, current_stock').in('id', ids)
-    const stockMap = Object.fromEntries((products || []).map(p => [p.id, p.current_stock ?? 0]))
-    for (const pid of ids) {
-      await config.client.from('products').update({ current_stock: Math.max(0, (stockMap[pid] ?? 0) - 1) }).eq('id', pid)
-    }
-  }
 
   async function handleDispatch(order) {
     const { tracking, carrier } = getInput(order.id)
@@ -120,11 +216,10 @@ export default function OrdersPage() {
         dispatch_status: 'dispatched',
         tracking_number: tracking.trim() || null,
         carrier,
-        dispatched_at: new Date().toISOString(),
+        dispatched_at:   new Date().toISOString(),
       }).eq('id', order.id)
       if (err) throw err
-      await deductBoxAndFitment(order)
-      await fetchOrders()
+      await Promise.all([fetchOrders(), fetchBatches()])
     } catch (err) {
       setSaveError(err.message)
     } finally {
@@ -151,6 +246,8 @@ export default function OrdersPage() {
   return (
     <div>
       <h1 className="page-title">Orders</h1>
+
+      <BatchSummary batches={batches} />
 
       <div className="filters-bar" style={{ marginBottom: 24 }}>
         <div className="form-group">
@@ -193,8 +290,8 @@ export default function OrdersPage() {
                   <tr>
                     <th>Date</th>
                     <th>Customer</th>
-                    <th>Kit / Type</th>
-                    <th>Box #</th>
+                    <th>Box</th>
+                    <th>Dispatch By</th>
                     <th>Amount</th>
                     <th>Status</th>
                     <th>Carrier + Tracking</th>
@@ -205,8 +302,10 @@ export default function OrdersPage() {
                   {orders.length === 0 ? (
                     <tr><td colSpan={8} className="no-data">No orders found.</td></tr>
                   ) : orders.map(order => {
-                    const inp = getInput(order.id)
+                    const inp        = getInput(order.id)
                     const isExpanded = expanded[order.id]
+                    const manifest   = BOX_MANIFESTS[order.boxCode]
+                    const isOverdue  = order.dispatch_status === 'pending' && order.dispatchBy < new Date()
                     return [
                       <tr key={order.id} style={{ cursor: 'pointer' }} onClick={() => toggleExpand(order.id)}>
                         <td style={{ fontSize: 13, color: 'var(--bone-muted)', whiteSpace: 'nowrap' }}>{fmt(order.created_at)}</td>
@@ -219,15 +318,25 @@ export default function OrdersPage() {
                           </button>
                         </td>
                         <td>
-                          <div style={{ textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 12, fontWeight: 600, color: 'var(--sky-blue)', marginBottom: 3 }}>{order.kit_id}</div>
-                          <span className={`type-badge ${order.order_type === 'first_box' ? 'inbound' : 'outbound_order'}`}>
-                            {order.order_type === 'first_box' ? 'First Box' : 'Refill'}
+                          <span
+                            title={manifest ? `${manifest.label} · ${manifest.products.map(n => PRODUCT_NAMES[n]).join(', ')}` : order.boxCode}
+                            style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: 'var(--sky-blue)', letterSpacing: '0.05em', cursor: 'help', borderBottom: '1px dashed rgba(74,143,199,0.4)', paddingBottom: 1 }}
+                          >
+                            {order.boxCode}
                           </span>
                         </td>
-                        <td style={{ color: 'var(--bone-muted)', fontSize: 13 }}>{order.box_number ?? '—'}</td>
+                        <td style={{ whiteSpace: 'nowrap' }}>
+                          {order.dispatch_status === 'pending' ? (
+                            <span style={{ fontSize: 13, fontWeight: 500, color: isOverdue ? 'var(--critical)' : 'var(--bone)' }}>
+                              {isOverdue && '⚠ '}{fmtDispatch(order.dispatchBy)}
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: 13, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
+                          )}
+                        </td>
                         <td style={{ fontVariantNumeric: 'tabular-nums' }}>£{((order.amount_pence || 0) / 100).toFixed(2)}</td>
                         <td>
-                          <span className={`risk-badge ${order.dispatch_status === 'pending' ? 'low' : 'ok'}`}>
+                          <span className={`risk-badge ${order.dispatch_status === 'pending' ? (isOverdue ? 'critical' : 'low') : 'ok'}`}>
                             {order.dispatch_status}
                           </span>
                         </td>
@@ -265,27 +374,34 @@ export default function OrdersPage() {
                         </td>
                       </tr>,
                       isExpanded && (
-                        <tr key={`${order.id}-addr`} style={{ background: 'var(--surface-hover)' }}>
-                          <td colSpan={8} style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', gap: 48 }}>
+                        <tr key={`${order.id}-detail`} style={{ background: 'var(--surface-hover)' }}>
+                          <td colSpan={8} style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+                            <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
                               <div>
                                 <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Ship To</div>
                                 <AddressBlock address={order.address} />
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>
+                                  Box Contents · <span style={{ color: 'var(--sky-blue)' }}>{order.boxCode}</span>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 16px' }}>
+                                  {(manifest?.products || []).map(num => (
+                                    <span key={num} style={{ fontSize: 13, color: 'var(--bone-dim)' }}>
+                                      <span style={{ color: 'var(--sky-blue)', fontFamily: 'monospace', fontWeight: 600, marginRight: 5 }}>{num}</span>
+                                      {PRODUCT_NAMES[num] || num}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
                               <div>
                                 <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Order ID</div>
                                 <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--bone-muted)' }}>{order.id.slice(0, 8)}</span>
                               </div>
-                              {order.dispatch_status === 'dispatched' && (
-                                <div>
-                                  <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Dispatched</div>
-                                  <span style={{ fontSize: 13 }}>{fmt(order.dispatched_at)}</span>
-                                </div>
-                              )}
                             </div>
                           </td>
                         </tr>
-                      )
+                      ),
                     ]
                   })}
                 </tbody>

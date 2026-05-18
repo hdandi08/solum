@@ -110,13 +110,13 @@ async function sendConfirmationEmail(
             <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">First box ships within a week</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. You'll get a tracking email when it's dispatched.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">First box ships Thursday or Monday</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. Dispatched on the next available slot (Thu/Mon) and arrives within 2 days. You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Monthly refills on the 1st</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your first box lasts 4–6 weeks. Refills ship automatically on the 1st of each month — you'll never run out.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Refills every 30 days</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your first refill is charged 30 days from today — you saw the exact date at checkout. Every 30 days after that. You'll never run out.</p></td>
               </tr></table>
             </td></tr>
             <tr><td style="padding:16px 20px;">

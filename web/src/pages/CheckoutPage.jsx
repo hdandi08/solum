@@ -129,36 +129,50 @@ const CSS = `
 }
 `;
 
-// ── Shipping date helpers ──────────────────────────────────────────────────
+// ── Shipping & billing date helpers ───────────────────────────────────────
+// Two dispatch days: Thursday and Monday.
+// Cutoffs (UK time): before Wed 12:00 → Thu · Wed 12:00–Sun 12:00 → Mon · after Sun 12:00 → Thu
 
-function getNextMondayDispatch() {
-  const today = new Date();
-  const day = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  const daysUntil = day === 1 ? 7 : (1 + 7 - day) % 7;
-  const next = new Date(today);
-  next.setDate(today.getDate() + daysUntil);
-  return next;
-}
-
-function getFirstBoxArrival(dispatch) {
-  const d = new Date(dispatch);
-  d.setDate(d.getDate() + 3);
+function getDispatchDate() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+  const isBeforeNoon = now.getHours() < 12;
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 };
+  if (day in daysToAdd) {
+    d.setDate(d.getDate() + daysToAdd[day]);
+  } else if (day === 3) {
+    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5)); // Wed: Thu or Mon
+  } else {
+    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4)); // Sun: Mon or Thu
+  }
   return d;
 }
 
-function getFirstBillingDate(dispatch) {
-  if (dispatch.getDate() <= 7) {
-    return new Date(dispatch.getFullYear(), dispatch.getMonth(), 25);
-  }
-  return new Date(dispatch.getFullYear(), dispatch.getMonth() + 1, 25);
+function getArrivalDate(dispatch) {
+  const d = new Date(dispatch);
+  d.setDate(d.getDate() + 2);
+  return d;
 }
 
-function getRefillShipDate(billing) {
-  return new Date(billing.getFullYear(), billing.getMonth(), 28);
+function getFirstChargeDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
-function getRefillArrivalDate(billing) {
-  return new Date(billing.getFullYear(), billing.getMonth() + 1, 1);
+function getRefillShipDate(charge) {
+  const d = new Date(charge);
+  d.setDate(d.getDate() + 2);
+  return d;
+}
+
+function getRefillArrivalDate(charge) {
+  const d = new Date(charge);
+  d.setDate(d.getDate() + 4);
+  return d;
 }
 
 function fmtDay(date) {
@@ -229,11 +243,11 @@ export default function CheckoutPage() {
   const products    = PRODUCTS.filter(p => kit.productNums.includes(p.num));
   const ritualKit   = KITS.find(k => k.id === 'ritual');
 
-  const dispatch     = getNextMondayDispatch();
-  const arrival      = getFirstBoxArrival(dispatch);
-  const billing      = getFirstBillingDate(dispatch);
-  const refillShip   = getRefillShipDate(billing);
-  const refillArrive = getRefillArrivalDate(billing);
+  const dispatch     = getDispatchDate();
+  const arrival      = getArrivalDate(dispatch);
+  const firstCharge  = getFirstChargeDate();
+  const refillShip   = getRefillShipDate(firstCharge);
+  const refillArrive = getRefillArrivalDate(firstCharge);
 
   function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -534,9 +548,9 @@ export default function CheckoutPage() {
           </div>
           <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives by {fmtDay(arrival)}</div>
           <div style={{ marginTop: 14 }}>
-            <span className="co-price-sub">then £{kit.monthlyPrice}/mo</span>
+            <span className="co-price-sub">then £{kit.monthlyPrice}/mo · every 30 days</span>
           </div>
-          <div className="co-price-refill">Charged {fmtDate(billing)} · Ships {fmtDate(refillShip)} · Arrives by {fmtDate(refillArrive)}</div>
+          <div className="co-price-refill">First charge {fmtDate(firstCharge)} · Ships {fmtDate(refillShip)} · Arrives by {fmtDate(refillArrive)}</div>
 
           <div className="co-divider" />
 
@@ -561,7 +575,7 @@ export default function CheckoutPage() {
               </div>
               <div className="co-trust-line">
                 <span className="co-trust-check">🚚</span>
-                <span>First box ships within a week and lasts 4–6 weeks · refills ship on the 1st of each month</span>
+                <span>First box ships {fmtDay(dispatch)} · refills charged every 30 days, arrive before you run out</span>
               </div>
             </div>
           </div>

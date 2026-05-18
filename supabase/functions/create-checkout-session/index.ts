@@ -23,46 +23,71 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ── Shipping date helpers ──────────────────────────────────────────────────
+// ── Dispatch & billing date helpers ───────────────────────────────────────
+//
+// Two dispatch days: Thursday and Monday.
+// Cutoffs (UK time):
+//   Before Wed 12:00 → ships Thursday
+//   Wed 12:00 – Sun 12:00 → ships Monday
+//   After Sun 12:00 → ships Thursday
+//
+// Royal Mail Tracked 48 = +2 calendar days (Sat counts as working day).
+// First recurring charge = 30 days from purchase, then every 30 days.
 
-/** Next Monday from today. If today is Monday, returns next week's Monday. */
-function nextMondayDispatch(): Date {
-  const today = new Date();
-  const day = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  const daysUntil = day === 1 ? 7 : (1 + 7 - day) % 7;
-  const next = new Date(today);
-  next.setDate(today.getDate() + daysUntil);
-  next.setHours(0, 0, 0, 0);
-  return next;
-}
+function getDispatchDate(): Date {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+  const isBeforeNoon = now.getHours() < 12;
 
-/** First box arrives ~3 days after dispatch. */
-function firstBoxArrival(dispatch: Date): Date {
-  const d = new Date(dispatch);
-  d.setDate(d.getDate() + 3);
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+
+  const daysToAdd: Record<number, number> = {
+    1: 3, // Mon → Thu
+    2: 2, // Tue → Thu
+    4: 4, // Thu (dispatch done) → Mon
+    5: 3, // Fri → Mon
+    6: 2, // Sat → Mon
+  };
+
+  if (day in daysToAdd) {
+    d.setDate(d.getDate() + (daysToAdd as Record<number, number>)[day]);
+  } else if (day === 3) {
+    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5)); // Wed: Thu or Mon
+  } else {
+    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4)); // Sun: Mon or Thu
+  }
+
   return d;
 }
 
-/**
- * First subscription billing date (25th).
- * If dispatch falls on or before the 7th → same month's 25th.
- * Otherwise → next month's 25th.
- */
-function firstBillingDate(dispatch: Date): Date {
-  if (dispatch.getDate() <= 7) {
-    return new Date(dispatch.getFullYear(), dispatch.getMonth(), 25);
-  }
-  return new Date(dispatch.getFullYear(), dispatch.getMonth() + 1, 25);
+/** Royal Mail Tracked 48: arrives 2 calendar days after dispatch. */
+function getArrivalDate(dispatch: Date): Date {
+  const d = new Date(dispatch);
+  d.setDate(d.getDate() + 2);
+  return d;
 }
 
-/** Refill ships on the 28th of the billing month. */
-function refillShipDate(billing: Date): Date {
-  return new Date(billing.getFullYear(), billing.getMonth(), 28);
+/** First recurring charge = 30 days from now. */
+function getFirstChargeDate(): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
-/** Refill arrives by the 1st of the month after billing. */
-function refillArrivalDate(billing: Date): Date {
-  return new Date(billing.getFullYear(), billing.getMonth() + 1, 1);
+/** Refill ships 2 days after the charge clears. */
+function getRefillShipDate(charge: Date): Date {
+  const d = new Date(charge);
+  d.setDate(d.getDate() + 2);
+  return d;
+}
+
+/** Refill arrives 4 days after the charge date (RM T48 after 2-day processing). */
+function getRefillArrivalDate(charge: Date): Date {
+  const d = new Date(charge);
+  d.setDate(d.getDate() + 4);
+  return d;
 }
 
 /** "Mon 6 Apr" format for dispatch/arrival. */
@@ -113,11 +138,11 @@ Deno.serve(async (req) => {
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
 
     // Shipping & billing schedule
-    const dispatch     = nextMondayDispatch();
-    const arrival      = firstBoxArrival(dispatch);
-    const billing      = firstBillingDate(dispatch);
-    const refillShip   = refillShipDate(billing);
-    const refillArrive = refillArrivalDate(billing);
+    const dispatch     = getDispatchDate();
+    const arrival      = getArrivalDate(dispatch);
+    const firstCharge  = getFirstChargeDate();
+    const refillShip   = getRefillShipDate(firstCharge);
+    const refillArrive = getRefillArrivalDate(firstCharge);
 
     // Block duplicate subscriptions — check if this email already has an active account
     const { data: existingCustomer } = await supabase
@@ -164,7 +189,7 @@ Deno.serve(async (req) => {
       currency: 'gbp',
       unit_amount: kit.monthly_pence,
       recurring: { interval: 'month' },
-      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · first charged ${fmtDate(billing)}, ships ${fmtDate(refillShip)}, arrives ${fmtDate(refillArrive)}` },
+      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · first charged ${fmtDate(firstCharge)}, ships ${fmtDate(refillShip)}, arrives ${fmtDate(refillArrive)}` },
     });
 
     // Build add-on line items (one-time, charged with first box)
@@ -189,12 +214,12 @@ Deno.serve(async (req) => {
         ...addonLineItems,
       ],
       subscription_data: {
-        trial_end: Math.floor(billing.getTime() / 1000),
+        trial_end: Math.floor(firstCharge.getTime() / 1000),
         metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
       },
       custom_text: {
         submit: {
-          message: `Your first box ships ${fmtDay(dispatch)} and arrives by ${fmtDay(arrival)} — no action needed. Your monthly refill subscription starts ${fmtDate(billing)}: charged that day, ships ${fmtDate(refillShip)}, arrives by ${fmtDate(refillArrive)}.`,
+          message: `Your first box ships ${fmtDay(dispatch)} and arrives by ${fmtDay(arrival)} — no action needed. Your first refill is charged on ${fmtDate(firstCharge)} (30 days from today), ships ${fmtDate(refillShip)}, arrives by ${fmtDate(refillArrive)}. Every 30 days after that.`,
         },
         after_submit: {
           message: `Cancel any time from your account — no questions asked.`,
