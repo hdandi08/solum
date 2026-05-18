@@ -19,8 +19,8 @@ function AppInner() {
 
   useEffect(() => {
     setSession(undefined)
-    config.client.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = config.client.auth.onAuthStateChange((event, session) => {
+    config.authClient.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = config.authClient.auth.onAuthStateChange((event, session) => {
       if (event !== 'INITIAL_SESSION') setSession(session)
     })
     return () => subscription.unsubscribe()

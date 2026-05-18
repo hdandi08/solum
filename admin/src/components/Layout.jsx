@@ -18,7 +18,7 @@ export default function Layout({ session }) {
   const [confirmInput, setConfirmInput] = useState('')
 
   const handleSignOut = async () => {
-    await config.client.auth.signOut()
+    await config.authClient.auth.signOut()
   }
 
   const isProd = env === 'prod'

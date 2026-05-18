@@ -71,8 +71,7 @@ export default function OrdersPage() {
         .from('orders')
         .select(`
           *,
-          customers(first_name, last_name, email),
-          addresses!addresses_customer_id_fkey(name, line1, line2, city, postcode, phone, is_current)
+          customers(first_name, last_name, email, addresses(name, line1, line2, city, postcode, phone, is_current))
         `, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
@@ -83,7 +82,7 @@ export default function OrdersPage() {
       // Attach only the current address per customer
       const rows = (data || []).map(o => ({
         ...o,
-        address: (o.addresses || []).find(a => a.is_current) || o.addresses?.[0] || null,
+        address: (o.customers?.addresses || []).find(a => a.is_current) || o.customers?.addresses?.[0] || null,
       }))
       setOrders(rows)
       setTotal(count || 0)
