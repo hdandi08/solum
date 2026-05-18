@@ -200,6 +200,7 @@ Deno.serve(async (req) => {
           message: `Cancel any time from your account — no questions asked.`,
         },
       },
+      phone_number_collection: { enabled: true },
       shipping_address_collection: {
         allowed_countries: ['GB'],
       },

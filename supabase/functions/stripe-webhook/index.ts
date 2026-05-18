@@ -186,6 +186,7 @@ Deno.serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         const { kit_id, first_name, last_name, birth_year, birth_month } = session.metadata ?? {};
         const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
+        const phone = session.customer_details?.phone ?? null;
         const stripe_customer_id = session.customer as string;
         const stripe_subscription_id = session.subscription as string;
 
@@ -229,9 +230,23 @@ Deno.serve(async (req) => {
             months_active: 0,
             subscription_number: subscriptionNumber,
             previous_subscription_id: previousSub?.id ?? null,
+            payment_status: 'active',
+            last_payment_at: new Date().toISOString(),
           }, { onConflict: 'stripe_subscription_id' })
           .select()
           .single();
+
+        // Set next_payment_due from the subscription's trial_end (= first billing date)
+        if (sub) {
+          try {
+            const stripeSub = await stripe.subscriptions.retrieve(stripe_subscription_id);
+            if (stripeSub.trial_end) {
+              await supabase.from('subscriptions').update({
+                next_payment_due: new Date(stripeSub.trial_end * 1000).toISOString(),
+              }).eq('id', sub.id);
+            }
+          } catch { /* non-critical */ }
+        }
 
         // Create first_box order only if it doesn't already exist
         const { data: existingOrder } = await supabase
@@ -241,8 +256,9 @@ Deno.serve(async (req) => {
           .eq('order_type', 'first_box')
           .maybeSingle();
 
+        let firstBoxOrderId: string | null = existingOrder?.id ?? null;
         if (!existingOrder) {
-          await supabase.from('orders').insert({
+          const { data: newOrder } = await supabase.from('orders').insert({
             customer_id: customer.id,
             subscription_id: sub?.id,
             stripe_payment_id: session.payment_intent as string,
@@ -251,7 +267,22 @@ Deno.serve(async (req) => {
             box_number: null,
             amount_pence: session.amount_total ?? 0,
             status: 'paid',
-          });
+          }).select('id').single();
+          firstBoxOrderId = newOrder?.id ?? null;
+        }
+
+        // Log first-box payment attempt
+        const checkoutInvoiceId = session.invoice as string;
+        if (checkoutInvoiceId && session.payment_status === 'paid' && customer) {
+          await supabase.from('payment_attempts').insert({
+            customer_id: customer.id,
+            order_id: firstBoxOrderId,
+            stripe_invoice_id: checkoutInvoiceId,
+            stripe_payment_intent_id: session.payment_intent as string ?? null,
+            amount_pence: session.amount_total ?? 0,
+            status: 'succeeded',
+            attempt_number: 1,
+          }).select(); // ignore duplicate on webhook replay
         }
 
         // Deduct first-box inventory
@@ -283,6 +314,7 @@ Deno.serve(async (req) => {
             city:              sd.address.city ?? '',
             postcode:          sd.address.postal_code ?? '',
             country:           sd.address.country ?? 'GB',
+            phone:             phone,
             is_current:        true,
             updated_at:        new Date().toISOString(),
           }, { onConflict: 'stripe_session_id' });
@@ -337,6 +369,25 @@ Deno.serve(async (req) => {
           await deductInventory(supabase, sub.kit_id, 'refill', refillOrder.id);
         }
 
+        // Log payment attempt
+        await supabase.from('payment_attempts').insert({
+          customer_id: sub.customer_id,
+          order_id: refillOrder?.id ?? null,
+          stripe_invoice_id: invoice.id,
+          stripe_payment_intent_id: invoice.payment_intent as string ?? null,
+          amount_pence: invoice.amount_paid,
+          status: 'succeeded',
+          attempt_number: invoice.attempt_count ?? 1,
+        }).select();
+
+        // Reset payment health on subscription
+        await supabase.from('subscriptions').update({
+          payment_status: 'active',
+          consecutive_failures: 0,
+          last_payment_at: new Date().toISOString(),
+          next_payment_due: new Date(invoice.period_end * 1000).toISOString(),
+        }).eq('id', sub.id);
+
         break;
       }
 
@@ -368,12 +419,69 @@ Deno.serve(async (req) => {
       }
 
       case 'invoice.payment_failed': {
-        // Payment failed — mark subscription past_due so we can prompt the customer
         const invoice = event.data.object as Stripe.Invoice;
-        await supabase
+        const stripe_subscription_id = invoice.subscription as string;
+
+        const { data: sub } = await supabase
           .from('subscriptions')
-          .update({ status: 'past_due' })
-          .eq('stripe_subscription_id', invoice.subscription as string);
+          .select('id, customer_id, consecutive_failures')
+          .eq('stripe_subscription_id', stripe_subscription_id)
+          .single();
+
+        if (!sub) break;
+
+        // Fetch failure details from the payment intent
+        let failure_code: string | null = null;
+        let failure_message: string | null = null;
+        if (invoice.payment_intent) {
+          try {
+            const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent as string);
+            failure_code = pi.last_payment_error?.decline_code ?? pi.last_payment_error?.code ?? null;
+            failure_message = pi.last_payment_error?.message ?? null;
+          } catch { /* non-critical */ }
+        }
+
+        const attemptNumber = invoice.attempt_count ?? 1;
+        const newFailures = (sub.consecutive_failures ?? 0) + 1;
+
+        // Log the failed attempt — upsert to survive webhook replays
+        await supabase.from('payment_attempts').upsert({
+          customer_id: sub.customer_id,
+          stripe_invoice_id: invoice.id,
+          stripe_payment_intent_id: invoice.payment_intent as string ?? null,
+          amount_pence: invoice.amount_due,
+          status: 'failed',
+          attempt_number: attemptNumber,
+          failure_code,
+          failure_message,
+        }, { onConflict: 'stripe_invoice_id,attempt_number' });
+
+        const paymentStatus = newFailures >= 4 ? 'unpaid' : 'past_due';
+        await supabase.from('subscriptions').update({
+          payment_status: paymentStatus,
+          consecutive_failures: newFailures,
+        }).eq('id', sub.id);
+
+        // All retries exhausted — escalate to payment_issues
+        if (newFailures >= 4) {
+          const { data: existingIssue } = await supabase
+            .from('payment_issues')
+            .select('id')
+            .eq('stripe_invoice_id', invoice.id)
+            .eq('issue_type', 'all_retries_failed')
+            .maybeSingle();
+
+          if (!existingIssue) {
+            await supabase.from('payment_issues').insert({
+              customer_id: sub.customer_id,
+              stripe_invoice_id: invoice.id,
+              issue_type: 'all_retries_failed',
+              total_attempts: attemptNumber,
+              last_failure_code: failure_code,
+            });
+          }
+        }
+
         break;
       }
 
@@ -402,11 +510,40 @@ Deno.serve(async (req) => {
 
       case 'charge.dispute.created': {
         const dispute = event.data.object as Stripe.Dispute;
+        const disputePiId = dispute.payment_intent as string;
+
         await supabase
           .from('orders')
           .update({ status: 'disputed' })
-          .eq('stripe_payment_id', dispute.payment_intent as string);
-        await logEvent(supabase, event.id, event.type, null, {
+          .eq('stripe_payment_id', disputePiId);
+
+        // Look up customer via order
+        const { data: disputeOrder } = await supabase
+          .from('orders')
+          .select('customer_id')
+          .eq('stripe_payment_id', disputePiId)
+          .maybeSingle();
+
+        if (disputeOrder?.customer_id) {
+          const { data: existingDispute } = await supabase
+            .from('payment_issues')
+            .select('id')
+            .eq('stripe_invoice_id', disputePiId)
+            .eq('issue_type', 'disputed')
+            .maybeSingle();
+
+          if (!existingDispute) {
+            await supabase.from('payment_issues').insert({
+              customer_id: disputeOrder.customer_id,
+              stripe_invoice_id: disputePiId,
+              issue_type: 'disputed',
+              total_attempts: 1,
+              last_failure_code: dispute.reason,
+            });
+          }
+        }
+
+        await logEvent(supabase, event.id, event.type, disputeOrder?.customer_id ?? null, {
           dispute_id: dispute.id, reason: dispute.reason, amount_pence: dispute.amount,
         });
         break;
