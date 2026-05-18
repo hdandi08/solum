@@ -8,6 +8,7 @@ import StockPage from './pages/StockPage'
 import PaymentsPage from './pages/PaymentsPage'
 import BookkeepingPage from './pages/BookkeepingPage'
 import SubscribersPage from './pages/SubscribersPage'
+import CustomersPage from './pages/CustomersPage'
 import LoginPage from './pages/LoginPage'
 import './admin.css'
 
@@ -50,6 +51,7 @@ function AppInner() {
           <Route path="stock" element={<StockPage />} />
           <Route path="bookkeeping" element={<BookkeepingPage />} />
           <Route path="subscribers" element={<SubscribersPage />} />
+          <Route path="customers" element={<CustomersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

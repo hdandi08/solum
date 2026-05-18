@@ -6,9 +6,10 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/orders', label: 'Orders' },
   { to: '/payments', label: 'Payments' },
+  { to: '/customers', label: 'Customers' },
+  { to: '/subscribers', label: 'Subscribers' },
   { to: '/stock', label: 'Stock' },
   { to: '/bookkeeping', label: 'Bookkeeping' },
-  { to: '/subscribers', label: 'Subscribers' },
 ]
 
 export default function Layout({ session }) {
