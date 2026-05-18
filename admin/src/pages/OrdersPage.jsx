@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useEnv } from '../context/EnvContext'
+import CustomerPanel from '../components/CustomerPanel'
 
 const PAGE_SIZE = 25
 
@@ -59,9 +60,10 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [expanded, setExpanded]         = useState({})
 
-  const [inputs, setInputs]   = useState({})
-  const [saving, setSaving]   = useState(null)
+  const [inputs, setInputs]       = useState({})
+  const [saving, setSaving]       = useState(null)
   const [saveError, setSaveError] = useState('')
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
@@ -209,10 +211,12 @@ export default function OrdersPage() {
                       <tr key={order.id} style={{ cursor: 'pointer' }} onClick={() => toggleExpand(order.id)}>
                         <td style={{ fontSize: 13, color: 'var(--bone-muted)', whiteSpace: 'nowrap' }}>{fmt(order.created_at)}</td>
                         <td>
-                          <div style={{ fontWeight: 500 }}>
-                            {[order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || '—'}
-                          </div>
-                          <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{order.customers?.email}</div>
+                          <button className="customer-link" onClick={e => { e.stopPropagation(); setSelectedCustomerId(order.customer_id) }}>
+                            <div className="customer-link-name" style={{ fontWeight: 500 }}>
+                              {[order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || '—'}
+                            </div>
+                            <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{order.customers?.email}</div>
+                          </button>
                         </td>
                         <td>
                           <div style={{ textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 12, fontWeight: 600, color: 'var(--sky-blue)', marginBottom: 3 }}>{order.kit_id}</div>
@@ -297,6 +301,10 @@ export default function OrdersPage() {
             </div>
           )}
         </>
+      )}
+
+      {selectedCustomerId && (
+        <CustomerPanel customerId={selectedCustomerId} onClose={() => setSelectedCustomerId(null)} />
       )}
     </div>
   )

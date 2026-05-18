@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useEnv } from '../context/EnvContext'
+import CustomerPanel from '../components/CustomerPanel'
 
 const PAGE_SIZE = 30
 const KIT_MONTHLY_PENCE = { ground: 3800, ritual: 4800, sovereign: 5800 }
@@ -31,6 +32,7 @@ export default function SubscribersPage() {
   const [payStatusFilter, setPayStatusFilter] = useState('')
   const [kitFilter, setKitFilter]   = useState('')
   const [stats, setStats]           = useState({ active: 0, mrr: 0, avgMonths: 0, atRisk: 0 })
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null)
 
   const loadStats = useCallback(async () => {
     try {
@@ -162,8 +164,10 @@ export default function SubscribersPage() {
                     return (
                       <tr key={s.id}>
                         <td>
-                          <div style={{ fontWeight: 500 }}>{[s.customers?.first_name, s.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
-                          <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{s.customers?.email}</div>
+                          <button className="customer-link" onClick={() => setSelectedCustomerId(s.customer_id)}>
+                            <div className="customer-link-name" style={{ fontWeight: 500 }}>{[s.customers?.first_name, s.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
+                            <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{s.customers?.email}</div>
+                          </button>
                         </td>
                         <td style={{ textTransform: 'uppercase', fontSize: 13, letterSpacing: '0.05em', fontWeight: 600, color: 'var(--sky-blue)' }}>{s.kit_id}</td>
                         <td><PaymentStatusBadge status={s.payment_status} /></td>
@@ -192,6 +196,10 @@ export default function SubscribersPage() {
             </div>
           )}
         </>
+      )}
+
+      {selectedCustomerId && (
+        <CustomerPanel customerId={selectedCustomerId} onClose={() => setSelectedCustomerId(null)} />
       )}
     </div>
   )

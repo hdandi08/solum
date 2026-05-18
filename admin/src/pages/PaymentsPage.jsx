@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useEnv } from '../context/EnvContext'
+import CustomerPanel from '../components/CustomerPanel'
 
 const PAGE_SIZE = 30
 
@@ -44,7 +45,7 @@ function SubStatusBadge({ status }) {
 }
 
 // ── At Risk Tab ───────────────────────────────────────────────────────────────
-function AtRiskTab() {
+function AtRiskTab({ onCustomerClick }) {
   const { config } = useEnv()
   const [issues, setIssues]   = useState([])
   const [loading, setLoading] = useState(true)
@@ -115,8 +116,10 @@ function AtRiskTab() {
               {issues.map(issue => (
                 <tr key={issue.id}>
                   <td>
-                    <div style={{ fontWeight: 500 }}>{[issue.customers?.first_name, issue.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
-                    <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{issue.customers?.email}</div>
+                    <button className="customer-link" onClick={() => onCustomerClick(issue.customer_id)}>
+                      <div className="customer-link-name" style={{ fontWeight: 500 }}>{[issue.customers?.first_name, issue.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
+                      <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{issue.customers?.email}</div>
+                    </button>
                   </td>
                   <td><IssueTypeBadge type={issue.issue_type} /></td>
                   <td style={{ fontSize: 13, color: 'var(--bone-muted)' }}>{issue.total_attempts}</td>
@@ -147,7 +150,7 @@ function AtRiskTab() {
 }
 
 // ── Upcoming Tab ──────────────────────────────────────────────────────────────
-function UpcomingTab() {
+function UpcomingTab({ onCustomerClick }) {
   const { config } = useEnv()
   const [subs, setSubs]       = useState([])
   const [loading, setLoading] = useState(true)
@@ -205,8 +208,10 @@ function UpcomingTab() {
             return (
               <tr key={s.id}>
                 <td>
-                  <div style={{ fontWeight: 500 }}>{[s.customers?.first_name, s.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
-                  <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{s.customers?.email}</div>
+                  <button className="customer-link" onClick={() => onCustomerClick(s.customer_id)}>
+                    <div className="customer-link-name" style={{ fontWeight: 500 }}>{[s.customers?.first_name, s.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
+                    <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{s.customers?.email}</div>
+                  </button>
                 </td>
                 <td style={{ textTransform: 'uppercase', fontSize: 13, letterSpacing: '0.05em', fontWeight: 600, color: 'var(--sky-blue)' }}>{s.kit_id}</td>
                 <td><SubStatusBadge status={s.payment_status} /></td>
@@ -226,7 +231,7 @@ function UpcomingTab() {
 }
 
 // ── History Tab ───────────────────────────────────────────────────────────────
-function HistoryTab() {
+function HistoryTab({ onCustomerClick }) {
   const { config } = useEnv()
   const [attempts, setAttempts] = useState([])
   const [loading, setLoading]   = useState(true)
@@ -316,8 +321,10 @@ function HistoryTab() {
                   <tr key={a.id}>
                     <td style={{ fontSize: 13, color: 'var(--bone-muted)', whiteSpace: 'nowrap' }}>{fmtTime(a.attempted_at)}</td>
                     <td>
-                      <div style={{ fontWeight: 500 }}>{[a.customers?.first_name, a.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
-                      <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{a.customers?.email}</div>
+                      <button className="customer-link" onClick={() => onCustomerClick(a.customer_id)}>
+                        <div className="customer-link-name" style={{ fontWeight: 500 }}>{[a.customers?.first_name, a.customers?.last_name].filter(Boolean).join(' ') || '—'}</div>
+                        <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{a.customers?.email}</div>
+                      </button>
                     </td>
                     <td style={{ fontVariantNumeric: 'tabular-nums' }}>{pence(a.amount_pence)}</td>
                     <td><PaymentStatusBadge status={a.status} /></td>
@@ -349,6 +356,7 @@ const TAB_LABELS = { 'at-risk': 'At Risk', 'upcoming': 'Upcoming', 'history': 'H
 
 export default function PaymentsPage() {
   const [tab, setTab] = useState('at-risk')
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null)
 
   return (
     <div>
@@ -379,9 +387,13 @@ export default function PaymentsPage() {
         ))}
       </div>
 
-      {tab === 'at-risk' && <AtRiskTab />}
-      {tab === 'upcoming' && <UpcomingTab />}
-      {tab === 'history' && <HistoryTab />}
+      {tab === 'at-risk' && <AtRiskTab onCustomerClick={setSelectedCustomerId} />}
+      {tab === 'upcoming' && <UpcomingTab onCustomerClick={setSelectedCustomerId} />}
+      {tab === 'history' && <HistoryTab onCustomerClick={setSelectedCustomerId} />}
+
+      {selectedCustomerId && (
+        <CustomerPanel customerId={selectedCustomerId} onClose={() => setSelectedCustomerId(null)} />
+      )}
     </div>
   )
 }
