@@ -161,6 +161,90 @@ async function logEvent(
 ) {
   await supabase.from('events').insert({ stripe_event_id, event_type, customer_id, data });
 }
+async function handleOneTimeOrderFromPI(
+  pi: Stripe.PaymentIntent,
+  supabase: ReturnType<typeof createClient>,
+) {
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone } = pi.metadata ?? {};
+  const email = metaEmail?.trim().toLowerCase();
+  const stripe_customer_id = pi.customer as string;
+
+  if (!pi.id) throw new Error('one_time_order_from_pi_missing_id');
+
+  // Idempotency: skip if already processed
+  const { data: existingOrder } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('stripe_payment_id', pi.id)
+    .eq('order_type', 'first_box')
+    .maybeSingle();
+  if (existingOrder) return;
+
+  // Upsert customer
+  const { data: customer, error: customerErr } = await supabase
+    .from('customers')
+    .upsert({
+      email,
+      first_name,
+      last_name: last_name || null,
+      stripe_customer_id,
+      kit_id,
+    }, { onConflict: 'email' })
+    .select()
+    .single();
+
+  if (!customer) throw new Error(`one_time_pi_customer_upsert_failed: ${customerErr?.message}`);
+
+  // Insert order
+  const { data: order, error: orderErr } = await supabase.from('orders').insert({
+    customer_id: customer.id,
+    subscription_id: null,
+    stripe_payment_id: pi.id,
+    kit_id,
+    order_type: 'first_box',
+    box_number: null,
+    amount_pence: pi.amount,
+    status: 'paid',
+    source,
+  }).select('id').single();
+
+  if (orderErr) throw new Error(`one_time_pi_order_insert_failed: ${orderErr.message}`);
+
+  // Deduct inventory
+  if (kit_id && order?.id) {
+    await deductInventory(supabase, kit_id, 'first_box', order.id);
+  }
+
+  // Mark lead completed
+  await supabase.from('leads')
+    .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
+    .eq('stripe_session_id', pi.id);
+
+  // Send confirmation email
+  if (email && order) {
+    const orderRef = pi.id.slice(-8).toUpperCase();
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef);
+  }
+
+  // Store shipping address from pi.shipping
+  const sh = pi.shipping;
+  if (sh?.address && customer) {
+    await supabase.from('addresses').upsert({
+      customer_id: customer.id,
+      stripe_session_id: pi.id,
+      name: sh.name ?? '',
+      line1: sh.address.line1 ?? '',
+      line2: sh.address.line2 ?? null,
+      city: sh.address.city ?? '',
+      postcode: sh.address.postal_code ?? '',
+      country: sh.address.country ?? 'GB',
+      phone: phone ?? null,
+      is_current: true,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'stripe_session_id' });
+  }
+}
+
 async function handleOneTimeOrder(
   session: Stripe.Checkout.Session,
   supabase: ReturnType<typeof createClient>,
@@ -452,8 +536,15 @@ Deno.serve(async (req) => {
         // Fires for integrated checkout (non-redirect flow using PaymentElement)
         const pi = event.data.object as Stripe.PaymentIntent;
 
-        // Only process intents created by our integrated checkout (has kit_id metadata)
+        // Only process intents created by our checkout (has kit_id metadata)
         if (!pi.metadata?.kit_id) break;
+
+        // One-time order (first_batch / gift / tiktok_shop) — no subscription
+        const oneTimeSources = ['first_batch', 'gift', 'tiktok_shop'];
+        if (pi.metadata?.source && oneTimeSources.includes(pi.metadata.source)) {
+          await handleOneTimeOrderFromPI(pi, supabase);
+          break;
+        }
 
         const { kit_id, email, first_name, last_name, birth_year, birth_month, first_charge_ts, monthly_pence, phone } = pi.metadata;
         const stripe_customer_id = pi.customer as string;
