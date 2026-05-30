@@ -161,6 +161,78 @@ async function logEvent(
 ) {
   await supabase.from('events').insert({ stripe_event_id, event_type, customer_id, data });
 }
+async function handleOneTimeOrder(
+  session: Stripe.Checkout.Session,
+  supabase: ReturnType<typeof createClient>,
+) {
+  const { kit_id, first_name, last_name, source } = session.metadata ?? {};
+  const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
+  const phone = session.customer_details?.phone ?? null;
+  const stripe_customer_id = session.customer as string;
+
+  // Upsert customer (no subscription fields)
+  const { data: customer, error: customerErr } = await supabase
+    .from('customers')
+    .upsert({
+      email,
+      first_name,
+      last_name: last_name || null,
+      stripe_customer_id,
+      kit_id,
+    }, { onConflict: 'email' })
+    .select()
+    .single();
+
+  if (!customer) throw new Error(`one_time_customer_upsert_failed: ${customerErr?.message}`);
+
+  // Insert order with source, no subscription_id
+  const { data: order } = await supabase.from('orders').insert({
+    customer_id: customer.id,
+    subscription_id: null,
+    stripe_payment_id: session.payment_intent as string,
+    kit_id,
+    order_type: 'first_box',
+    box_number: null,
+    amount_pence: session.amount_total ?? 0,
+    status: 'paid',
+    source,
+  }).select('id').single();
+
+  // Deduct inventory
+  if (kit_id && order?.id) {
+    await deductInventory(supabase, kit_id, 'first_box', order.id);
+  }
+
+  // Mark lead completed
+  await supabase.from('leads')
+    .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
+    .eq('stripe_session_id', session.id);
+
+  // Send confirmation email
+  if (email && order) {
+    const orderRef = session.id.slice(-8).toUpperCase();
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef);
+  }
+
+  // Store shipping address
+  const sd = (session as any).collected_information?.shipping_details ?? session.shipping_details;
+  if (sd?.address && customer) {
+    await supabase.from('addresses').upsert({
+      customer_id: customer.id,
+      stripe_session_id: session.id,
+      name: sd.name ?? '',
+      line1: sd.address.line1 ?? '',
+      line2: sd.address.line2 ?? null,
+      city: sd.address.city ?? '',
+      postcode: sd.address.postal_code ?? '',
+      country: sd.address.country ?? 'GB',
+      phone,
+      is_current: true,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'stripe_session_id' });
+  }
+}
+
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')!;
 
 const supabase = createClient(
@@ -184,11 +256,48 @@ Deno.serve(async (req) => {
 
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const { kit_id, first_name, last_name, birth_year, birth_month } = session.metadata ?? {};
+        const { kit_id, first_name, last_name, birth_year, birth_month, first_charge_ts, monthly_pence } = session.metadata ?? {};
         const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
         const phone = session.customer_details?.phone ?? null;
         const stripe_customer_id = session.customer as string;
-        const stripe_subscription_id = session.subscription as string;
+
+        // One-time purchase: source present in metadata → skip subscription creation
+        if (session.metadata?.source) {
+          await handleOneTimeOrder(session, supabase);
+          break;
+        }
+
+        // Payment mode: session.subscription is null — create subscription using saved card
+        let stripe_subscription_id = session.subscription as string | null;
+        if (!stripe_subscription_id && session.payment_intent) {
+          try {
+            const pi = await stripe.paymentIntents.retrieve(session.payment_intent as string);
+            const paymentMethodId = pi.payment_method as string;
+
+            const recurringPrice = await stripe.prices.create({
+              currency: 'gbp',
+              unit_amount: parseInt(monthly_pence ?? '4800'),
+              recurring: { interval: 'month' },
+              product_data: { name: `SOLUM ${KIT_NAMES[kit_id ?? ''] ?? (kit_id ?? '').toUpperCase()} — Monthly Refill` },
+            });
+
+            const trialEnd = first_charge_ts
+              ? parseInt(first_charge_ts)
+              : Math.floor(Date.now() / 1000) + 30 * 24 * 3600;
+
+            const stripeSub = await stripe.subscriptions.create({
+              customer: stripe_customer_id,
+              items: [{ price: recurringPrice.id }],
+              trial_end: trialEnd,
+              default_payment_method: paymentMethodId,
+              metadata: { kit_id: kit_id ?? '', birth_year: birth_year?.toString() ?? '', birth_month: birth_month?.toString() ?? '' },
+            });
+            stripe_subscription_id = stripeSub.id;
+          } catch (subErr) {
+            console.error('SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
+            // Don't throw — order is still recorded, admin can fix manually
+          }
+        }
 
         // Upsert customer
         const { data: customer, error: customerErr } = await supabase
@@ -272,17 +381,16 @@ Deno.serve(async (req) => {
         }
 
         // Log first-box payment attempt
-        const checkoutInvoiceId = session.invoice as string;
-        if (checkoutInvoiceId && session.payment_status === 'paid' && customer) {
+        if (session.payment_status === 'paid' && customer) {
           await supabase.from('payment_attempts').insert({
             customer_id: customer.id,
             order_id: firstBoxOrderId,
-            stripe_invoice_id: checkoutInvoiceId,
-            stripe_payment_intent_id: session.payment_intent as string ?? null,
+            stripe_invoice_id: (session.invoice as string) ?? null,
+            stripe_payment_intent_id: (session.payment_intent as string) ?? null,
             amount_pence: session.amount_total ?? 0,
             status: 'succeeded',
             attempt_number: 1,
-          }).select(); // ignore duplicate on webhook replay
+          }).select();
         }
 
         // Deduct first-box inventory
@@ -321,6 +429,173 @@ Deno.serve(async (req) => {
           if (addrErr) console.error('address_insert_error', JSON.stringify(addrErr));
         } else {
           console.warn('No shipping_details on session', session.id);
+        }
+
+        break;
+      }
+
+      case 'payment_intent.succeeded': {
+        // Fires for integrated checkout (non-redirect flow using PaymentElement)
+        const pi = event.data.object as Stripe.PaymentIntent;
+
+        // Only process intents created by our integrated checkout (has kit_id metadata)
+        if (!pi.metadata?.kit_id) break;
+
+        const { kit_id, email, first_name, last_name, birth_year, birth_month, first_charge_ts, monthly_pence, phone } = pi.metadata;
+        const stripe_customer_id = pi.customer as string;
+
+        // Upsert customer
+        const { data: customer, error: customerErr } = await supabase
+          .from('customers')
+          .upsert({
+            email: email?.trim().toLowerCase(),
+            first_name,
+            last_name: last_name || null,
+            birth_year: birth_year ? parseInt(birth_year) : null,
+            birth_month: birth_month ? parseInt(birth_month) : null,
+            phone: phone || null,
+            stripe_customer_id,
+            kit_id,
+            subscribed_at: new Date().toISOString(),
+          }, { onConflict: 'email' })
+          .select()
+          .single();
+
+        if (!customer) {
+          console.error('PI_CUSTOMER_UPSERT_FAILED', customerErr?.message, { stripe_customer_id });
+          break;
+        }
+
+        // Create Stripe subscription using saved card
+        let stripe_subscription_id: string | null = null;
+        try {
+          const paymentMethodId = pi.payment_method as string;
+          const recurringPrice = await stripe.prices.create({
+            currency: 'gbp',
+            unit_amount: parseInt(monthly_pence ?? '4800'),
+            recurring: { interval: 'month' },
+            product_data: { name: `SOLUM ${KIT_NAMES[kit_id ?? ''] ?? (kit_id ?? '').toUpperCase()} — Monthly Refill` },
+          });
+          const trialEnd = first_charge_ts
+            ? parseInt(first_charge_ts)
+            : Math.floor(Date.now() / 1000) + 30 * 24 * 3600;
+          const stripeSub = await stripe.subscriptions.create({
+            customer: stripe_customer_id,
+            items: [{ price: recurringPrice.id }],
+            trial_end: trialEnd,
+            default_payment_method: paymentMethodId,
+            metadata: { kit_id: kit_id ?? '', birth_year, birth_month },
+          });
+          stripe_subscription_id = stripeSub.id;
+        } catch (subErr) {
+          console.error('PI_SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
+        }
+
+        // Look up prior subscriptions for numbering
+        const { data: previousSubs } = await supabase
+          .from('subscriptions')
+          .select('id, subscription_number')
+          .eq('customer_id', customer.id)
+          .order('subscription_number', { ascending: false })
+          .limit(1);
+
+        const subscriptionNumber = previousSubs?.[0] ? previousSubs[0].subscription_number + 1 : 1;
+
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .upsert({
+            customer_id: customer.id,
+            stripe_subscription_id,
+            kit_id,
+            status: 'active',
+            months_active: 0,
+            subscription_number: subscriptionNumber,
+            payment_status: 'active',
+            last_payment_at: new Date().toISOString(),
+          }, { onConflict: 'stripe_subscription_id' })
+          .select()
+          .single();
+
+        // Set next_payment_due from trial_end
+        if (sub && stripe_subscription_id) {
+          try {
+            const stripeSub = await stripe.subscriptions.retrieve(stripe_subscription_id);
+            if (stripeSub.trial_end) {
+              await supabase.from('subscriptions').update({
+                next_payment_due: new Date(stripeSub.trial_end * 1000).toISOString(),
+              }).eq('id', sub.id);
+            }
+          } catch { /* non-critical */ }
+        }
+
+        // Check idempotency — don't double-create orders on webhook replay
+        const { data: existingOrder } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('stripe_payment_id', pi.id)
+          .eq('order_type', 'first_box')
+          .maybeSingle();
+
+        let firstBoxOrderId: string | null = existingOrder?.id ?? null;
+        if (!existingOrder) {
+          const { data: newOrder } = await supabase.from('orders').insert({
+            customer_id: customer.id,
+            subscription_id: sub?.id,
+            stripe_payment_id: pi.id,
+            kit_id,
+            order_type: 'first_box',
+            box_number: null,
+            amount_pence: pi.amount,
+            status: 'paid',
+          }).select('id').single();
+          firstBoxOrderId = newOrder?.id ?? null;
+        }
+
+        // Log payment attempt
+        if (!existingOrder) {
+          await supabase.from('payment_attempts').insert({
+            customer_id: customer.id,
+            order_id: firstBoxOrderId,
+            stripe_invoice_id: null,
+            stripe_payment_intent_id: pi.id,
+            amount_pence: pi.amount,
+            status: 'succeeded',
+            attempt_number: 1,
+          }).select();
+        }
+
+        // Deduct inventory
+        if (kit_id && sub?.id) {
+          await deductInventory(supabase, kit_id, 'first_box', sub.id);
+        }
+
+        // Mark lead completed
+        await supabase.from('leads')
+          .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
+          .eq('stripe_customer_id', stripe_customer_id);
+
+        // Send confirmation email
+        if (!existingOrder) {
+          const orderRef = pi.id.slice(-8).toUpperCase();
+          await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef);
+        }
+
+        // Store address from pi.shipping
+        const piShipping = pi.shipping;
+        if (piShipping?.address && customer) {
+          await supabase.from('addresses').upsert({
+            customer_id:       customer.id,
+            stripe_session_id: pi.id,
+            name:              piShipping.name ?? '',
+            line1:             piShipping.address.line1 ?? '',
+            line2:             piShipping.address.line2 ?? null,
+            city:              piShipping.address.city ?? '',
+            postcode:          piShipping.address.postal_code ?? '',
+            country:           piShipping.address.country ?? 'GB',
+            phone:             phone || null,
+            is_current:        true,
+            updated_at:        new Date().toISOString(),
+          }, { onConflict: 'stripe_session_id' });
         }
 
         break;
