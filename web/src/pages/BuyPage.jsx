@@ -180,7 +180,8 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
       setError(confirmError.message ?? 'Payment failed. Please try again.');
       setLoading(false);
     } else if (paymentIntent?.status === 'succeeded') {
-      window.location.href = `/success?kit=${activeKit.id}`;
+      const ref = paymentIntent.id ?? '';
+      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}`;
     } else {
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       setLoading(false);
