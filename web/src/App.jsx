@@ -15,6 +15,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import Founding100Page from './pages/Founding100Page';
 import AthletePage from './pages/AthletePage';
 import AthleteComingSoon from './pages/AthleteComingSoon';
+import BuyPage from './pages/BuyPage';
 import './styles/global.css';
 
 // Auth pages that handle their own session callbacks — do not redirect these.
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
         <Route path="/full" element={<FullSite />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/buy" element={<BuyPage />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/ritual" element={<RitualPage />} />
