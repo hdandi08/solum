@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+
+const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const CSS = `
 .kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
 .kits-inner{max-width:1400px;margin:0 auto;}
@@ -66,10 +68,12 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                       <span className="kit-price-first-label">first box</span>
                     </div>
-                    <div className="kit-price-sub">
-                      then <span>£{kit.monthlyPrice}/mo</span>
-                      {kit.comingSoon ? ' when available' : ' · cancel any time'}
-                    </div>
+                    {!IS_FIRST_BATCH && (
+                      <div className="kit-price-sub">
+                        then <span>£{kit.monthlyPrice}/mo</span>
+                        {kit.comingSoon ? ' when available' : ' · cancel any time'}
+                      </div>
+                    )}
                   </div>
                   <div className="kit-divider" />
                   <div className="kit-products">
@@ -92,8 +96,11 @@ export default function KitComparison() {
                   {kit.comingSoon ? (
                     <span className="kit-cta inactive">Coming Soon</span>
                   ) : (
-                    <button className="kit-cta active" onClick={() => navigate(`/checkout?kit=${kit.id}`)}>
-                      Start with {kit.name}
+                    <button
+                      className="kit-cta active"
+                      onClick={() => navigate(IS_FIRST_BATCH ? `/buy?kit=${kit.id}` : `/checkout?kit=${kit.id}`)}
+                    >
+                      {IS_FIRST_BATCH ? `Get ${kit.name}` : `Start with ${kit.name}`}
                     </button>
                   )}
                 </div>
@@ -101,7 +108,9 @@ export default function KitComparison() {
             })}
           </div>
           <p className="kits-footnote">
-            First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.
+            {IS_FIRST_BATCH
+              ? 'One-time purchase. No subscription required. Subscription launches later — current buyers get first access.'
+              : 'First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.'}
           </p>
         </div>
       </section>

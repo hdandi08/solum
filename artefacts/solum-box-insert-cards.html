@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLUM — Box Insert Cards · Design Reference</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black:      #08090B;
+      --charcoal:   #181C24;
+      --steel:      #2E6DA4;
+      --sky:        #4A8FC7;
+      --bone:       #F0ECE2;
+      --bone-dim:   rgba(240,236,226,0.65);
+      --bone-ghost: rgba(240,236,226,0.28);
+      --steel-dim:  rgba(46,109,164,0.15);
+      --card-w:     300px;
+      --card-h:     423px; /* 105:148 ratio */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #E8E4DA;
+      font-family: 'Barlow Condensed', sans-serif;
+      padding: 64px 48px 100px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      margin-bottom: 72px;
+    }
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--black);
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      font-weight: 300;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--black);
+      opacity: 0.4;
+    }
+
+    /* ── CARD GROUP ── */
+    .card-group {
+      margin-bottom: 80px;
+    }
+    .group-label {
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--black);
+      opacity: 0.35;
+      margin-bottom: 14px;
+    }
+    .group-label span {
+      color: var(--steel);
+      opacity: 1;
+    }
+    .card-pair {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .card-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .face-label {
+      font-weight: 500;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--black);
+      opacity: 0.3;
+    }
+
+    /* ── BASE CARD ── */
+    .card {
+      width: var(--card-w);
+      height: var(--card-h);
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 6px 32px rgba(0,0,0,0.22),
+        0 1px 4px rgba(0,0,0,0.14);
+    }
+
+    /* ── WORDMARK ── */
+    .wm {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.32em;
+      color: var(--bone);
+      position: absolute;
+      top: 20px;
+      left: 22px;
+    }
+
+    /* ── STEEL RULES ── */
+    .rule-h {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--steel);
+    }
+    .rule-h-short {
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--steel);
+    }
+
+    /* ── KEEP BAR (Cards 2 + 3 front) ── */
+    .keep-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 38px;
+      background: var(--steel-dim);
+      border-top: 1px solid var(--steel);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      gap: 8px;
+    }
+    .keep-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--steel);
+      flex-shrink: 0;
+    }
+    .keep-text {
+      font-weight: 600;
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      color: var(--steel);
+      text-transform: uppercase;
+    }
+
+    /* ── QR PLACEHOLDER ── */
+    .qr {
+      width: 72px; height: 72px;
+      flex-shrink: 0;
+    }
+
+    /* ── BOTTOM CLOSER ── */
+    .card-footer {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 34px;
+      border-top: 1px solid var(--bone-ghost);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+    }
+    .card-footer span {
+      font-weight: 600;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--bone);
+      opacity: 0.4;
+      text-transform: uppercase;
+    }
+
+    /* ── WHISPER TEXT ── */
+    .whisper {
+      font-weight: 300;
+      font-size: 10px;
+      line-height: 1.45;
+      color: var(--bone);
+      opacity: 0.32;
+      font-style: italic;
+    }
+
+    /* ════════════════════════════
+       CARD 1 — SELF SUBSCRIBER
+    ════════════════════════════ */
+
+    /* Front */
+    .c1f .section-title {
+      position: absolute;
+      top: 54px;
+      left: 22px;
+      right: 22px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      line-height: 0.92;
+      color: var(--bone);
+      letter-spacing: 0.04em;
+    }
+    .c1f .origins-area {
+      position: absolute;
+      top: 190px;
+      left: 22px; right: 22px; bottom: 38px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+    .c1f .origin-row {
+      border-top: 1px solid rgba(46,109,164,0.3);
+      padding-top: 8px;
+    }
+    .c1f .origin-country {
+      display: block;
+      font-weight: 600;
+      font-size: 10.5px;
+      letter-spacing: 0.2em;
+      color: var(--steel);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .c1f .origin-desc {
+      display: block;
+      font-weight: 300;
+      font-size: 11px;
+      line-height: 1.35;
+      color: var(--bone-dim);
+    }
+    .c1f .footer-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 34px;
+      border-top: 1px solid var(--bone-ghost);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+    }
+    .c1f .footer-bar span {
+      font-weight: 600;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--bone);
+      opacity: 0.35;
+      text-transform: uppercase;
+    }
+
+    /* Back */
+    .c1b {
+      padding: 22px 22px 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .c1b .story {
+      margin-top: 54px;
+      flex: 1;
+    }
+    .c1b .story p {
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 1.58;
+      color: var(--bone-dim);
+      margin-bottom: 11px;
+    }
+    .c1b .closer {
+      padding: 12px 0 14px;
+      border-top: 1px solid rgba(46,109,164,0.25);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .c1b .closer-photo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 12%;
+      filter: grayscale(35%) contrast(1.08);
+      border: 1.5px solid rgba(46,109,164,0.45);
+      flex-shrink: 0;
+    }
+    .c1b .closer-name {
+      display: block;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--bone);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .c1b .closer-url {
+      display: block;
+      font-weight: 300;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--bone);
+      opacity: 0.35;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════════════
+       CARD 2 — GIFT RECIPIENT
+    ════════════════════════════ */
+
+    /* Front */
+    .c2f .rule-h { top: 42px; }
+
+    .c2f .hero {
+      position: absolute;
+      top: 54px;
+      left: 22px;
+      right: 22px;
+    }
+    .c2f .hero-line {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 62px;
+      line-height: 0.9;
+      color: var(--bone);
+      letter-spacing: 0.03em;
+    }
+    .c2f .hero-break {
+      display: block;
+      height: 12px;
+    }
+    .c2f .hero-sub {
+      display: block;
+      font-weight: 700;
+      font-size: 58px;
+      line-height: 0.9;
+      color: var(--bone);
+      text-transform: uppercase;
+    }
+
+    /* Back */
+    .c2b {
+      padding: 18px 22px 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .c2b .headline {
+      margin-top: 22px;
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 0.96;
+      color: var(--bone);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .c2b .body {
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--bone-dim);
+      margin-bottom: 14px;
+    }
+    .c2b .divider {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: rgba(46,109,164,0.35);
+      margin-bottom: 12px;
+    }
+    .c2b .section-label {
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--steel);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .c2b .section-body {
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--bone-dim);
+      margin-bottom: 12px;
+    }
+    .c2b .qr-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .c2b .qr-aside {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 2px;
+    }
+    .c2b .qr-cta {
+      font-weight: 600;
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--bone);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .c2b .qr-sub {
+      font-weight: 300;
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--bone-dim);
+    }
+
+    /* ════════════════════════════
+       CARD 3 — TIKTOK ONE-OFF
+    ════════════════════════════ */
+
+    /* Front — same structure as Card 2 front */
+    .c3f .rule-h { top: 42px; }
+
+    .c3f .hero {
+      position: absolute;
+      top: 54px;
+      left: 22px;
+      right: 22px;
+    }
+    .c3f .hero-line {
+      display: block;
+      font-weight: 700;
+      font-size: 62px;
+      line-height: 0.9;
+      color: var(--bone);
+      text-transform: uppercase;
+    }
+
+    /* Back */
+    .c3b {
+      padding: 18px 22px 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .c3b .headline {
+      margin-top: 22px;
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 0.96;
+      color: var(--bone);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .c3b .ritual-block {
+      margin-bottom: 10px;
+    }
+    .c3b .ritual-label {
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--steel);
+      text-transform: uppercase;
+    }
+    .c3b .ritual-desc {
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--bone-dim);
+    }
+    .c3b .divider {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: rgba(46,109,164,0.35);
+      margin: 12px 0;
+    }
+    .c3b .section-label {
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--steel);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .c3b .qr-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .c3b .qr-aside {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .c3b .qr-cta {
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.05;
+      color: var(--bone);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+    .c3b .qr-sub {
+      font-weight: 300;
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--bone-dim);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>SOLUM · BOX INSERT CARDS · DESIGN REFERENCE</h1>
+    <p>Format: A6 · 105 × 148mm · Double-sided · Matte black stock · White ink + Steel Blue accent · Barlow Condensed / Bebas Neue</p>
+  </div>
+
+
+  <!-- ════ CARD 01 ════ -->
+  <div class="card-group">
+    <div class="group-label">CARD 01 · <span>SELF-SUBSCRIBER</span></div>
+    <div class="card-pair">
+
+      <!-- Front -->
+      <div class="card-wrap">
+        <div class="face-label">Front</div>
+        <div class="card c1f">
+
+          <!-- Subtle world map background -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.045;" viewBox="0 0 300 423" preserveAspectRatio="xMidYMid slice">
+            <ellipse cx="60" cy="230" rx="28" ry="22" stroke="#4A8FC7" stroke-width="1" fill="none"/>
+            <ellipse cx="200" cy="175" rx="22" ry="16" stroke="#4A8FC7" stroke-width="1" fill="none"/>
+            <ellipse cx="228" cy="195" rx="8" ry="6" stroke="#4A8FC7" stroke-width="1" fill="none"/>
+            <ellipse cx="130" cy="155" rx="12" ry="8" stroke="#4A8FC7" stroke-width="1" fill="none"/>
+            <line x1="60" y1="208" x2="130" y2="163" stroke="#4A8FC7" stroke-width="0.5" stroke-dasharray="2,3"/>
+            <line x1="130" y1="163" x2="200" y2="175" stroke="#4A8FC7" stroke-width="0.5" stroke-dasharray="2,3"/>
+            <line x1="200" y1="175" x2="228" y2="195" stroke="#4A8FC7" stroke-width="0.5" stroke-dasharray="2,3"/>
+            <circle cx="60" cy="230" r="2.5" fill="#4A8FC7"/>
+            <circle cx="200" cy="175" r="2.5" fill="#4A8FC7"/>
+            <circle cx="228" cy="195" r="2.5" fill="#4A8FC7"/>
+            <circle cx="130" cy="155" r="2.5" fill="#4A8FC7"/>
+          </svg>
+
+          <!-- Steel blue glow at bottom -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:radial-gradient(ellipse at 50% 100%, rgba(46,109,164,0.18) 0%, transparent 70%);pointer-events:none;"></div>
+
+          <span class="wm">S O L U M</span>
+          <div class="rule-h" style="top:42px"></div>
+
+          <div class="section-title">THE<br>ORIGINS<br>OF SOLUM</div>
+
+          <div class="origins-area">
+            <div class="origin-row">
+              <span class="origin-country">Morocco</span>
+              <span class="origin-desc">Rhassoul Clay · Argan Oil</span>
+            </div>
+            <div class="origin-row">
+              <span class="origin-country">South Korea</span>
+              <span class="origin-desc">The bathhouse tradition</span>
+            </div>
+            <div class="origin-row">
+              <span class="origin-country">Turkey</span>
+              <span class="origin-desc">The hammam</span>
+            </div>
+            <div class="origin-row">
+              <span class="origin-country">United Kingdom</span>
+              <span class="origin-desc">Formulated in London</span>
+            </div>
+          </div>
+
+          <div class="footer-bar">
+            <span>YOUR BODY. DONE RIGHT.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back -->
+      <div class="card-wrap">
+        <div class="face-label">Back</div>
+        <div class="card c1b">
+
+          <!-- Warm texture overlay -->
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%, rgba(46,109,164,0.08) 0%, transparent 60%);pointer-events:none;"></div>
+
+          <span class="wm">S O L U M</span>
+          <div class="rule-h" style="top:42px"></div>
+
+          <div class="story">
+            <p>I couldn't find body care built for men. What I found was facial products in different packaging.</p>
+            <p>So I built SOLUM — for myself first. Inspired by my travels through the Middle East, Asia and European spas, where body rituals have existed for centuries. Every product in this box comes from those traditions. Researched, tested, refined until I couldn't go back.</p>
+            <p>I no longer just rinse and leave. I feel the difference every day.</p>
+            <p>Hopefully, opening this box, you'll see the care that went into every part of it.</p>
+          </div>
+
+          <div class="closer">
+            <img src="../web/public/harsha.jpg" alt="Harsha" class="closer-photo">
+            <div>
+              <span class="closer-name">Harsha · Founder · SOLUM</span>
+              <span class="closer-url">bysolum.co.uk</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════ CARD 02 ════ -->
+  <div class="card-group">
+    <div class="group-label">CARD 02 · <span>GIFT RECIPIENT</span> · Trigger: order placed with gift flag at checkout</div>
+    <div class="card-pair">
+
+      <!-- Front -->
+      <div class="card-wrap">
+        <div class="face-label">Front</div>
+        <div class="card c2f">
+          <span class="wm">S O L U M</span>
+          <div class="rule-h" style="top:42px"></div>
+
+          <!-- GIFT heading -->
+          <div style="position:absolute; top:54px; left:22px;">
+            <span style="font-family:'Bebas Neue',sans-serif; font-size:72px; line-height:1; color:#F0ECE2; letter-spacing:0.04em;">GIFT</span>
+          </div>
+
+          <!-- Present illustration -->
+          <div style="position:absolute; top:138px; left:0; right:0; display:flex; justify-content:center;">
+            <svg width="156" height="148" viewBox="0 0 156 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Box lid -->
+              <rect x="14" y="44" width="128" height="22" rx="3" stroke="#F0ECE2" stroke-width="1.2" fill="rgba(240,236,226,0.04)"/>
+              <!-- Box body -->
+              <rect x="20" y="66" width="116" height="76" rx="3" stroke="#F0ECE2" stroke-width="1.2" fill="rgba(240,236,226,0.03)"/>
+              <!-- Vertical ribbon on lid -->
+              <rect x="72" y="44" width="12" height="22" rx="0" fill="rgba(46,109,164,0.55)"/>
+              <!-- Vertical ribbon on body -->
+              <rect x="72" y="66" width="12" height="76" rx="0" fill="rgba(46,109,164,0.45)"/>
+              <!-- Horizontal ribbon on body -->
+              <rect x="20" y="96" width="116" height="10" rx="0" fill="rgba(46,109,164,0.45)"/>
+              <!-- Bow — left loop -->
+              <path d="M78 44 C72 34 50 22 52 36 C53 44 68 44 78 44Z" stroke="#2E6DA4" stroke-width="1.2" fill="rgba(46,109,164,0.3)"/>
+              <!-- Bow — right loop -->
+              <path d="M78 44 C84 34 106 22 104 36 C103 44 88 44 78 44Z" stroke="#2E6DA4" stroke-width="1.2" fill="rgba(46,109,164,0.3)"/>
+              <!-- Bow tails -->
+              <path d="M78 44 C72 50 66 56 60 66" stroke="#2E6DA4" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <path d="M78 44 C84 50 90 56 96 66" stroke="#2E6DA4" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <!-- Bow centre knot -->
+              <circle cx="78" cy="44" r="5" fill="#2E6DA4"/>
+              <circle cx="78" cy="44" r="3" fill="#1A4A78"/>
+              <!-- Subtle shine line on lid -->
+              <line x1="28" y1="52" x2="72" y2="52" stroke="#F0ECE2" stroke-width="0.4" opacity="0.2"/>
+            </svg>
+          </div>
+
+          <!-- Bottom statement -->
+          <div style="position:absolute; bottom:38px; left:22px; right:22px;">
+            <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:0.92; color:#F0ECE2; letter-spacing:0.03em;">NOTHING LIKE<br>THIS EXISTS<br>FOR MEN.</div>
+          </div>
+
+          <div style="position:absolute; bottom:0; left:0; right:0; height:32px; border-top:1px solid rgba(240,236,226,0.1); display:flex; align-items:center; padding:0 22px;">
+            <span style="font-weight:600; font-size:9px; letter-spacing:0.14em; color:#F0ECE2; opacity:0.3; text-transform:uppercase;">YOUR BODY. DONE RIGHT.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back -->
+      <div class="card-wrap">
+        <div class="face-label">Back</div>
+        <div class="card c2b">
+          <span class="wm">S O L U M</span>
+          <div class="rule-h" style="top:42px"></div>
+          <div class="story" style="margin-top:54px; flex:1;">
+            <p style="font-weight:300; font-size:12px; line-height:1.55; color:rgba(240,236,226,0.75); margin-bottom:11px;">You've just been gifted SOLUM — the first complete body ritual built for men.</p>
+            <p style="font-weight:300; font-size:12px; line-height:1.55; color:rgba(240,236,226,0.75); margin-bottom:11px;">Use it for a week. Daily and weekly, following the ritual guide on the box. Let your skin tell you whether it works.</p>
+            <p style="font-weight:300; font-size:12px; line-height:1.55; color:rgba(240,236,226,0.75); margin-bottom:0;">If you feel the difference, come back and subscribe. We'll keep your products stocked and delivered to your door, so the ritual never stops.</p>
+          </div>
+          <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(46,109,164,0.3);">
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
+              <svg width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                <rect width="72" height="72" fill="#F0ECE2"/>
+                <rect x="4" y="4" width="20" height="20" fill="#08090B"/>
+                <rect x="7" y="7" width="14" height="14" fill="#F0ECE2"/>
+                <rect x="10" y="10" width="8" height="8" fill="#08090B"/>
+                <rect x="48" y="4" width="20" height="20" fill="#08090B"/>
+                <rect x="51" y="7" width="14" height="14" fill="#F0ECE2"/>
+                <rect x="54" y="10" width="8" height="8" fill="#08090B"/>
+                <rect x="4" y="48" width="20" height="20" fill="#08090B"/>
+                <rect x="7" y="51" width="14" height="14" fill="#F0ECE2"/>
+                <rect x="10" y="54" width="8" height="8" fill="#08090B"/>
+                <rect x="28" y="4" width="4" height="4" fill="#08090B"/>
+                <rect x="36" y="4" width="4" height="4" fill="#08090B"/>
+                <rect x="28" y="10" width="4" height="4" fill="#08090B"/>
+                <rect x="42" y="10" width="4" height="4" fill="#08090B"/>
+                <rect x="34" y="16" width="4" height="4" fill="#08090B"/>
+                <rect x="28" y="28" width="4" height="4" fill="#08090B"/>
+                <rect x="38" y="28" width="4" height="4" fill="#08090B"/>
+                <rect x="48" y="28" width="4" height="4" fill="#08090B"/>
+                <rect x="58" y="28" width="4" height="4" fill="#08090B"/>
+                <rect x="30" y="34" width="4" height="4" fill="#08090B"/>
+                <rect x="44" y="34" width="4" height="4" fill="#08090B"/>
+                <rect x="56" y="34" width="4" height="4" fill="#08090B"/>
+                <rect x="30" y="40" width="4" height="4" fill="#08090B"/>
+                <rect x="40" y="40" width="4" height="4" fill="#08090B"/>
+                <rect x="52" y="40" width="4" height="4" fill="#08090B"/>
+                <rect x="34" y="48" width="4" height="4" fill="#08090B"/>
+                <rect x="46" y="48" width="4" height="4" fill="#08090B"/>
+                <rect x="58" y="48" width="4" height="4" fill="#08090B"/>
+                <rect x="28" y="54" width="4" height="4" fill="#08090B"/>
+                <rect x="40" y="54" width="4" height="4" fill="#08090B"/>
+                <rect x="52" y="54" width="4" height="4" fill="#08090B"/>
+                <rect x="28" y="60" width="4" height="4" fill="#08090B"/>
+                <rect x="42" y="60" width="4" height="4" fill="#08090B"/>
+                <rect x="56" y="60" width="4" height="4" fill="#08090B"/>
+              </svg>
+              <div>
+                <div style="font-weight:600; font-size:10px; letter-spacing:0.16em; color:#F0ECE2; text-transform:uppercase; margin-bottom:3px;">Subscribe for an exclusive offer</div>
+                <div style="font-weight:300; font-size:9px; letter-spacing:0.1em; color:rgba(240,236,226,0.4); text-transform:uppercase;">bysolum.co.uk/join</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════ CARD 03 ════ -->
+  <div class="card-group">
+    <div class="group-label">CARD 03 · <span>TIKTOK ONE-OFF</span> · Trigger: order with source = tiktok_shop (no subscription)</div>
+    <div class="card-pair">
+
+      <!-- Front -->
+      <div class="card-wrap">
+        <div class="face-label">Front</div>
+        <div class="card c3f">
+          <span class="wm">S O L U M</span>
+          <div class="rule-h" style="top:42px"></div>
+          <div class="hero">
+            <span class="hero-line">YOU SAW IT.</span>
+            <span class="hero-line">YOU GOT IT.</span>
+            <span class="hero-line">NOW USE IT.</span>
+          </div>
+          <div class="keep-bar">
+            <div class="keep-dot"></div>
+            <span class="keep-text">Keep this card</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back -->
+      <div class="card-wrap">
+        <div class="face-label">Back</div>
+        <div class="card c3b">
+          <div class="headline">HERE'S THE SYSTEM<br>BEHIND THE KIT.</div>
+          <div class="ritual-block">
+            <div class="ritual-label">Daily · 10 min</div>
+            <div class="ritual-desc">Every morning. The products in this box.</div>
+          </div>
+          <div class="ritual-block">
+            <div class="ritual-label">Weekly · 22 min</div>
+            <div class="ritual-desc">Goes deeper. The version that<br>actually changes your skin.</div>
+          </div>
+          <span class="divider"></span>
+          <div class="section-label">Make it a habit.</div>
+          <div class="qr-row">
+            <svg class="qr" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="72" height="72" fill="#F0ECE2"/>
+              <rect x="4" y="4" width="20" height="20" fill="#08090B"/>
+              <rect x="7" y="7" width="14" height="14" fill="#F0ECE2"/>
+              <rect x="10" y="10" width="8" height="8" fill="#08090B"/>
+              <rect x="48" y="4" width="20" height="20" fill="#08090B"/>
+              <rect x="51" y="7" width="14" height="14" fill="#F0ECE2"/>
+              <rect x="54" y="10" width="8" height="8" fill="#08090B"/>
+              <rect x="4" y="48" width="20" height="20" fill="#08090B"/>
+              <rect x="7" y="51" width="14" height="14" fill="#F0ECE2"/>
+              <rect x="10" y="54" width="8" height="8" fill="#08090B"/>
+              <rect x="30" y="4" width="4" height="4" fill="#08090B"/>
+              <rect x="38" y="4" width="4" height="4" fill="#08090B"/>
+              <rect x="46" y="4" width="4" height="4" fill="#08090B"/>
+              <rect x="30" y="10" width="4" height="4" fill="#08090B"/>
+              <rect x="42" y="10" width="4" height="4" fill="#08090B"/>
+              <rect x="36" y="16" width="4" height="4" fill="#08090B"/>
+              <rect x="44" y="16" width="4" height="4" fill="#08090B"/>
+              <rect x="4" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="14" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="22" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="32" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="40" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="50" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="60" y="26" width="4" height="4" fill="#08090B"/>
+              <rect x="32" y="34" width="4" height="4" fill="#08090B"/>
+              <rect x="48" y="34" width="4" height="4" fill="#08090B"/>
+              <rect x="56" y="34" width="4" height="4" fill="#08090B"/>
+              <rect x="32" y="42" width="4" height="4" fill="#08090B"/>
+              <rect x="40" y="42" width="4" height="4" fill="#08090B"/>
+              <rect x="52" y="42" width="4" height="4" fill="#08090B"/>
+              <rect x="62" y="42" width="4" height="4" fill="#08090B"/>
+              <rect x="36" y="50" width="4" height="4" fill="#08090B"/>
+              <rect x="46" y="50" width="4" height="4" fill="#08090B"/>
+              <rect x="54" y="50" width="4" height="4" fill="#08090B"/>
+              <rect x="64" y="50" width="4" height="4" fill="#08090B"/>
+              <rect x="32" y="56" width="4" height="4" fill="#08090B"/>
+              <rect x="42" y="56" width="4" height="4" fill="#08090B"/>
+              <rect x="50" y="56" width="4" height="4" fill="#08090B"/>
+              <rect x="60" y="56" width="4" height="4" fill="#08090B"/>
+              <rect x="32" y="62" width="4" height="4" fill="#08090B"/>
+              <rect x="46" y="62" width="4" height="4" fill="#08090B"/>
+              <rect x="56" y="62" width="4" height="4" fill="#08090B"/>
+              <rect x="64" y="62" width="4" height="4" fill="#08090B"/>
+            </svg>
+            <div class="qr-aside">
+              <div class="qr-cta">Scan.<br>See what<br>subscribers pay.</div>
+              <div class="qr-sub" style="margin-top:6px">bysolum.co.uk/start</div>
+            </div>
+          </div>
+          <p class="whisper">This card doesn't expire.<br>Come back when you're ready to upgrade.</p>
+          <div class="card-footer">
+            <span>YOUR BODY. DONE RIGHT.</span>
+            <span>bysolum.co.uk</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════ SPEC NOTES ════ -->
+  <div style="margin-top:20px; border-top: 1px solid rgba(8,9,11,0.15); padding-top:32px;">
+    <p style="font-weight:600; font-size:10px; letter-spacing:0.2em; color:var(--black); opacity:0.35; text-transform:uppercase; margin-bottom:16px;">PRINT SPEC</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; max-width:720px;">
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">Format</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">A6 · 105 × 148mm<br>Double-sided<br>Portrait orientation</p>
+      </div>
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">Stock + Finish</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">400gsm uncoated black<br>White ink throughout<br>No laminate (matte natural)</p>
+      </div>
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">Typography</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">Wordmark: Bebas Neue 0.32em ls<br>Headlines: Barlow Condensed 700<br>Body: Barlow Condensed 300<br>Labels: Barlow Condensed 600</p>
+      </div>
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">Colours</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">Background: #08090B<br>Primary text: #F0ECE2<br>Accent: #2E6DA4 (Steel Blue)<br>No gradients</p>
+      </div>
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">QR Codes</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">Min 20 × 20mm at print<br>White QR on black bg<br>Card 01 → /welcome<br>Card 02 → /gift/{code}<br>Card 03 → /start</p>
+      </div>
+      <div>
+        <p style="font-weight:600; font-size:10px; letter-spacing:0.14em; color:#08090B; opacity:0.5; text-transform:uppercase; margin-bottom:6px;">Cards 02 + 03 only</p>
+        <p style="font-weight:300; font-size:12px; line-height:1.5; color:#08090B; opacity:0.6;">"Keep this card" bar<br>bottom of front face<br>Steel Blue rule + bg tint<br>Steel Blue text + dot</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

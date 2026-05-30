@@ -302,6 +302,81 @@ textarea {
 
 .env-banner-switch:hover { opacity: 1; }
 
+/* ─── Customer Panel ─── */
+.panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 11, 0.55);
+  z-index: 200;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 500px;
+  background: var(--charcoal);
+  border-left: 1px solid var(--border);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  position: relative;
+  padding: 28px 28px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.panel-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--bone-muted);
+  font-size: 26px;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.panel-close:hover { color: var(--bone); }
+
+.panel-identity { padding-right: 36px; }
+
+.panel-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  color: var(--bone);
+  line-height: 1;
+}
+
+.panel-email {
+  font-size: 13px;
+  color: var(--bone-muted);
+  margin-top: 5px;
+}
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 28px 40px;
+}
+
+.customer-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+.customer-link:hover .customer-link-name { color: var(--sky-blue); }
+
 /* ─── Modal ─── */
 .modal-backdrop {
   position: fixed;

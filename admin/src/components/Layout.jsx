@@ -5,11 +5,11 @@ import { useEnv } from '../context/EnvContext'
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/orders', label: 'Orders' },
-  { to: '/inventory', label: 'Inventory' },
-  { to: '/replenishment', label: 'Replenishment' },
-  { to: '/costs', label: 'Costs' },
-  { to: '/projections', label: 'Projections' },
-  { to: '/events', label: 'Events' },
+  { to: '/payments', label: 'Payments' },
+  { to: '/customers', label: 'Customers' },
+  { to: '/subscribers', label: 'Subscribers' },
+  { to: '/stock', label: 'Stock' },
+  { to: '/bookkeeping', label: 'Bookkeeping' },
 ]
 
 export default function Layout({ session }) {
@@ -19,7 +19,7 @@ export default function Layout({ session }) {
   const [confirmInput, setConfirmInput] = useState('')
 
   const handleSignOut = async () => {
-    await config.client.auth.signOut()
+    await config.authClient.auth.signOut()
   }
 
   const isProd = env === 'prod'

@@ -1,5 +1,7 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
 
+const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
+
 const CTA_COPY = {
   control: 'Choose Your Kit',
   ritual:  'Build Your Ritual',
@@ -55,7 +57,9 @@ export default function Hero() {
         <div className="hero-glow" />
         <div className="hero-cols">
           <div className="hero-content">
-            <div className="hero-eyebrow">Men shower. Men don't actually clean.</div>
+            <div className="hero-eyebrow">
+              {IS_FIRST_BATCH ? '250 kits · no subscription required' : "Men shower. Men don't actually clean."}
+            </div>
             <h1 className="hero-title">
               You Shower<br />Every Day.<br /><em>Your Body Is</em><br /><em>Still Dirty.</em>
             </h1>
@@ -68,10 +72,12 @@ export default function Hero() {
             <div className="hero-scope">
               <span className="hero-scope-label">Real Results</span>
               <span className="hero-scope-divider" />
-              <span className="hero-scope-note">Your Body — Head to Toe.</span>
+              <span className="hero-scope-note">
+                {IS_FIRST_BATCH ? 'One-time · No commitment' : 'Your Body — Head to Toe.'}
+              </span>
             </div>
             <div className="hero-actions">
-              <a href="#kits" className="btn-primary" onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}>{ctaLabel}</a>
+              <a href={IS_FIRST_BATCH ? '/buy' : '#kits'} className="btn-primary" onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}>{IS_FIRST_BATCH ? 'Get Your Kit' : ctaLabel}</a>
               <a href="#truth" className="btn-ghost">Why It Matters</a>
             </div>
           </div>

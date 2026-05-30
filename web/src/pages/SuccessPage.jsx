@@ -48,13 +48,17 @@ const CSS = `
 @media(max-width:600px){.su-steps{border:none;gap:1px;background:var(--line);}.su-step{background:var(--char);}}
 `;
 
+const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
+
 export default function SuccessPage() {
   const [params] = useSearchParams();
   const kitId    = params.get('kit');
   const rawRef   = params.get('ref') ?? '';
+  const source   = params.get('source') ?? '';
   const kit      = KITS.find(k => k.id === kitId);
   const kitName  = kit?.name ?? 'SOLUM';
   const orderRef = rawRef ? rawRef.slice(-8).toUpperCase() : null;
+  const isOneTime = ONE_TIME_SOURCES.includes(source);
 
   return (
     <>
@@ -89,17 +93,27 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">2</span>
               <div className="su-step-body">
-                <div className="su-step-title">First box ships within a week</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched. You'll get a separate email with your tracking link once it's on its way.</div>
+                <div className="su-step-title">Your kit ships Thursday or Monday</div>
+                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched on the next available slot. You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
-            <div className="su-step">
-              <span className="su-step-num">3</span>
-              <div className="su-step-body">
-                <div className="su-step-title">Monthly refills on the 1st</div>
-                <div className="su-step-copy">Consumables replenish automatically. Your first box lasts 4–6 weeks — you won't run out before the first refill arrives.</div>
+            {isOneTime ? (
+              <div className="su-step">
+                <span className="su-step-num">3</span>
+                <div className="su-step-body">
+                  <div className="su-step-title">We'll check in at two weeks</div>
+                  <div className="su-step-copy">Once you've had time to use the kit properly, we'll ask a few quick questions. Your feedback directly shapes what we build next.</div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="su-step">
+                <span className="su-step-num">3</span>
+                <div className="su-step-body">
+                  <div className="su-step-title">Monthly refills arrive before you run out</div>
+                  <div className="su-step-copy">Consumables replenish automatically every 30 days. Your first box lasts 4–6 weeks — you won't run out before the first refill arrives.</div>
+                </div>
+              </div>
+            )}
             <div className="su-step">
               <span className="su-step-num">4</span>
               <div className="su-step-body">
@@ -122,8 +136,8 @@ export default function SuccessPage() {
           </div>
 
           <div className="su-actions">
-            <a href="/full#ritual" className="su-btn-primary">See Your Ritual →</a>
-            <a href="/account" className="su-btn-ghost">Manage subscription</a>
+            <a href="/ritual" className="su-btn-primary">See Your Ritual →</a>
+            {!isOneTime && <a href="/account" className="su-btn-ghost">Manage subscription</a>}
           </div>
 
         </div>

@@ -13,7 +13,7 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { error: authError } = await config.client.auth.signInWithPassword({
+    const { error: authError } = await config.authClient.auth.signInWithPassword({
       email: email.trim(),
       password,
     })

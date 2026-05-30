@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// Public endpoint — called by checkout page to check kit availability
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -15,42 +14,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Get all first-box kit compositions and current stock
-    const { data: kitProducts } = await db
-      .from('kit_products')
-      .select('kit_id, product_id, first_box_qty, products(current_stock, is_active)')
+    const { data: kitInventory, error } = await db
+      .from('kit_inventory')
+      .select('kit_id, available_count')
 
-    // A kit is available if ALL its products have enough stock for at least 1 first box
-    const kitAvailability: Record<string, boolean> = {}
-    const kitsByKit: Record<string, typeof kitProducts> = {}
+    if (error) throw error
 
-    for (const kp of kitProducts ?? []) {
-      if (!kitsByKit[kp.kit_id]) kitsByKit[kp.kit_id] = []
-      kitsByKit[kp.kit_id].push(kp)
+    const kits: Record<string, { available: boolean; count: number }> = {}
+    for (const row of kitInventory ?? []) {
+      kits[row.kit_id] = {
+        available: row.available_count > 0,
+        count: row.available_count ?? 0,
+      }
     }
 
-    for (const [kitId, items] of Object.entries(kitsByKit)) {
-      kitAvailability[kitId] = items.every(
-        (item: any) =>
-          item.products?.is_active &&
-          item.products?.current_stock >= item.first_box_qty
-      )
-    }
-
-    // Also expose per-product stock for "selling out soon" signals
-    const { data: products } = await db
-      .from('products')
-      .select('id, current_stock, is_active')
-
-    const productStock: Record<string, number> = {}
-    for (const p of products ?? []) {
-      productStock[p.id] = p.current_stock
-    }
-
-    return new Response(JSON.stringify({
-      kits: kitAvailability,
-      products: productStock,
-    }), {
+    return new Response(JSON.stringify({ kits }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err) {
