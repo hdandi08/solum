@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:    #08090B;
+  --surface:  #181C24;
+  --raised:   #1E2430;
+  --border:   rgba(240,236,226,0.08);
+  --accent:   #2E6DA4;
+  --sky:      #4A8FC7;
+  --bone:     #F0ECE2;
+  --dim:      rgba(240,236,226,0.5);
+  --muted:    rgba(240,236,226,0.25);
+  --ok:       #4CAF50;
+  --warn:     #F59E0B;
+  --crit:     #EF4444;
+  --sidebar:  220px;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Barlow Condensed', sans-serif;
+  background: var(--black);
+  color: var(--bone);
+  display: flex;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* ── Sidebar ──────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar);
+  min-width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.15em;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: var(--bone);
+  user-select: none;
+}
+
+.sidebar-logo span {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nav { flex: 1; padding: 12px 0; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.nav-item:hover { color: var(--bone); background: rgba(240,236,226,0.04); }
+
+.nav-item.active {
+  color: var(--bone);
+  background: rgba(74,143,199,0.1);
+  border-left-color: var(--sky);
+}
+
+.nav-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.env-badge {
+  display: inline-block;
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.4);
+  color: var(--warn);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 4px 10px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Main content ─────────────────────────────── */
+.main {
+  margin-left: var(--sidebar);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.page { display: none; padding: 32px 36px; min-height: 100%; }
+.page.active { display: block; }
+
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 0.1em;
+  color: var(--bone);
+  margin-bottom: 28px;
+}
+
+/* ── Cards ────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.card-pad { padding: 24px; }
+
+/* ── Kit control cards ────────────────────────── */
+.kit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kit-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 28px 28px 24px;
+}
+
+.kit-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+  color: var(--bone);
+}
+
+.kit-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.kit-input {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--bone);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  width: 100%;
+  padding: 10px 16px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.kit-input:focus { border-color: var(--accent); }
+
+.kit-health {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.kit-health.warn { color: var(--warn); }
+.kit-health.ok   { color: var(--ok); }
+
+.kit-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  letter-spacing: 0.03em;
+}
+
+/* ── Stat tiles ───────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  letter-spacing: 0.05em;
+  color: var(--bone);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Section header ───────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Warnings ─────────────────────────────────── */
+.warnings-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+
+.warning-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.warning-row.crit  { border-left: 3px solid var(--crit); }
+.warning-row.warn  { border-left: 3px solid var(--warn); }
+.warning-row.ok    { border-left: 3px solid var(--ok); color: var(--dim); }
+
+.w-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.w-dot.crit { background: var(--crit); }
+.w-dot.warn { background: var(--warn); }
+.w-dot.ok   { background: var(--ok); }
+
+.w-name { font-weight: 600; min-width: 140px; }
+.w-detail { color: var(--dim); font-size: 13px; }
+.w-action { margin-left: auto; }
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(240,236,226,0.02); }
+
+.td-dim  { color: var(--dim); font-size: 13px; }
+.td-mono { font-family: monospace; font-size: 12px; color: var(--sky); }
+.td-num  { font-variant-numeric: tabular-nums; }
+
+/* ── Badges ───────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge-pending   { background: rgba(245,158,11,0.15);  color: var(--warn); border: 1px solid rgba(245,158,11,0.3); }
+.badge-dispatch  { background: rgba(74,143,199,0.15);  color: var(--sky);  border: 1px solid rgba(74,143,199,0.3); }
+.badge-delivered { background: rgba(76,175,80,0.15);   color: var(--ok);   border: 1px solid rgba(76,175,80,0.3); }
+.badge-ground    { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+.badge-ritual    { background: rgba(46,109,164,0.2); color: var(--sky); border: 1px solid rgba(74,143,199,0.4); }
+.badge-first     { background: transparent; color: var(--bone); border: 1px solid rgba(240,236,226,0.25); }
+.badge-refill    { background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 10px; }
+.badge-ok        { background: rgba(76,175,80,0.1); color: var(--ok); border: 1px solid rgba(76,175,80,0.2); }
+.badge-warn-sm   { background: rgba(245,158,11,0.1); color: var(--warn); border: 1px solid rgba(245,158,11,0.2); }
+.badge-crit-sm   { background: rgba(239,68,68,0.1); color: var(--crit); border: 1px solid rgba(239,68,68,0.2); }
+
+/* Category badges */
+.badge-inv   { background: rgba(74,143,199,0.12); color: var(--sky); border: 1px solid rgba(74,143,199,0.25); }
+.badge-pkg   { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+.badge-mkt   { background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); }
+.badge-comp  { background: rgba(245,158,11,0.12); color: var(--warn); border: 1px solid rgba(245,158,11,0.25); }
+.badge-ops   { background: rgba(76,175,80,0.12);  color: var(--ok);  border: 1px solid rgba(76,175,80,0.25); }
+.badge-other { background: rgba(240,236,226,0.06); color: var(--dim); border: 1px solid var(--border); }
+
+/* ── Buttons ──────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary   { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--sky); }
+.btn-secondary { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+.btn-secondary:hover { color: var(--bone); border-color: rgba(240,236,226,0.25); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-ghost { background: transparent; color: var(--muted); border: none; padding: 5px 8px; }
+.btn-ghost:hover { color: var(--crit); }
+
+/* ── Inline inputs ────────────────────────────── */
+.inline-input {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--bone);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 8px;
+  width: 80px;
+  text-align: right;
+  outline: none;
+}
+
+.inline-input:focus { border-color: var(--accent); }
+
+/* ── Filter bar ───────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+.select, .input-field {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--bone);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.select:focus, .input-field:focus { border-color: var(--accent); }
+.input-field { cursor: text; }
+
+/* ── Summary chips ────────────────────────────── */
+.summary-chips {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.chip-item { display: flex; align-items: center; gap: 6px; }
+.chip-dot  { width: 6px; height: 6px; border-radius: 50%; }
+.chip-dot.pend  { background: var(--warn); }
+.chip-dot.disp  { background: var(--sky); }
+.chip-dot.deliv { background: var(--ok); }
+
+/* ── Dispatch inline ──────────────────────────── */
+.dispatch-inline { display: flex; flex-direction: column; gap: 5px; }
+
+.dispatch-inline .select {
+  font-size: 12px;
+  padding: 4px 8px;
+  min-width: 120px;
+}
+
+.dispatch-inline .input-field {
+  font-size: 12px;
+  padding: 4px 8px;
+  min-width: 140px;
+}
+
+/* ── Pagination ───────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Stock page ───────────────────────────────── */
+.capacity-chip {
+  background: rgba(74,143,199,0.1);
+  border: 1px solid rgba(74,143,199,0.25);
+  color: var(--sky);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: 2px;
+}
+
+.prod-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.packaging-note {
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+/* ── Bookkeeping ──────────────────────────────── */
+.add-entry-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.add-entry-bar .input-field { min-width: 200px; flex: 1; }
+.add-entry-bar .select      { min-width: 140px; }
+
+.amount-wrap { position: relative; display: flex; align-items: center; }
+.amount-prefix {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dim);
+  pointer-events: none;
+}
+.amount-wrap .input-field { padding-left: 22px; width: 110px; }
+
+.bk-tiles {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.bk-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bk-tile-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  color: var(--bone);
+}
+
+.bk-tile-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+.bk-total {
+  background: var(--surface);
+  border: 1px solid rgba(74,143,199,0.3);
+  border-radius: 4px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bk-total-label { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+.bk-total-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.05em; color: var(--sky); }
+
+/* ── Subscribers ──────────────────────────────── */
+.sub-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.content-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.pill {
+  background: rgba(240,236,226,0.07);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.pill.special {
+  background: rgba(74,143,199,0.1);
+  border-color: rgba(74,143,199,0.25);
+  color: var(--sky);
+}
+
+.pill.extra {
+  background: rgba(245,158,11,0.1);
+  border-color: rgba(245,158,11,0.25);
+  color: var(--warn);
+}
+
+/* ── Save bar ─────────────────────────────────── */
+.save-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.save-bar .btn { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    SOLUM
+    <span>Admin Panel</span>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item active" onclick="nav('dashboard', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H2a1 1 0 01-1-1V2zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H2a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V2zm0 6a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V8z"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('orders', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.5A.5.5 0 01.5 1H2a.5.5 0 01.485.379L2.89 3H14.5a.5.5 0 01.491.592l-1.5 8A.5.5 0 0113 12H4a.5.5 0 01-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 01-.5-.5zM5 12a2 2 0 100 4 2 2 0 000-4zm7 0a2 2 0 100 4 2 2 0 000-4z"/></svg>
+      Orders
+    </div>
+    <div class="nav-item" onclick="nav('stock', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2.5 2.5 0 012.5 2.5V4h-5v-.5A2.5 2.5 0 018 1zm3.5 3v-.5a3.5 3.5 0 10-7 0V4H1v10a2 2 0 002 2h10a2 2 0 002-2V4h-3.5z"/></svg>
+      Stock
+    </div>
+    <div class="nav-item" onclick="nav('bookkeeping', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A2.5 2.5 0 013.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75H3.5A2.5 2.5 0 011 11.5v-9zm3.5 1a.5.5 0 000 1h6a.5.5 0 000-1h-6zm0 2.5a.5.5 0 000 1h6a.5.5 0 000-1h-6zm0 2.5a.5.5 0 000 1h3a.5.5 0 000-1h-3z"/></svg>
+      Bookkeeping
+    </div>
+    <div class="nav-item" onclick="nav('subscribers', this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 100-6 3 3 0 000 6zM5.216 14A2.238 2.238 0 015 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 005 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/></svg>
+      Subscribers
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="env-badge">DEV</div>
+  </div>
+</nav>
+
+<!-- ── Main ───────────────────────────────────── -->
+<main class="main">
+
+  <!-- PAGE: DASHBOARD ────────────────────────── -->
+  <div id="dashboard" class="page active">
+    <h1 class="page-title">Dashboard</h1>
+
+    <div class="kit-grid">
+      <!-- Ground -->
+      <div class="kit-card">
+        <div class="kit-label">GROUND</div>
+        <div class="kit-field-label">First Boxes Available</div>
+        <input class="kit-input" type="number" value="150">
+        <div class="kit-health warn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 118 0a8 8 0 010 16z"/><path d="M7.002 11a1 1 0 112 0 1 1 0 01-2 0zM7.1 4.995a.905.905 0 111.8 0l-.35 3.507a.552.552 0 01-1.1 0L7.1 4.995z"/></svg>
+          Stock supports max 120 — reduce or reorder
+        </div>
+        <div class="kit-meta">7 products · 5 monthly refill items</div>
+      </div>
+
+      <!-- Ritual -->
+      <div class="kit-card">
+        <div class="kit-label">RITUAL</div>
+        <div class="kit-field-label">First Boxes Available</div>
+        <input class="kit-input" type="number" value="80">
+        <div class="kit-health ok">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z"/></svg>
+          Stock supports up to 210 — you're within capacity
+        </div>
+        <div class="kit-meta">9 products · 6 monthly refill items</div>
+      </div>
+    </div>
+
+    <div class="save-bar">
+      <button class="btn btn-primary">Save Kit Availability</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-tile">
+        <div class="stat-value">14</div>
+        <div class="stat-label">Pending Dispatch</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">4</div>
+        <div class="stat-label">New Subscribers</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">£2,184</div>
+        <div class="stat-label">Monthly Recurring Revenue</div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:12px;">
+      <div class="section-title">Stock Warnings</div>
+    </div>
+
+    <div class="warnings-list">
+      <div class="warning-row crit">
+        <div class="w-dot crit"></div>
+        <div class="w-name">Body Lotion</div>
+        <div class="w-detail">3.2 weeks runway · 8-week lead time · Will miss Month 3 refills</div>
+        <div class="w-action"><button class="btn btn-sm btn-secondary">Reorder Now</button></div>
+      </div>
+      <div class="warning-row crit">
+        <div class="w-dot crit"></div>
+        <div class="w-name">Ritual Refill Fitment</div>
+        <div class="w-detail">2.8 weeks runway · 8-week lead time · Reorder immediately</div>
+        <div class="w-action"><button class="btn btn-sm btn-secondary">Reorder Now</button></div>
+      </div>
+      <div class="warning-row warn">
+        <div class="w-dot warn"></div>
+        <div class="w-name">Body Wash</div>
+        <div class="w-detail">7.1 weeks runway · Order within 2 weeks to maintain buffer</div>
+        <div class="w-action"><button class="btn btn-sm btn-secondary">Log Order</button></div>
+      </div>
+      <div class="warning-row warn">
+        <div class="w-dot warn"></div>
+        <div class="w-name">Shipping Box</div>
+        <div class="w-detail">6.4 weeks runway · Monitor closely</div>
+        <div class="w-action"><button class="btn btn-sm btn-secondary">Log Order</button></div>
+      </div>
+      <div class="warning-row ok">
+        <div class="w-dot ok"></div>
+        <div style="color:var(--muted); font-size:13px; font-style:italic;">All other products healthy</div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:12px;">
+      <div class="section-title">Recent Orders</div>
+      <a onclick="nav('orders', document.querySelector('.nav-item:nth-child(2)'))" style="font-size:12px; color:var(--sky); cursor:pointer; letter-spacing:0.06em;">View all →</a>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Customer</th><th>Kit</th><th>Type</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-dim">14 May 2026</td>
+              <td><div style="font-weight:500;">James Harrison</div><div style="font-size:12px;color:var(--muted);">james@gmail.com</div></td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">13 May 2026</td>
+              <td><div style="font-weight:500;">Marcus Thompson</div><div style="font-size:12px;color:var(--muted);">marcus@outlook.com</div></td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td><span class="badge badge-refill">Refill #2</span></td>
+              <td><span class="badge badge-dispatch">Dispatched</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">13 May 2026</td>
+              <td><div style="font-weight:500;">Daniel Okafor</div><div style="font-size:12px;color:var(--muted);">d.okafor@gmail.com</div></td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-refill">Refill #3</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">12 May 2026</td>
+              <td><div style="font-weight:500;">Tom Bradley</div><div style="font-size:12px;color:var(--muted);">tombradley@icloud.com</div></td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-delivered">Delivered</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">12 May 2026</td>
+              <td><div style="font-weight:500;">Ravi Patel</div><div style="font-size:12px;color:var(--muted);">ravi.p@gmail.com</div></td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: ORDERS ───────────────────────────── -->
+  <div id="orders" class="page">
+    <h1 class="page-title">Orders</h1>
+
+    <div class="filter-bar">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="select">
+          <option>All Orders</option>
+          <option>Pending Dispatch</option>
+          <option>Dispatched</option>
+          <option>Delivered</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kit</label>
+        <select class="select" style="min-width:110px;">
+          <option>All Kits</option>
+          <option>Ground</option>
+          <option>Ritual</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">From</label>
+        <input type="date" class="input-field" style="min-width:140px;" value="2026-05-01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">To</label>
+        <input type="date" class="input-field" style="min-width:140px;" value="2026-05-14">
+      </div>
+      <button class="btn btn-secondary">Clear</button>
+    </div>
+
+    <div class="summary-chips">
+      <div class="chip-item"><div class="chip-dot pend"></div>14 pending</div>
+      <div class="chip-item"><div class="chip-dot disp"></div>38 dispatched</div>
+      <div class="chip-item"><div class="chip-dot deliv"></div>127 delivered</div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Kit</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Carrier + Tracking</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Pending -->
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">14 May</td>
+              <td>
+                <div style="font-weight:500;">James Harrison</div>
+                <div style="font-size:12px;color:var(--muted);">james@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+              <td>
+                <div class="dispatch-inline">
+                  <select class="select"><option>Royal Mail</option><option>Evri</option><option>DPD</option><option>DHL</option></select>
+                  <input class="input-field" placeholder="Tracking number…">
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-primary">Dispatch</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">14 May</td>
+              <td>
+                <div style="font-weight:500;">Ravi Patel</div>
+                <div style="font-size:12px;color:var(--muted);">ravi.p@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+              <td>
+                <div class="dispatch-inline">
+                  <select class="select"><option>Royal Mail</option><option>Evri</option><option>DPD</option></select>
+                  <input class="input-field" placeholder="Tracking number…">
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-primary">Dispatch</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">13 May</td>
+              <td>
+                <div style="font-weight:500;">Daniel Okafor</div>
+                <div style="font-size:12px;color:var(--muted);">d.okafor@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-refill">Refill #3</span></td>
+              <td><span class="badge badge-pending">Pending</span></td>
+              <td>
+                <div class="dispatch-inline">
+                  <select class="select"><option>Royal Mail</option><option>Evri</option><option>DPD</option></select>
+                  <input class="input-field" placeholder="Tracking number…">
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-primary">Dispatch</button></td>
+            </tr>
+            <!-- Dispatched -->
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">13 May</td>
+              <td>
+                <div style="font-weight:500;">Marcus Thompson</div>
+                <div style="font-size:12px;color:var(--muted);">marcus@outlook.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td><span class="badge badge-refill">Refill #2</span></td>
+              <td><span class="badge badge-dispatch">Dispatched</span></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Royal Mail</span>
+                  <a class="td-mono" href="#">TT748291745GB</a>
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-secondary">Mark Delivered</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">12 May</td>
+              <td>
+                <div style="font-weight:500;">Ahmed Al-Farsi</div>
+                <div style="font-size:12px;color:var(--muted);">ahmed@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-dispatch">Dispatched</span></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Evri</span>
+                  <a class="td-mono" href="#">H8923746120EV</a>
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-secondary">Mark Delivered</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">11 May</td>
+              <td>
+                <div style="font-weight:500;">Ben Whitmore</div>
+                <div style="font-size:12px;color:var(--muted);">ben.w@hotmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-refill">Refill #5</span></td>
+              <td><span class="badge badge-dispatch">Dispatched</span></td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Royal Mail</span>
+                  <a class="td-mono" href="#">TT219847362GB</a>
+                </div>
+              </td>
+              <td><button class="btn btn-sm btn-secondary">Mark Delivered</button></td>
+            </tr>
+            <!-- Delivered -->
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">10 May</td>
+              <td>
+                <div style="font-weight:500;">Tom Bradley</div>
+                <div style="font-size:12px;color:var(--muted);">tombradley@icloud.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td><span class="badge badge-first">First Box</span></td>
+              <td><span class="badge badge-delivered">Delivered</span></td>
+              <td><span style="font-size:12px;color:var(--muted);">Delivered 12 May</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">09 May</td>
+              <td>
+                <div style="font-weight:500;">Liam Foster</div>
+                <div style="font-size:12px;color:var(--muted);">liamf@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td><span class="badge badge-refill">Refill #2</span></td>
+              <td><span class="badge badge-delivered">Delivered</span></td>
+              <td><span style="font-size:12px;color:var(--muted);">Delivered 11 May</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span>Page 1 of 7 · 165 orders</span>
+        <button class="btn btn-sm btn-secondary" disabled>Prev</button>
+        <button class="btn btn-sm btn-secondary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: STOCK ────────────────────────────── -->
+  <div id="stock" class="page">
+    <h1 class="page-title">Stock</h1>
+
+    <!-- Products -->
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="section-title">Products</div>
+      <div class="capacity-chip">Ground: 120 first orders · Ritual: 210 first orders</div>
+    </div>
+
+    <div class="card" style="padding:0; margin-bottom:28px;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th style="text-align:right;">Stock</th>
+              <th style="text-align:right;">Monthly Burn</th>
+              <th style="text-align:right;">Weeks Runway</th>
+              <th>Refill Cadence</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="prod-num">01</span></td>
+              <td style="font-weight:500;">Body Wash</td>
+              <td style="text-align:right;"><input class="inline-input" value="380"></td>
+              <td class="td-dim td-num" style="text-align:right;">142</td>
+              <td class="td-num" style="text-align:right; color:var(--warn);">10.7wk</td>
+              <td><span class="badge badge-warn-sm">Monthly</span></td>
+              <td><span class="badge badge-warn-sm">⚠ Warning</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">02</span></td>
+              <td style="font-weight:500;">Italy Towel Mitt</td>
+              <td style="text-align:right;"><input class="inline-input" value="520"></td>
+              <td class="td-dim td-num" style="text-align:right;">142</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">14.6wk</td>
+              <td><span class="badge badge-ok">Monthly</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">03</span></td>
+              <td style="font-weight:500;">Back Scrub Cloth</td>
+              <td style="text-align:right;"><input class="inline-input" value="490"></td>
+              <td class="td-dim td-num" style="text-align:right;">47</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">41.7wk</td>
+              <td><span class="badge badge-ok">Quarterly</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">04</span></td>
+              <td style="font-weight:500;">Scalp Massager</td>
+              <td style="text-align:right;"><input class="inline-input" value="610"></td>
+              <td class="td-dim td-num" style="text-align:right;">12</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">203wk</td>
+              <td><span class="badge badge-ok">6-Month</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">05</span></td>
+              <td style="font-weight:500;">Atlas Clay</td>
+              <td style="text-align:right;"><input class="inline-input" value="440"></td>
+              <td class="td-dim td-num" style="text-align:right;">142</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">12.4wk</td>
+              <td><span class="badge badge-ok">Monthly</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">06</span></td>
+              <td style="font-weight:500;">Argan Oil <span style="font-size:11px;color:var(--muted);">Ritual only</span></td>
+              <td style="text-align:right;"><input class="inline-input" value="290"></td>
+              <td class="td-dim td-num" style="text-align:right;">68</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">17.1wk</td>
+              <td><span class="badge badge-ok">Monthly</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">07</span></td>
+              <td style="font-weight:500;">Body Lotion</td>
+              <td style="text-align:right;"><input class="inline-input" value="215" style="border-color:rgba(239,68,68,0.4);"></td>
+              <td class="td-dim td-num" style="text-align:right;">142</td>
+              <td class="td-num" style="text-align:right; color:var(--crit);">6.1wk</td>
+              <td><span class="badge badge-crit-sm">Monthly</span></td>
+              <td><span class="badge badge-crit-sm">🔴 Critical</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">08</span></td>
+              <td style="font-weight:500;">Cleansing Cloth</td>
+              <td style="text-align:right;"><input class="inline-input" value="510"></td>
+              <td class="td-dim td-num" style="text-align:right;">142</td>
+              <td class="td-num" style="text-align:right; color:var(--ok);">14.4wk</td>
+              <td><span class="badge badge-ok">Monthly</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod-num">09</span></td>
+              <td style="font-weight:500;">Silicone Bowl <span style="font-size:11px;color:var(--muted);">Ritual only</span></td>
+              <td style="text-align:right;"><input class="inline-input" value="380"></td>
+              <td class="td-dim td-num" style="text-align:right;">—</td>
+              <td class="td-num" style="text-align:right; color:var(--dim);">—</td>
+              <td><span class="badge badge-other">First box only</span></td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-secondary btn-sm">Cancel</button>
+        <button class="btn btn-primary btn-sm">Save Stock Changes</button>
+      </div>
+    </div>
+
+    <!-- Packaging -->
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="section-title">Packaging</div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="text-align:right;">Stock</th>
+              <th>Used For</th>
+              <th style="text-align:right;">Monthly Need</th>
+              <th style="text-align:right;">Weeks Runway</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500;">Shipping Box</td>
+              <td style="text-align:right;"><input class="inline-input" value="480"></td>
+              <td class="td-dim">All orders</td>
+              <td class="td-dim td-num" style="text-align:right;">189/mo</td>
+              <td class="td-num" style="text-align:right; color:var(--warn);">10.2wk</td>
+              <td><span class="badge badge-warn-sm">⚠ Warning</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;">Fitment: Ground First</td>
+              <td style="text-align:right;"><input class="inline-input" value="340"></td>
+              <td class="td-dim">Ground first box</td>
+              <td class="td-dim td-num" style="text-align:right;">—</td>
+              <td class="td-num" style="text-align:right; color:var(--dim);">—</td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;">Fitment: Ritual First</td>
+              <td style="text-align:right;"><input class="inline-input" value="180"></td>
+              <td class="td-dim">Ritual first box</td>
+              <td class="td-dim td-num" style="text-align:right;">—</td>
+              <td class="td-num" style="text-align:right; color:var(--dim);">—</td>
+              <td><span class="badge badge-ok">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;">Fitment: Ground Refill</td>
+              <td style="text-align:right;"><input class="inline-input" value="290"></td>
+              <td class="td-dim">Ground monthly refills</td>
+              <td class="td-dim td-num" style="text-align:right;">121/mo</td>
+              <td class="td-num" style="text-align:right; color:var(--warn);">9.6wk</td>
+              <td><span class="badge badge-warn-sm">⚠ Warning</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;">Fitment: Ritual Refill</td>
+              <td style="text-align:right;"><input class="inline-input" value="94" style="border-color:rgba(239,68,68,0.4);"></td>
+              <td class="td-dim">Ritual monthly refills</td>
+              <td class="td-dim td-num" style="text-align:right;">68/mo</td>
+              <td class="td-num" style="text-align:right; color:var(--crit);">5.5wk</td>
+              <td><span class="badge badge-crit-sm">🔴 Critical</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:12px 16px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+        <div class="packaging-note" style="border:none; padding:0;">No cost tracking here — log restocking costs in Bookkeeping</div>
+        <button class="btn btn-primary btn-sm">Save Packaging Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: BOOKKEEPING ──────────────────────── -->
+  <div id="bookkeeping" class="page">
+    <h1 class="page-title">Bookkeeping</h1>
+
+    <div class="add-entry-bar">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="input-field" value="2026-05-14" style="min-width:unset;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="select">
+          <option>Inventory</option>
+          <option>Packaging</option>
+          <option>Marketing</option>
+          <option>Compliance</option>
+          <option>Operations</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label class="form-label">Description</label>
+        <input class="input-field" placeholder="e.g. Body Wash restock × 500 units" style="width:100%;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount</label>
+        <div class="amount-wrap">
+          <span class="amount-prefix">£</span>
+          <input class="input-field" placeholder="0.00">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-bottom:1px;">Add Entry</button>
+    </div>
+
+    <div class="bk-tiles">
+      <div class="bk-tile">
+        <div class="bk-tile-value">£4,280</div>
+        <div class="bk-tile-label">Inventory</div>
+      </div>
+      <div class="bk-tile">
+        <div class="bk-tile-value">£1,140</div>
+        <div class="bk-tile-label">Packaging</div>
+      </div>
+      <div class="bk-tile">
+        <div class="bk-tile-value">£3,600</div>
+        <div class="bk-tile-label">Marketing</div>
+      </div>
+      <div class="bk-tile">
+        <div class="bk-tile-value">£850</div>
+        <div class="bk-tile-label">Compliance</div>
+      </div>
+      <div class="bk-tile">
+        <div class="bk-tile-value">£420</div>
+        <div class="bk-tile-label">Operations</div>
+      </div>
+      <div class="bk-tile">
+        <div class="bk-tile-value">£180</div>
+        <div class="bk-tile-label">Other</div>
+      </div>
+    </div>
+
+    <div class="bk-total">
+      <div class="bk-total-label">All-Time Spend</div>
+      <div class="bk-total-value">£10,470</div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th style="text-align:right;">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">12 May 2026</td>
+              <td><span class="badge badge-inv">Inventory</span></td>
+              <td>Body Wash restock × 500 units</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£1,600</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">10 May 2026</td>
+              <td><span class="badge badge-mkt">Marketing</span></td>
+              <td>Instagram ads — May</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£800</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">08 May 2026</td>
+              <td><span class="badge badge-pkg">Packaging</span></td>
+              <td>Shipping boxes × 500</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£420</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">05 May 2026</td>
+              <td><span class="badge badge-inv">Inventory</span></td>
+              <td>Atlas Clay restock × 200 units</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£700</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">02 May 2026</td>
+              <td><span class="badge badge-comp">Compliance</span></td>
+              <td>CPSR assessment — 4 products</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£850</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">28 Apr 2026</td>
+              <td><span class="badge badge-mkt">Marketing</span></td>
+              <td>Instagram ads — April</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£800</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">25 Apr 2026</td>
+              <td><span class="badge badge-pkg">Packaging</span></td>
+              <td>Ritual first fitments × 200</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£320</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">20 Apr 2026</td>
+              <td><span class="badge badge-inv">Inventory</span></td>
+              <td>Body Lotion restock × 300 units</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£1,320</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">18 Apr 2026</td>
+              <td><span class="badge badge-ops">Operations</span></td>
+              <td>Royal Mail account fee</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£120</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+            <tr>
+              <td class="td-dim" style="white-space:nowrap;">15 Apr 2026</td>
+              <td><span class="badge badge-mkt">Marketing</span></td>
+              <td>Instagram ads — April top-up</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£600</td>
+              <td><button class="btn-ghost btn">✕</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: SUBSCRIBERS ──────────────────────── -->
+  <div id="subscribers" class="page">
+    <h1 class="page-title">Subscribers</h1>
+
+    <div class="sub-stats">
+      <div class="stat-tile">
+        <div class="stat-value">189</div>
+        <div class="stat-label">Active Subscribers</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">121</div>
+        <div class="stat-label">Ground <span style="font-size:12px;color:var(--muted);">64%</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">68</div>
+        <div class="stat-label">Ritual <span style="font-size:12px;color:var(--muted);">36%</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">3.2</div>
+        <div class="stat-label">Avg Months Active</div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="section-title">This Month's Refills</div>
+      <div style="font-size:13px; color:var(--muted);">May 2026 · 189 boxes to ship</div>
+    </div>
+
+    <div class="card" style="padding:0; margin-bottom:28px;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Kit</th>
+              <th>Box #</th>
+              <th>Ships</th>
+              <th>Contents</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style="font-weight:500;">James Harrison</div>
+                <div style="font-size:12px;color:var(--muted);">james@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#4</td>
+              <td class="td-dim">15 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill">Argan Oil</span>
+                  <span class="pill extra">+ Back Scrub (Q)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Marcus Thompson</div>
+                <div style="font-size:12px;color:var(--muted);">marcus@outlook.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#2</td>
+              <td class="td-dim">15 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Sarah Beckett</div>
+                <div style="font-size:12px;color:var(--muted);">s.beckett@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#7</td>
+              <td class="td-dim">16 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill">Argan Oil</span>
+                  <span class="pill special">+ Scalp Massager (6mo)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Liam Foster</div>
+                <div style="font-size:12px;color:var(--muted);">liamf@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#3</td>
+              <td class="td-dim">16 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill extra">+ Back Scrub (Q)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Ahmed Al-Farsi</div>
+                <div style="font-size:12px;color:var(--muted);">ahmed@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#2</td>
+              <td class="td-dim">17 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Daniel Okafor</div>
+                <div style="font-size:12px;color:var(--muted);">d.okafor@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#5</td>
+              <td class="td-dim">17 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill">Argan Oil</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Ravi Patel</div>
+                <div style="font-size:12px;color:var(--muted);">ravi.p@gmail.com</div>
+              </td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#2</td>
+              <td class="td-dim">18 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill">Argan Oil</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;">Tom Bradley</div>
+                <div style="font-size:12px;color:var(--muted);">tombradley@icloud.com</div>
+              </td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#6</td>
+              <td class="td-dim">19 May</td>
+              <td>
+                <div class="content-pills">
+                  <span class="pill">Body Wash</span>
+                  <span class="pill">Body Lotion</span>
+                  <span class="pill">Atlas Clay</span>
+                  <span class="pill">Cleansing Cloth</span>
+                  <span class="pill">Italy Mitt</span>
+                  <span class="pill special">+ Scalp Massager (6mo)</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="section-title">Payment History</div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Kit</th>
+              <th>Box #</th>
+              <th style="text-align:right;">Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-dim">14 May 2026</td>
+              <td style="font-weight:500;">James Harrison</td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#4</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£48.00</td>
+              <td><span class="badge badge-ok">Paid</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">14 May 2026</td>
+              <td style="font-weight:500;">Ravi Patel</td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#2</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£48.00</td>
+              <td><span class="badge badge-ok">Paid</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">13 May 2026</td>
+              <td style="font-weight:500;">Marcus Thompson</td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#2</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£38.00</td>
+              <td><span class="badge badge-ok">Paid</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">12 May 2026</td>
+              <td style="font-weight:500;">Ben Whitmore</td>
+              <td><span class="badge badge-ritual">RITUAL</span></td>
+              <td class="td-dim">#5</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£48.00</td>
+              <td><span class="badge badge-warn-sm">Failed</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">11 May 2026</td>
+              <td style="font-weight:500;">Liam Foster</td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#3</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£38.00</td>
+              <td><span class="badge badge-ok">Paid</span></td>
+            </tr>
+            <tr>
+              <td class="td-dim">10 May 2026</td>
+              <td style="font-weight:500;">Tom Bradley</td>
+              <td><span class="badge badge-ground">GROUND</span></td>
+              <td class="td-dim">#6</td>
+              <td class="td-num" style="text-align:right; font-weight:500;">£38.00</td>
+              <td><span class="badge badge-ok">Paid</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function nav(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  document.getElementById(page).classList.add('active')
+  if (el) el.classList.add('active')
+}
+</script>
+</body>
+</html>

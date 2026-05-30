@@ -1,5 +1,11 @@
 project_id = "gvfptmjluxpngfjendbi"
 
+[functions.create-payment-intent]
+verify_jwt = false
+
+[functions.get-inventory-status]
+verify_jwt = false
+
 [functions.sendcloud-webhook]
 verify_jwt = false
 

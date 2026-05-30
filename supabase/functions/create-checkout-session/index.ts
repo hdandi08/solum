@@ -184,14 +184,6 @@ Deno.serve(async (req) => {
       product_data: { name: `SOLUM ${kit.name} — First Box · ships ${fmtDay(dispatch)}, arrives ${fmtDay(arrival)}` },
     });
 
-    // Recurring monthly price — name includes first charge date and refill schedule
-    const monthlyPrice = await stripe.prices.create({
-      currency: 'gbp',
-      unit_amount: kit.monthly_pence,
-      recurring: { interval: 'month' },
-      product_data: { name: `SOLUM ${kit.name} — Monthly Refill · first charged ${fmtDate(firstCharge)}, ships ${fmtDate(refillShip)}, arrives ${fmtDate(refillArrive)}` },
-    });
-
     // Build add-on line items (one-time, charged with first box)
     const addonLineItems: { price: string; quantity: number }[] = [];
     for (const addonKey of selectedAddons) {
@@ -207,22 +199,21 @@ Deno.serve(async (req) => {
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
-      mode: 'subscription',
+      mode: 'payment',
+      payment_intent_data: {
+        setup_future_usage: 'off_session',
+        metadata: { kit_id },
+      },
       line_items: [
-        { price: firstBoxPrice.id,  quantity: 1 },
-        { price: monthlyPrice.id,   quantity: 1 },
+        { price: firstBoxPrice.id, quantity: 1 },
         ...addonLineItems,
       ],
-      subscription_data: {
-        trial_end: Math.floor(firstCharge.getTime() / 1000),
-        metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
-      },
       custom_text: {
         submit: {
-          message: `Your first box ships ${fmtDay(dispatch)} and arrives by ${fmtDay(arrival)} — no action needed. Your first refill is charged on ${fmtDate(firstCharge)} (30 days from today), ships ${fmtDate(refillShip)}, arrives by ${fmtDate(refillArrive)}. Every 30 days after that.`,
+          message: `First box ships ${fmtDay(dispatch)}, arrives ${fmtDay(arrival)}. Your £${(kit.monthly_pence / 100).toFixed(0)}/month subscription starts ${fmtDate(firstCharge)} — cancel any time.`,
         },
         after_submit: {
-          message: `Cancel any time from your account — no questions asked.`,
+          message: `Refills dispatched every 30 days from ${fmtDate(refillShip)}. No contracts — cancel from your account.`,
         },
       },
       phone_number_collection: { enabled: true },
@@ -231,7 +222,16 @@ Deno.serve(async (req) => {
       },
       success_url,
       cancel_url,
-      metadata: { kit_id, first_name, last_name, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
+      metadata: {
+        kit_id,
+        first_name,
+        last_name,
+        birth_year:       birth_year?.toString(),
+        birth_month:      birth_month?.toString(),
+        first_charge_ts:  String(Math.floor(firstCharge.getTime() / 1000)),
+        monthly_pence:    String(kit.monthly_pence),
+        refill_ship_date: fmtDate(refillShip),
+      },
     });
 
     // Capture lead immediately — before the customer reaches Stripe.
