@@ -20,7 +20,7 @@ const KIT_CONFIG = {
   },
 };
 
-const PREMIUM_SOURCES = ['gift', 'tiktok'];
+const PREMIUM_SOURCES = ['gift', 'tiktok_shop'];
 
 const CSS = `
 .buy-page{min-height:100vh;background:var(--black,#08090B);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:80px 24px 60px;color:var(--bone,#F0ECE2);}

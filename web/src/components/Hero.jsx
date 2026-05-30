@@ -77,7 +77,7 @@ export default function Hero() {
               </span>
             </div>
             <div className="hero-actions">
-              <a href="#kits" className="btn-primary" onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}>{ctaLabel}</a>
+              <a href={IS_FIRST_BATCH ? '/buy' : '#kits'} className="btn-primary" onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}>{IS_FIRST_BATCH ? 'Get Your Kit' : ctaLabel}</a>
               <a href="#truth" className="btn-ghost">Why It Matters</a>
             </div>
           </div>
