@@ -61,7 +61,9 @@ const CSS = `
 
 export default function BuyPage() {
   const [params] = useSearchParams();
-  const source = params.get('source') ?? 'first_batch';
+  // Normalise URL param: ?source=tiktok → 'tiktok_shop' (canonical DB value)
+  const rawSource = params.get('source');
+  const source = rawSource === 'tiktok' ? 'tiktok_shop' : (rawSource ?? 'first_batch');
   const preselect = params.get('kit');
 
   const isPremium = PREMIUM_SOURCES.includes(source);
