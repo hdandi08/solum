@@ -15,6 +15,8 @@ import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import ABDevPanel from '../components/ABDevPanel.jsx';
 
+const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
+
 export default function FullSite() {
   useEffect(() => {
     const hash = window.location.hash;
@@ -54,8 +56,8 @@ export default function FullSite() {
       <KitComparison />
       <ProductLineup />
       <RitualSection />
-      <SubscriptionSection />
-      <LoyaltySection />
+      {!IS_FIRST_BATCH && <SubscriptionSection />}
+      {!IS_FIRST_BATCH && <LoyaltySection />}
       <ProvenanceSection />
       <SocialProof />
       <FAQ />
