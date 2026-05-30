@@ -1012,10 +1012,420 @@ Save to `artefacts/solum-5year-projections-v2.html` and commit.
 
 ---
 
+## Task 10: E2E Tests — `/buy` One-Time Purchase Flow
+
+**Files:**
+- Delete: `web/e2e/` (all existing tests — written for old subscription flow)
+- Create: `web/e2e/buy-flow.spec.ts`
+- Modify: `web/playwright.config.ts` (update baseURL and test dir if needed)
+
+**Context:** The existing Playwright e2e tests were written for the subscription checkout flow and are now stale. We're replacing them with tests that cover the `/buy` one-time purchase path end to end.
+
+**Test environment:** Dev Supabase (`rodvvmfzkyjsqbufkjbc`) with test Stripe keys. `VITE_LAUNCH_MODE=live`, `VITE_SITE_MODE=first_batch`. Stripe test card: `4242 4242 4242 4242`, exp `12/29`, CVC `123`, postcode `SW1A 1AA`.
+
+- [ ] **Step 1: Remove old tests**
+
+```bash
+rm -rf web/e2e/
+```
+
+- [ ] **Step 2: Verify playwright config**
+
+Read `web/playwright.config.ts`. Confirm `testDir` points to `./e2e`, `baseURL` is `http://localhost:5173`, and `webServer` runs `npm run dev`. If not, update accordingly.
+
+- [ ] **Step 3: Create `web/e2e/buy-flow.spec.ts`**
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+const GROUND_PRICE = '£65';
+const RITUAL_PRICE = '£85';
+const GROUND_PREMIUM = '£75';
+const RITUAL_PREMIUM = '£95';
+
+const TEST_USER = {
+  firstName: 'Test',
+  lastName:  'Buyer',
+  email:     `e2e+${Date.now()}@bysolum.com`,
+  phone:     '07700900000',
+  line1:     '10 Downing Street',
+  city:      'London',
+  postcode:  'SW1A 2AA',
+};
+
+const CARD = {
+  number:  '4242 4242 4242 4242',
+  expiry:  '12 / 29',
+  cvc:     '123',
+};
+
+async function fillForm(page, user = TEST_USER, kit = 'ground') {
+  await page.selectOption('[data-testid="kit-select"]', kit);
+  await page.fill('[name="first_name"]', user.firstName);
+  await page.fill('[name="last_name"]',  user.lastName);
+  await page.fill('[name="email"]',      user.email);
+  await page.fill('[name="phone"]',      user.phone);
+  await page.fill('[name="line1"]',      user.line1);
+  await page.fill('[name="city"]',       user.city);
+  await page.fill('[name="postcode"]',   user.postcode);
+}
+
+async function fillStripeCard(page) {
+  const frame = page.frameLocator('iframe[name*="stripe"]').first();
+  await frame.locator('[placeholder="Card number"]').fill(CARD.number);
+  await frame.locator('[placeholder="MM / YY"]').fill(CARD.expiry);
+  await frame.locator('[placeholder="CVC"]').fill(CARD.cvc);
+}
+
+// ─── 1. Kit selector shows correct prices ───────────────────────────────────
+
+test('shows correct prices for first_batch source', async ({ page }) => {
+  await page.goto('/buy');
+  await expect(page.getByText(GROUND_PRICE)).toBeVisible();
+  await page.selectOption('[data-testid="kit-select"]', 'ritual');
+  await expect(page.getByText(RITUAL_PRICE)).toBeVisible();
+});
+
+test('shows premium prices for tiktok source', async ({ page }) => {
+  await page.goto('/buy?source=tiktok');
+  await expect(page.getByText(GROUND_PREMIUM)).toBeVisible();
+  await page.selectOption('[data-testid="kit-select"]', 'ritual');
+  await expect(page.getByText(RITUAL_PREMIUM)).toBeVisible();
+});
+
+test('shows premium prices for gift source', async ({ page }) => {
+  await page.goto('/buy?source=gift');
+  await expect(page.getByText(GROUND_PREMIUM)).toBeVisible();
+});
+
+// ─── 2. Stock counter visibility ────────────────────────────────────────────
+
+test('shows stock counter for first_batch', async ({ page }) => {
+  await page.goto('/buy');
+  await expect(page.locator('[data-testid="stock-count"]')).toBeVisible();
+});
+
+test('hides stock counter for gift source', async ({ page }) => {
+  await page.goto('/buy?source=gift');
+  await expect(page.locator('[data-testid="stock-count"]')).not.toBeVisible();
+});
+
+test('hides stock counter for tiktok source', async ({ page }) => {
+  await page.goto('/buy?source=tiktok');
+  await expect(page.locator('[data-testid="stock-count"]')).not.toBeVisible();
+});
+
+// ─── 3. Form validation ──────────────────────────────────────────────────────
+
+test('blocks submit when phone is empty', async ({ page }) => {
+  await page.goto('/buy');
+  await fillForm(page, { ...TEST_USER, phone: '' });
+  await page.click('[data-testid="continue-btn"]');
+  await expect(page.getByText(/phone number is required/i)).toBeVisible();
+  // Still on stage 1 — PaymentElement not mounted
+  await expect(page.locator('[data-testid="payment-element"]')).not.toBeVisible();
+});
+
+test('blocks submit when postcode is empty', async ({ page }) => {
+  await page.goto('/buy');
+  await fillForm(page, { ...TEST_USER, postcode: '' });
+  await page.click('[data-testid="continue-btn"]');
+  await expect(page.getByText(/postcode/i)).toBeVisible();
+});
+
+test('blocks submit when email is invalid', async ({ page }) => {
+  await page.goto('/buy');
+  await fillForm(page, { ...TEST_USER, email: 'notanemail' });
+  await page.click('[data-testid="continue-btn"]');
+  // HTML5 email validation or custom error
+  const emailInput = page.locator('[name="email"]');
+  const validity = await emailInput.evaluate((el: HTMLInputElement) => el.validity.valid);
+  expect(validity).toBe(false);
+});
+
+// ─── 4. Happy path — full purchase ──────────────────────────────────────────
+
+test('completes one-time purchase and lands on success page', async ({ page }) => {
+  await page.goto('/buy?kit=ground');
+  await fillForm(page);
+  await page.click('[data-testid="continue-btn"]');
+
+  // Stage 2 — PaymentElement should appear
+  await expect(page.locator('[data-testid="payment-element"]')).toBeVisible({ timeout: 10_000 });
+
+  // Fill Stripe iframe
+  await fillStripeCard(page);
+
+  await page.click('[data-testid="pay-btn"]');
+
+  // Should redirect to /success with one-time params
+  await page.waitForURL(/\/success/, { timeout: 30_000 });
+  await expect(page).toHaveURL(/source=first_batch/);
+  await expect(page.getByText(/order confirmed/i)).toBeVisible();
+});
+
+// ─── 5. Success page — one-time copy ────────────────────────────────────────
+
+test('success page shows one-time copy, no subscription messaging', async ({ page }) => {
+  await page.goto('/success?kit=ground&source=first_batch&ref=pi_test_12345678');
+  await expect(page.getByText(/we.ll check in at two weeks/i)).toBeVisible();
+  await expect(page.getByText(/manage subscription/i)).not.toBeVisible();
+  await expect(page.getByText(/monthly refills/i)).not.toBeVisible();
+});
+
+test('success page shows subscription copy for subscription source', async ({ page }) => {
+  await page.goto('/success?kit=ground&ref=pi_test_12345678');
+  await expect(page.getByText(/monthly refills arrive/i)).toBeVisible();
+  await expect(page.getByText(/manage subscription/i)).toBeVisible();
+});
+
+test('success page shows order reference from ref param', async ({ page }) => {
+  await page.goto('/success?kit=ground&source=first_batch&ref=pi_test_ABCDEFGH');
+  await expect(page.getByText(/#ABCDEFGH/i)).toBeVisible();
+});
+```
+
+- [ ] **Step 4: Add `data-testid` attributes to BuyPage**
+
+Open `web/src/pages/BuyPage.jsx`. Add `data-testid` attributes to the elements the tests reference:
+
+- Kit `<select>`: add `data-testid="kit-select"`
+- Stock count element (`.by-stock-count` or similar): add `data-testid="stock-count"`
+- Continue button: add `data-testid="continue-btn"`
+- Payment element wrapper: add `data-testid="payment-element"`
+- Pay button: add `data-testid="pay-btn"`
+
+- [ ] **Step 5: Run tests locally**
+
+```bash
+cd web && npx playwright test e2e/buy-flow.spec.ts --headed
+```
+
+Expected: all tests pass. Fix any failures before proceeding.
+
+- [ ] **Step 6: Run headless**
+
+```bash
+cd web && npx playwright test e2e/buy-flow.spec.ts
+```
+
+Expected: same pass rate headless.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add web/e2e/ web/src/pages/BuyPage.jsx web/playwright.config.ts
+git commit -m "test: replace e2e tests with /buy one-time purchase flow"
+```
+
+---
+
+## Task 11: Father's Day Landing Page (`/fathers-day`)
+
+**Files:**
+- Create: `web/src/pages/FathersDayPage.jsx`
+- Modify: `web/src/App.jsx` (add route)
+
+**Context:** Father's Day ads will carry Father's Day-specific messaging. Without a dedicated landing page, these ads land on the homepage and the messaging mismatch kills conversion. This page needs to continue the Father's Day frame all the way to the `/buy?source=gift` CTA.
+
+Father's Day 2026 (UK): **21 June 2026**. This page is a seasonal ad landing page — not a permanent nav item.
+
+**Design:** Matches SOLUM aesthetic (dark, Bebas Neue, CSS variables). No nav bar. Eyebrow says "Father's Day Gift". Heading is large, emotional, Father's-Day-specific. Below the fold: kit options with prices, product list from the RITUAL kit (positioned as the gift pick), CTA goes to `/buy?source=gift&kit=ritual`.
+
+- [ ] **Step 1: Create `web/src/pages/FathersDayPage.jsx`**
+
+```jsx
+import { Link } from 'react-router-dom';
+import { KITS, PRODUCTS } from '../data/kits.js';
+
+const ritual = KITS.find(k => k.id === 'ritual');
+const ground = KITS.find(k => k.id === 'ground');
+
+const CSS = `
+.fd-page{min-height:100vh;background:var(--black);color:var(--bone);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;}
+.fd-hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;overflow:hidden;}
+.fd-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(46,109,164,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.04) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;}
+.fd-glow{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:900px;height:700px;background:radial-gradient(ellipse,rgba(46,109,164,0.09) 0%,transparent 70%);pointer-events:none;}
+.fd-inner{position:relative;z-index:1;max-width:700px;width:100%;}
+.fd-eyebrow{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
+.fd-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);letter-spacing:.04em;line-height:.9;color:var(--bone);margin-bottom:32px;}
+.fd-heading span{color:var(--blit);}
+.fd-subhead{font-size:18px;font-weight:300;color:var(--mist);line-height:1.6;max-width:520px;margin:0 auto 48px;}
+.fd-cta-primary{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;background:var(--bone);color:var(--black);padding:18px 48px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;margin-right:16px;}
+.fd-cta-primary:hover{background:#fff;transform:translateY(-2px);}
+.fd-cta-ghost{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s;display:inline-block;}
+.fd-cta-ghost:hover{color:var(--bone);}
+.fd-trust{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:48px;}
+.fd-trust-item{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);display:flex;align-items:center;gap:8px;}
+.fd-trust-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);}
+
+.fd-kits{padding:80px 24px;max-width:900px;margin:0 auto;}
+.fd-section-label{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:40px;text-align:center;}
+.fd-kit-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.fd-kit-card{border:1px solid var(--lineb);padding:32px;background:var(--char);position:relative;cursor:pointer;transition:border-color .2s;}
+.fd-kit-card.featured{border-color:var(--blue);}
+.fd-kit-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--blue);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--black);padding:4px 16px;font-weight:600;white-space:nowrap;}
+.fd-kit-name{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.1em;color:var(--bone);margin-bottom:8px;}
+.fd-kit-price{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue);letter-spacing:.05em;margin-bottom:16px;}
+.fd-kit-desc{font-size:14px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:24px;}
+.fd-kit-link{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;background:var(--blue);color:var(--black);padding:12px 28px;text-decoration:none;display:inline-block;transition:background .2s;}
+.fd-kit-link:hover{background:var(--blit);}
+.fd-kit-card.featured .fd-kit-link{background:var(--bone);color:var(--black);}
+.fd-kit-card.featured .fd-kit-link:hover{background:#fff;}
+
+.fd-products{padding:0 24px 80px;max-width:720px;margin:0 auto;}
+.fd-prod-label{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:32px;text-align:center;}
+.fd-prod-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--lineb);}
+.fd-prod-item{display:flex;align-items:center;gap:20px;padding:20px 24px;border-bottom:1px solid var(--line);}
+.fd-prod-item:last-child{border-bottom:none;}
+.fd-prod-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--blue);width:32px;flex-shrink:0;text-align:center;}
+.fd-prod-name{font-size:15px;color:var(--bone);font-weight:500;}
+.fd-prod-origin{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin-top:2px;}
+
+.fd-bottom{padding:60px 24px;text-align:center;border-top:1px solid var(--line);}
+.fd-bottom-copy{font-size:14px;color:var(--stone);font-weight:300;margin-bottom:24px;}
+
+@media(max-width:640px){
+  .fd-kit-cards{grid-template-columns:1fr;}
+  .fd-kit-card.featured{margin-top:12px;}
+  .fd-cta-primary{display:block;margin:0 0 16px;}
+  .fd-cta-ghost{display:block;}
+}
+`;
+
+const RITUAL_PRODUCTS = [
+  { num: '01', name: 'Amino Acid Body Wash 250ml',  origin: 'Made in UK' },
+  { num: '02', name: 'Exfoliating Mitt',            origin: 'Korean Bathhouse Tradition' },
+  { num: '03', name: 'Back Scrub Cloth 70cm',       origin: 'Korean Bathhouse Tradition' },
+  { num: '04', name: 'Silicone Scalp Massager',     origin: 'Made in Republic of Korea' },
+  { num: '05', name: 'Rhassoul Clay Body Mask 200g',origin: 'Made in Morocco' },
+  { num: '06', name: 'Organic Argan Body Oil 50ml', origin: 'Made in Morocco' },
+  { num: '07', name: 'Fast-Absorb Body Lotion 400ml',origin: 'Made in UK' },
+];
+
+export default function FathersDayPage() {
+  return (
+    <>
+      <style>{CSS}</style>
+      <div className="fd-page">
+
+        {/* Hero */}
+        <div className="fd-hero">
+          <div className="fd-glow" />
+          <div className="fd-inner">
+            <div className="fd-eyebrow">Father's Day Gift · 21 June</div>
+            <h1 className="fd-heading">Give Him<br /><span>A Real</span><br />Routine.</h1>
+            <p className="fd-subhead">
+              Most men shower every day and still have rough skin, a neglected back, and a scalp they've never properly cleaned. SOLUM fixes that. A complete body care system — tools and consumables — built for a man who's never had one before.
+            </p>
+            <a href="/buy?source=gift&kit=ritual" className="fd-cta-primary">Get the Ritual Kit — £95 →</a>
+            <a href="/buy?source=gift&kit=ground" className="fd-cta-ghost">GROUND Kit — £75</a>
+            <div className="fd-trust">
+              <span className="fd-trust-item"><span className="fd-trust-dot" />Ships Thursday or Monday</span>
+              <span className="fd-trust-item"><span className="fd-trust-dot" />UK delivery · Royal Mail Tracked</span>
+              <span className="fd-trust-item"><span className="fd-trust-dot" />One-time · No subscription</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Kit selection */}
+        <div className="fd-kits">
+          <div className="fd-section-label">Choose the right kit</div>
+          <div className="fd-kit-cards">
+            <div className="fd-kit-card">
+              <div className="fd-kit-name">GROUND</div>
+              <div className="fd-kit-price">£75</div>
+              <div className="fd-kit-desc">
+                The daily system. Body wash, exfoliating mitt, back scrub cloth, scalp massager, body lotion. Everything he needs to actually clean his body — not just rinse it.
+              </div>
+              <a href="/buy?source=gift&kit=ground" className="fd-kit-link">Buy GROUND →</a>
+            </div>
+            <div className="fd-kit-card featured">
+              <div className="fd-kit-badge">Most Popular Gift</div>
+              <div className="fd-kit-name">RITUAL</div>
+              <div className="fd-kit-price">£95</div>
+              <div className="fd-kit-desc">
+                Everything in GROUND, plus the Rhassoul Clay Mask and Argan Body Oil. The full 10-minute daily + 22-minute weekly system. Head to toe.
+              </div>
+              <a href="/buy?source=gift&kit=ritual" className="fd-kit-link">Buy RITUAL →</a>
+            </div>
+          </div>
+        </div>
+
+        {/* What's in the RITUAL Kit */}
+        <div className="fd-products">
+          <div className="fd-prod-label">What's inside the RITUAL Kit</div>
+          <div className="fd-prod-list">
+            {RITUAL_PRODUCTS.map(p => (
+              <div className="fd-prod-item" key={p.num}>
+                <span className="fd-prod-num">{p.num}</span>
+                <div>
+                  <div className="fd-prod-name">{p.name}</div>
+                  <div className="fd-prod-origin">{p.origin}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="fd-bottom">
+          <p className="fd-bottom-copy">
+            Arrives before Father's Day when ordered by Sunday 15 June. Tracked Royal Mail delivery.
+          </p>
+          <a href="/buy?source=gift&kit=ritual" className="fd-cta-primary">Gift the RITUAL Kit — £95 →</a>
+        </div>
+
+      </div>
+    </>
+  );
+}
+```
+
+- [ ] **Step 2: Add route to `App.jsx`**
+
+Open `web/src/App.jsx`. Add the import:
+
+```jsx
+import FathersDayPage from './pages/FathersDayPage.jsx';
+```
+
+Add the route (alongside `/buy`, outside any `IS_LIVE` gate):
+
+```jsx
+<Route path="/fathers-day" element={<FathersDayPage />} />
+```
+
+- [ ] **Step 3: Verify locally**
+
+Run `npm run dev`. Navigate to `http://localhost:5173/fathers-day`. Confirm:
+- Page renders with correct dark SOLUM aesthetic
+- RITUAL Kit card has "Most Popular Gift" badge
+- Both kit CTAs link to `/buy?source=gift&kit=<kit>`
+- Mobile layout stacks to single column correctly
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add web/src/pages/FathersDayPage.jsx web/src/App.jsx
+git commit -m "feat: fathers day landing page — /fathers-day route for gift ad conversion"
+```
+
+- [ ] **Step 5: Deploy**
+
+Merge dev → master and push. Amplify will pick up automatically. Verify `https://bysolum.co.uk/fathers-day` is live before using in ads.
+
+**Ad URL to use:** `https://bysolum.co.uk/fathers-day`
+
+---
+
 ## Self-Review Notes
 
 - `source` in migration uses check constraint to enumerate valid values — new values can be added via migration if needed.
 - `handleOneTimeOrder` in webhook is fail-fast but inventory deduction errors are swallowed (same pattern as existing `deductInventory` wrapper) to avoid blocking order processing.
 - `/buy` waitlist fallback (both sold out) uses a mailto link — simple, no new infra needed.
 - `VITE_SITE_MODE` env var approach means flipping to subscription mode at Phase 2 is a single Amplify env var change + redeploy. No code change required.
+- Task 10 (e2e) requires `data-testid` attributes added to BuyPage — these are not present in the current implementation and must be added as part of the task.
+- Task 11 (Father's Day) uses hardcoded product list rather than importing from `kits.js` because the RITUAL-specific product names and origins aren't structured that way in the data file — simpler to inline.
+- Father's Day order cutoff copy ("order by Sunday 15 June") is hardcoded — update if launch timing changes.
 - Gift fields (recipient name/email/message) are not in this plan — they require the `gift_orders` table (separate spec). `/buy?source=gift` captures the purchase and tags the order; the full gift journey is a follow-on task.
