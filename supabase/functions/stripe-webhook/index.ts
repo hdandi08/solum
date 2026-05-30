@@ -185,11 +185,14 @@ async function handleOneTimeOrder(
 
   if (!customer) throw new Error(`one_time_customer_upsert_failed: ${customerErr?.message}`);
 
+  const paymentIntentId = session.payment_intent as string;
+  if (!paymentIntentId) throw new Error('one_time_order_missing_payment_intent');
+
   // Idempotency: skip if this payment_intent was already processed
   const { data: existingOrder } = await supabase
     .from('orders')
     .select('id')
-    .eq('stripe_payment_id', session.payment_intent as string)
+    .eq('stripe_payment_id', paymentIntentId)
     .eq('order_type', 'first_box')
     .maybeSingle();
   if (existingOrder) return;
@@ -198,7 +201,7 @@ async function handleOneTimeOrder(
   const { data: order, error: orderErr } = await supabase.from('orders').insert({
     customer_id: customer.id,
     subscription_id: null,
-    stripe_payment_id: session.payment_intent as string,
+    stripe_payment_id: paymentIntentId,
     kit_id,
     order_type: 'first_box',
     box_number: null,
