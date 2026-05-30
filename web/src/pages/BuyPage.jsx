@@ -279,6 +279,7 @@ export default function BuyPage() {
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
     const emailVal = form.email.trim();
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { setError('Please enter a valid email address.'); return; }
+    if (!form.phone.trim()) { setError('Phone number is required for delivery updates.'); return; }
     if (!form.line1.trim()) { setError('Delivery address is required.'); return; }
     if (!form.city.trim()) { setError('City is required.'); return; }
     if (!form.postcode.trim()) { setError('Postcode is required.'); return; }
@@ -497,8 +498,8 @@ export default function BuyPage() {
                 </div>
 
                 <div className="by-field">
-                  <label className="by-label">Phone <span style={{ fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-                  <input className="by-input" type="tel" placeholder="+44 7700 900000" value={form.phone} onChange={set('phone')} />
+                  <label className="by-label">Phone <span style={{ fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>— for delivery updates</span></label>
+                  <input className="by-input" type="tel" required placeholder="+44 7700 900000" value={form.phone} onChange={set('phone')} />
                 </div>
 
                 <div className="by-section-divider">Delivery Address</div>
