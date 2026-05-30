@@ -115,7 +115,7 @@ export default function BuyPage() {
 
       const data = await res.json();
       if (!res.ok || !data.url) {
-        setError(data.error ?? 'Something went wrong. Please try again.');
+        setError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
       }
       window.location.href = data.url;

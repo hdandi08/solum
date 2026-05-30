@@ -45,6 +45,19 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Server-side stock check — prevent payment for a sold-out kit
+    const { data: inv } = await supabase
+      .from('kit_inventory')
+      .select('available_count')
+      .eq('kit_id', kit_id)
+      .maybeSingle();
+    if (inv !== null && inv.available_count <= 0) {
+      return new Response(
+        JSON.stringify({ error: 'sold_out', message: 'This kit is currently sold out.' }),
+        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     const isPremium = PREMIUM_SOURCES.includes(source ?? '');
     const amountPence = KIT_BASE_PENCE[kit_id!] + (isPremium ? 1000 : 0);
     const kitName = KIT_NAMES[kit_id!];
