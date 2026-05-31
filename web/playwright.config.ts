@@ -5,6 +5,10 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 8_000 },
 
+  // Runs once before all tests: seeds inventory, clears test data.
+  // Requires web/.env.test with SUPABASE_SERVICE_ROLE_KEY — see .env.test.example.
+  globalSetup: './e2e/global-setup.ts',
+
   // Retry once on CI so a transient network hiccup doesn't fail the run.
   // No retries locally — if a test is flaky you want to know immediately.
   retries: process.env.CI ? 1 : 0,

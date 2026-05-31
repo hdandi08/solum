@@ -185,7 +185,130 @@ test.describe('Checkout flow', () => {
   });
 });
 
-// ─── Group 5: Success page copy branches correctly by purchase type ───────────
+// ─── Group 5: Sold-out state ─────────────────────────────────────────────────
+//
+// When both kits have 0 stock, the form is replaced with a waitlist block.
+// We mock the inventory API response so this test doesn't depend on actual
+// DB state — it only tests the UI branching logic.
+
+test.describe('Sold-out state', () => {
+  test('shows waitlist block when all kits are out of stock', async ({ page }) => {
+    // Intercept the inventory check and return zero stock for both kits.
+    // This tests the sold-out UI without touching real inventory in the DB.
+    await page.route('**/functions/v1/get-inventory-status', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          kits: {
+            ground: { available: false, count: 0 },
+            ritual: { available: false, count: 0 },
+          },
+        }),
+      });
+    });
+
+    await page.goto('/buy');
+
+    await expect(page.getByText(/all 250.*claimed/i)).toBeVisible();
+    await expect(page.getByText(/join the waitlist/i)).toBeVisible();
+
+    // Checkout form must be gone — sold-out buyers can't proceed to payment
+    await expect(page.getByTestId('continue-btn')).not.toBeVisible();
+    await expect(page.getByTestId('kit-ground')).not.toBeVisible();
+  });
+
+  test('individual kit sold out: shows "Sold Out" tag and blocks selection', async ({ page }) => {
+    // Only ground is sold out — ritual is still available.
+    await page.route('**/functions/v1/get-inventory-status', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          kits: {
+            ground: { available: false, count: 0 },
+            ritual: { available: true, count: 50 },
+          },
+        }),
+      });
+    });
+
+    await page.goto('/buy');
+
+    // GROUND card should be visually marked sold out
+    const groundCard = page.getByTestId('kit-ground');
+    await expect(groundCard).toContainText(/sold out/i);
+    await expect(groundCard).toHaveClass(/soldout/);
+
+    // Form should still be visible (ritual is available)
+    await expect(page.getByTestId('continue-btn')).toBeVisible();
+  });
+});
+
+// ─── Group 6: Page copy and key UI strings ────────────────────────────────────
+//
+// Verifies that critical copy is present and correctly worded on each page.
+// These tests catch copy regressions — if someone accidentally changes "The
+// First 250." to "The First 250", or removes the "No subscription" line,
+// a test will catch it.
+
+test.describe('Page copy — /buy', () => {
+  test('first_batch page has correct heading and trust copy', async ({ page }) => {
+    await page.goto('/buy');
+    // Main heading
+    await expect(page.getByText('The First 250.')).toBeVisible();
+    // Eyebrow — batch framing
+    await expect(page.getByText(/250 kits/i)).toBeVisible();
+    // Subheading
+    await expect(page.getByText(/no subscription/i)).toBeVisible();
+    // Right panel trust block
+    await expect(page.getByText(/one-time purchase — no subscription/i)).toBeVisible();
+    await expect(page.getByText(/ritual card included/i)).toBeVisible();
+    await expect(page.getByText(/secured by stripe/i)).toBeVisible();
+  });
+
+  test('gift source page has gift-specific heading and copy', async ({ page }) => {
+    await page.goto('/buy?source=gift');
+    await expect(page.getByText('Get Your Kit.')).toBeVisible();
+    await expect(page.getByText(/send someone the full system/i)).toBeVisible();
+    // No "250 Kits" batch framing — that's for first_batch only
+    await expect(page.getByText(/250 kits/i)).not.toBeVisible();
+  });
+
+  test('back link goes to /#kits', async ({ page }) => {
+    await page.goto('/buy');
+    const backLink = page.getByText(/← back to kits/i);
+    await expect(backLink).toBeVisible();
+    await expect(backLink).toHaveAttribute('href', '/#kits');
+  });
+});
+
+test.describe('Page copy — /success', () => {
+  test('one-time success page has all four steps with correct copy', async ({ page }) => {
+    await page.goto('/success?kit=ritual&source=first_batch&ref=pi_test_ABCDEFGH');
+    await expect(page.getByText(/order confirmed/i)).toBeVisible();
+    await expect(page.getByText(/ritual begins/i)).toBeVisible();
+    // Step 1
+    await expect(page.getByText(/confirmation email/i)).toBeVisible();
+    // Step 2
+    await expect(page.getByText(/kit ships thursday or monday/i)).toBeVisible();
+    // Step 3 — one-time version
+    await expect(page.getByText(/we.ll check in at two weeks/i)).toBeVisible();
+    // Step 4
+    await expect(page.getByText(/ritual card is in the box/i)).toBeVisible();
+    // Ritual teaser section
+    await expect(page.getByText(/10 minutes every morning/i)).toBeVisible();
+    // Primary CTA
+    await expect(page.getByRole('link', { name: /see your ritual/i })).toBeVisible();
+  });
+
+  test('kit name from URL param appears on success page', async ({ page }) => {
+    await page.goto('/success?kit=ritual&source=first_batch&ref=pi_test_ABCDEFGH');
+    await expect(page.getByText(/ritual kit/i)).toBeVisible();
+  });
+});
+
+// ─── Group 7: Success page copy branches correctly by purchase type ───────────
 //
 // SuccessPage reads ?source from the URL and branches on it.
 // One-time buyers (first_batch / gift / tiktok_shop) must NOT see:
