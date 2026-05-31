@@ -52,9 +52,11 @@ const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
 
 export default function SuccessPage() {
   const [params] = useSearchParams();
-  const kitId    = params.get('kit');
-  const rawRef   = params.get('ref') ?? '';
-  const source   = params.get('source') ?? '';
+  const kitId       = params.get('kit');
+  const rawRef      = params.get('ref') ?? '';
+  const source      = params.get('source') ?? '';
+  const dispatchDate = params.get('dispatch') ?? '';
+  const arrivalDate  = params.get('arrival') ?? '';
   const kit      = KITS.find(k => k.id === kitId);
   const kitName  = kit?.name ?? 'SOLUM';
   const orderRef = rawRef ? rawRef.slice(-8).toUpperCase() : null;
@@ -93,8 +95,8 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">2</span>
               <div className="su-step-body">
-                <div className="su-step-title">Your kit ships Thursday or Monday</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched on the next available slot. You'll get a tracking email when it's on its way.</div>
+                <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</div>
+                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched.{arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
             {isOneTime ? (

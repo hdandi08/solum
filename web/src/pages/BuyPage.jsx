@@ -181,7 +181,9 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
       setLoading(false);
     } else if (paymentIntent?.status === 'succeeded') {
       const ref = paymentIntent.id ?? '';
-      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}`;
+      const dispatch = encodeURIComponent(payInfo.dispatch_date ?? '');
+      const arrival  = encodeURIComponent(payInfo.arrival_date ?? '');
+      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}&dispatch=${dispatch}&arrival=${arrival}`;
     } else {
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       setLoading(false);

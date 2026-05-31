@@ -63,6 +63,8 @@ async function sendConfirmationEmail(
   kitId: string,
   orderRef: string,
   isOneTime = false,
+  dispatchDate?: string,
+  arrivalDate?: string,
 ) {
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) { console.warn('RESEND_API_KEY not set — skipping email'); return; }
@@ -129,7 +131,7 @@ async function sendConfirmationEmail(
             <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Kit ships Thursday or Monday</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. Dispatched on the next available slot and arrives within 2 days. You'll get a tracking email when it's on its way.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             ${step3}
@@ -179,7 +181,7 @@ async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, dispatch_date, arrival_date } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -237,7 +239,7 @@ async function handleOneTimeOrderFromPI(
   // Send confirmation email
   if (email && order) {
     const orderRef = pi.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
   }
 
   // Store shipping address from pi.shipping
