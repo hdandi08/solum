@@ -31,7 +31,8 @@ export default async function globalSetup() {
     dotenv.config({ path: envLocalPath });
   }
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  // Accept VITE_SUPABASE_URL (local .env.local) or SUPABASE_URL (CI buildspec)
+  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceKey) {

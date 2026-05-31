@@ -1,31 +1,34 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const isCI    = !!process.env.CI;
+const baseURL = process.env.DEV_BASE_URL ?? 'http://localhost:5173';
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
   expect: { timeout: 8_000 },
 
   // Runs once before all tests: seeds inventory, clears test data.
-  // Requires web/.env.test with SUPABASE_SERVICE_ROLE_KEY — see .env.test.example.
+  // Local: needs web/.env.test with SUPABASE_SERVICE_ROLE_KEY (see .env.test.example).
+  // CI: keys come from SSM via buildspec env vars — no .env.test needed.
   globalSetup: './e2e/global-setup.ts',
 
-  // Retry once on CI so a transient network hiccup doesn't fail the run.
-  // No retries locally — if a test is flaky you want to know immediately.
-  retries: process.env.CI ? 1 : 0,
+  // Retry once on CI to absorb transient network blips.
+  retries: isCI ? 1 : 0,
 
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL,
     headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
 
-  // Start the Vite dev server automatically.
-  // If you already have it running (local dev), it reuses it.
-  webServer: {
+  // In CI the tests run against the deployed dev site — no local server needed.
+  // Locally: starts Vite dev server and reuses it if already running.
+  webServer: isCI ? undefined : {
     command: 'npm run dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 60_000,
   },
 
