@@ -295,7 +295,7 @@ test.describe('Page copy — /success', () => {
     // Step 3 — one-time version
     await expect(page.getByText(/we.ll check in at two weeks/i)).toBeVisible();
     // Step 4
-    await expect(page.getByText(/ritual card is in the box/i)).toBeVisible();
+    await expect(page.getByText(/your ritual guide/i)).toBeVisible();
     // Ritual teaser section
     await expect(page.getByText(/10 minutes every morning/i)).toBeVisible();
     // Primary CTA

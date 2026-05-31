@@ -379,7 +379,7 @@ export default function BuyPage() {
             </div>
             <div className="by-trust-line">
               <span className="by-trust-check">◆</span>
-              <span>Ritual card included — daily and weekly step-by-step guide</span>
+              <span>QR code in the box — full ritual guide at bysolum.co.uk/ritual</span>
             </div>
             <div className="by-trust-line">
               <span className="by-trust-check">◆</span>

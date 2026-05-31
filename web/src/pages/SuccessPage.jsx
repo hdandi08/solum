@@ -117,8 +117,8 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">4</span>
               <div className="su-step-body">
-                <div className="su-step-title">Ritual card is in the box</div>
-                <div className="su-step-copy">Step-by-step instructions for your daily and weekly ritual. Everything you need, in the right order.</div>
+                <div className="su-step-title">Your ritual guide</div>
+                <div className="su-step-copy">Full step-by-step for your daily and weekly ritual. Scan the QR code in the box or go to <a href="/ritual" style={{ color: 'var(--blit)', textDecoration: 'none' }}>bysolum.co.uk/ritual</a></div>
               </div>
             </div>
           </div>
