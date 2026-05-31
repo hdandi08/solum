@@ -17,13 +17,16 @@ import * as fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
 
 export default async function globalSetup() {
+  // Playwright runs from the web/ directory — use cwd() not __dirname
+  const root = process.cwd();
+
   // Load .env.test first (service role key lives here, not in .env.local)
-  const envTestPath = path.join(__dirname, '..', '.env.test');
+  const envTestPath = path.join(root, '.env.test');
   if (fs.existsSync(envTestPath)) {
     dotenv.config({ path: envTestPath });
   }
   // Also load .env.local so VITE_SUPABASE_URL etc. are available
-  const envLocalPath = path.join(__dirname, '..', '.env.local');
+  const envLocalPath = path.join(root, '.env.local');
   if (fs.existsSync(envLocalPath)) {
     dotenv.config({ path: envLocalPath });
   }
