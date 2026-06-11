@@ -72,7 +72,22 @@ const CSS = `
 @media(max-width:799px){
   .ritual-flow{display:none;}
   .ritual-section{padding:60px 24px;}
+  .ritual-panels{display:none;}
+  .ritual-compact{display:flex;flex-direction:column;gap:1px;background:var(--line);}
 }
+@media(min-width:800px){
+  .ritual-compact{display:none;}
+}
+/* Compact rows */
+.ritual-compact-row{display:flex;align-items:center;justify-content:space-between;background:var(--char);padding:24px 28px;text-decoration:none;transition:background .15s;}
+.ritual-compact-row:hover,.ritual-compact-row:active{background:var(--mid);}
+.ritual-compact-left{display:flex;align-items:center;gap:16px;}
+.ritual-compact-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ritual-compact-pip.daily{background:var(--blue);}
+.ritual-compact-pip.weekly{background:#c8a96e;}
+.ritual-compact-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.05em;color:var(--bone);line-height:1;margin-bottom:4px;}
+.ritual-compact-meta{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--stone);font-weight:500;}
+.ritual-compact-arrow{font-size:22px;color:var(--blue);flex-shrink:0;}
 `;
 
 const ARROW = (
@@ -141,6 +156,32 @@ export default function RitualSection() {
           <div className="ritual-section-tag reveal">The Ritual</div>
           <div className="ritual-section-head reveal">Two Rituals.<br />One System.</div>
           <p className="ritual-section-sub reveal">Daily keeps you clean. Weekly goes deeper. Follow both exactly.</p>
+
+          {/* Mobile compact view — replaces full panels on small screens */}
+          <div className="ritual-compact reveal">
+            <a href="/ritual?ritual=daily" className="ritual-compact-row"
+               onClick={() => capture('ritual_cta_clicked', { ritual: 'daily', source: 'compact' })}>
+              <div className="ritual-compact-left">
+                <span className="ritual-compact-pip daily" />
+                <div>
+                  <div className="ritual-compact-title">Daily Ritual</div>
+                  <div className="ritual-compact-meta">10 min · 5 steps · Every shower</div>
+                </div>
+              </div>
+              <span className="ritual-compact-arrow">→</span>
+            </a>
+            <a href="/ritual?ritual=weekly" className="ritual-compact-row"
+               onClick={() => capture('ritual_cta_clicked', { ritual: 'weekly', source: 'compact' })}>
+              <div className="ritual-compact-left">
+                <span className="ritual-compact-pip weekly" />
+                <div>
+                  <div className="ritual-compact-title">Weekly Deep Clean</div>
+                  <div className="ritual-compact-meta">18 min · 4 steps · Once a week</div>
+                </div>
+              </div>
+              <span className="ritual-compact-arrow">→</span>
+            </a>
+          </div>
 
           <div className="ritual-panels reveal">
 

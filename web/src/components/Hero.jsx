@@ -13,7 +13,7 @@ const CSS = `
 .hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:500px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
 .hero-cols{position:relative;z-index:1;display:flex;flex-direction:column;width:100%;gap:0;}
 .hero-content{width:100%;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,13vw,104px);line-height:.92;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);line-height:.96;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
 /* ── Animated word swap ────────────────────────────── */
 .swap-container{display:inline-grid;position:relative;}
@@ -51,6 +51,9 @@ const CSS = `
 .hero-fd-deadline strong{color:#c8a96e;font-weight:600;}
 
 /* ── Tablet ────────────────────────────────────────── */
+@media(max-width:639px){
+  .hero-title{font-size:36px;line-height:.96;}
+}
 @media(min-width:640px){
   .hero-actions{flex-direction:row;align-items:center;}
   .btn-primary{display:inline-block;text-align:left;}
