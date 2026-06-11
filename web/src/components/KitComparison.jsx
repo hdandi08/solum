@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
@@ -38,11 +39,40 @@ const CSS = `
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
-@media(max-width:768px){.kits-grid{grid-template-columns:1fr;}.kits-section{padding:60px 24px;}.kit-card.featured{margin:0;}}
+/* Toggle button — base styles (desktop: hidden) */
+.kit-products-toggle{display:none;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:0;}
+.kit-products-toggle:hover{border-color:var(--blue);color:var(--bone);}
+.kit-products-toggle-arrow{font-size:16px;transition:transform .25s;display:inline-block;}
+.kit-card.products-open .kit-products-toggle-arrow{transform:rotate(180deg);}
+/* Mobile divider — hidden by default, shown only when products are open */
+.kit-divider-mobile{display:none;}
+.kit-card.products-open .kit-divider-mobile{display:block;width:100%;height:1px;background:var(--line);margin:16px 0;}
+/* ── Mobile ─────────────────────────────────────── */
+@media(max-width:768px){
+  .kits-section{padding:48px 0 60px;}
+  .kits-header{padding:0 24px;margin-bottom:40px;}
+  .kits-grid{display:flex;flex-direction:column;gap:1px;}
+  .kit-card:nth-child(1){order:2;}
+  .kit-card:nth-child(2){order:1;}
+  .kit-card:nth-child(3){display:none;}
+  .kit-card.featured{margin:0;}
+  .kit-card{padding:28px 24px;}
+  .kit-products-toggle{display:flex;}
+  .kit-products{display:none;}
+  .kit-card.products-open .kit-products{display:flex;}
+  .kit-divider{display:none;}
+  .kit-cta{margin-top:20px;}
+}
 `;
 
 export default function KitComparison() {
   const navigate = useNavigate();
+  const [openKits, setOpenKits] = useState(new Set());
+  const toggle = (id) => setOpenKits(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   return (
     <>
@@ -59,7 +89,7 @@ export default function KitComparison() {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
               const isSovereign = kit.id === 'sovereign';
               return (
-                <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}`}>
+                <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}${openKits.has(kit.id) ? ' products-open' : ''}`}>
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name">{kit.name}</div>
@@ -77,6 +107,11 @@ export default function KitComparison() {
                     )}
                   </div>
                   <div className="kit-divider" />
+                  <button className="kit-products-toggle" onClick={() => toggle(kit.id)}>
+                    {openKits.has(kit.id) ? 'Hide products' : `${products.filter(p => !p.comingSoon).length} products included`}
+                    <span className="kit-products-toggle-arrow">↓</span>
+                  </button>
+                  <div className="kit-divider-mobile" />
                   <div className="kit-products">
                     {products.map(p => (
                       <div key={p.num} className={`kit-product${p.comingSoon ? ' kit-product-coming' : ''}`}>

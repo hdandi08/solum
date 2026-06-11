@@ -87,16 +87,16 @@ export default function FullSite() {
       <Nav />
       <Hero />
       <Marquee />
-      <FounderSection />
+      <KitComparison />
+      <ProductLineup />
       <RitualSection />
       <TruthSection />
-      <KitComparison />
       <CredibilityStrip />
-      <ProductLineup />
       {!IS_FIRST_BATCH && <SubscriptionSection />}
       {!IS_FIRST_BATCH && <LoyaltySection />}
       <ProvenanceSection />
       <SocialProof />
+      <FounderSection />
       <FAQ />
       <CTASection />
       <SolumFooter />

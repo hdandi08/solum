@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PRODUCTS } from '../data/products.js';
 
 const CSS = `
@@ -33,22 +34,32 @@ const CSS = `
 .prod-info{padding:18px 20px 22px;display:flex;flex-direction:column;gap:4px;flex:1;}
 .prod-name{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bone);font-weight:700;line-height:1.3;}
 .prod-origin{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.3px;margin-top:1px;}
-.prod-tagline{font-size:13px;font-weight:300;color:var(--mist);line-height:1.5;font-style:italic;margin-top:4px;}
+.prod-desc{font-size:13px;font-weight:400;color:var(--mist);line-height:1.55;margin-top:8px;}
+.prod-benefits{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.prod-benefit{font-size:11px;letter-spacing:.3px;color:var(--stone);font-weight:500;padding-left:14px;position:relative;line-height:1.4;}
+.prod-benefit::before{content:'—';position:absolute;left:0;color:var(--blue);}
 
 /* ── Responsive ────────────────────────────────── */
 @media(max-width:960px){
   .products-grid{grid-template-columns:repeat(3,1fr);}
 }
+.products-see-all{display:none;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:1px;padding:18px 24px;background:var(--char);border:none;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;cursor:pointer;transition:color .2s,background .2s;}
+.products-see-all:hover{background:var(--mid);color:var(--bone);}
+.products-see-all-arrow{font-size:16px;}
 @media(max-width:640px){
   .products-grid{grid-template-columns:repeat(2,1fr);}
   .products-section{padding:60px 0;}
   .products-header{padding:0 24px;gap:16px;}
   .p-sec-sub{text-align:left;max-width:none;}
   .prod-info{padding:14px 14px 18px;}
+  .prod-benefits{display:none;}
+  .product-card.mob-hidden{display:none;}
+  .products-see-all{display:flex;}
 }
 `;
 
 export default function ProductLineup() {
+  const [allVisible, setAllVisible] = useState(false);
   return (
     <>
       <style>{CSS}</style>
@@ -64,13 +75,13 @@ export default function ProductLineup() {
         </div>
 
         <div className="products-grid reveal">
-          {PRODUCTS.map(p => {
+          {PRODUCTS.map((p, idx) => {
             const isWeekly = p.tag.toLowerCase().includes('weekly');
             const freqLabel = isWeekly ? 'WEEKLY' : 'DAILY';
             const freqClass = p.comingSoon ? 'soon' : isWeekly ? 'weekly' : 'daily';
 
             return (
-              <div key={p.num} className="product-card">
+              <div key={p.num} className={`product-card${!allVisible && idx >= 4 ? ' mob-hidden' : ''}`}>
                 <div className="prod-img-wrap">
                   <span className="prod-badge-num">{p.num}</span>
                   <span className={`prod-badge-freq ${freqClass}`}>
@@ -91,12 +102,24 @@ export default function ProductLineup() {
                 <div className="prod-info">
                   <div className="prod-name">{p.name}</div>
                   <div className="prod-origin">{p.origin}</div>
-                  <div className="prod-tagline">{p.tagline}</div>
+                  <div className="prod-desc">{p.desc}</div>
+                  {p.benefits.length > 0 && (
+                    <ul className="prod-benefits">
+                      {p.benefits.map((b, i) => (
+                        <li key={i} className="prod-benefit">{b}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
+        {!allVisible && (
+          <button className="products-see-all" onClick={() => setAllVisible(true)}>
+            See all 10 products <span className="products-see-all-arrow">↓</span>
+          </button>
+        )}
       </section>
     </>
   );
