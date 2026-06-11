@@ -1,4 +1,4 @@
-import { FOUNDING_LIMIT } from './WaitlistForm';
+const FOUNDING_LIMIT = 100;
 
 const CSS = `
 .fb-bar {

@@ -43,7 +43,7 @@ export default function SocialProof() {
       <section className="proof-section" id="proof">
         <div className="proof-inner">
           <div className="proof-header reveal">
-            <div className="pr-sec-tag">What To Expect When You Do It Right</div>
+            <div className="pr-sec-tag">What Actually Changes</div>
             <h2>The Results<br />Speak Plainly.</h2>
           </div>
           <div className="proof-grid reveal">

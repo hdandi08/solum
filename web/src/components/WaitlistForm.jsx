@@ -7,7 +7,6 @@ const COMMON_DOMAINS = [
   'btinternet.com','sky.com','talktalk.net','virgin.net','virginmedia.com',
 ];
 
-export const FOUNDING_LIMIT = 100;
 
 function levenshtein(a, b) {
   const m = a.length, n = b.length;
@@ -145,50 +144,11 @@ const CSS = `
   white-space: nowrap;
   flex-shrink: 0;
 }
-.wf-founding-teaser {
-  background: #181C24;
-  border: 1px solid rgba(74,143,199,0.3);
-}
-.wf-founding-teaser-header {
-  border-bottom: 1px solid rgba(240,236,226,0.07);
-  padding: 12px 20px;
-  font-size: 11px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #4A8FC7;
-}
-.wf-founding-teaser-body { padding: 20px 20px 0; }
-.wf-founding-teaser-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: .06em;
-  color: #f0ece2;
-  margin-bottom: 10px;
-}
-.wf-founding-teaser-text {
-  font-size: 13px;
-  font-weight: 300;
-  color: rgba(240,236,226,0.75);
-  line-height: 1.65;
-  margin-bottom: 20px;
-}
-.wf-founding-teaser-link {
-  display: block;
-  background: #2E6DA4;
-  color: #f0ece2;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 15px;
-  letter-spacing: .15em;
-  padding: 14px 20px;
-  text-decoration: none;
-  text-align: center;
-}
 `;
 
 // source prop overrides UTM/referrer detection — pass 'athlete' for the athlete page
 export default function WaitlistForm({
-  label    = 'Claim Founding Member Spot',
+  label    = 'Join the Waitlist',
   onSuccess,
   formId   = 'unknown',
   source: sourceProp = null,
@@ -262,7 +222,6 @@ export default function WaitlistForm({
   }
 
   if (position !== null) {
-    const isFounder = position <= FOUNDING_LIMIT;
     return (
       <>
         <style>{CSS}</style>
@@ -282,18 +241,6 @@ export default function WaitlistForm({
               @bysolum.body
             </a>
           </div>
-          {isFounder && (
-            <div className="wf-founding-teaser">
-              <div className="wf-founding-teaser-header">Founding 100 · Members Portal</div>
-              <div className="wf-founding-teaser-body">
-                <div className="wf-founding-teaser-title">Real equity in Solum</div>
-                <div className="wf-founding-teaser-text">
-                  A share of the founding pool vesting at <strong style={{ color: '#f0ece2' }}>£1M ARR or 14 months</strong>, whichever comes first. Shape products, track growth, see what it could be worth.
-                </div>
-              </div>
-              <a href="/founding-100" className="wf-founding-teaser-link">Find Out More</a>
-            </div>
-          )}
         </div>
       </>
     );

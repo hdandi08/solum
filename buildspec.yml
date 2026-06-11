@@ -2,7 +2,6 @@ version: 0.2
 
 env:
   parameter-store:
-    TEST_USER_EMAIL:           /solum/test/user-email
     SUPABASE_URL:              /solum/test/supabase-url
     SUPABASE_SERVICE_ROLE_KEY: /solum/test/supabase-svc-key
     DEV_BASE_URL:              /solum/test/dev-base-url
@@ -12,15 +11,14 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
-      - cd $CODEBUILD_SRC_DIR/tests/e2e
+      - cd $CODEBUILD_SRC_DIR/web
       - npm ci
       - npx playwright install --with-deps chromium
 
   build:
     commands:
-      - cd $CODEBUILD_SRC_DIR/tests/e2e
+      - cd $CODEBUILD_SRC_DIR/web
       - npx playwright test --reporter=list,html
-      - echo "BUILD_EXIT=$?" >> $CODEBUILD_SRC_DIR/build-result.env
 
   post_build:
     commands:
@@ -28,9 +26,8 @@ phases:
       - |
         REPORT_DATE=$(date +%Y-%m-%d)
         REPORT_KEY="reports/$REPORT_DATE/index.html"
-        aws s3 sync tests/e2e/playwright-report \
+        aws s3 sync web/playwright-report \
           s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet
-        # Plain public URL — reports/ prefix is publicly readable via bucket policy
         REPORT_URL="https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/$REPORT_KEY"
         echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
@@ -51,5 +48,5 @@ phases:
 
 artifacts:
   files:
-    - tests/e2e/playwright-report/**/*
+    - web/playwright-report/**/*
   discard-paths: no

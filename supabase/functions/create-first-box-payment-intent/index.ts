@@ -109,12 +109,14 @@ Deno.serve(async (req) => {
       },
       description: `SOLUM ${kitName} — One-time First Box`,
       metadata: {
-        kit_id:  kit_id!,
-        email:   email!,
-        first_name:  first_name  ?? '',
-        last_name:   last_name   ?? '',
-        source:      effectiveSource,
-        phone:       phone ?? '',
+        kit_id:       kit_id!,
+        email:        email!,
+        first_name:   first_name  ?? '',
+        last_name:    last_name   ?? '',
+        source:       effectiveSource,
+        phone:        phone ?? '',
+        dispatch_date: fmtDay(dispatch),
+        arrival_date:  fmtDay(arrival),
       },
     });
 

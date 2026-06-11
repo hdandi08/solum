@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
+import { capture, identify, fbPurchase } from '../lib/analytics.js';
 
 const CSS = `
 .su-page{min-height:100vh;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;position:relative;overflow:hidden;}
@@ -52,13 +54,35 @@ const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
 
 export default function SuccessPage() {
   const [params] = useSearchParams();
-  const kitId    = params.get('kit');
-  const rawRef   = params.get('ref') ?? '';
-  const source   = params.get('source') ?? '';
+  const kitId        = params.get('kit');
+  const rawRef       = params.get('ref') ?? '';
+  const source       = params.get('source') ?? '';
+  const dispatchDate = params.get('dispatch') ?? '';
+  const arrivalDate  = params.get('arrival') ?? '';
+  const amountPence  = parseInt(params.get('amount') ?? '0', 10);
   const kit      = KITS.find(k => k.id === kitId);
   const kitName  = kit?.name ?? 'SOLUM';
   const orderRef = rawRef ? rawRef.slice(-8).toUpperCase() : null;
   const isOneTime = ONE_TIME_SOURCES.includes(source);
+  const amountGbp = amountPence > 0 ? amountPence / 100 : null;
+
+  // Fire purchase events once — guard with sessionStorage to survive page refreshes
+  useEffect(() => {
+    const guardKey = `solum_purchase_fired_${rawRef || 'unknown'}`;
+    if (sessionStorage.getItem(guardKey)) return;
+    sessionStorage.setItem(guardKey, '1');
+
+    // Identify user if email was stashed during checkout
+    const buyerEmail = sessionStorage.getItem('solum_buyer_email');
+    if (buyerEmail) {
+      identify(buyerEmail, { kit: kitId, source });
+      try { sessionStorage.removeItem('solum_buyer_email'); } catch {}
+    }
+
+    capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef });
+
+    if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
+  }, []); // eslint-disable-line
 
   return (
     <>
@@ -93,8 +117,8 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">2</span>
               <div className="su-step-body">
-                <div className="su-step-title">Your kit ships Thursday or Monday</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched on the next available slot. You'll get a tracking email when it's on its way.</div>
+                <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</div>
+                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched.{arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
             {isOneTime ? (
@@ -117,8 +141,8 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">4</span>
               <div className="su-step-body">
-                <div className="su-step-title">Ritual card is in the box</div>
-                <div className="su-step-copy">Step-by-step instructions for your daily and weekly ritual. Everything you need, in the right order.</div>
+                <div className="su-step-title">Your ritual guide</div>
+                <div className="su-step-copy">Full step-by-step for your daily and weekly ritual. Scan the QR code in the box or go to <a href="/ritual" style={{ color: 'var(--blit)', textDecoration: 'none' }}>bysolum.co.uk/ritual</a></div>
               </div>
             </div>
           </div>

@@ -62,11 +62,32 @@ async function sendConfirmationEmail(
   firstName: string,
   kitId: string,
   orderRef: string,
+  isOneTime = false,
+  dispatchDate?: string,
+  arrivalDate?: string,
 ) {
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) { console.warn('RESEND_API_KEY not set — skipping email'); return; }
 
   const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+
+  const step3 = isOneTime
+    ? `<tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">We'll check in at two weeks</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Once you've had time to use the kit properly, we'll ask a few quick questions. Your feedback directly shapes what we build next.</p></td>
+              </tr></table>
+            </td></tr>`
+    : `<tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Refills every 30 days</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your first refill is charged 30 days from today — you saw the exact date at checkout. Every 30 days after that. You'll never run out.</p></td>
+              </tr></table>
+            </td></tr>`;
+
+  const footerLine = isOneTime
+    ? `<p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.co.uk</p>`
+    : `<p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.co.uk · You can cancel any time from your account.</p>`;
 
   const html = `<!DOCTYPE html>
 <html>
@@ -110,19 +131,14 @@ async function sendConfirmationEmail(
             <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">First box ships Thursday or Monday</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. Dispatched on the next available slot (Thu/Mon) and arrives within 2 days. You'll get a tracking email when it's on its way.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
-            <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
-              <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Refills every 30 days</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your first refill is charged 30 days from today — you saw the exact date at checkout. Every 30 days after that. You'll never run out.</p></td>
-              </tr></table>
-            </td></tr>
+            ${step3}
             <tr><td style="padding:16px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">4</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Ritual card is in the box</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Step-by-step instructions for your daily and weekly ritual. Everything in the right order.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Your ritual guide</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Full step-by-step for your daily and weekly ritual. Scan the QR code in the box or go to <a href="https://bysolum.co.uk/ritual" style="color:#4A8FC7;text-decoration:none;">bysolum.co.uk/ritual</a></p></td>
               </tr></table>
             </td></tr>
           </table>
@@ -131,7 +147,7 @@ async function sendConfirmationEmail(
         <!-- Footer -->
         <tr><td style="background:#08090B;padding:32px 48px;">
           <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">Questions? Reply to this email or contact us at <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a></p>
-          <p style="margin:0;font-size:12px;color:#555;">SOLUM · bysolum.co.uk · You can cancel any time from your account.</p>
+          ${footerLine}
         </td></tr>
 
       </table>
@@ -165,7 +181,7 @@ async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, dispatch_date, arrival_date } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -223,7 +239,7 @@ async function handleOneTimeOrderFromPI(
   // Send confirmation email
   if (email && order) {
     const orderRef = pi.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef);
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
   }
 
   // Store shipping address from pi.shipping
@@ -309,7 +325,7 @@ async function handleOneTimeOrder(
   // Send confirmation email
   if (email && order) {
     const orderRef = session.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef);
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
   }
 
   // Store shipping address
@@ -504,7 +520,7 @@ Deno.serve(async (req) => {
         // Send confirmation email — only on first processing, not on webhook retries
         if (email && !existingOrder) {
           const orderRef = session.id.slice(-8).toUpperCase();
-          await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef);
+          await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
         }
 
         // Store shipping address (null guard + idempotency via stripe_session_id unique index)
@@ -682,7 +698,7 @@ Deno.serve(async (req) => {
         // Send confirmation email
         if (!existingOrder) {
           const orderRef = pi.id.slice(-8).toUpperCase();
-          await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef);
+          await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
         }
 
         // Store address from pi.shipping

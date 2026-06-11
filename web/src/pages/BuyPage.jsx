@@ -4,6 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout } from '../lib/analytics.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -154,7 +155,7 @@ const CSS = `
 
 // ── PaymentStep — inside <Elements> ──────────────────────────────────────────
 
-function PaymentStep({ activeKit, payInfo, prices, onBack }) {
+function PaymentStep({ activeKit, payInfo, source, onBack }) {
   const stripe   = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -171,7 +172,7 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/success?kit=${activeKit.id}`,
+        return_url: `${window.location.origin}/success?kit=${activeKit.id}&source=${source}&amount=${payInfo.amount_pence}`,
       },
       redirect: 'if_required',
     });
@@ -180,8 +181,10 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
       setError(confirmError.message ?? 'Payment failed. Please try again.');
       setLoading(false);
     } else if (paymentIntent?.status === 'succeeded') {
-      const ref = paymentIntent.id ?? '';
-      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}`;
+      const ref      = paymentIntent.id ?? '';
+      const dispatch = encodeURIComponent(payInfo.dispatch_date ?? '');
+      const arrival  = encodeURIComponent(payInfo.arrival_date ?? '');
+      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}&dispatch=${dispatch}&arrival=${arrival}&amount=${payInfo.amount_pence}`;
     } else {
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       setLoading(false);
@@ -201,13 +204,13 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
         </div>
       </div>
 
-      <div className="by-payment-wrap">
+      <div className="by-payment-wrap" data-testid="payment-element-wrapper">
         <PaymentElement options={{ layout: 'tabs' }} />
       </div>
 
-      {error && <div className="by-error">{error}</div>}
+      {error && <div className="by-error" data-testid="pay-error">{error}</div>}
 
-      <button type="submit" className="by-submit" disabled={!stripe || !elements || loading}>
+      <button type="submit" className="by-submit" disabled={!stripe || !elements || loading} data-testid="pay-btn">
         {loading ? 'Processing…' : `Pay £${totalPrice} Now →`}
       </button>
 
@@ -262,6 +265,12 @@ export default function BuyPage() {
 
   const authHeaders = { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` };
 
+  // Fire buy_page_viewed + Meta ViewContent once on mount
+  useEffect(() => {
+    capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
+    fbViewContent('SOLUM Kit');
+  }, []); // eslint-disable-line
+
   useEffect(() => {
     fetch(`${SUPABASE_URL}/functions/v1/get-inventory-status`, { headers: authHeaders })
       .then(r => r.json())
@@ -312,6 +321,13 @@ export default function BuyPage() {
         return;
       }
 
+      // Identify the user in PostHog and fire checkout funnel events
+      identify(emailVal, { first_name: form.first_name.trim(), kit: selectedKit, source });
+      capture('checkout_initiated', { kit: selectedKit, source, price: prices[selectedKit] });
+      fbInitiateCheckout(KITS.find(k => k.id === selectedKit)?.name ?? selectedKit, prices[selectedKit]);
+      // Store email so SuccessPage can identify the user after redirect
+      try { sessionStorage.setItem('solum_buyer_email', emailVal); } catch {}
+
       setClientSecret(data.client_secret);
       setPayInfo(data);
       setStage('payment');
@@ -342,7 +358,7 @@ export default function BuyPage() {
         <div className="by-ship-line">Royal Mail Tracked 48 · UK only</div>
 
         {isFirstBatch && inventory && (
-          <div className="by-stock-pill">
+          <div className="by-stock-pill" data-testid="stock-count">
             <span className="by-stock-dot" />
             {totalRemaining} of 250 remaining
           </div>
@@ -379,7 +395,7 @@ export default function BuyPage() {
             </div>
             <div className="by-trust-line">
               <span className="by-trust-check">◆</span>
-              <span>Ritual card included — daily and weekly step-by-step guide</span>
+              <span>QR code in the box — full ritual guide at bysolum.co.uk/ritual</span>
             </div>
             <div className="by-trust-line">
               <span className="by-trust-check">◆</span>
@@ -406,7 +422,7 @@ export default function BuyPage() {
               <PaymentStep
                 activeKit={kitDef}
                 payInfo={payInfo}
-                prices={prices}
+                source={source}
                 onBack={() => { setStage('form'); window.scrollTo(0, 0); }}
               />
             </div>
@@ -466,6 +482,7 @@ export default function BuyPage() {
                   return (
                     <div
                       key={id}
+                      data-testid={`kit-${id}`}
                       className={`by-kit${selectedKit === id ? ' selected' : ''}${!available ? ' soldout' : ''}`}
                       onClick={() => available && setSelectedKit(id)}
                     >
@@ -524,9 +541,9 @@ export default function BuyPage() {
                   </div>
                 </div>
 
-                {error && <div className="by-error">{error}</div>}
+                {error && <div className="by-error" data-testid="form-error">{error}</div>}
 
-                <button className="by-submit" type="submit" disabled={loading || !selectedKit}>
+                <button className="by-submit" type="submit" disabled={loading || !selectedKit} data-testid="continue-btn">
                   {loading ? 'Checking details…' : 'Continue to Payment →'}
                 </button>
 

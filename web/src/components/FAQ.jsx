@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { capture } from '../lib/analytics.js';
 
 const CSS = `
 .faq-section{background:var(--black);padding:80px 48px;border-top:1px solid var(--line);}
@@ -23,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',
-    a: 'GROUND has 7 products and covers the full daily and weekly ritual. RITUAL adds Argan Body Oil — a leave-on treatment applied after the weekly exfoliation that replaces your lotion on those days. If you want the complete system, RITUAL is the one.',
+    a: 'GROUND has 5 products — body wash, exfoliating mitt, back scrub cloth, scalp massager, and body lotion. That covers the complete daily ritual. RITUAL adds two more: Rhassoul Clay Mask and Argan Body Oil, giving you the full weekly deep-clean treatment on top. If you want the complete system, RITUAL is the one.',
   },
   {
     q: 'What about SOVEREIGN?',
@@ -35,7 +36,7 @@ const FAQS = [
   },
   {
     q: 'Why does it matter that I use the lotion within 3 minutes?',
-    a: "Immediately after showering, your skin is warm and the outer layer is still hydrated. Moisture absorption is significantly higher during this window. Wait 15 minutes and you've largely missed it — the lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.",
+    a: "Immediately after showering, your skin is warm and the outer layer is still hydrated. Moisture absorption is up to 70% higher in this window. Wait 15 minutes and you've largely missed it — the lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.",
   },
   {
     q: 'Can I cancel or pause my subscription?',
@@ -49,7 +50,10 @@ const FAQS = [
 
 export default function FAQ() {
   const [openFaq, setOpenFaq] = useState(null);
-  const toggle = (i) => setOpenFaq(openFaq === i ? null : i);
+  const toggle = (i) => {
+    if (openFaq !== i) capture('faq_opened', { question: FAQS[i].q });
+    setOpenFaq(openFaq === i ? null : i);
+  };
 
   return (
     <>

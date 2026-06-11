@@ -36,14 +36,12 @@ export default function TruthSection() {
             <p className="truth-body">
               You were taught to shower. Nobody told you what actually happens inside one.
               One product on your whole body, rinsed off in 90 seconds — that's not a system.
-              That's just getting wet.
               <br /><br />
               SOLUM is the system that should have existed twenty years ago.
             </p>
             <div className="truth-note">
-              SOLUM is body care only. It does not replace your face routine, shampoo,
-              or deodorant. It addresses everything else — the 90% of your skin most
-              products ignore entirely.
+              SOLUM does not replace your face routine, shampoo, or deodorant.
+              It addresses everything else — the 90% of your skin most products ignore.
             </div>
           </div>
           <div className="truth-stats-wrap reveal">

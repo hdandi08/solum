@@ -47,8 +47,8 @@ export default function ProvenanceSection() {
             <div className="o-sec-tag">Where It Comes From</div>
             <h2 className="o-sec-title">Sourced From<br />Where It Works.</h2>
             <p className="o-sec-body">
-              Each tradition is proof of why the product works — not where it ships from.
-              Korean bathhouse exfoliation. Moroccan hammam clay. British pharmaceutical-grade formulation.
+              Each product is sourced from the country that does that tradition best.
+              Not for the label — for the result.
             </p>
           </div>
           <div className="origins-grid reveal">
