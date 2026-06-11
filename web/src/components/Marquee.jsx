@@ -7,14 +7,14 @@ const CSS = `
 `;
 
 const ITEMS = [
-  'The Ritual Men Were Never Taught',
+  'The First Guided Body Ritual For Men',
   'Ground · Ritual · Sovereign',
-  '10 Minutes Daily · 18 Minutes Weekly',
+  '10 Minutes Daily · Head to Toe',
   '10 Products · One System',
   'Body Care — Not Face. Not Hair.',
-  'Monthly. Automatic. Never Run Out.',
-  'UK · Korea · Morocco',
-  'Formulated for Men. Built to Last.',
+  'UK · Korea · Morocco · Turkey',
+  'Head to Toe. For the First Time.',
+  'Built for Men. Built to Last.',
 ];
 
 const ALL = [...ITEMS, ...ITEMS];

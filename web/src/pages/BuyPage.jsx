@@ -4,6 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout } from '../lib/analytics.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -154,7 +155,7 @@ const CSS = `
 
 // ── PaymentStep — inside <Elements> ──────────────────────────────────────────
 
-function PaymentStep({ activeKit, payInfo, prices, onBack }) {
+function PaymentStep({ activeKit, payInfo, source, onBack }) {
   const stripe   = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -171,7 +172,7 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/success?kit=${activeKit.id}`,
+        return_url: `${window.location.origin}/success?kit=${activeKit.id}&source=${source}&amount=${payInfo.amount_pence}`,
       },
       redirect: 'if_required',
     });
@@ -180,10 +181,10 @@ function PaymentStep({ activeKit, payInfo, prices, onBack }) {
       setError(confirmError.message ?? 'Payment failed. Please try again.');
       setLoading(false);
     } else if (paymentIntent?.status === 'succeeded') {
-      const ref = paymentIntent.id ?? '';
+      const ref      = paymentIntent.id ?? '';
       const dispatch = encodeURIComponent(payInfo.dispatch_date ?? '');
       const arrival  = encodeURIComponent(payInfo.arrival_date ?? '');
-      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}&dispatch=${dispatch}&arrival=${arrival}`;
+      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}&dispatch=${dispatch}&arrival=${arrival}&amount=${payInfo.amount_pence}`;
     } else {
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       setLoading(false);
@@ -264,6 +265,12 @@ export default function BuyPage() {
 
   const authHeaders = { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` };
 
+  // Fire buy_page_viewed + Meta ViewContent once on mount
+  useEffect(() => {
+    capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
+    fbViewContent('SOLUM Kit');
+  }, []); // eslint-disable-line
+
   useEffect(() => {
     fetch(`${SUPABASE_URL}/functions/v1/get-inventory-status`, { headers: authHeaders })
       .then(r => r.json())
@@ -313,6 +320,13 @@ export default function BuyPage() {
         setError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
       }
+
+      // Identify the user in PostHog and fire checkout funnel events
+      identify(emailVal, { first_name: form.first_name.trim(), kit: selectedKit, source });
+      capture('checkout_initiated', { kit: selectedKit, source, price: prices[selectedKit] });
+      fbInitiateCheckout(KITS.find(k => k.id === selectedKit)?.name ?? selectedKit, prices[selectedKit]);
+      // Store email so SuccessPage can identify the user after redirect
+      try { sessionStorage.setItem('solum_buyer_email', emailVal); } catch {}
 
       setClientSecret(data.client_secret);
       setPayInfo(data);
@@ -408,7 +422,7 @@ export default function BuyPage() {
               <PaymentStep
                 activeKit={kitDef}
                 payInfo={payInfo}
-                prices={prices}
+                source={source}
                 onBack={() => { setStage('form'); window.scrollTo(0, 0); }}
               />
             </div>

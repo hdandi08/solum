@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import { capture } from '../lib/analytics.js';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const CSS = `
@@ -98,7 +99,10 @@ export default function KitComparison() {
                   ) : (
                     <button
                       className="kit-cta active"
-                      onClick={() => navigate(IS_FIRST_BATCH ? `/buy?kit=${kit.id}` : `/checkout?kit=${kit.id}`)}
+                      onClick={() => {
+                        capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
+                        navigate(IS_FIRST_BATCH ? `/buy?kit=${kit.id}` : `/checkout?kit=${kit.id}`);
+                      }}
                     >
                       {IS_FIRST_BATCH ? `Get ${kit.name}` : `Start with ${kit.name}`}
                     </button>
@@ -109,8 +113,8 @@ export default function KitComparison() {
           </div>
           <p className="kits-footnote">
             {IS_FIRST_BATCH
-              ? 'One-time purchase. No subscription required. Subscription launches later — current buyers get first access.'
-              : 'First box is a one-time purchase and lasts 4–6 weeks. Monthly refills ship on the 1st — so you never run out. Cancel any time.'}
+              ? 'Subscription coming soon.'
+              : 'First box is a one-time purchase. Monthly refills ship on the 1st — cancel any time.'}
           </p>
         </div>
       </section>

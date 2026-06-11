@@ -50,7 +50,9 @@ const CSS = `
 `;
 
 export default function RitualPage() {
-  const [selected, setSelected] = useState(null);
+  const params = new URLSearchParams(window.location.search);
+  const preselect = params.get('ritual');
+  const [selected, setSelected] = useState(preselect === 'daily' || preselect === 'weekly' ? preselect : null);
   const config = selected ? CONFIG[selected] : null;
 
   return (

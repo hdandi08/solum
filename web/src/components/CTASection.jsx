@@ -28,7 +28,7 @@ export default function CTASection() {
         <div className="cta-tag">Your Body. Done Right.</div>
         <h2 className="cta-title">Start Your<br />Ritual.</h2>
         <p className="cta-body">
-          The system that should have existed twenty years ago. It exists now.
+          A shower cleans you. A ritual changes you.
         </p>
         <div className="cta-offer">
           {IS_FIRST_BATCH

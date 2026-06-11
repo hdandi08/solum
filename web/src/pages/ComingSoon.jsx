@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { PRODUCTS } from '../data/products';
 import { capture } from '../lib/analytics';
-import WaitlistForm, { FOUNDING_LIMIT, detectSource } from '../components/WaitlistForm';
+import WaitlistForm from '../components/WaitlistForm';
 import FoundingBar from '../components/FoundingBar';
 
 // Launch date: 8 weeks from 10 April 2026

@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
+import { capture } from '../lib/analytics.js';
 import Nav from '../components/Nav.jsx';
 import Hero from '../components/Hero.jsx';
 import Marquee from '../components/Marquee.jsx';
-import TruthSection from '../components/TruthSection.jsx';
-import KitComparison from '../components/KitComparison.jsx';
-import ProductLineup from '../components/ProductLineup.jsx';
 import RitualSection from '../components/RitualSection.jsx';
+import KitComparison from '../components/KitComparison.jsx';
+import TruthSection from '../components/TruthSection.jsx';
+import ProductLineup from '../components/ProductLineup.jsx';
 import SubscriptionSection from '../components/SubscriptionSection.jsx';
 import LoyaltySection from '../components/LoyaltySection.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
+import FounderSection from '../components/FounderSection.jsx';
+import CredibilityStrip from '../components/CredibilityStrip.jsx';
 import SocialProof from '../components/SocialProof.jsx';
 import FAQ from '../components/FAQ.jsx';
 import CTASection from '../components/CTASection.jsx';
@@ -26,6 +29,38 @@ export default function FullSite() {
         setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
       }
     }
+  }, []);
+
+  // Scroll depth — fires once per milestone per visit
+  useEffect(() => {
+    const milestones = new Set();
+    function onScroll() {
+      const pct = Math.round(((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100);
+      for (const m of [25, 50, 75, 100]) {
+        if (pct >= m && !milestones.has(m)) {
+          milestones.add(m);
+          capture('scroll_depth', { percent: m, page: 'homepage' });
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Section viewed — fires once when each named section enters viewport
+  useEffect(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.target.id) {
+          capture('section_viewed', { section: e.target.id, page: 'homepage' });
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    const timer = setTimeout(() => {
+      document.querySelectorAll('section[id]').forEach(el => obs.observe(el));
+    }, 500);
+    return () => { clearTimeout(timer); obs.disconnect(); };
   }, []);
 
   useEffect(() => {
@@ -52,10 +87,12 @@ export default function FullSite() {
       <Nav />
       <Hero />
       <Marquee />
+      <FounderSection />
+      <RitualSection />
       <TruthSection />
       <KitComparison />
+      <CredibilityStrip />
       <ProductLineup />
-      <RitualSection />
       {!IS_FIRST_BATCH && <SubscriptionSection />}
       {!IS_FIRST_BATCH && <LoyaltySection />}
       <ProvenanceSection />
