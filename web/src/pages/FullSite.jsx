@@ -92,8 +92,8 @@ export default function FullSite() {
       <RitualSection />
       <TruthSection />
       <CredibilityStrip />
-      {!IS_FIRST_BATCH && <SubscriptionSection />}
-      {!IS_FIRST_BATCH && <LoyaltySection />}
+      <SubscriptionSection />
+      <LoyaltySection />
       <ProvenanceSection />
       <SocialProof />
       <FounderSection />
