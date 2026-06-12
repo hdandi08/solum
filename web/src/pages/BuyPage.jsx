@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout } from '../lib/analytics.js';
+import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -12,12 +13,7 @@ const STRIPE_KEY   = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 const stripePromise = loadStripe(STRIPE_KEY);
 
-const PREMIUM_SOURCES = ['gift', 'tiktok_shop'];
-
-const FIRST_BATCH_PRICES = { ground: 65, ritual: 85 };
-const PREMIUM_PRICES     = { ground: 75, ritual: 95 };
-
-// ── Stripe appearance — matches SOLUM dark aesthetic ─────────────────────────
+const KIT_PRICES = { ground: 65, ritual: 85 };
 
 const stripeAppearance = {
   theme: 'night',
@@ -41,127 +37,204 @@ const stripeAppearance = {
   },
 };
 
-// ── Date helpers ──────────────────────────────────────────────────────────────
+// ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
+
+const CSS = `
+.by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:32px;}
+@media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
+.by-kit{background:var(--black);padding:24px 20px;cursor:pointer;transition:background .15s;}
+.by-kit:hover{background:var(--dark);}
+.by-kit.selected{background:var(--dark);outline:2px solid var(--blue);}
+.by-kit.soldout{opacity:.45;cursor:default;}
+.by-kit-badge{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:8px;display:block;}
+.by-kit-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;line-height:1;margin-bottom:4px;color:var(--bone);}
+.by-kit-tagline{font-size:12px;font-weight:300;color:var(--stone);line-height:1.4;margin-bottom:12px;}
+.by-kit-price{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:-1px;line-height:1;color:var(--bone);}
+.by-kit-price-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:2px;}
+.by-kit-soldout-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:6px;}
+.by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:5px 10px;}
+.by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
+@keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
+.by-waitlist-block{border:1px solid rgba(46,109,164,0.35);background:rgba(46,109,164,0.05);padding:28px 24px;}
+.by-waitlist-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#e05c5c;font-weight:600;margin-bottom:10px;}
+.by-waitlist-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:10px;}
+.by-waitlist-body{font-size:14px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:24px;}
+.by-waitlist-cta{display:block;text-align:center;text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.12em;background:var(--blue);color:#fff;padding:15px 40px;}
+`;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function fmtDay(d) {
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
 
 function getDispatchDate() {
   const now = new Date();
   const day = now.getDay();
   const isBeforeNoon = now.getHours() < 12;
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
+  const d = new Date(now); d.setHours(0, 0, 0, 0);
   const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 };
   if (day in daysToAdd) d.setDate(d.getDate() + daysToAdd[day]);
   else if (day === 3) d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5));
   else d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4));
   return d;
 }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
-function getArrivalDate(dispatch) {
-  const d = new Date(dispatch); d.setDate(d.getDate() + 2); return d;
+// ── Progress bar ──────────────────────────────────────────────────────────────
+
+const STEPS = ['details', 'delivery', 'payment'];
+const STEP_LABELS = ['Details', 'Delivery', 'Payment'];
+
+function ProgressBar({ step }) {
+  const idx = STEPS.indexOf(step);
+  return (
+    <div className="co-progress">
+      {STEPS.map((s, i) => (
+        <Fragment key={s}>
+          <div className={`co-progress-step${i === idx ? ' active' : i < idx ? ' done' : ''}`}>
+            <div className="co-progress-dot">{i < idx ? '✓' : i + 1}</div>
+            <div className="co-progress-label">{STEP_LABELS[i]}</div>
+          </div>
+          {i < STEPS.length - 1 && <div className="co-progress-line" />}
+        </Fragment>
+      ))}
+    </div>
+  );
 }
 
-function fmtDay(date) {
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+// ── Mobile header (one-time, no subscription language) ────────────────────────
+
+function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
+  const [open, setOpen] = useState(false);
+  const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
+  const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
+
+  return (
+    <div className="co-mobile-header">
+      <button
+        className="co-mobile-header-bar"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        type="button"
+      >
+        <div className="co-mobile-header-left">
+          <span className="co-mobile-kit-name">{kit.name}</span>
+          <span className="co-mobile-see-more">
+            {open ? '▴ Hide summary' : '▾ Order summary'}
+          </span>
+        </div>
+        <div className="co-mobile-price-block">
+          <span className="co-mobile-price">£{price}</span>
+          <span className="co-mobile-price-note">one-time</span>
+        </div>
+      </button>
+
+      {open && (
+        <div className="co-mobile-header-body">
+          <div className="co-mobile-dispatch">
+            Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
+          </div>
+          <div className="co-mobile-dispatch">
+            No subscription — this is your only charge
+          </div>
+          {inventory && (
+            <div style={{ fontSize: 12, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--blit)', fontWeight: 600 }}>
+              {totalRemaining} of 250 remaining
+            </div>
+          )}
+          <div className="co-mobile-products">
+            {products.map(p => (
+              <div key={p.num} className="co-mobile-product">
+                <span className="co-mobile-product-num">{p.num}</span>
+                <span>{p.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="co-mobile-trust">
+            <div className="co-mobile-trust-line">◆ One-time purchase — no recurring charge</div>
+            <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · Free · UK only</div>
+            <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-// ── CSS ───────────────────────────────────────────────────────────────────────
+// ── Desktop right panel ───────────────────────────────────────────────────────
 
-const CSS = `
-.by-page{min-height:100vh;background:var(--black);display:grid;grid-template-columns:1fr 420px;gap:0;padding-top:64px;}
-.by-left{padding:64px 56px 80px;border-right:1px solid var(--line);}
-.by-right{padding:48px 40px;position:sticky;top:64px;align-self:start;height:calc(100vh - 64px);overflow-y:auto;background:var(--char);border-left:1px solid var(--lineb);}
+function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
+  const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
+  const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
-.by-back{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;margin-bottom:48px;transition:color .2s;}
-.by-back:hover{color:var(--bone);}
+  return (
+    <div className="co-right">
+      <div className="co-kit-name">{kit.name}</div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
+        <span className="co-price-main">£{price}</span>
+        <span className="co-price-label">one-time</span>
+      </div>
+      <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</div>
+      <div className="co-price-sub" style={{ marginTop: 3 }}>Royal Mail Tracked 48 · Free · UK only</div>
+      {inventory && (
+        <div className="by-stock-pill">
+          <span className="by-stock-dot" />
+          {totalRemaining} of 250 remaining
+        </div>
+      )}
 
-.by-eyebrow{font-size:13px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:12px;}
-.by-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5vw,72px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:10px;}
-.by-subhead{font-size:16px;color:var(--stone);font-weight:300;margin-bottom:36px;line-height:1.5;}
+      <div className="co-divider" />
 
-/* Kit selector */
-.by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:36px;}
-@media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
-.by-kit{background:var(--black);padding:28px 24px;cursor:pointer;transition:background .15s;}
-.by-kit:hover{background:var(--dark);}
-.by-kit.selected{background:var(--dark);outline:2px solid var(--blue);}
-.by-kit.soldout{opacity:.45;cursor:default;}
-.by-kit-badge{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:10px;display:block;}
-.by-kit-name{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.06em;line-height:1;margin-bottom:6px;color:var(--bone);}
-.by-kit-tagline{font-size:13px;font-weight:300;color:var(--stone);line-height:1.5;margin-bottom:16px;}
-.by-kit-price{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:-1px;line-height:1;color:var(--bone);}
-.by-kit-price-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:3px;}
-.by-kit-soldout-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:8px;}
+      <div className="co-promise">
+        <div className="co-promise-title">Before You Buy</div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>One-time purchase — no subscription, no recurring charge</span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>Ritual guide included in the box — QR code to bysolum.co.uk/ritual</span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>Secured by Stripe — your card details never touch our servers</span>
+        </div>
+      </div>
 
-/* Form */
-.by-section-divider{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;margin:28px 0 22px;padding-bottom:10px;border-bottom:1px solid var(--line);}
-.by-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.by-field{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
-.by-label{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:600;}
-.by-input{background:var(--dark);border:1px solid var(--lineb);color:var(--bone);padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:300;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box;}
-.by-input:focus{border-color:var(--blue);}
-.by-input::placeholder{color:rgba(168,180,188,0.4);}
-.by-submit{width:100%;background:var(--bone);color:var(--black);border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;padding:18px;cursor:pointer;transition:background .2s,transform .15s;margin-top:8px;}
-.by-submit:hover:not(:disabled){background:#fff;transform:translateY(-1px);}
-.by-submit:disabled{background:var(--stone);cursor:wait;transform:none;}
-.by-error{font-size:14px;color:#e05c5c;margin-top:8px;line-height:1.5;padding:12px 16px;border:1px solid rgba(224,92,92,0.3);background:rgba(224,92,92,0.05);}
-.by-secure{font-size:13px;color:var(--stone);font-weight:300;margin-top:14px;text-align:center;}
-.by-stripe-badge{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;padding:10px 16px;border:1px solid rgba(99,91,255,0.2);background:rgba(99,91,255,0.04);}
-.by-stripe-text{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.5px;}
-.by-stripe-logo{font-size:13px;font-weight:700;letter-spacing:-.5px;color:#a09bff;}
+      <div className="co-divider" />
 
-/* Payment step */
-.by-order-pill{background:rgba(46,109,164,0.12);border:1px solid rgba(74,143,199,0.3);padding:16px 20px;margin-bottom:28px;}
-.by-order-pill-kit{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:6px;}
-.by-order-pill-price{font-size:18px;color:var(--bone);font-weight:500;}
-.by-order-pill-sub{font-size:13px;color:var(--stone);font-weight:300;margin-top:4px;}
-.by-payment-wrap{margin-bottom:24px;}
-
-/* Waitlist */
-.by-waitlist-block{border:1px solid var(--lineb);background:rgba(46,109,164,0.04);padding:28px 28px 24px;}
-.by-waitlist-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#e05c5c;font-weight:600;margin-bottom:12px;}
-.by-waitlist-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:10px;}
-.by-waitlist-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:24px;}
-.by-waitlist-cta{display:block;text-align:center;text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;background:var(--bone);color:var(--black);padding:18px 40px;}
-
-/* Right panel */
-.by-right-kit{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.05em;color:var(--bone);line-height:1;margin-bottom:4px;}
-.by-right-price-row{display:flex;align-items:baseline;gap:6px;margin-top:8px;}
-.by-right-price{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--bone);letter-spacing:-1px;line-height:1;}
-.by-right-price-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);}
-.by-ship-line{font-size:15px;color:var(--stone);font-weight:300;margin-top:5px;}
-.by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:6px 12px;}
-.by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
-@keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
-.by-divider{height:1px;background:var(--line);margin:22px 0;}
-.by-section-label{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
-.by-product-list{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;}
-.by-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
-.by-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:22px;}
-.by-product-thumb{width:32px;height:40px;object-fit:cover;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
-.by-product-thumb-ph{width:32px;height:40px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
-.by-promise{border:1px solid var(--lineb);padding:20px 20px 16px;}
-.by-promise-title{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
-.by-trust{display:flex;flex-direction:column;gap:0;}
-.by-trust-line{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--mist);font-weight:300;line-height:1.4;padding:10px 0;border-bottom:1px solid var(--line);}
-.by-trust-line:last-child{border-bottom:none;padding-bottom:0;}
-.by-trust-check{color:var(--blue);font-size:12px;flex-shrink:0;margin-top:2px;font-weight:700;}
-
-@media(max-width:900px){
-  .by-page{grid-template-columns:1fr;}
-  .by-right{position:static;height:auto;border-left:none;border-bottom:1px solid var(--lineb);padding:28px 24px;}
-  .by-left{padding:36px 24px 64px;border-right:none;}
+      <div className="co-panel-label">What's in your box</div>
+      <div className="co-product-list">
+        {products.map(p => (
+          <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
+            {p.image
+              ? <img src={p.image} alt={p.name} className="co-product-thumb" loading="lazy" />
+              : <div className="co-product-thumb-ph" />
+            }
+            <span className="co-product-num">{p.num}</span>
+            <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+          </div>
+        ))}
+      </div>
+      {products.some(p => p.comingSoon) && (
+        <div className="co-soon-note">* Coming soon — included when available</div>
+      )}
+    </div>
+  );
 }
-`;
 
-// ── PaymentStep — inside <Elements> ──────────────────────────────────────────
+// ── Step 3: Payment ───────────────────────────────────────────────────────────
 
-function PaymentStep({ activeKit, payInfo, source, onBack }) {
+function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
   const stripe   = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
-
-  const totalPrice = (payInfo.amount_pence / 100).toFixed(0);
 
   async function handlePay(e) {
     e.preventDefault();
@@ -193,46 +266,63 @@ function PaymentStep({ activeKit, payInfo, source, onBack }) {
 
   return (
     <form onSubmit={handlePay} noValidate>
-      <div className="by-order-pill">
-        <div className="by-order-pill-kit">{activeKit.name} · First Box · One-Time</div>
-        <div className="by-order-pill-price">£{totalPrice} today</div>
-        <div className="by-order-pill-sub">
+      <div className="co-step-heading">Payment.</div>
+      <div className="co-step-subhead">Your card details are encrypted — never stored on our servers.</div>
+
+      <div className="co-order-pill">
+        <div className="co-order-pill-kit">{activeKit.name} · First Box · One-Time</div>
+        <div className="co-order-pill-charge-row">
+          <span className="co-order-pill-charge-label">Charged today</span>
+          <span className="co-order-pill-charge-amount">£{price}</span>
+        </div>
+        <div className="co-order-pill-detail">
           Ships {payInfo.dispatch_date} · Arrives {payInfo.arrival_date}
         </div>
-        <div className="by-order-pill-sub" style={{ marginTop: 4 }}>
-          No subscription — this is your only charge.
-        </div>
+        <div className="co-order-pill-cancel">◆ No subscription — this is your only charge</div>
       </div>
 
-      <div className="by-payment-wrap" data-testid="payment-element-wrapper">
-        <PaymentElement options={{ layout: 'tabs' }} />
+      <div className="co-payment-element-wrap">
+        <PaymentElement options={{
+          layout: 'tabs',
+          defaultValues: {
+            billingDetails: {
+              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+              email:   form.email || undefined,
+              phone:   form.phone || undefined,
+              address: {
+                line1:       form.line1    || undefined,
+                line2:       form.line2    || undefined,
+                city:        form.city     || undefined,
+                postal_code: form.postcode || undefined,
+                country:     'GB',
+              },
+            },
+          },
+          fields: { billingDetails: 'never' },
+        }} />
       </div>
 
-      {error && <div className="by-error" data-testid="pay-error">{error}</div>}
+      {error && <div className="co-error" data-testid="pay-error">{error}</div>}
 
-      <button type="submit" className="by-submit" disabled={!stripe || !elements || loading} data-testid="pay-btn">
-        {loading ? 'Processing…' : `Pay £${totalPrice} Now →`}
+      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading} data-testid="pay-btn">
+        {loading ? 'Processing…' : `Pay £${price} Now →`}
       </button>
 
-      <div className="by-secure" style={{ marginTop: 10 }}>
+      <div className="co-secure-note">
         By paying you agree to our{' '}
-        <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Terms</a>
+        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>
         {' '}and{' '}
-        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Privacy Policy</a>
+        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
       </div>
 
-      <div className="by-stripe-badge">
+      <div className="co-trust-row">
         <span style={{ fontSize: 13, color: '#a09bff' }}>🔒</span>
-        <span className="by-stripe-text">256-bit SSL · Secured by</span>
-        <span className="by-stripe-logo">Stripe</span>
+        <span className="co-trust-row-text">256-bit SSL · Secured by</span>
+        <span className="co-trust-row-brand">Stripe</span>
       </div>
 
-      <button
-        type="button"
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--stone)', fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 600, marginTop: 20, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
-        onClick={onBack}
-      >
-        ← Back to your details
+      <button type="button" className="co-back-btn" onClick={onBack}>
+        ← Back to delivery
       </button>
     </form>
   );
@@ -244,28 +334,23 @@ export default function BuyPage() {
   const [params] = useSearchParams();
 
   const rawSource = params.get('source');
-  const source = rawSource === 'tiktok' ? 'tiktok_shop' : (rawSource ?? 'first_batch');
+  const source    = rawSource === 'tiktok' ? 'tiktok_shop' : (rawSource ?? 'first_batch');
   const preselect = params.get('kit');
-
-  const isPremium  = PREMIUM_SOURCES.includes(source);
   const isFirstBatch = source === 'first_batch';
-  const prices = isPremium ? PREMIUM_PRICES : FIRST_BATCH_PRICES;
 
-  const [inventory, setInventory]       = useState(null);
-  const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
-  const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', postcode: '' });
-  const [loading, setLoading]           = useState(false);
-  const [error, setError]               = useState('');
-  const [stage, setStage]               = useState('form'); // 'form' | 'payment'
-  const [clientSecret, setClientSecret] = useState(null);
-  const [payInfo, setPayInfo]           = useState(null);
+  const [inventory, setInventory]         = useState(null);
+  const [selectedKit, setSelectedKit]     = useState(preselect ?? 'ritual');
+  const [step, setStep]                   = useState('details');
+  const [form, setForm]                   = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', postcode: '' });
+  const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState('');
+  const [clientSecret, setClientSecret]   = useState(null);
+  const [payInfo, setPayInfo]             = useState(null);
+  const [waitlistForm, setWaitlistForm]   = useState({ first_name: '', email: '' });
+  const [waitlistState, setWaitlistState] = useState('idle'); // idle | submitting | done | error
 
-  const dispatch = getDispatchDate();
-  const arrival  = getArrivalDate(dispatch);
+  const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
-  const authHeaders = { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` };
-
-  // Fire buy_page_viewed + Meta ViewContent once on mount
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
     fbViewContent('SOLUM Kit');
@@ -278,32 +363,71 @@ export default function BuyPage() {
       .catch(() => setInventory({}));
   }, []); // eslint-disable-line
 
-  const bothSoldOut = inventory && !inventory.ground?.available && !inventory.ritual?.available;
-  const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
-  const kitDef = KITS.find(k => k.id === selectedKit);
+  const dispatch = getDispatchDate();
+  const arrival  = addDays(dispatch, 2);
 
-  function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+  const activeKit   = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
+  const price       = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
+  // Sold out when inventory loaded and both kits have available=false (or no rows exist)
+  const bothSoldOut = inventory !== null && !inventory.ground?.available && !inventory.ritual?.available;
 
-  async function handleSubmit(e) {
+  async function handleWaitlist(e) {
     e.preventDefault();
+    const emailVal = waitlistForm.email.trim();
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
+    setWaitlistState('submitting');
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+        body: JSON.stringify({
+          email:      emailVal,
+          first_name: waitlistForm.first_name.trim() || null,
+          kit_id:     preselect ?? 'ritual',
+        }),
+      });
+      if (!res.ok) throw new Error();
+      capture('waitlist_joined', { source, kit: preselect ?? 'ritual' });
+      setWaitlistState('done');
+    } catch {
+      setWaitlistState('error');
+    }
+  }
+
+  function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+  // ── Step 1: details validation ────────────────────────────────────────────
+
+  function handleDetailsNext(e) {
+    e.preventDefault();
+    setError('');
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
     const emailVal = form.email.trim();
-    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { setError('Please enter a valid email address.'); return; }
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      setError('Please enter a valid email address.'); return;
+    }
     if (!form.phone.trim()) { setError('Phone number is required for delivery updates.'); return; }
-    if (!form.line1.trim()) { setError('Delivery address is required.'); return; }
-    if (!form.city.trim()) { setError('City is required.'); return; }
+    setStep('delivery');
+    window.scrollTo(0, 0);
+  }
+
+  // ── Step 2: delivery → create payment intent ──────────────────────────────
+
+  async function handleDeliveryNext(e) {
+    e.preventDefault();
+    setError('');
+    if (!form.line1.trim()) { setError('Address line 1 is required.'); return; }
+    if (!form.city.trim())  { setError('City is required.'); return; }
     if (!form.postcode.trim()) { setError('Postcode is required.'); return; }
 
     setLoading(true);
-    setError('');
-
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           kit_id:     selectedKit,
-          email:      emailVal,
+          email:      form.email.trim().toLowerCase(),
           first_name: form.first_name.trim(),
           last_name:  form.last_name.trim() || null,
           phone:      form.phone.trim() || null,
@@ -314,23 +438,20 @@ export default function BuyPage() {
           postcode:   form.postcode.trim(),
         }),
       });
-
       const data = await res.json();
       if (!res.ok) {
         setError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
       }
 
-      // Identify the user in PostHog and fire checkout funnel events
-      identify(emailVal, { first_name: form.first_name.trim(), kit: selectedKit, source });
-      capture('checkout_initiated', { kit: selectedKit, source, price: prices[selectedKit] });
-      fbInitiateCheckout(KITS.find(k => k.id === selectedKit)?.name ?? selectedKit, prices[selectedKit]);
-      // Store email so SuccessPage can identify the user after redirect
-      try { sessionStorage.setItem('solum_buyer_email', emailVal); } catch {}
+      identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
+      capture('checkout_initiated', { kit: selectedKit, source, price });
+      fbInitiateCheckout(activeKit?.name ?? selectedKit, price);
+      try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch {}
 
       setClientSecret(data.client_secret);
       setPayInfo(data);
-      setStage('payment');
+      setStep('payment');
       window.scrollTo(0, 0);
     } catch {
       setError('Network error. Please try again.');
@@ -339,231 +460,229 @@ export default function BuyPage() {
     }
   }
 
-  // ── Right summary panel ───────────────────────────────────────────────────
+  // ── Shared header + summary props ─────────────────────────────────────────
 
-  const RightPanel = () => {
-    const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS[1];
-    const activeProducts = PRODUCTS.filter(
-      p => activeKit.productNums.includes(p.num) && !p.comingSoon,
-    );
+  const headerProps = { kit: activeKit, price, dispatch, arrival, inventory: isFirstBatch ? inventory : null };
 
-    return (
-      <div className="by-right">
-        <div className="by-right-kit">{activeKit.name}</div>
-        <div className="by-right-price-row">
-          <span className="by-right-price">£{prices[activeKit.id] ?? prices.ritual}</span>
-          <span className="by-right-price-label">one-time</span>
-        </div>
-        <div className="by-ship-line">Ships {fmtDay(dispatch)} · Arrives by {fmtDay(arrival)}</div>
-        <div className="by-ship-line">Royal Mail Tracked 48 · UK only</div>
+  // ── Render ────────────────────────────────────────────────────────────────
 
-        {isFirstBatch && inventory && (
-          <div className="by-stock-pill" data-testid="stock-count">
-            <span className="by-stock-dot" />
-            {totalRemaining} of 250 remaining
-          </div>
-        )}
-
-        <div className="by-divider" />
-
-        <div className="by-section-label">What's in your box</div>
-        <div className="by-product-list">
-          {activeProducts.map(p => (
-            <div key={p.num} className="by-product">
-              {p.image
-                ? <img src={p.image} alt={p.name} className="by-product-thumb" loading="lazy" />
-                : <div className="by-product-thumb-ph" />
-              }
-              <span className="by-product-num">{p.num}</span>
-              <span>{p.name}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="by-divider" />
-
-        <div className="by-promise">
-          <div className="by-promise-title">Before You Buy</div>
-          <div className="by-trust">
-            <div className="by-trust-line">
-              <span className="by-trust-check">◆</span>
-              <span>One-time purchase — no subscription, no recurring charge</span>
-            </div>
-            <div className="by-trust-line">
-              <span className="by-trust-check">◆</span>
-              <span>Ships {fmtDay(dispatch)} · arrives by {fmtDay(arrival)} via Royal Mail Tracked 48</span>
-            </div>
-            <div className="by-trust-line">
-              <span className="by-trust-check">◆</span>
-              <span>QR code in the box — full ritual guide at bysolum.co.uk/ritual</span>
-            </div>
-            <div className="by-trust-line">
-              <span className="by-trust-check">◆</span>
-              <span>Secured by Stripe — your card details never touch our servers</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ── Payment stage ─────────────────────────────────────────────────────────
-
-  if (stage === 'payment' && clientSecret) {
+  if (step === 'payment' && clientSecret) {
     return (
       <>
         <style>{CSS}</style>
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
-          <div className="by-page">
-            <div className="by-left">
-              <div className="by-eyebrow">{kitDef?.name} · £{prices[selectedKit]} one-time</div>
-              <div className="by-heading">Pay Now.</div>
-              <div className="by-subhead">Your card details are encrypted — never stored on our servers.</div>
-              <PaymentStep
-                activeKit={kitDef}
+          <div className="co-page">
+            <div className="co-left">
+              <BuyMobileHeader {...headerProps} />
+              <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
+                ← Back to kits
+              </a>
+              <ProgressBar step="payment" />
+              <StepPayment
+                activeKit={activeKit}
+                price={price}
                 payInfo={payInfo}
+                form={form}
                 source={source}
-                onBack={() => { setStage('form'); window.scrollTo(0, 0); }}
+                onBack={() => { setStep('delivery'); window.scrollTo(0, 0); }}
               />
             </div>
-            <RightPanel />
+            <BuyOrderSummary {...headerProps} />
           </div>
         </Elements>
       </>
     );
   }
 
-  // ── Form stage ────────────────────────────────────────────────────────────
-
-  const eyebrow = isFirstBatch
-    ? '250 Kits · No Subscription Required'
-    : source === 'gift'
-    ? 'Gift Purchase · One-Time'
-    : 'One-Time Purchase · No Commitment';
-
   return (
     <>
       <style>{CSS}</style>
-      <div className="by-page">
-        <div className="by-left">
-          <a className="by-back" href="/#kits">← Back to kits</a>
+      <div className="co-page">
+        <div className="co-left">
+          <BuyMobileHeader {...headerProps} />
+          <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
+            ← Back to kits
+          </a>
 
           {bothSoldOut ? (
-            <div className="by-waitlist-block">
-              <div className="by-waitlist-eyebrow">Sold Out</div>
-              <div className="by-waitlist-title">All 250<br />claimed.</div>
-              <div className="by-waitlist-body">
-                The first batch is gone. Leave your email and you'll be first to know when we restock with 1,000+ units.
-              </div>
-              <a href="mailto:contact@bysolum.co.uk?subject=Restock%20Waitlist" className="by-waitlist-cta">
-                Join the waitlist →
-              </a>
+            <div className="co-waitlist">
+              {waitlistState === 'done' ? (
+                <div className="co-waitlist-done">
+                  <div className="co-waitlist-done-tick">✓</div>
+                  <div className="co-waitlist-done-title">You're on the list.</div>
+                  <div className="co-waitlist-done-body">
+                    We'll email you the moment stock is back — usually within a week.
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="co-waitlist-eyebrow">Sold Out</div>
+                  <div className="co-waitlist-title">Get notified<br />when it's back.</div>
+                  <div className="co-waitlist-body">
+                    The first batch has been claimed. Leave your details and we'll email you the moment stock is available.
+                  </div>
+                  <form onSubmit={handleWaitlist} noValidate>
+                    <div className="co-field">
+                      <label className="co-label">First Name <span className="co-label-opt">optional</span></label>
+                      <input
+                        className="co-input"
+                        value={waitlistForm.first_name}
+                        onChange={e => setWaitlistForm(f => ({ ...f, first_name: e.target.value }))}
+                        placeholder="James"
+                        autoComplete="given-name"
+                      />
+                    </div>
+                    <div className="co-field">
+                      <label className="co-label">Email</label>
+                      <input
+                        className="co-input"
+                        type="email"
+                        required
+                        value={waitlistForm.email}
+                        onChange={e => setWaitlistForm(f => ({ ...f, email: e.target.value }))}
+                        placeholder="james@example.com"
+                        autoComplete="email"
+                      />
+                    </div>
+                    {waitlistState === 'error' && (
+                      <div className="co-error">Something went wrong — please try again.</div>
+                    )}
+                    <button
+                      type="submit"
+                      className="co-waitlist-submit"
+                      disabled={waitlistState === 'submitting'}
+                    >
+                      {waitlistState === 'submitting' ? 'Saving…' : 'Notify Me When Available →'}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           ) : (
             <>
-              <div className="by-eyebrow">{eyebrow}</div>
-              <div className="by-heading">
-                {isFirstBatch ? 'The First 250.' : 'Get Your Kit.'}
-              </div>
-              <div className="by-subhead">
-                {isFirstBatch
-                  ? 'First-batch pricing. No subscription. Start the ritual today.'
-                  : source === 'gift'
-                  ? 'Send someone the full system. We ship directly to them.'
-                  : 'One-time purchase. Subscribe for monthly refills anytime after.'}
-              </div>
+              <ProgressBar step={step} />
 
-              {/* Kit selector */}
-              <div className="by-kits">
-                {(['ground', 'ritual']).map(id => {
-                  const kit = KITS.find(k => k.id === id);
-                  const stock = inventory?.[id];
-                  const available = !inventory || stock?.available;
-                  return (
-                    <div
-                      key={id}
-                      data-testid={`kit-${id}`}
-                      className={`by-kit${selectedKit === id ? ' selected' : ''}${!available ? ' soldout' : ''}`}
-                      onClick={() => available && setSelectedKit(id)}
-                    >
-                      {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
-                      <div className="by-kit-name">{kit?.name}</div>
-                      <div className="by-kit-tagline">{kit?.tagline}</div>
-                      <div className="by-kit-price">£{prices[id]}</div>
-                      <div className="by-kit-price-label">one-time</div>
-                      {!available && <div className="by-kit-soldout-tag">Sold Out</div>}
+              {/* Kit selector — shown on step 1 only */}
+              {step === 'details' && (
+                <div className="by-kits" data-testid="kit-selector">
+                  {(['ground', 'ritual']).map(id => {
+                    const kit = KITS.find(k => k.id === id);
+                    const stock = inventory?.[id];
+                    const available = !inventory || stock?.available;
+                    return (
+                      <div
+                        key={id}
+                        data-testid={`kit-${id}`}
+                        className={`by-kit${selectedKit === id ? ' selected' : ''}${!available ? ' soldout' : ''}`}
+                        onClick={() => available && setSelectedKit(id)}
+                      >
+                        {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
+                        <div className="by-kit-name">{kit?.name}</div>
+                        <div className="by-kit-tagline">{kit?.tagline}</div>
+                        <div className="by-kit-price">£{KIT_PRICES[id]}</div>
+                        <div className="by-kit-price-label">one-time</div>
+                        {!available && <div className="by-kit-soldout-tag">Sold Out</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Step 1: Details */}
+              {step === 'details' && (
+                <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
+                  <div className="co-step-heading">Your Details.</div>
+                  <div className="co-step-subhead">Takes 60 seconds. We only ask what we need.</div>
+
+                  <div className="co-row">
+                    <div className="co-field">
+                      <label className="co-label">First Name</label>
+                      <input className="co-input" type="text" value={form.first_name} onChange={onChange('first_name')} placeholder="James" autoComplete="given-name" data-testid="first-name" />
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} noValidate>
-                <div className="by-row">
-                  <div className="by-field">
-                    <label className="by-label">First Name</label>
-                    <input className="by-input" type="text" required placeholder="James" value={form.first_name} onChange={set('first_name')} />
+                    <div className="co-field">
+                      <label className="co-label">Last Name <span className="co-label-opt">optional</span></label>
+                      <input className="co-input" type="text" value={form.last_name} onChange={onChange('last_name')} placeholder="Smith" autoComplete="family-name" />
+                    </div>
                   </div>
-                  <div className="by-field">
-                    <label className="by-label">Last Name</label>
-                    <input className="by-input" type="text" placeholder="Smith" value={form.last_name} onChange={set('last_name')} />
+
+                  <div className="co-field">
+                    <label className="co-label">Email</label>
+                    <input className="co-input" type="email" value={form.email} onChange={onChange('email')} placeholder="james@example.com" autoComplete="email" data-testid="email" />
                   </div>
-                </div>
 
-                <div className="by-field">
-                  <label className="by-label">Email</label>
-                  <input className="by-input" type="email" required placeholder="james@example.com" value={form.email} onChange={set('email')} />
-                </div>
-
-                <div className="by-field">
-                  <label className="by-label">Phone <span style={{ fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>— for delivery updates</span></label>
-                  <input className="by-input" type="tel" required placeholder="+44 7700 900000" value={form.phone} onChange={set('phone')} />
-                </div>
-
-                <div className="by-section-divider">Delivery Address</div>
-
-                <div className="by-field">
-                  <label className="by-label">Address Line 1</label>
-                  <input className="by-input" type="text" required placeholder="12 Example Street" value={form.line1} onChange={set('line1')} />
-                </div>
-                <div className="by-field">
-                  <label className="by-label">Address Line 2 <span style={{ fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-                  <input className="by-input" type="text" placeholder="Flat, apartment…" value={form.line2} onChange={set('line2')} />
-                </div>
-                <div className="by-row">
-                  <div className="by-field">
-                    <label className="by-label">City</label>
-                    <input className="by-input" type="text" required placeholder="London" value={form.city} onChange={set('city')} />
+                  <div className="co-field">
+                    <label className="co-label">Phone <span className="co-label-opt">for delivery updates</span></label>
+                    <input className="co-input" type="tel" value={form.phone} onChange={onChange('phone')} placeholder="+44 7700 900000" autoComplete="tel" data-testid="phone" />
                   </div>
-                  <div className="by-field">
-                    <label className="by-label">Postcode</label>
-                    <input className="by-input" type="text" required placeholder="SW1A 1AA" value={form.postcode} onChange={set('postcode')} />
+
+                  {error && <div className="co-error" data-testid="form-error">{error}</div>}
+
+                  <button className="co-submit" type="submit" data-testid="continue-btn">
+                    Next: Delivery →
+                  </button>
+
+                  <div className="co-inline-trust">
+                    <div className="co-inline-trust-item">
+                      <span>🔒</span>
+                      <span>Your information is encrypted and never sold</span>
+                    </div>
+                    <div className="co-inline-trust-item">
+                      <span>◆</span>
+                      <span>One-time purchase — no subscription, no recurring charges</span>
+                    </div>
                   </div>
-                </div>
+                </form>
+              )}
 
-                {error && <div className="by-error" data-testid="form-error">{error}</div>}
+              {/* Step 2: Delivery */}
+              {step === 'delivery' && (
+                <form onSubmit={handleDeliveryNext} noValidate data-testid="delivery-form">
+                  <div className="co-step-heading">Delivery.</div>
+                  <div className="co-step-subhead">UK delivery only · Royal Mail Tracked 48 · Free shipping</div>
 
-                <button className="by-submit" type="submit" disabled={loading || !selectedKit} data-testid="continue-btn">
-                  {loading ? 'Checking details…' : 'Continue to Payment →'}
-                </button>
+                  <div className="co-field">
+                    <label className="co-label">Address Line 1</label>
+                    <input className="co-input" type="text" value={form.line1} onChange={onChange('line1')} placeholder="14 Example Street" autoComplete="address-line1" data-testid="line1" />
+                  </div>
+                  <div className="co-field">
+                    <label className="co-label">Address Line 2 <span className="co-label-opt">optional</span></label>
+                    <input className="co-input" type="text" value={form.line2} onChange={onChange('line2')} placeholder="Flat 2" autoComplete="address-line2" />
+                  </div>
+                  <div className="co-row">
+                    <div className="co-field">
+                      <label className="co-label">City / Town</label>
+                      <input className="co-input" type="text" value={form.city} onChange={onChange('city')} placeholder="London" autoComplete="address-level2" data-testid="city" />
+                    </div>
+                    <div className="co-field">
+                      <label className="co-label">Postcode</label>
+                      <input className="co-input" type="text" value={form.postcode} onChange={onChange('postcode')} placeholder="SW1A 1AA" autoComplete="postal-code" style={{ textTransform: 'uppercase' }} data-testid="postcode" />
+                    </div>
+                  </div>
 
-                <div className="by-secure">
-                  By placing an order you agree to our{' '}
-                  <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Terms</a>
-                  {' '}and{' '}
-                  <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Privacy Policy</a>
-                </div>
-                <div className="by-stripe-badge">
-                  <span style={{ fontSize: 13, color: '#a09bff' }}>🔒</span>
-                  <span className="by-stripe-text">256-bit SSL · Secured by</span>
-                  <span className="by-stripe-logo">Stripe</span>
-                </div>
-              </form>
+                  <div className="co-ship-strip">
+                    <span className="co-ship-strip-icon">📦</span>
+                    <div className="co-ship-strip-text">
+                      <span className="co-ship-strip-main">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</span>
+                      <span className="co-ship-strip-sub">Royal Mail Tracked 48 · Free</span>
+                    </div>
+                  </div>
+
+                  {error && <div className="co-error" data-testid="delivery-error">{error}</div>}
+
+                  <button className="co-submit" type="submit" disabled={loading} data-testid="delivery-btn">
+                    {loading ? 'Preparing payment…' : 'Continue to Payment →'}
+                  </button>
+
+                  <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); window.scrollTo(0, 0); }}>
+                    ← Back to your details
+                  </button>
+                </form>
+              )}
             </>
           )}
         </div>
 
-        <RightPanel />
+        {!bothSoldOut && <BuyOrderSummary {...headerProps} />}
       </div>
     </>
   );

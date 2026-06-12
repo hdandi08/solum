@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+
 const PAGE_SIZE = 25
 
 const CARRIERS = [
@@ -62,8 +64,9 @@ export default function OrdersPage() {
 
   // Per-row dispatch inputs
   const [inputs, setInputs] = useState({}) // { [orderId]: { tracking, carrier } }
-  const [saving, setSaving]     = useState(null)
+  const [saving, setSaving]       = useState(null)
   const [saveError, setSaveError] = useState('')
+  const [labelSaving, setLabelSaving] = useState(null) // order id being labelled
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
@@ -155,6 +158,31 @@ export default function OrdersPage() {
       setSaveError(err.message)
     } finally {
       setSaving(null)
+    }
+  }
+
+  async function handleCreateLabel(order) {
+    setLabelSaving(order.id)
+    setSaveError('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-sendcloud-parcel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ order_id: order.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `SendCloud error ${res.status}`)
+      if (data.label_url) window.open(data.label_url, '_blank')
+      await fetchOrders()
+    } catch (err) {
+      setSaveError(err.message)
+    } finally {
+      setLabelSaving(null)
     }
   }
 
@@ -263,22 +291,40 @@ export default function OrdersPage() {
                         </td>
                         <td style={{ whiteSpace: 'nowrap' }}>
                           {order.dispatch_status === 'pending' && (
-                            <button
-                              className="btn btn-sm btn-primary"
-                              onClick={() => handleDispatch(order)}
-                              disabled={saving === order.id}
-                            >
-                              {saving === order.id ? '...' : 'Dispatch'}
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleCreateLabel(order)}
+                                disabled={labelSaving === order.id || saving === order.id}
+                                title="Create Royal Mail label via SendCloud"
+                              >
+                                {labelSaving === order.id ? '...' : 'Create Label'}
+                              </button>
+                              <button
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => handleDispatch(order)}
+                                disabled={saving === order.id || labelSaving === order.id}
+                                title="Manual dispatch — enter tracking above"
+                              >
+                                {saving === order.id ? '...' : 'Manual'}
+                              </button>
+                            </div>
                           )}
                           {order.dispatch_status === 'dispatched' && (
-                            <button
-                              className="btn btn-sm btn-secondary"
-                              onClick={() => handleMarkDelivered(order.id)}
-                              disabled={saving === order.id}
-                            >
-                              {saving === order.id ? '...' : 'Mark Delivered'}
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <button
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => handleMarkDelivered(order.id)}
+                                disabled={saving === order.id}
+                              >
+                                {saving === order.id ? '...' : 'Mark Delivered'}
+                              </button>
+                              {order.sendcloud_parcel_id && (
+                                <span style={{ fontSize: '11px', color: 'var(--bone-muted)' }}>
+                                  SC#{order.sendcloud_parcel_id}
+                                </span>
+                              )}
+                            </div>
                           )}
                           {order.dispatch_status === 'delivered' && (
                             <span style={{ fontSize: '12px', color: 'var(--bone-muted)' }}>

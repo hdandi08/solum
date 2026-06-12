@@ -153,9 +153,9 @@ export default function RitualSection() {
       <style>{CSS}</style>
       <section className="ritual-section" id="ritual">
         <div className="ritual-inner">
-          <div className="ritual-section-tag reveal">The Ritual</div>
-          <div className="ritual-section-head reveal">Two Rituals.<br />One System.</div>
-          <p className="ritual-section-sub reveal">Daily keeps you clean. Weekly goes deeper. Follow both exactly.</p>
+          <div className="ritual-section-tag reveal">Ten minutes. Every shower.</div>
+          <div className="ritual-section-head reveal">The Ritual.</div>
+          <p className="ritual-section-sub reveal">All five steps happen in the shower you are already taking. Follow the numbers.</p>
 
           {/* Mobile compact view — replaces full panels on small screens */}
           <div className="ritual-compact reveal">

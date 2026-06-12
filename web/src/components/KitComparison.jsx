@@ -80,9 +80,9 @@ export default function KitComparison() {
       <section className="kits-section" id="kits">
         <div className="kits-inner">
           <div className="kits-header reveal">
-            <div className="k-sec-tag">Choose Your Kit</div>
-            <h2>The Difference<br />Is Immediate.</h2>
-            <p>Every kit gets your back properly clean for the first time and removes the dead skin buildup most men carry for years. RITUAL adds the oil treatment — skin that stays fed all day, not just the hour after your shower.</p>
+            <div className="k-sec-tag">Two ways to begin.</div>
+            <h2>Choose<br />Your Kit.</h2>
+            <p>Each kit arrives once. After that, only what runs out is replenished.</p>
           </div>
           <div className="kits-grid reveal">
             {KITS.map(kit => {

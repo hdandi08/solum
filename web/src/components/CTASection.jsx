@@ -25,10 +25,10 @@ export default function CTASection() {
     <>
       <style>{CSS}</style>
       <section className="cta-section">
-        <div className="cta-tag">Your Body. Done Right.</div>
-        <h2 className="cta-title">Start Your<br />Ritual.</h2>
+        <div className="cta-tag">Your body. Done right.</div>
+        <h2 className="cta-title">Your Body.<br />Done Right.</h2>
         <p className="cta-body">
-          A shower cleans you. A ritual changes you.
+          The system that should have existed twenty years ago. It exists now.
         </p>
         <div className="cta-offer">
           {IS_FIRST_BATCH
@@ -37,11 +37,19 @@ export default function CTASection() {
         </div>
         <div className="cta-btns">
           <a
-            href={IS_FIRST_BATCH ? '/buy' : '#kits'}
+            href={IS_FIRST_BATCH ? '/buy?kit=ritual' : '/checkout?kit=ritual'}
             className="cta-btn-primary"
-            onClick={() => trackGoal('bottom_cta_clicked', { variant: ctaVariant })}
+            onClick={() => trackGoal('bottom_cta_clicked', { variant: 'ritual' })}
           >
-            {IS_FIRST_BATCH ? 'Get Your Kit' : ctaLabel}
+            Begin with Ritual — £85
+          </a>
+          <a
+            href={IS_FIRST_BATCH ? '/buy?kit=ground' : '/checkout?kit=ground'}
+            className="cta-btn-primary"
+            style={{ background: 'transparent', color: 'var(--bone)', border: '1px solid rgba(240,236,226,0.25)' }}
+            onClick={() => trackGoal('bottom_cta_clicked', { variant: 'ground' })}
+          >
+            Begin with Ground — £65
           </a>
         </div>
       </section>

@@ -101,6 +101,14 @@ Deno.serve(async (req) => {
       return new Response('ok', { status: 200, headers: corsHeaders });
     }
 
+    // Validate UUID format — SendCloud test events send numeric strings like "12345"
+    // which cause a Postgres type error. Return 200 so SendCloud doesn't retry test events.
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!UUID_RE.test(orderNumber)) {
+      console.warn('SENDCLOUD_WEBHOOK: non-UUID order_number (likely test event), skipping', { orderNumber, parcel_id: parcel.id });
+      return new Response('ok', { status: 200, headers: corsHeaders });
+    }
+
     const newDispatchStatus = STATUS_MAP[statusId];
 
     if (newDispatchStatus) {

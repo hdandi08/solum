@@ -18,10 +18,10 @@ const CSS = `
 `;
 
 const STATS = [
-  ['Week 1', "Dead skin you didn't know existed rolls off.", 'Rinsing never removes it. Friction does. Most men are carrying years of buildup.'],
-  ['Week 2', 'Body odour reduces.', 'Not from sweat — dead cells feed odour bacteria. Remove the cells, cut the source.'],
-  ['Week 3', 'Skin holds moisture past midday.', "No tightness by afternoon. The 3-minute lotion window actually works when skin is clean underneath."],
-  ['Month 2', 'Your skin is just different.', 'Not one thing fixed. All of it — texture, moisture, clarity, smell. This is what properly maintained skin feels like.'],
+  ['Week 1', "Dead skin you didn't know existed rolls off.", "Rinsing never removes it; friction does. You stop carrying years of unseen buildup."],
+  ['Week 2', 'Body odour noticeably reduces.', 'Odour bacteria feed on dead cells, not sweat. Remove the cells, eliminate the source.'],
+  ['Week 3', 'Skin holds moisture past midday.', 'No tightness by afternoon. The three-minute lotion rule finally works because the skin beneath is clean.'],
+  ['Month 2', 'Your skin is fundamentally different.', 'Texture, moisture, clarity, and scent. This is what properly maintained skin feels like.'],
 ];
 
 export default function TruthSection() {
@@ -31,17 +31,15 @@ export default function TruthSection() {
       <section className="truth-section" id="truth">
         <div className="truth-inner">
           <div className="truth-text reveal-left">
-            <div className="t-sec-tag">The Reality</div>
-            <div className="truth-quote">Nobody<br />Taught<br />You <em>This.</em></div>
+            <div className="t-sec-tag">The results speak plainly.</div>
+            <div className="truth-quote">The<br />Reality.</div>
             <p className="truth-body">
               You were taught to shower. Nobody told you what actually happens inside one.
-              One product on your whole body, rinsed off in 90 seconds — that's not a system.
-              <br /><br />
-              SOLUM is the system that should have existed twenty years ago.
+              One product on your whole body, rinsed off in ninety seconds, is a habit — not a system.
             </p>
             <div className="truth-note">
               SOLUM does not replace your face routine, shampoo, or deodorant.
-              It addresses everything else — the 90% of your skin most products ignore.
+              It addresses the 90% of your skin that every other brand ignores.
             </div>
           </div>
           <div className="truth-stats-wrap reveal">
