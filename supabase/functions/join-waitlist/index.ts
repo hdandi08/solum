@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { email, first_name, source, utm_medium, utm_campaign, referred_by } = await req.json()
+    const { email, first_name, last_name, phone, line1, line2, city, postcode, source, utm_medium, utm_campaign, referred_by } = await req.json()
 
     const normalised = (email ?? '').trim().toLowerCase()
 
@@ -207,13 +207,19 @@ Deno.serve(async (req) => {
     const { data: inserted, error: insertError } = await db
       .from('leads')
       .insert({
-        email: normalised,
-        first_name: first_name?.trim() || null,
+        email:           normalised,
+        first_name:      first_name?.trim()  || null,
+        last_name:       last_name?.trim()   || null,
+        phone:           phone?.trim()       || null,
+        line1:           line1?.trim()       || null,
+        line2:           line2?.trim()       || null,
+        city:            city?.trim()        || null,
+        postcode:        postcode?.trim()    || null,
         checkout_status: 'waitlist',
-        source: source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
-        referred_by: referred_by || null,
+        source:          source              || null,
+        utm_medium:      utm_medium          || null,
+        utm_campaign:    utm_campaign        || null,
+        referred_by:     referred_by         || null,
       })
       .select('confirm_token')
       .single()
