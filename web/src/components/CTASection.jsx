@@ -1,6 +1,5 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
 
-const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 
 const CTA_COPY = { control: 'Choose Your Kit', ritual: 'Build Your Ritual' };
 
@@ -30,21 +29,17 @@ export default function CTASection() {
         <p className="cta-body">
           The system that should have existed twenty years ago. It exists now.
         </p>
-        <div className="cta-offer">
-          {IS_FIRST_BATCH
-            ? '250 kits only · one-time purchase · GROUND £65 · RITUAL £85'
-            : 'Spaces are filling fast · GROUND from £65 · RITUAL from £85'}
-        </div>
+        <div className="cta-offer">250 kits only · one-time purchase · GROUND £65 · RITUAL £85</div>
         <div className="cta-btns">
           <a
-            href={IS_FIRST_BATCH ? '/buy?kit=ritual' : '/checkout?kit=ritual'}
+            href="/buy?kit=ritual"
             className="cta-btn-primary"
             onClick={() => trackGoal('bottom_cta_clicked', { variant: 'ritual' })}
           >
             Begin with Ritual — £85
           </a>
           <a
-            href={IS_FIRST_BATCH ? '/buy?kit=ground' : '/checkout?kit=ground'}
+            href="/buy?kit=ground"
             className="cta-btn-primary"
             style={{ background: 'transparent', color: 'var(--bone)', border: '1px solid rgba(240,236,226,0.25)' }}
             onClick={() => trackGoal('bottom_cta_clicked', { variant: 'ground' })}

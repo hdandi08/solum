@@ -338,16 +338,15 @@ export default function BuyPage() {
   const preselect = params.get('kit');
   const isFirstBatch = source === 'first_batch';
 
-  const [inventory, setInventory]         = useState(null);
-  const [selectedKit, setSelectedKit]     = useState(preselect ?? 'ritual');
-  const [step, setStep]                   = useState('details');
-  const [form, setForm]                   = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', postcode: '' });
-  const [loading, setLoading]             = useState(false);
-  const [error, setError]                 = useState('');
-  const [clientSecret, setClientSecret]   = useState(null);
-  const [payInfo, setPayInfo]             = useState(null);
-  const [waitlistForm, setWaitlistForm]   = useState({ first_name: '', email: '' });
-  const [waitlistState, setWaitlistState] = useState('idle'); // idle | submitting | done | error
+  const [inventory, setInventory]       = useState(null);
+  const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
+  const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
+  const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', postcode: '' });
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState('');
+  const [clientSecret, setClientSecret] = useState(null);
+  const [payInfo, setPayInfo]           = useState(null);
+  const [soldoutSaved, setSoldoutSaved] = useState(false);
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
@@ -366,33 +365,8 @@ export default function BuyPage() {
   const dispatch = getDispatchDate();
   const arrival  = addDays(dispatch, 2);
 
-  const activeKit   = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
-  const price       = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
-  // Sold out when inventory loaded and both kits have available=false (or no rows exist)
-  const bothSoldOut = inventory !== null && !inventory.ground?.available && !inventory.ritual?.available;
-
-  async function handleWaitlist(e) {
-    e.preventDefault();
-    const emailVal = waitlistForm.email.trim();
-    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
-    setWaitlistState('submitting');
-    try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
-        body: JSON.stringify({
-          email:      emailVal,
-          first_name: waitlistForm.first_name.trim() || null,
-          kit_id:     preselect ?? 'ritual',
-        }),
-      });
-      if (!res.ok) throw new Error();
-      capture('waitlist_joined', { source, kit: preselect ?? 'ritual' });
-      setWaitlistState('done');
-    } catch {
-      setWaitlistState('error');
-    }
-  }
+  const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
+  const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
 
   function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -419,6 +393,31 @@ export default function BuyPage() {
     if (!form.line1.trim()) { setError('Address line 1 is required.'); return; }
     if (!form.city.trim())  { setError('City is required.'); return; }
     if (!form.postcode.trim()) { setError('Postcode is required.'); return; }
+
+    // Check inventory — only after they've committed their details
+    const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
+    if (kitSoldOut) {
+      setLoading(true);
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+          body: JSON.stringify({
+            email:      form.email.trim().toLowerCase(),
+            first_name: form.first_name.trim() || null,
+            source:     `buy-soldout-${selectedKit}`,
+          }),
+        });
+        setSoldoutSaved(true);
+      } catch {
+        setSoldoutSaved(false);
+      }
+      capture('soldout_detected', { kit: selectedKit, source, has_address: true });
+      setStep('soldout');
+      window.scrollTo(0, 0);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -462,7 +461,7 @@ export default function BuyPage() {
 
   // ── Shared header + summary props ─────────────────────────────────────────
 
-  const headerProps = { kit: activeKit, price, dispatch, arrival, inventory: isFirstBatch ? inventory : null };
+  const headerProps = { kit: activeKit, price, dispatch, arrival, inventory };
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -504,59 +503,18 @@ export default function BuyPage() {
             ← Back to kits
           </a>
 
-          {bothSoldOut ? (
+          {step === 'soldout' ? (
             <div className="co-waitlist">
-              {waitlistState === 'done' ? (
-                <div className="co-waitlist-done">
-                  <div className="co-waitlist-done-tick">✓</div>
-                  <div className="co-waitlist-done-title">You're on the list.</div>
-                  <div className="co-waitlist-done-body">
-                    We'll email you the moment stock is back — usually within a week.
-                  </div>
+              <div className="co-waitlist-done">
+                <div className="co-waitlist-done-tick">✓</div>
+                <div className="co-waitlist-done-title">You're on the list.</div>
+                <div className="co-waitlist-done-body">
+                  This kit has sold out. We've saved your details and will email {form.email} the moment stock is back.
                 </div>
-              ) : (
-                <>
-                  <div className="co-waitlist-eyebrow">Sold Out</div>
-                  <div className="co-waitlist-title">Get notified<br />when it's back.</div>
-                  <div className="co-waitlist-body">
-                    The first batch has been claimed. Leave your details and we'll email you the moment stock is available.
-                  </div>
-                  <form onSubmit={handleWaitlist} noValidate>
-                    <div className="co-field">
-                      <label className="co-label">First Name <span className="co-label-opt">optional</span></label>
-                      <input
-                        className="co-input"
-                        value={waitlistForm.first_name}
-                        onChange={e => setWaitlistForm(f => ({ ...f, first_name: e.target.value }))}
-                        placeholder="James"
-                        autoComplete="given-name"
-                      />
-                    </div>
-                    <div className="co-field">
-                      <label className="co-label">Email</label>
-                      <input
-                        className="co-input"
-                        type="email"
-                        required
-                        value={waitlistForm.email}
-                        onChange={e => setWaitlistForm(f => ({ ...f, email: e.target.value }))}
-                        placeholder="james@example.com"
-                        autoComplete="email"
-                      />
-                    </div>
-                    {waitlistState === 'error' && (
-                      <div className="co-error">Something went wrong — please try again.</div>
-                    )}
-                    <button
-                      type="submit"
-                      className="co-waitlist-submit"
-                      disabled={waitlistState === 'submitting'}
-                    >
-                      {waitlistState === 'submitting' ? 'Saving…' : 'Notify Me When Available →'}
-                    </button>
-                  </form>
-                </>
-              )}
+              </div>
+              <a href="/" className="co-back-btn" style={{ display: 'inline-block', marginTop: 24 }}>
+                ← Back to bysolum.co.uk
+              </a>
             </div>
           ) : (
             <>
@@ -567,21 +525,18 @@ export default function BuyPage() {
                 <div className="by-kits" data-testid="kit-selector">
                   {(['ground', 'ritual']).map(id => {
                     const kit = KITS.find(k => k.id === id);
-                    const stock = inventory?.[id];
-                    const available = !inventory || stock?.available;
                     return (
                       <div
                         key={id}
                         data-testid={`kit-${id}`}
-                        className={`by-kit${selectedKit === id ? ' selected' : ''}${!available ? ' soldout' : ''}`}
-                        onClick={() => available && setSelectedKit(id)}
+                        className={`by-kit${selectedKit === id ? ' selected' : ''}`}
+                        onClick={() => setSelectedKit(id)}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         <div className="by-kit-name">{kit?.name}</div>
                         <div className="by-kit-tagline">{kit?.tagline}</div>
                         <div className="by-kit-price">£{KIT_PRICES[id]}</div>
                         <div className="by-kit-price-label">one-time</div>
-                        {!available && <div className="by-kit-soldout-tag">Sold Out</div>}
                       </div>
                     );
                   })}
@@ -682,7 +637,7 @@ export default function BuyPage() {
           )}
         </div>
 
-        {!bothSoldOut && <BuyOrderSummary {...headerProps} />}
+        {step !== 'soldout' && <BuyOrderSummary {...headerProps} />}
       </div>
     </>
   );

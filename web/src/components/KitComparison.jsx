@@ -4,7 +4,6 @@ import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
 
-const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const CSS = `
 .kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
 .kits-inner{max-width:1400px;margin:0 auto;}
@@ -99,12 +98,6 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                       <span className="kit-price-first-label">first box</span>
                     </div>
-                    {!IS_FIRST_BATCH && (
-                      <div className="kit-price-sub">
-                        then <span>£{kit.monthlyPrice}/mo</span>
-                        {kit.comingSoon ? ' when available' : ' · cancel any time'}
-                      </div>
-                    )}
                   </div>
                   <div className="kit-divider" />
                   <button className="kit-products-toggle" onClick={() => toggle(kit.id)}>
@@ -136,21 +129,17 @@ export default function KitComparison() {
                       className="kit-cta active"
                       onClick={() => {
                         capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
-                        navigate(IS_FIRST_BATCH ? `/buy?kit=${kit.id}` : `/checkout?kit=${kit.id}`);
+                        navigate(`/buy?kit=${kit.id}`);
                       }}
                     >
-                      {IS_FIRST_BATCH ? `Get ${kit.name}` : `Start with ${kit.name}`}
+                      Get {kit.name}
                     </button>
                   )}
                 </div>
               );
             })}
           </div>
-          <p className="kits-footnote">
-            {IS_FIRST_BATCH
-              ? 'Subscription coming soon.'
-              : 'First box is a one-time purchase. Monthly refills ship on the 1st — cancel any time.'}
-          </p>
+          <p className="kits-footnote">Subscription coming soon.</p>
         </div>
       </section>
     </>
