@@ -12,10 +12,7 @@ const STRIPE_KEY   = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 const stripePromise = loadStripe(STRIPE_KEY);
 
-const PREMIUM_SOURCES = ['gift', 'tiktok_shop'];
-
-const FIRST_BATCH_PRICES = { ground: 65, ritual: 85 };
-const PREMIUM_PRICES     = { ground: 75, ritual: 95 };
+const KIT_PRICES = { ground: 65, ritual: 85 };
 
 // ── Stripe appearance — matches SOLUM dark aesthetic ─────────────────────────
 
@@ -247,9 +244,7 @@ export default function BuyPage() {
   const source = rawSource === 'tiktok' ? 'tiktok_shop' : (rawSource ?? 'first_batch');
   const preselect = params.get('kit');
 
-  const isPremium  = PREMIUM_SOURCES.includes(source);
-  const isFirstBatch = source === 'first_batch';
-  const prices = isPremium ? PREMIUM_PRICES : FIRST_BATCH_PRICES;
+  const prices = KIT_PRICES;
 
   const [inventory, setInventory]       = useState(null);
   const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');

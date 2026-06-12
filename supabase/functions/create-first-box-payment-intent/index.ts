@@ -8,10 +8,8 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
-const FIRST_BATCH_PENCE: Record<string, number> = { ground: 6500, ritual: 8500 };
-const PREMIUM_PENCE: Record<string, number>     = { ground: 7500, ritual: 9500 };
-const KIT_NAMES: Record<string, string>          = { ground: 'GROUND', ritual: 'RITUAL' };
-const PREMIUM_SOURCES = ['gift', 'tiktok_shop'];
+const KIT_PENCE: Record<string, number> = { ground: 6500, ritual: 8500 };
+const KIT_NAMES: Record<string, string> = { ground: 'GROUND', ritual: 'RITUAL' };
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -75,8 +73,7 @@ Deno.serve(async (req) => {
     }
 
     const effectiveSource = source ?? 'first_batch';
-    const isPremium = PREMIUM_SOURCES.includes(effectiveSource);
-    const amount = (isPremium ? PREMIUM_PENCE : FIRST_BATCH_PENCE)[kit_id!];
+    const amount = KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
     const dispatch = getDispatchDate();
