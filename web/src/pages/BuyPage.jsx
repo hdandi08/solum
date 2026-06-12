@@ -404,7 +404,13 @@ export default function BuyPage() {
           headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
           body: JSON.stringify({
             email:      form.email.trim().toLowerCase(),
-            first_name: form.first_name.trim() || null,
+            first_name: form.first_name.trim()  || null,
+            last_name:  form.last_name.trim()   || null,
+            phone:      form.phone.trim()       || null,
+            line1:      form.line1.trim()       || null,
+            line2:      form.line2.trim()       || null,
+            city:       form.city.trim()        || null,
+            postcode:   form.postcode.trim()    || null,
             source:     `buy-soldout-${selectedKit}`,
           }),
         });
