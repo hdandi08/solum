@@ -33,12 +33,12 @@ export default function LoyaltySection() {
         <div className="loyalty-inner">
           <div className="loyalty-text reveal-left">
             <div className="loy-tag">The 180 Club</div>
-            <h2 className="loy-title">You Can't<br />Buy <em>This.</em></h2>
+            <h2 className="loy-title">Coming<br /><em>Soon.</em></h2>
             <div className="loy-rule">Not for sale. Not in the shop. Only earned.</div>
             <p className="loy-body">
-              Six months of continuous subscription. That's the only qualification.
-              No points. No codes. No tiers to unlock. Stay consistent — do the ritual —
-              and at month six it ships with your box.
+              Six months of continuous subscription. That will be the only qualification.
+              No points. No codes. No tiers to unlock. Stay consistent, do the ritual,
+              and at month six it ships with your box. Subscription is coming — and so is this.
             </p>
             <div className="loy-timeline">
               <div className="loy-step">

@@ -20,7 +20,7 @@ const CSS = `
 const FAQS = [
   {
     q: 'Am I paying the full kit price every month?',
-    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment that includes physical tools lasting 6–12 months. After that, you pay £38 or £48/month for consumables only — body wash, lotion, bamboo cloth, and the tools that refresh on a quarterly or 6-monthly cycle. You never pay the setup price again.',
+    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment. It includes all the physical tools — the mitt, the back cloth, the scalp massager — which last 6–12 months. Right now, SOLUM is a one-off purchase. Subscription, where consumables arrive automatically before you run out, is coming soon.',
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',
@@ -40,11 +40,11 @@ const FAQS = [
   },
   {
     q: 'Can I cancel or pause my subscription?',
-    a: "Yes. Any time. One click. No penalty, no phone calls, no retention flows designed to confuse you. Skip a month if you're travelling. Pause indefinitely. We'd rather you come back when you're ready than resent us for charging you when you don't need it.",
+    a: 'Subscription is not yet live, so there is nothing to cancel. When it launches, the answer will be yes — one click, no penalty, no phone calls, no retention flows designed to confuse you. We will not make it difficult.',
   },
   {
     q: 'Does it work as a gift?',
-    a: 'The RITUAL kit is ideal for gifting. Rigid matte black box, steel blue foil strip, ribbon pull, ritual card face-up. You can choose whether to include a subscription with it or let the recipient decide after they have tried it.',
+    a: 'Yes. The RITUAL kit is ideal for gifting. Rigid matte black box, steel blue foil strip, ribbon pull, ritual card face-up. It arrives as a complete, self-contained kit — no subscription required. The recipient can choose to join the subscription waitlist when it launches.',
   },
 ];
 
