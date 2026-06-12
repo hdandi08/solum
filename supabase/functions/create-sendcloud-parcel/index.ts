@@ -86,9 +86,8 @@ Deno.serve(async (req) => {
     });
   }
 
-  const publicKey        = Deno.env.get('SENDCLOUD_PUBLIC_KEY');
-  const secretKey        = Deno.env.get('SENDCLOUD_SECRET_KEY');
-  const shippingMethodId = parseInt(Deno.env.get('SENDCLOUD_SHIPPING_METHOD_ID') ?? '8');
+  const publicKey = Deno.env.get('SENDCLOUD_PUBLIC_KEY');
+  const secretKey = Deno.env.get('SENDCLOUD_SECRET_KEY');
 
   if (!publicKey || !secretKey) {
     return new Response(JSON.stringify({ error: 'SendCloud credentials not configured' }), {
@@ -96,21 +95,51 @@ Deno.serve(async (req) => {
     });
   }
 
-  const weight      = KIT_WEIGHT[order.kit_id] ?? '2.000';
+  const scAuth = 'Basic ' + btoa(`${publicKey}:${secretKey}`);
+
+  // Use hardcoded secret if set, otherwise auto-discover from the integration's
+  // available shipping methods (works when only one method is configured).
+  let shippingMethodId: number;
+  const configuredId = Deno.env.get('SENDCLOUD_SHIPPING_METHOD_ID');
+  if (configuredId) {
+    shippingMethodId = parseInt(configuredId);
+  } else {
+    const smRes = await fetch('https://panel.sendcloud.sc/api/v2/shipping_methods?to_country=GB', {
+      headers: { 'Authorization': scAuth },
+    });
+    if (!smRes.ok) {
+      const errBody = await smRes.text();
+      console.error('SENDCLOUD_SHIPPING_METHODS_ERROR', smRes.status, errBody);
+      return new Response(JSON.stringify({ error: 'Could not fetch SendCloud shipping methods', detail: errBody }), {
+        status: 502, headers: corsHeaders,
+      });
+    }
+    const smData = await smRes.json();
+    const methods: Array<{ id: number; name: string }> = smData.shipping_methods ?? [];
+    if (methods.length === 0) {
+      return new Response(JSON.stringify({ error: 'No shipping methods available in SendCloud integration' }), {
+        status: 500, headers: corsHeaders,
+      });
+    }
+    shippingMethodId = methods[0].id;
+    console.log('SENDCLOUD_AUTO_SHIPPING_METHOD', JSON.stringify({ id: shippingMethodId, name: methods[0].name }));
+  }
+
+  const weight       = KIT_WEIGHT[order.kit_id] ?? '2.000';
   const customerName = [order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || address.name;
 
   const parcelPayload = {
     parcel: {
-      name:        customerName,
-      address:     address.line1,
-      address_2:   address.line2 ?? '',
-      city:        address.city,
-      postal_code: address.postcode,
-      country:     { iso_2: address.country ?? 'GB' },
-      telephone:   address.phone ?? order.customers?.phone ?? '',
-      email:       order.customers?.email ?? '',
+      name:         customerName,
+      address:      address.line1,
+      address_2:    address.line2 ?? '',
+      city:         address.city,
+      postal_code:  address.postcode,
+      country:      { iso_2: address.country ?? 'GB' },
+      telephone:    address.phone ?? order.customers?.phone ?? '',
+      email:        order.customers?.email ?? '',
       order_number: order.id,
-      shipment:    { id: shippingMethodId },
+      shipment:     { id: shippingMethodId },
       weight,
       request_label: true,
     },
@@ -118,10 +147,7 @@ Deno.serve(async (req) => {
 
   const scRes = await fetch('https://panel.sendcloud.sc/api/v2/parcels', {
     method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'Authorization': 'Basic ' + btoa(`${publicKey}:${secretKey}`),
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': scAuth },
     body: JSON.stringify(parcelPayload),
   });
 
