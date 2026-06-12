@@ -1,6 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com'];
+const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com', 'hdandibrwz@gmail.com'];
 
 const KIT_WEIGHT: Record<string, string> = {
   ground:    '1.500',

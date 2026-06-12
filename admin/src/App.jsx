@@ -12,7 +12,7 @@ import CustomersPage from './pages/CustomersPage'
 import LoginPage from './pages/LoginPage'
 import './admin.css'
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
+const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com', 'hdandibrwz@gmail.com']
 
 function AppInner() {
   const { env, config } = useEnv()
@@ -25,7 +25,7 @@ function AppInner() {
       if (event !== 'INITIAL_SESSION') setSession(session)
     })
     return () => subscription.unsubscribe()
-  }, [env, config.client])
+  }, [env, config.authClient])
 
   if (session === undefined) return null
 
@@ -35,7 +35,7 @@ function AppInner() {
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<LoginPage />} />
+          <Route path="*" element={<LoginPage unauthorisedEmail={session?.user?.email} />} />
         </Routes>
       </BrowserRouter>
     )

@@ -58,8 +58,8 @@ export default function SubscriptionSection() {
       <section className="sub-section" id="subscription">
         <div className="sub-inner">
           <div className="sub-header reveal">
-            <div className="s-sec-tag">The Subscription</div>
-            <h2>Your System<br />On Autopilot.</h2>
+            <div className="s-sec-tag">Your system. On autopilot.</div>
+            <h2>The<br />Subscription.</h2>
             <p>
               Pay once for your kit. After that, only what runs out arrives at your door.
               Flat monthly price — regardless of which box ships that month.

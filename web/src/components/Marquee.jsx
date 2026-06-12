@@ -7,14 +7,10 @@ const CSS = `
 `;
 
 const ITEMS = [
-  'The First Guided Body Ritual For Men',
-  'Ground · Ritual · Sovereign',
-  '10 Minutes Daily · Head to Toe',
-  '10 Products · One System',
-  'Body Care — Not Face. Not Hair.',
-  'UK · Korea · Morocco · Turkey',
-  'Head to Toe. For the First Time.',
-  'Built for Men. Built to Last.',
+  'GROUND · RITUAL · SOVEREIGN',
+  'TEN PRODUCTS. ONE SYSTEM.',
+  'BODY CARE — NOT FACE, NOT HAIR.',
+  'BUILT FOR MEN.',
 ];
 
 const ALL = [...ITEMS, ...ITEMS];

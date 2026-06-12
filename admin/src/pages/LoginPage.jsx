@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useEnv } from '../context/EnvContext'
 
-export default function LoginPage() {
+export default function LoginPage({ unauthorisedEmail } = {}) {
   const { config, env, switchEnv } = useEnv()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
@@ -56,6 +56,11 @@ export default function LoginPage() {
             Sign in to {isProd ? 'Production' : 'Development'}
           </div>
 
+          {unauthorisedEmail && (
+            <div className="login-error">
+              {unauthorisedEmail} is not authorised. Add this email to ADMIN_EMAILS in App.jsx.
+            </div>
+          )}
           {error && <div className="login-error">{error}</div>}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

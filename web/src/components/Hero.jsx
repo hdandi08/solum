@@ -134,10 +134,10 @@ export default function Hero() {
                   For Men.
                 </h1>
                 <div className="hero-line" />
-                <p className="hero-subline">This is what actually clean feels like.</p>
+                <p className="hero-subline">You shower every day. Your body is still not clean. Dead skin builds up for years. Odour comes from bacteria feeding on dead cells, not sweat. Skin dries out by midday because nothing is actually maintaining it. SOLUM fixes all of it — in ten minutes, in the shower you already take.</p>
                 <div className="hero-scope">
-                  <span className="hero-scope-pill accent">Head to Toe</span>
-                  <span className="hero-scope-pill accent">Ten Minutes Daily</span>
+                  <span className="hero-scope-pill accent">Body Care — Not Face, Not Hair</span>
+                  <span className="hero-scope-pill accent">Built For Men</span>
                 </div>
                 <div className="hero-actions">
                   <a

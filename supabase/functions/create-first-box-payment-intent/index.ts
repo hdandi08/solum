@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     email  = body.email?.trim().toLowerCase();
     const { first_name, last_name, source, phone, line1, line2, city, postcode } = body;
 
-    if (!FIRST_BATCH_PENCE[kit_id!]) {
+    if (!KIT_PENCE[kit_id!]) {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
