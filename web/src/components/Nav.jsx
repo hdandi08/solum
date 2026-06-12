@@ -84,9 +84,9 @@ export default function Nav() {
   const { pathname }                = useLocation();
   const ctaVariant                  = useVariant('hero-cta-copy');
   const ctaLabel                    = CTA_COPY[ctaVariant] ?? CTA_COPY.control;
-  const onFullSite                  = pathname === '/full';
+  const onHomePage                  = pathname === '/full' || pathname === '/';
 
-  const resolve = (href) => href.startsWith('#') && !onFullSite ? `/full${href}` : href;
+  const resolve = (href) => href.startsWith('#') && !onHomePage ? `/${href}` : href;
   const close   = ()     => setMenuOpen(false);
 
   // lock body scroll when menu open
