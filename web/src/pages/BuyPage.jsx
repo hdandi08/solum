@@ -55,23 +55,43 @@ const CSS = `
 .by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:5px 10px;}
 .by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
 @keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
-.by-soldout{padding:8px 0;}
+.by-soldout-page{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);min-height:calc(100vh - 64px);align-items:start;}
+.by-soldout-left{background:var(--black);padding:48px 40px;}
+.by-soldout-right{background:var(--char);padding:48px 40px;display:flex;flex-direction:column;gap:0;}
 .by-soldout-badge{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#e05c5c;border:1px solid rgba(224,92,92,0.3);padding:5px 12px;margin-bottom:28px;font-weight:700;}
 .by-soldout-badge-dot{width:6px;height:6px;border-radius:50%;background:#e05c5c;animation:bydot 1.5s ease infinite;}
-.by-soldout-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,80px);letter-spacing:.04em;color:var(--bone);line-height:.95;margin-bottom:20px;}
-.by-soldout-kit{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:32px;}
-.by-soldout-apology{border-left:2px solid #e05c5c;padding-left:20px;margin-bottom:32px;}
-.by-soldout-apology-head{font-size:17px;color:var(--bone);font-weight:500;line-height:1.5;margin-bottom:8px;}
-.by-soldout-apology-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.7;}
-.by-soldout-saved{display:flex;align-items:flex-start;gap:14px;background:rgba(46,109,164,0.07);border:1px solid rgba(46,109,164,0.2);padding:20px 22px;margin-bottom:32px;}
-.by-soldout-saved-tick{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff;margin-top:1px;}
+.by-soldout-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6vw,76px);letter-spacing:.04em;color:var(--bone);line-height:.95;margin-bottom:16px;}
+.by-soldout-kit{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:28px;}
+.by-soldout-apology{border-left:2px solid #e05c5c;padding-left:18px;margin-bottom:28px;}
+.by-soldout-apology-head{font-size:16px;color:var(--bone);font-weight:500;line-height:1.55;margin-bottom:6px;}
+.by-soldout-apology-body{font-size:14px;color:var(--stone);font-weight:300;line-height:1.7;}
+.by-soldout-saved{display:flex;align-items:flex-start;gap:14px;background:rgba(46,109,164,0.07);border:1px solid rgba(46,109,164,0.2);padding:18px 20px;margin-bottom:28px;}
+.by-soldout-saved-tick{width:26px;height:26px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;margin-top:2px;}
 .by-soldout-saved-text{font-size:14px;color:var(--mist);font-weight:300;line-height:1.65;}
 .by-soldout-saved-text strong{color:var(--bone);font-weight:600;display:block;margin-bottom:2px;}
-.by-soldout-actions{display:flex;flex-direction:column;gap:12px;}
-.by-soldout-home{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--stone);text-decoration:none;border:1px solid var(--lineb);padding:13px 24px;text-align:center;transition:border-color .2s,color .2s;}
+.by-soldout-home{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--stone);text-decoration:none;border:1px solid var(--lineb);padding:13px 24px;text-align:center;transition:border-color .2s,color .2s;display:block;}
 .by-soldout-home:hover{border-color:var(--bone);color:var(--bone);}
-.by-soldout-ig{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);text-decoration:none;text-align:center;padding:4px 0;}
-.by-soldout-ig:hover{color:var(--bone);}
+/* Founder card */
+.by-founder-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:24px;}
+.by-founder-photo-wrap{position:relative;width:88px;height:88px;margin-bottom:20px;}
+.by-founder-photo{width:88px;height:88px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--blue);display:block;}
+.by-founder-status{position:absolute;bottom:2px;right:2px;width:16px;height:16px;border-radius:50%;background:#22c55e;border:2px solid var(--char);}
+.by-founder-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:4px;}
+.by-founder-role{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:24px;}
+.by-founder-message{font-size:16px;color:var(--mist);font-weight:300;line-height:1.75;font-style:italic;border-left:2px solid var(--blue);padding-left:18px;margin-bottom:28px;}
+.by-founder-message em{font-style:normal;color:var(--bone);font-weight:500;}
+.by-founder-sig{font-size:13px;color:var(--stone);font-weight:400;margin-bottom:32px;letter-spacing:.3px;}
+.by-ig-btn{display:flex;align-items:center;gap:12px;background:var(--black);border:1px solid var(--lineb);padding:14px 18px;text-decoration:none;transition:border-color .2s,background .2s;}
+.by-ig-btn:hover{border-color:var(--blue);background:rgba(46,109,164,0.08);}
+.by-ig-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.by-ig-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.by-ig-text{display:flex;flex-direction:column;gap:1px;}
+.by-ig-handle{font-size:14px;color:var(--bone);font-weight:600;letter-spacing:.3px;}
+.by-ig-sub{font-size:11px;color:var(--stone);font-weight:300;letter-spacing:.3px;}
+@media(max-width:768px){
+  .by-soldout-page{grid-template-columns:1fr;}
+  .by-soldout-left,.by-soldout-right{padding:36px 24px;}
+}
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -479,6 +499,79 @@ export default function BuyPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  if (step === 'soldout') {
+    return (
+      <>
+        <style>{CSS}</style>
+        <div className="by-soldout-page">
+          {/* Left — apology */}
+          <div className="by-soldout-left">
+            <div className="by-soldout-badge">
+              <span className="by-soldout-badge-dot" />
+              Sold Out
+            </div>
+            <div className="by-soldout-title">Oh No.<br />We're Sorry.</div>
+            <div className="by-soldout-kit">
+              SOLUM {activeKit?.name} — {activeKit?.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · First Box
+            </div>
+            <div className="by-soldout-apology">
+              <div className="by-soldout-apology-head">
+                You got this far and we let you down. This kit has sold out.
+              </div>
+              <div className="by-soldout-apology-body">
+                The first batch went faster than expected. We are working on the next restock now.
+                You will be the first to know the moment it is back.
+              </div>
+            </div>
+            <div className="by-soldout-saved">
+              <div className="by-soldout-saved-tick">✓</div>
+              <div className="by-soldout-saved-text">
+                <strong>You're on the list.</strong>
+                We've saved your details and will email {form.email} the moment stock is back. No action needed.
+              </div>
+            </div>
+            <a href="/" className="by-soldout-home">← Back to bysolum.co.uk</a>
+          </div>
+
+          {/* Right — founder card */}
+          <div className="by-soldout-right">
+            <div className="by-founder-tag">From the Founder</div>
+            <div className="by-founder-photo-wrap">
+              <img src="/harsha.jpg" alt="Harsha, Founder of SOLUM" className="by-founder-photo" />
+              <span className="by-founder-status" />
+            </div>
+            <div className="by-founder-name">Harsha</div>
+            <div className="by-founder-role">Founder · SOLUM</div>
+            <div className="by-founder-message">
+              "I'm genuinely sorry. You did everything right and we ran out. I built SOLUM because I believe
+              in what it does — and running out of stock on people who want it is the worst feeling.
+              I'm personally working on the restock. <em>You will hear from me the moment it's ready.</em>"
+            </div>
+            <div className="by-founder-sig">— Harsha · harsha@bysolum.co.uk</div>
+            <a
+              href="https://instagram.com/bysolum.body"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="by-ig-btn"
+            >
+              <span className="by-ig-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <circle cx="12" cy="12" r="5"/>
+                  <circle cx="17.5" cy="6.5" r="1.5" fill="#fff" stroke="none"/>
+                </svg>
+              </span>
+              <span className="by-ig-text">
+                <span className="by-ig-handle">@bysolum.body</span>
+                <span className="by-ig-sub">Follow for restock updates</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (step === 'payment' && clientSecret) {
     return (
       <>
@@ -517,41 +610,7 @@ export default function BuyPage() {
             ← Back to kits
           </a>
 
-          {step === 'soldout' ? (
-            <div className="by-soldout">
-              <div className="by-soldout-badge">
-                <span className="by-soldout-badge-dot" />
-                Sold Out
-              </div>
-              <div className="by-soldout-title">Oh No.<br />We're Sorry.</div>
-              <div className="by-soldout-kit">
-                SOLUM {activeKit.name} — {activeKit.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · First Box
-              </div>
-              <div className="by-soldout-apology">
-                <div className="by-soldout-apology-head">
-                  This kit has sold out. We genuinely apologise — you got this far and we let you down.
-                </div>
-                <div className="by-soldout-apology-body">
-                  The first batch went faster than expected. We are working on the next restock now.
-                  You will be the first to know the moment it is available.
-                </div>
-              </div>
-              <div className="by-soldout-saved">
-                <div className="by-soldout-saved-tick">✓</div>
-                <div className="by-soldout-saved-text">
-                  <strong>You're on the waitlist.</strong>
-                  We've saved your details and will email {form.email} as soon as stock is back. No action needed from you.
-                </div>
-              </div>
-              <div className="by-soldout-actions">
-                <a href="/" className="by-soldout-home">← Back to bysolum.co.uk</a>
-                <a href="https://instagram.com/bysolum" target="_blank" rel="noopener noreferrer" className="by-soldout-ig">
-                  Follow @bysolum for restock updates
-                </a>
-              </div>
-            </div>
-          ) : (
-            <>
+          <>
               <ProgressBar step={step} />
 
               {/* Kit selector — shown on step 1 only */}
@@ -668,10 +727,9 @@ export default function BuyPage() {
                 </form>
               )}
             </>
-          )}
         </div>
 
-        {step !== 'soldout' && <BuyOrderSummary {...headerProps} />}
+        <BuyOrderSummary {...headerProps} />
       </div>
     </>
   );
