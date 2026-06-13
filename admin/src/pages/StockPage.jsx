@@ -4,6 +4,62 @@ import { useEnv } from '../context/EnvContext'
 const CADENCE_LABELS = { monthly: 'Monthly', quarterly: 'Quarterly', biannual: '6-Month', first_box_only: 'First Box Only' }
 const CADENCE_COLORS = { monthly: 'var(--sky-blue)', quarterly: 'var(--low)', biannual: 'var(--bone-muted)', first_box_only: 'var(--bone-muted)' }
 
+function StockRow({ product, showCadence, inputs, setInputs, saving, saved, cadences, saveStock }) {
+  const isDirty = inputs[product.id] !== String(product.current_stock)
+  const isSaving = saving === product.id
+  const isSaved = saved === product.id
+  const stock = product.current_stock
+  const stockColor = stock === 0 ? 'var(--critical)' : stock < 20 ? 'var(--low)' : 'var(--bone)'
+
+  return (
+    <tr>
+      <td>
+        <div style={{ fontWeight: 500 }}>{product.name}</div>
+        <div style={{ fontSize: 11, color: 'var(--bone-muted)', marginTop: 2, fontFamily: 'monospace' }}>{product.sku}</div>
+      </td>
+      {showCadence && (
+        <td>
+          {cadences[product.id] ? (
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: CADENCE_COLORS[cadences[product.id]] }}>
+              {CADENCE_LABELS[cadences[product.id]]}
+            </span>
+          ) : (
+            <span style={{ fontSize: 11, color: 'var(--bone-muted)' }}>—</span>
+          )}
+        </td>
+      )}
+      <td style={{ color: stockColor, fontFamily: 'Bebas Neue', fontSize: 22, letterSpacing: '0.05em' }}>
+        {stock}
+      </td>
+      <td>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input
+            type="number"
+            min={0}
+            className="input"
+            style={{ width: 90, padding: '5px 10px', fontSize: 13 }}
+            value={inputs[product.id] ?? String(stock)}
+            onChange={e => setInputs(p => ({ ...p, [product.id]: e.target.value }))}
+          />
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => saveStock(product.id)}
+            disabled={!isDirty || isSaving}
+            style={{ minWidth: 56 }}
+          >
+            {isSaving ? '...' : isSaved ? '✓' : 'Save'}
+          </button>
+        </div>
+      </td>
+      {!showCadence && (
+        <td style={{ fontSize: 12, color: 'var(--bone-muted)' }}>
+          {product.unit_cost_pence > 0 ? `£${(product.unit_cost_pence / 100).toFixed(2)}` : '—'}
+        </td>
+      )}
+    </tr>
+  )
+}
+
 export default function StockPage() {
   const { config } = useEnv()
   const [products, setProducts]   = useState([])
@@ -27,7 +83,6 @@ export default function StockPage() {
       const productRows = (allProducts || []).filter(p => p.id.startsWith('product-'))
       const packagingRows = (allProducts || []).filter(p => !p.id.startsWith('product-'))
 
-      // Deduplicate cadences per product (take from any kit — they're consistent)
       const cadenceMap = {}
       for (const kp of kps || []) {
         if (!cadenceMap[kp.product_id]) cadenceMap[kp.product_id] = kp.refill_cadence
@@ -69,61 +124,7 @@ export default function StockPage() {
     }
   }
 
-  function StockRow({ product, showCadence = false }) {
-    const isDirty = inputs[product.id] !== String(product.current_stock)
-    const isSaving = saving === product.id
-    const isSaved = saved === product.id
-    const stock = product.current_stock
-    const stockColor = stock === 0 ? 'var(--critical)' : stock < 20 ? 'var(--low)' : 'var(--bone)'
-
-    return (
-      <tr>
-        <td>
-          <div style={{ fontWeight: 500 }}>{product.name}</div>
-          <div style={{ fontSize: 11, color: 'var(--bone-muted)', marginTop: 2, fontFamily: 'monospace' }}>{product.sku}</div>
-        </td>
-        {showCadence && (
-          <td>
-            {cadences[product.id] ? (
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: CADENCE_COLORS[cadences[product.id]] }}>
-                {CADENCE_LABELS[cadences[product.id]]}
-              </span>
-            ) : (
-              <span style={{ fontSize: 11, color: 'var(--bone-muted)' }}>—</span>
-            )}
-          </td>
-        )}
-        <td style={{ color: stockColor, fontFamily: 'Bebas Neue', fontSize: 22, letterSpacing: '0.05em' }}>
-          {stock}
-        </td>
-        <td>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input
-              type="number"
-              min={0}
-              className="input"
-              style={{ width: 90, padding: '5px 10px', fontSize: 13 }}
-              value={inputs[product.id] ?? String(stock)}
-              onChange={e => setInputs(p => ({ ...p, [product.id]: e.target.value }))}
-            />
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={() => saveStock(product.id)}
-              disabled={!isDirty || isSaving}
-              style={{ minWidth: 56 }}
-            >
-              {isSaving ? '...' : isSaved ? '✓' : 'Save'}
-            </button>
-          </div>
-        </td>
-        {!showCadence && (
-          <td style={{ fontSize: 12, color: 'var(--bone-muted)' }}>
-            {product.unit_cost_pence > 0 ? `£${(product.unit_cost_pence / 100).toFixed(2)}` : '—'}
-          </td>
-        )}
-      </tr>
-    )
-  }
+  const rowProps = { inputs, setInputs, saving, saved, cadences, saveStock }
 
   if (loading) return <div className="loading-state"><div className="loading-spinner" />Loading stock...</div>
   if (error) return <div className="error-state">{error} <button className="btn btn-secondary btn-sm" style={{ marginLeft: 12 }} onClick={load}>Retry</button></div>
@@ -148,7 +149,7 @@ export default function StockPage() {
             <tbody>
               {products.length === 0 ? (
                 <tr><td colSpan={4} className="no-data">No products found.</td></tr>
-              ) : products.map(p => <StockRow key={p.id} product={p} showCadence />)}
+              ) : products.map(p => <StockRow key={p.id} product={p} showCadence {...rowProps} />)}
             </tbody>
           </table>
         </div>
@@ -173,7 +174,7 @@ export default function StockPage() {
             <tbody>
               {packaging.length === 0 ? (
                 <tr><td colSpan={4} className="no-data">No packaging items found.</td></tr>
-              ) : packaging.map(p => <StockRow key={p.id} product={p} showCadence={false} />)}
+              ) : packaging.map(p => <StockRow key={p.id} product={p} showCadence={false} {...rowProps} />)}
             </tbody>
           </table>
         </div>
