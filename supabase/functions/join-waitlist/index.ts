@@ -37,120 +37,121 @@ async function hasMxRecords(domain: string): Promise<boolean> {
 }
 
 
-function buildConfirmEmail(email: string, firstName: string | null, token: string, position: number): string {
-  const siteUrl = Deno.env.get('SITE_URL') || 'https://bysolum.co.uk'
-  const confirmUrl = `${siteUrl}/confirm?token=${token}`
-  const greeting = firstName ? `${firstName},` : 'Hey,'
+function buildConfirmEmail(email: string, firstName: string | null, _token: string, _position: number): string {
+  const greeting = firstName ? firstName : null
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Confirm your spot — spaces filling fast</title>
+<title>You're on the list — SOLUM</title>
 </head>
-<body style="margin:0;padding:0;background:#08090b;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#08090b;padding:48px 24px;">
-  <tr><td align="center">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+<body style="margin:0;padding:0;background:#111111;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#111111;padding:0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
-      <!-- Logo -->
-      <tr><td style="padding-bottom:40px;">
-        <span style="font-size:28px;letter-spacing:0.18em;color:#f0ece2;font-weight:700;">SOLUM</span>
-      </td></tr>
+  <!-- Header -->
+  <tr><td style="background:#08090B;padding:32px 48px 26px;border-bottom:1px solid #181c24;">
+    <img src="https://bysolum.co.uk/solum-wordmark-white.png" alt="SOLUM" width="130" style="display:block;height:auto;border:0;" />
+    <p style="margin:10px 0 0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:600;">Your body. Done right.</p>
+  </td></tr>
 
-      <!-- Step indicator -->
-      <tr><td style="padding-bottom:32px;border-top:1px solid rgba(240,236,226,0.08);padding-top:32px;">
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td align="center" width="33%" style="padding:0 4px;">
-              <div style="background:rgba(46,109,164,0.15);border:1px solid rgba(46,109,164,0.4);padding:12px 8px;text-align:center;">
-                <div style="font-size:22px;font-weight:700;color:#4a8fc7;line-height:1;">✓</div>
-                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#4a8fc7;font-weight:600;margin-top:4px;">Signed up</div>
-              </div>
-            </td>
-            <td align="center" width="33%" style="padding:0 4px;">
-              <div style="background:rgba(46,109,164,0.25);border:1px solid rgba(74,143,199,0.8);padding:12px 8px;text-align:center;">
-                <div style="font-size:22px;font-weight:700;color:#f0ece2;line-height:1;">2</div>
-                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#f0ece2;font-weight:600;margin-top:4px;">Confirm</div>
-              </div>
-            </td>
-            <td align="center" width="33%" style="padding:0 4px;">
-              <div style="background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.1);padding:12px 8px;text-align:center;">
-                <div style="font-size:22px;font-weight:700;color:rgba(240,236,226,0.3);line-height:1;">3</div>
-                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.3);font-weight:600;margin-top:4px;">Ship first</div>
-              </div>
-            </td>
-          </tr>
-        </table>
+  <!-- Hero -->
+  <tr><td style="background:#08090B;padding:48px 48px 0;">
+    <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+      <tr><td style="background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.35);padding:5px 14px;">
+        <p style="margin:0;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#e05c5c;font-weight:700;">Sold Out</p>
       </td></tr>
+    </table>
+    <h1 style="margin:0 0 16px;font-size:44px;font-weight:700;letter-spacing:0.04em;color:#F0ECE2;text-transform:uppercase;line-height:0.95;">
+      You're<br />On The List.
+    </h1>
+    <div style="width:48px;height:1px;background:#2E6DA4;margin-bottom:24px;"></div>
+    <p style="margin:0 0 32px;font-size:15px;color:rgba(240,236,226,0.7);line-height:1.75;max-width:440px;">
+      ${greeting ? `${greeting}, we're` : `We're`} sorry you got this far and ran into a sold-out. The first batch went faster than expected. Your details are saved — you will hear from us the moment it's back in stock.
+    </p>
+  </td></tr>
 
-      <!-- Heading -->
-      <tr><td style="padding-bottom:12px;">
-        <p style="margin:0;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">Early Access · #${position} of 100</p>
-      </td></tr>
-      <tr><td style="padding-bottom:16px;">
-        <h1 style="margin:0;font-size:34px;letter-spacing:0.02em;color:#f0ece2;font-weight:700;line-height:1.1;">
-          Spaces are filling fast.<br/>Confirm your spot.
-        </h1>
-      </td></tr>
-
-      <!-- Body -->
-      <tr><td style="padding-bottom:32px;">
-        <p style="margin:0;font-size:16px;color:rgba(240,236,226,0.78);line-height:1.65;">
-          ${greeting} confirm your spot now and you'll be first to ship — before we open to everyone else.
+  <!-- Founder note -->
+  <tr><td style="background:#08090B;padding:0 48px 40px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#181C24;border:1px solid #1e2530;border-left:2px solid #2E6DA4;">
+      <tr><td style="padding:24px 28px;">
+        <p style="margin:0 0 4px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">From the Founder</p>
+        <p style="margin:12px 0 16px;font-size:15px;color:rgba(240,236,226,0.85);line-height:1.75;font-style:italic;">
+          "I'm genuinely sorry. You did everything right and we ran out. I built SOLUM because I believe in what it does — and running out of stock on people who want it is the worst feeling. I'm personally working on the restock. You will hear from me the moment it's ready."
         </p>
+        <p style="margin:0;font-size:13px;color:rgba(240,236,226,0.55);font-weight:600;">— Harsha &nbsp;·&nbsp; Founder, SOLUM</p>
       </td></tr>
-
-      <!-- CTA -->
-      <tr><td style="padding-bottom:36px;">
-        <a href="${confirmUrl}"
-           style="display:inline-block;background:#2e6da4;color:#f0ece2;font-size:14px;
-                  letter-spacing:3px;text-transform:uppercase;font-weight:700;
-                  padding:18px 40px;text-decoration:none;">
-          CONFIRM MY SPOT
-        </a>
-      </td></tr>
-
-      <!-- What's locked in -->
-      <tr><td style="padding-bottom:32px;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid rgba(46,109,164,0.25);">
-          <tr><td style="padding:14px 20px;border-bottom:1px solid rgba(240,236,226,0.07);">
-            <p style="margin:0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4a8fc7;font-weight:600;">What you get</p>
-          </td></tr>
-          <tr><td style="padding:0;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
-                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">#${position}</div>
-                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Of 100 spots</div>
-                </td>
-                <td width="33%" style="padding:20px 16px;border-right:1px solid rgba(240,236,226,0.07);text-align:center;vertical-align:top;">
-                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">1st</div>
-                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">To ship</div>
-                </td>
-                <td width="33%" style="padding:20px 16px;text-align:center;vertical-align:top;">
-                  <div style="font-size:28px;font-weight:800;color:#4a8fc7;line-height:1;margin-bottom:6px;">100</div>
-                  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,236,226,0.55);font-weight:600;">Spaces total</div>
-                </td>
-              </tr>
-            </table>
-          </td></tr>
-        </table>
-      </td></tr>
-
-      <!-- Footer -->
-      <tr><td style="border-top:1px solid rgba(240,236,226,0.07);padding-top:24px;">
-        <p style="margin:0 0 8px;font-size:12px;color:rgba(240,236,226,0.35);line-height:1.6;">
-          If you didn't sign up to SOLUM, ignore this — nothing will happen.
-        </p>
-        <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.35);">
-          bysolum.co.uk · contact@bysolum.com
-        </p>
-      </td></tr>
-
     </table>
   </td></tr>
+
+  <!-- What happens next -->
+  <tr><td style="background:#08090B;padding:0 48px 40px;">
+    <p style="margin:0 0 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">What Happens Next</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2530;">
+      <tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+        <table width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td width="28" style="vertical-align:top;padding-top:2px;">
+            <span style="font-size:20px;font-weight:700;color:#2E6DA4;line-height:1;">1</span>
+          </td>
+          <td>
+            <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#F0ECE2;">You're saved. Nothing to do.</p>
+            <p style="margin:0;font-size:13px;color:rgba(240,236,226,0.5);line-height:1.6;">We've got your name and email. No form to fill in, no link to click. You're already on the list.</p>
+          </td>
+        </tr></table>
+      </td></tr>
+      <tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+        <table width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td width="28" style="vertical-align:top;padding-top:2px;">
+            <span style="font-size:20px;font-weight:700;color:#2E6DA4;line-height:1;">2</span>
+          </td>
+          <td>
+            <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#F0ECE2;">We restock. You're first.</p>
+            <p style="margin:0;font-size:13px;color:rgba(240,236,226,0.5);line-height:1.6;">When it's back in stock, we'll email you before anyone else. First access — no queue, no lottery.</p>
+          </td>
+        </tr></table>
+      </td></tr>
+      <tr><td style="background:#181C24;padding:20px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td width="28" style="vertical-align:top;padding-top:2px;">
+            <span style="font-size:20px;font-weight:700;color:#2E6DA4;line-height:1;">3</span>
+          </td>
+          <td>
+            <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#F0ECE2;">Follow for updates</p>
+            <p style="margin:0;font-size:13px;color:rgba(240,236,226,0.5);line-height:1.6;">We post restock updates on Instagram as soon as they're confirmed. Follow <span style="color:#4A8FC7;font-weight:600;">@bysolum.body</span> to stay close.</p>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <!-- Instagram CTA -->
+  <tr><td style="background:#08090B;padding:0 48px 48px;">
+    <a href="https://instagram.com/bysolum.body" style="display:block;border:1px solid #1e2530;padding:16px 24px;text-decoration:none;">
+      <table cellpadding="0" cellspacing="0"><tr>
+        <td style="vertical-align:middle;padding-right:16px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);text-align:center;line-height:36px;font-size:18px;">📷</div>
+        </td>
+        <td style="vertical-align:middle;">
+          <p style="margin:0;font-size:14px;font-weight:700;color:#F0ECE2;letter-spacing:0.5px;">@bysolum.body</p>
+          <p style="margin:2px 0 0;font-size:11px;color:rgba(240,236,226,0.45);letter-spacing:1px;">Follow for restock updates</p>
+        </td>
+      </tr></table>
+    </a>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="background:#08090B;border-top:1px solid #1e2530;padding:28px 48px 36px;">
+    <p style="margin:0 0 6px;font-size:12px;color:rgba(240,236,226,0.35);line-height:1.7;">
+      Questions? Reply to this email or write to <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a>
+    </p>
+    <p style="margin:0;font-size:11px;color:rgba(240,236,226,0.2);letter-spacing:1px;">SOLUM &nbsp;·&nbsp; bysolum.co.uk &nbsp;·&nbsp; Your body. Done right.</p>
+  </td></tr>
+
+</table>
+</td></tr>
 </table>
 </body>
 </html>`
@@ -237,7 +238,7 @@ Deno.serve(async (req) => {
     // Send confirmation email (non-blocking — don't fail the signup if email fails)
     const resendKey = Deno.env.get('RESEND_API_KEY')
     if (resendKey && inserted?.confirm_token) {
-      const subject = `Spaces are filling fast — confirm your spot`
+      const subject = `You're on the list. We'll be in touch the moment it's back.`
 
       fetch('https://api.resend.com/emails', {
         method: 'POST',
