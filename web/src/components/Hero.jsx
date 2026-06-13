@@ -154,7 +154,7 @@ export default function Hero() {
           </div>
         </div>
         <div className="hero-visual" style={{ position: 'relative' }}>
-          <img src="/solum-hero.jpg" alt="SOLUM kit — open box with all products" className="hero-box-img" />
+          <img src="/solum-hero.png" alt="SOLUM kit — open box with all products" className="hero-box-img" />
           <span className="hero-visual-caption">RITUAL Kit · bysolum.co.uk</span>
         </div>
         <div className="scroll-cue"><div className="scroll-line" />Scroll</div>
