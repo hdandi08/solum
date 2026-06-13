@@ -181,8 +181,12 @@ export default function OrdersPage() {
         `, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-      if (typeFilter)   q = q.eq('order_type', typeFilter)
-      if (statusFilter) q = q.eq('dispatch_status', statusFilter)
+      if (typeFilter) q = q.eq('order_type', typeFilter)
+      if (statusFilter === 'cancelled') {
+        q = q.eq('status', 'cancelled')
+      } else if (statusFilter) {
+        q = q.eq('dispatch_status', statusFilter)
+      }
       const { data, count, error: err } = await q
       if (err) throw err
       const rows = (data || []).map(o => ({
@@ -241,6 +245,37 @@ export default function OrdersPage() {
     }
   }
 
+  async function handleCancel(orderId) {
+    if (!window.confirm('Cancel this order and issue a full refund? This cannot be undone.')) return
+    setSaving(orderId)
+    setSaveError('')
+    try {
+      const { data: { session } } = await config.authClient.auth.getSession()
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cancel-order`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        }
+      )
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
+      if (data.cancel_notes) {
+        alert(`Refund issued (${data.refund_id}). Note: ${data.cancel_notes}`)
+      }
+      await Promise.all([fetchOrders(), fetchBatches()])
+    } catch (err) {
+      setSaveError(err.message)
+    } finally {
+      setSaving(null)
+    }
+  }
+
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
@@ -265,6 +300,7 @@ export default function OrdersPage() {
             <option value="pending">Pending</option>
             <option value="dispatched">Dispatched</option>
             <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -336,8 +372,11 @@ export default function OrdersPage() {
                         </td>
                         <td style={{ fontVariantNumeric: 'tabular-nums' }}>£{((order.amount_pence || 0) / 100).toFixed(2)}</td>
                         <td>
-                          <span className={`risk-badge ${order.dispatch_status === 'pending' ? (isOverdue ? 'critical' : 'low') : 'ok'}`}>
-                            {order.dispatch_status}
+                          <span className={`risk-badge ${
+                            order.status === 'cancelled'        ? 'critical' :
+                            order.dispatch_status === 'pending' ? (isOverdue ? 'critical' : 'low') : 'ok'
+                          }`}>
+                            {order.status === 'cancelled' ? 'cancelled' : order.dispatch_status}
                           </span>
                         </td>
                         <td onClick={e => e.stopPropagation()}>
@@ -358,19 +397,31 @@ export default function OrdersPage() {
                           )}
                         </td>
                         <td style={{ whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
-                          {order.dispatch_status === 'pending' && (
-                            <button className="btn btn-sm btn-primary" onClick={() => handleDispatch(order)} disabled={saving === order.id}>
-                              {saving === order.id ? '...' : 'Dispatch'}
-                            </button>
-                          )}
-                          {order.dispatch_status === 'dispatched' && (
-                            <button className="btn btn-sm btn-secondary" onClick={() => handleMarkDelivered(order.id)} disabled={saving === order.id}>
-                              {saving === order.id ? '...' : 'Delivered'}
-                            </button>
-                          )}
-                          {order.dispatch_status === 'delivered' && (
-                            <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
-                          )}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                            {order.dispatch_status === 'pending' && (
+                              <button className="btn btn-sm btn-primary" onClick={() => handleDispatch(order)} disabled={saving === order.id}>
+                                {saving === order.id ? '...' : 'Dispatch'}
+                              </button>
+                            )}
+                            {order.dispatch_status === 'dispatched' && (
+                              <button className="btn btn-sm btn-secondary" onClick={() => handleMarkDelivered(order.id)} disabled={saving === order.id}>
+                                {saving === order.id ? '...' : 'Delivered'}
+                              </button>
+                            )}
+                            {order.dispatch_status === 'delivered' && (
+                              <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
+                            )}
+                            {order.status !== 'cancelled' && (
+                              <button
+                                className="btn btn-sm"
+                                style={{ background: 'rgba(224,92,92,0.12)', color: '#e05c5c', border: '1px solid rgba(224,92,92,0.3)' }}
+                                onClick={() => handleCancel(order.id)}
+                                disabled={saving === order.id}
+                              >
+                                Cancel & Refund
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>,
                       isExpanded && (
@@ -397,6 +448,23 @@ export default function OrdersPage() {
                               <div>
                                 <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Order ID</div>
                                 <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--bone-muted)' }}>{order.id.slice(0, 8)}</span>
+                                {order.status === 'cancelled' && (
+                                  <div style={{ marginTop: 8 }}>
+                                    <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#e05c5c', fontWeight: 600 }}>
+                                      Refunded
+                                    </span>
+                                    {order.refund_id && (
+                                      <span style={{ fontSize: 12, color: 'var(--bone-muted)', marginLeft: 8, fontFamily: 'monospace' }}>
+                                        {order.refund_id}
+                                      </span>
+                                    )}
+                                    {order.cancel_notes && (
+                                      <div style={{ fontSize: 12, color: '#e05c5c', marginTop: 4, lineHeight: 1.5 }}>
+                                        ⚠ {order.cancel_notes}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </td>
