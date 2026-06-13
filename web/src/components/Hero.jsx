@@ -11,7 +11,7 @@ const CSS = `
 .hero-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,30vw,340px);letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.06);pointer-events:none;user-select:none;white-space:nowrap;animation:ghostIn 2s cubic-bezier(.16,1,.3,1) .3s both;}
 @keyframes ghostIn{from{opacity:0;transform:translate(-50%,-48%) scale(.96);}to{opacity:1;transform:translate(-50%,-52%) scale(1);}}
 .hero-glow{position:absolute;top:30%;left:25%;transform:translate(-50%,-50%);width:500px;height:400px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
-.hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:32px 24px 48px;gap:0;}
+.hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:88px 24px 48px;gap:0;}
 .hero-content{width:100%;}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);line-height:.96;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
@@ -64,7 +64,7 @@ const CSS = `
 /* ── Desktop ───────────────────────────────────────── */
 @media(min-width:960px){
   .hero{flex-direction:row;height:100svh;min-height:640px;}
-  .hero-cols{flex:0 0 48%;padding:80px 48px 64px;}
+  .hero-cols{flex:0 0 48%;padding:80px 48px 64px;justify-content:flex-end;}
   .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
   .hero-glow{left:24%;}
   /* Right panel: image fills full height */
