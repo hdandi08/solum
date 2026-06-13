@@ -70,8 +70,11 @@ Deno.serve(async (req) => {
   let refundId: string;
   try {
     const refund = await stripe.refunds.create({ payment_intent: order.stripe_payment_id });
+    if (refund.status === 'failed') {
+      throw new Error(`Refund created but status=failed (${refund.id}) — check Stripe dashboard`);
+    }
     refundId = refund.id;
-    console.log('CANCEL_ORDER_REFUND', JSON.stringify({ order_id, refund_id: refundId }));
+    console.log('CANCEL_ORDER_REFUND', JSON.stringify({ order_id, refund_id: refundId, status: refund.status }));
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('CANCEL_ORDER_STRIPE_ERROR', msg);
