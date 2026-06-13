@@ -227,14 +227,6 @@ Deno.serve(async (req) => {
 
     if (insertError) throw insertError
 
-    // Get position
-    const { count } = await db
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .eq('checkout_status', 'waitlist')
-
-    const position = count ?? 1
-
     // Send waitlist email
     const resendKey = Deno.env.get('RESEND_API_KEY')
     if (resendKey && inserted) {
@@ -248,7 +240,7 @@ Deno.serve(async (req) => {
             from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
             to: [normalised],
             subject,
-            html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token ?? '', position),
+            html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token ?? '', 0),
           }),
         })
         if (!res.ok) {
@@ -260,7 +252,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return json({ success: true, position })
+    return json({ success: true })
 
   } catch (err) {
     console.error(err)
