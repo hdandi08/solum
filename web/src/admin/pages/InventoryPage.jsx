@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Fragment } from 'react'
 import { supabase } from '../../lib/supabase'
 import RiskBadge from '../components/RiskBadge'
 
@@ -174,8 +174,8 @@ export default function InventoryPage() {
                     const risk = getRiskLevel(p.runway_weeks, p.current_stock)
                     const isOpen = activeAdjust === p.id
                     return (
-                      <>
-                        <tr key={p.id} style={isOpen ? { background: 'var(--surface-hover)' } : {}}>
+                      <Fragment key={p.id}>
+                        <tr style={isOpen ? { background: 'var(--surface-hover)' } : {}}>
                           <td style={{ color: 'var(--bone-muted)', fontVariantNumeric: 'tabular-nums' }}>
                             {String(idx + 1).padStart(2, '0')}
                           </td>
@@ -217,7 +217,7 @@ export default function InventoryPage() {
                         </tr>
 
                         {isOpen && (
-                          <tr key={`${p.id}-adjust`}>
+                          <tr>
                             <td colSpan={9} style={{ padding: 0 }}>
                               <div className="inline-form">
                                 <div style={{ fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-dim)', marginBottom: '16px' }}>
@@ -289,7 +289,7 @@ export default function InventoryPage() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     )
                   })
                 )}
