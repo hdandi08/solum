@@ -235,23 +235,29 @@ Deno.serve(async (req) => {
 
     const position = count ?? 1
 
-    // Send confirmation email (non-blocking — don't fail the signup if email fails)
+    // Send waitlist email
     const resendKey = Deno.env.get('RESEND_API_KEY')
-    if (resendKey && inserted?.confirm_token) {
+    if (resendKey && inserted) {
       const subject = `You're on the list. We'll be in touch the moment it's back.`
 
-      fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
-          to: [normalised],
-          subject,
-          html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token, position),
-        }),
-      }).catch(e => console.error('Resend error:', e))
-
-      return json({ success: true, position })
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
+            to: [normalised],
+            subject,
+            html: buildConfirmEmail(normalised, first_name?.trim() || null, inserted.confirm_token ?? '', position),
+          }),
+        })
+        if (!res.ok) {
+          const body = await res.text()
+          console.error('Resend error', res.status, body)
+        }
+      } catch (e) {
+        console.error('Resend fetch error:', e)
+      }
     }
 
     return json({ success: true, position })
