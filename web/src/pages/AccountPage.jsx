@@ -529,7 +529,7 @@ function Dashboard({ session, customer, sub, address, setAddress, setSub, setCus
         {/* Header */}
         <div className="ac-dash-head" style={{position:'relative',overflow:'hidden'}}>
           <div className="ac-head-box">
-            <img src="/solum-box-open-v4.png" alt="" aria-hidden="true" />
+            <img src="/solum-hero.jpg" alt="" aria-hidden="true" />
           </div>
           <div className="ac-head-top" style={{position:'relative',zIndex:1}}>
             <a href="/" className="ac-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></a>

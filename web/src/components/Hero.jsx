@@ -38,7 +38,7 @@ const CSS = `
 .btn-ghost{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;align-self:center;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
 .hero-visual{display:flex;flex-direction:column;align-items:center;order:-1;width:100%;margin-bottom:28px;animation:fadeUp .8s ease .5s both;}
-.hero-box-img{width:auto;max-width:280px;max-height:240px;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,.7));}
+.hero-box-img{width:100%;max-width:100%;height:auto;object-fit:cover;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.8);}
 .hero-visual-label{display:none;}
 .scroll-cue{position:absolute;bottom:24px;right:24px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
 .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
@@ -68,7 +68,7 @@ const CSS = `
   .hero-ghost{font-size:clamp(180px,22vw,340px);}
   .hero-glow{left:35%;}
   .hero-visual{flex:0 0 42%;flex-direction:column;align-items:flex-end;justify-content:flex-end;order:0;width:auto;margin-bottom:0;}
-  .hero-box-img{width:100%;max-width:480px;max-height:none;height:auto;object-fit:contain;filter:drop-shadow(0 32px 64px rgba(0,0,0,.7));}
+  .hero-box-img{width:100%;max-width:560px;height:auto;object-fit:cover;border-radius:3px;box-shadow:0 32px 80px rgba(0,0,0,.85);}
   .hero-visual-label{display:flex;align-items:center;gap:8px;margin-top:16px;align-self:flex-end;}
   .hero-visual-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);}
   .hero-visual-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
@@ -154,7 +154,7 @@ export default function Hero() {
             )}
           </div>
           <div className="hero-visual">
-            <img src="/solum-box-open-v4.png" alt="SOLUM kit" className="hero-box-img" />
+            <img src="/solum-hero.jpg" alt="SOLUM kit — open box with all products" className="hero-box-img" />
             <div className="hero-visual-label">
               <span className="hero-visual-dot" />
               <span className="hero-visual-tag">RITUAL Kit · bysolum.co.uk</span>
