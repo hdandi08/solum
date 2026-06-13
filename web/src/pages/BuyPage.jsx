@@ -55,11 +55,23 @@ const CSS = `
 .by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:5px 10px;}
 .by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
 @keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
-.by-waitlist-block{border:1px solid rgba(46,109,164,0.35);background:rgba(46,109,164,0.05);padding:28px 24px;}
-.by-waitlist-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#e05c5c;font-weight:600;margin-bottom:10px;}
-.by-waitlist-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);letter-spacing:.04em;color:var(--bone);line-height:1;margin-bottom:10px;}
-.by-waitlist-body{font-size:14px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:24px;}
-.by-waitlist-cta{display:block;text-align:center;text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.12em;background:var(--blue);color:#fff;padding:15px 40px;}
+.by-soldout{padding:8px 0;}
+.by-soldout-badge{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#e05c5c;border:1px solid rgba(224,92,92,0.3);padding:5px 12px;margin-bottom:28px;font-weight:700;}
+.by-soldout-badge-dot{width:6px;height:6px;border-radius:50%;background:#e05c5c;animation:bydot 1.5s ease infinite;}
+.by-soldout-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,80px);letter-spacing:.04em;color:var(--bone);line-height:.95;margin-bottom:20px;}
+.by-soldout-kit{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:32px;}
+.by-soldout-apology{border-left:2px solid #e05c5c;padding-left:20px;margin-bottom:32px;}
+.by-soldout-apology-head{font-size:17px;color:var(--bone);font-weight:500;line-height:1.5;margin-bottom:8px;}
+.by-soldout-apology-body{font-size:15px;color:var(--stone);font-weight:300;line-height:1.7;}
+.by-soldout-saved{display:flex;align-items:flex-start;gap:14px;background:rgba(46,109,164,0.07);border:1px solid rgba(46,109,164,0.2);padding:20px 22px;margin-bottom:32px;}
+.by-soldout-saved-tick{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff;margin-top:1px;}
+.by-soldout-saved-text{font-size:14px;color:var(--mist);font-weight:300;line-height:1.65;}
+.by-soldout-saved-text strong{color:var(--bone);font-weight:600;display:block;margin-bottom:2px;}
+.by-soldout-actions{display:flex;flex-direction:column;gap:12px;}
+.by-soldout-home{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--stone);text-decoration:none;border:1px solid var(--lineb);padding:13px 24px;text-align:center;transition:border-color .2s,color .2s;}
+.by-soldout-home:hover{border-color:var(--bone);color:var(--bone);}
+.by-soldout-ig{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);text-decoration:none;text-align:center;padding:4px 0;}
+.by-soldout-ig:hover{color:var(--bone);}
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -372,7 +384,7 @@ export default function BuyPage() {
 
   // ── Step 1: details validation ────────────────────────────────────────────
 
-  function handleDetailsNext(e) {
+  async function handleDetailsNext(e) {
     e.preventDefault();
     setError('');
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
@@ -381,6 +393,33 @@ export default function BuyPage() {
       setError('Please enter a valid email address.'); return;
     }
     if (!form.phone.trim()) { setError('Phone number is required for delivery updates.'); return; }
+
+    const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
+    if (kitSoldOut) {
+      setLoading(true);
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+          body: JSON.stringify({
+            email:      emailVal.toLowerCase(),
+            first_name: form.first_name.trim() || null,
+            last_name:  form.last_name.trim()  || null,
+            phone:      form.phone.trim()      || null,
+            source:     `buy-soldout-${selectedKit}`,
+          }),
+        });
+        setSoldoutSaved(true);
+      } catch {
+        setSoldoutSaved(false);
+      }
+      capture('soldout_detected', { kit: selectedKit, source });
+      setStep('soldout');
+      window.scrollTo(0, 0);
+      setLoading(false);
+      return;
+    }
+
     setStep('delivery');
     window.scrollTo(0, 0);
   }
@@ -393,37 +432,6 @@ export default function BuyPage() {
     if (!form.line1.trim()) { setError('Address line 1 is required.'); return; }
     if (!form.city.trim())  { setError('City is required.'); return; }
     if (!form.postcode.trim()) { setError('Postcode is required.'); return; }
-
-    // Check inventory — only after they've committed their details
-    const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
-    if (kitSoldOut) {
-      setLoading(true);
-      try {
-        await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
-          body: JSON.stringify({
-            email:      form.email.trim().toLowerCase(),
-            first_name: form.first_name.trim()  || null,
-            last_name:  form.last_name.trim()   || null,
-            phone:      form.phone.trim()       || null,
-            line1:      form.line1.trim()       || null,
-            line2:      form.line2.trim()       || null,
-            city:       form.city.trim()        || null,
-            postcode:   form.postcode.trim()    || null,
-            source:     `buy-soldout-${selectedKit}`,
-          }),
-        });
-        setSoldoutSaved(true);
-      } catch {
-        setSoldoutSaved(false);
-      }
-      capture('soldout_detected', { kit: selectedKit, source, has_address: true });
-      setStep('soldout');
-      window.scrollTo(0, 0);
-      setLoading(false);
-      return;
-    }
 
     setLoading(true);
     try {
@@ -510,17 +518,37 @@ export default function BuyPage() {
           </a>
 
           {step === 'soldout' ? (
-            <div className="co-waitlist">
-              <div className="co-waitlist-done">
-                <div className="co-waitlist-done-tick">✓</div>
-                <div className="co-waitlist-done-title">You're on the list.</div>
-                <div className="co-waitlist-done-body">
-                  This kit has sold out. We've saved your details and will email {form.email} the moment stock is back.
+            <div className="by-soldout">
+              <div className="by-soldout-badge">
+                <span className="by-soldout-badge-dot" />
+                Sold Out
+              </div>
+              <div className="by-soldout-title">Oh No.<br />We're Sorry.</div>
+              <div className="by-soldout-kit">
+                SOLUM {activeKit.name} — {activeKit.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · First Box
+              </div>
+              <div className="by-soldout-apology">
+                <div className="by-soldout-apology-head">
+                  This kit has sold out. We genuinely apologise — you got this far and we let you down.
+                </div>
+                <div className="by-soldout-apology-body">
+                  The first batch went faster than expected. We are working on the next restock now.
+                  You will be the first to know the moment it is available.
                 </div>
               </div>
-              <a href="/" className="co-back-btn" style={{ display: 'inline-block', marginTop: 24 }}>
-                ← Back to bysolum.co.uk
-              </a>
+              <div className="by-soldout-saved">
+                <div className="by-soldout-saved-tick">✓</div>
+                <div className="by-soldout-saved-text">
+                  <strong>You're on the waitlist.</strong>
+                  We've saved your details and will email {form.email} as soon as stock is back. No action needed from you.
+                </div>
+              </div>
+              <div className="by-soldout-actions">
+                <a href="/" className="by-soldout-home">← Back to bysolum.co.uk</a>
+                <a href="https://instagram.com/bysolum" target="_blank" rel="noopener noreferrer" className="by-soldout-ig">
+                  Follow @bysolum for restock updates
+                </a>
+              </div>
             </div>
           ) : (
             <>
