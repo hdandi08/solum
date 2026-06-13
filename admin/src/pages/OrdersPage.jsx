@@ -252,13 +252,13 @@ export default function OrdersPage() {
     try {
       const { data: { session } } = await config.authClient.auth.getSession()
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cancel-order`,
+        `${config.url}/functions/v1/cancel-order`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': config.anonKey,
           },
           body: JSON.stringify({ order_id: orderId }),
         }
