@@ -41,15 +41,15 @@ const CSS = `
 const CADENCE = [
   {
     label: 'Every Month',
-    products: 'Body Wash · Body Lotion · Cleansing Cloth',
-    note: null,
-    copy: 'The daily essentials. Always there when you need them.',
+    products: 'Body Wash · Body Lotion · Cleansing Cloth · Italy Towel Mitt · Atlas Clay',
+    note: '+ Argan Body Oil (RITUAL only)',
+    copy: 'Everything that depletes or wears within a month. Always fresh, always ready.',
   },
   {
     label: 'Every 3 Months',
-    products: 'Italy Towel Mitt · Back Scrub Cloth · Atlas Clay',
-    note: '+ Argan Oil (RITUAL and SOVEREIGN)',
-    copy: 'The tools and weekly ritual products. Refreshed before they degrade.',
+    products: 'Back Scrub Cloth',
+    note: null,
+    copy: 'The back cloth takes more friction than anything else. Replaced before it loses effectiveness.',
   },
   {
     label: 'Every 6 Months',
@@ -98,7 +98,7 @@ export default function SubscriptionSection() {
             <div className="s-sec-tag">Coming Soon</div>
             <h2>Subscription.<br />On Autopilot.</h2>
             <p>
-              We are launching as a one-time purchase. Subscription — where only what runs out arrives at your door — is coming. Join the early access list to be first.
+              We are launching as a one-time purchase. Subscription is coming. Join the early access list to be first.
             </p>
           </div>
           <div className="sub-grid">
@@ -130,7 +130,7 @@ export default function SubscriptionSection() {
                 ))}
               </div>
               <div className="sub-footnote" style={{ marginBottom: '24px' }}>
-                Right now, SOLUM is available as a one-time purchase only. Subscription — where refills arrive automatically before you run out — is coming soon. Join the early access list and we will notify you the moment it launches.
+                Right now, SOLUM is available as a one-time purchase only. Subscription is coming soon: refills that arrive automatically before you run out. Join the early access list and we will notify you the moment it launches.
               </div>
               <div className="sub-early-access">
                 <div className="sub-early-access-label">Early Access</div>
