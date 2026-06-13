@@ -54,8 +54,10 @@ Deno.serve(async (req) => {
   if (orderErr || !order) {
     return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404, headers: corsHeaders });
   }
-  if (order.status === 'cancelled') {
-    return new Response(JSON.stringify({ error: 'Order already cancelled' }), { status: 409, headers: corsHeaders });
+  if (order.status !== 'paid') {
+    return new Response(JSON.stringify({ error: `Order cannot be cancelled (status: ${order.status})` }), {
+      status: 409, headers: corsHeaders,
+    });
   }
   if (!order.stripe_payment_id) {
     return new Response(JSON.stringify({ error: 'No Stripe payment ID on this order — refund manually in Stripe dashboard' }), {
@@ -104,12 +106,20 @@ Deno.serve(async (req) => {
   }
 
   // ── Update order ─────────────────────────────────────────────────────────
-  await db.from('orders').update({
+  const { error: updateErr } = await db.from('orders').update({
     status:       'cancelled',
     cancelled_at: new Date().toISOString(),
     refund_id:    refundId,
     cancel_notes: cancelNotes,
   }).eq('id', order_id);
+
+  if (updateErr) {
+    console.error('CANCEL_ORDER_DB_UPDATE_ERROR', updateErr.message);
+    return new Response(
+      JSON.stringify({ error: `Refund issued (${refundId}) but DB update failed — check Supabase logs` }),
+      { status: 502, headers: corsHeaders },
+    );
+  }
 
   console.log('CANCEL_ORDER_COMPLETE', JSON.stringify({ order_id, refund_id: refundId, sendcloud_cancelled: sendcloudCancelled }));
 
