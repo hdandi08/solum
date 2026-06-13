@@ -5,13 +5,13 @@ const IS_FATHERS_DAY = new URLSearchParams(window.location.search).get('occasion
 
 const CSS = `
 /* ── Mobile first ─────────────────────────────────── */
-.hero{min-height:100svh;display:flex;align-items:flex-end;padding:80px 24px 56px;position:relative;overflow:hidden;background:var(--black);}
+.hero{min-height:100svh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--black);padding:0;}
 .hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(46,109,164,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.03) 1px,transparent 1px);background-size:60px 60px;animation:gridFade 3s ease forwards;}
 @keyframes gridFade{from{opacity:0;}to{opacity:1;}}
 .hero-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,30vw,340px);letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.06);pointer-events:none;user-select:none;white-space:nowrap;animation:ghostIn 2s cubic-bezier(.16,1,.3,1) .3s both;}
 @keyframes ghostIn{from{opacity:0;transform:translate(-50%,-48%) scale(.96);}to{opacity:1;transform:translate(-50%,-52%) scale(1);}}
-.hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:500px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
-.hero-cols{position:relative;z-index:1;display:flex;flex-direction:column;width:100%;gap:0;}
+.hero-glow{position:absolute;top:30%;left:25%;transform:translate(-50%,-50%);width:500px;height:400px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:32px 24px 48px;gap:0;}
 .hero-content{width:100%;}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);line-height:.96;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
@@ -37,10 +37,11 @@ const CSS = `
 .btn-primary:hover{background:#fff;transform:translateY(-1px);}
 .btn-ghost{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;align-self:center;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
-.hero-visual{display:flex;flex-direction:column;align-items:center;order:-1;width:100%;margin-bottom:28px;animation:fadeUp .8s ease .5s both;}
-.hero-box-img{width:100%;max-width:100%;height:auto;object-fit:cover;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.8);}
-.hero-visual-label{display:none;}
-.scroll-cue{position:absolute;bottom:24px;right:24px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
+/* Mobile: image on top, full width */
+.hero-visual{width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;animation:fadeUp .8s ease .5s both;}
+.hero-box-img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;}
+.hero-visual-caption{display:none;}
+.scroll-cue{position:absolute;bottom:24px;left:24px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
 .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
 @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
@@ -62,17 +63,15 @@ const CSS = `
 
 /* ── Desktop ───────────────────────────────────────── */
 @media(min-width:960px){
-  .hero{padding:80px 48px 80px;}
-  .hero-cols{flex-direction:row;align-items:flex-end;gap:48px;}
-  .hero-content{flex:0 0 55%;max-width:600px;}
-  .hero-ghost{font-size:clamp(180px,22vw,340px);}
-  .hero-glow{left:35%;}
-  .hero-visual{flex:0 0 42%;flex-direction:column;align-items:flex-end;justify-content:flex-end;order:0;width:auto;margin-bottom:0;}
-  .hero-box-img{width:100%;max-width:560px;height:auto;object-fit:cover;border-radius:3px;box-shadow:0 32px 80px rgba(0,0,0,.85);}
-  .hero-visual-label{display:flex;align-items:center;gap:8px;margin-top:16px;align-self:flex-end;}
-  .hero-visual-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);}
-  .hero-visual-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;}
-  .scroll-cue{bottom:32px;right:48px;}
+  .hero{flex-direction:row;height:100svh;min-height:640px;}
+  .hero-cols{flex:0 0 48%;padding:80px 48px 64px;}
+  .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
+  .hero-glow{left:24%;}
+  /* Right panel: image fills full height */
+  .hero-visual{flex:0 0 52%;width:52%;height:100%;max-height:none;min-height:100%;}
+  .hero-box-img{object-position:center center;}
+  .hero-visual-caption{display:block;position:absolute;bottom:16px;right:20px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.4);font-weight:500;z-index:1;}
+  .scroll-cue{bottom:40px;left:48px;}
   .scroll-line{height:48px;}
 }
 `;
@@ -153,13 +152,10 @@ export default function Hero() {
               </>
             )}
           </div>
-          <div className="hero-visual">
-            <img src="/solum-hero.jpg" alt="SOLUM kit — open box with all products" className="hero-box-img" />
-            <div className="hero-visual-label">
-              <span className="hero-visual-dot" />
-              <span className="hero-visual-tag">RITUAL Kit · bysolum.co.uk</span>
-            </div>
-          </div>
+        </div>
+        <div className="hero-visual" style={{ position: 'relative' }}>
+          <img src="/solum-hero.jpg" alt="SOLUM kit — open box with all products" className="hero-box-img" />
+          <span className="hero-visual-caption">RITUAL Kit · bysolum.co.uk</span>
         </div>
         <div className="scroll-cue"><div className="scroll-line" />Scroll</div>
       </section>
