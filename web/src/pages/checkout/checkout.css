@@ -1,3 +1,39 @@
+/* ── Checkout nav (logo bar, fixed top) ──────────────────────────────────── */
+
+.co-checkout-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #08090B;
+  border-bottom: 1px solid rgba(240,236,226,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  z-index: 200;
+}
+
+.co-checkout-nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.15em;
+  color: #F0ECE2;
+  text-decoration: none;
+}
+
+.co-checkout-nav-lock {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(168,180,188,0.8);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 
 .co-page {
@@ -1059,17 +1095,41 @@ select.co-input option {
     padding-top: 64px;
   }
 
-  /* co-left: no top padding — MobileHeader sits flush at top edge */
+  /* co-left: standard padding; extra bottom padding for the sticky order bar */
   .co-left {
-    padding: 0 16px 64px;
+    padding: 24px 16px 96px;
     border-right: none;
-    overflow-x: clip; /* clip negative-margin bleed from MobileHeader */
   }
 
-  /* MobileHeader lives inside co-left; pull it to edge-to-edge */
+  /* Checkout nav: tighter padding on mobile, hide lock text */
+  .co-checkout-nav { padding: 0 16px; }
+  .co-checkout-nav-lock { display: none; }
+
+  /* MobileHeader: sticky bar fixed to bottom of viewport */
   .co-mobile-header {
     display: block;
-    margin: 0 -16px 24px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    margin: 0;
+    overflow: visible;
+    box-shadow: 0 -1px 0 rgba(240,236,226,0.1), 0 -8px 32px rgba(0,0,0,0.6);
+  }
+
+  /* Expanded panel slides upward from the bar */
+  .co-mobile-header-body {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: var(--char);
+    border-top: 1px solid rgba(240,236,226,0.1);
+    border-bottom: none;
+    max-height: 65vh;
+    overflow-y: auto;
+    padding: 20px 16px 24px;
   }
 
   /* Button must fill its parent width on mobile */

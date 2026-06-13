@@ -55,7 +55,7 @@ const CSS = `
 .by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:5px 10px;}
 .by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
 @keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
-.by-soldout-page{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);min-height:calc(100vh - 64px);align-items:start;}
+.by-soldout-page{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);min-height:calc(100vh - 64px);align-items:start;padding-top:64px;}
 .by-soldout-left{background:var(--black);padding:48px 40px;}
 .by-soldout-right{background:var(--char);padding:48px 40px;display:flex;flex-direction:column;gap:0;}
 .by-soldout-badge{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#e05c5c;border:1px solid rgba(224,92,92,0.3);padding:5px 12px;margin-bottom:28px;font-weight:700;}
@@ -89,7 +89,7 @@ const CSS = `
 .by-ig-handle{font-size:14px;color:var(--bone);font-weight:600;letter-spacing:.3px;}
 .by-ig-sub{font-size:11px;color:var(--stone);font-weight:300;letter-spacing:.3px;}
 @media(max-width:768px){
-  .by-soldout-page{grid-template-columns:1fr;}
+  .by-soldout-page{grid-template-columns:1fr;padding-top:64px;}
   .by-soldout-left,.by-soldout-right{padding:36px 24px;}
 }
 `;
@@ -191,6 +191,23 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
         </div>
       )}
     </div>
+  );
+}
+
+// ── Checkout nav (SOLUM wordmark, fixed top) ─────────────────────────────────
+
+function BuyCheckoutNav() {
+  return (
+    <nav className="co-checkout-nav">
+      <a href="/" className="co-checkout-nav-logo">SOLUM</a>
+      <span className="co-checkout-nav-lock">
+        <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true">
+          <rect x="0.75" y="5.75" width="9.5" height="6.5" rx="0.75" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M3 5.5V3.5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+        Secure Checkout
+      </span>
+    </nav>
   );
 }
 
@@ -505,6 +522,7 @@ export default function BuyPage() {
     return (
       <>
         <style>{CSS}</style>
+        <BuyCheckoutNav />
         <div className="by-soldout-page">
           {/* Left — apology */}
           <div className="by-soldout-left">
@@ -578,6 +596,7 @@ export default function BuyPage() {
     return (
       <>
         <style>{CSS}</style>
+        <BuyCheckoutNav />
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
           <div className="co-page">
             <div className="co-left">
@@ -605,6 +624,7 @@ export default function BuyPage() {
   return (
     <>
       <style>{CSS}</style>
+      <BuyCheckoutNav />
       <div className="co-page">
         <div className="co-left">
           <BuyMobileHeader {...headerProps} />

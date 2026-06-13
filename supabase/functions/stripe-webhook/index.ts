@@ -99,7 +99,7 @@ async function sendConfirmationEmail(
 
         <!-- Header -->
         <tr><td style="background:#08090B;padding:32px 48px 26px;border-bottom:1px solid #181c24;">
-          <img src="https://bysolum.co.uk/solum-wordmark-white.png" alt="SOLUM" width="130" style="display:block;height:auto;border:0;" />
+          <img src="https://bysolum.co.uk/solum-wordmark-email.png" alt="SOLUM" width="130" style="display:block;height:auto;border:0;" />
           <p style="margin:10px 0 0;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:600;">Your body. Done right.</p>
         </td></tr>
 
