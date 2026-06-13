@@ -81,7 +81,7 @@ export default function KitComparison() {
           <div className="kits-header reveal">
             <div className="k-sec-tag">Two ways to begin.</div>
             <h2>Choose<br />Your Kit.</h2>
-            <p>Each kit arrives once. After that, only what runs out is replenished.</p>
+            <p>Each kit arrives once. After that, we only send what you've run out of.</p>
           </div>
           <div className="kits-grid reveal">
             {KITS.map(kit => {
@@ -118,7 +118,7 @@ export default function KitComparison() {
                     ))}
                     {isSovereign && (
                       <div className="kit-product-replacement">
-                        * Turkish Kese Mitt replaces Italy Towel Mitt · Beidi Black Soap — both coming soon
+                        * Turkish Kese Mitt replaces Italy Towel Mitt · Beidi Black Soap. Both coming soon.
                       </div>
                     )}
                   </div>

@@ -191,8 +191,7 @@ export default function RitualSection() {
                 <span className="ritual-panel-badge-dot" style={{ background: 'var(--blue)' }} />
                 Daily · 10 Minutes · Every Shower
               </div>
-              <div className="ritual-panel-title">10 Minutes.<br />Every Shower.</div>
-              <p className="ritual-panel-desc">Five steps in the shower you already take. Follow the numbers.</p>
+              <div className="ritual-panel-title">Five steps. In the shower you already take.</div>
               <StepFlow steps={DAILY} variant="daily" />
               <a href="/ritual?ritual=daily" className="ritual-panel-cta daily"
                  onClick={() => capture('ritual_cta_clicked', { ritual: 'daily' })}>
@@ -207,7 +206,7 @@ export default function RitualSection() {
                 Weekly · 18 Minutes · Once a Week
               </div>
               <div className="ritual-panel-title">18 Minutes.<br />Once a Week.</div>
-              <p className="ritual-panel-desc">Replaces the daily ritual. Goes deeper — clay, oil, full exfoliation.</p>
+              <p className="ritual-panel-desc">Replaces the daily ritual. Goes deeper: clay, oil, full exfoliation.</p>
               <StepFlow steps={WEEKLY} variant="weekly" />
               <a href="/ritual?ritual=weekly" className="ritual-panel-cta weekly"
                  onClick={() => capture('ritual_cta_clicked', { ritual: 'weekly' })}>

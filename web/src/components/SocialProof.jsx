@@ -19,7 +19,7 @@ const OUTCOMES = [
   {
     week: 'Session One',
     outcome: 'Your Back. For The First Time.',
-    detail: 'The back scrub cloth reaches what no shower ever has. In 60 seconds. The difference is immediate — you will feel skin that has never been touched by a proper clean.',
+    detail: 'The back scrub cloth reaches what no shower ever has. In 60 seconds. The difference is immediate. You will feel skin that has never been touched by a proper clean.',
     zone: 'Back · Dead Skin',
   },
   {
@@ -44,7 +44,7 @@ export default function SocialProof() {
         <div className="proof-inner">
           <div className="proof-header reveal">
             <div className="pr-sec-tag">What Actually Changes</div>
-            <h2>The Results<br />Speak Plainly.</h2>
+            <h2>What Actually<br />Changes.</h2>
           </div>
           <div className="proof-grid reveal">
             {OUTCOMES.map(o => (

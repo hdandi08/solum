@@ -20,31 +20,31 @@ const CSS = `
 const FAQS = [
   {
     q: 'Am I paying the full kit price every month?',
-    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment. It includes all the physical tools — the mitt, the back cloth, the scalp massager — which last 6–12 months. Right now, SOLUM is a one-off purchase. Subscription, where consumables arrive automatically before you run out, is coming soon.',
+    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment. It includes all the physical tools: the mitt, the back cloth and the scalp massager. These last 6–12 months. Right now, SOLUM is a one-off purchase. Subscription, where consumables arrive automatically before you run out, is coming soon.',
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',
-    a: 'GROUND has 5 products — body wash, exfoliating mitt, back scrub cloth, scalp massager, and body lotion. That covers the complete daily ritual. RITUAL adds two more: Rhassoul Clay Mask and Argan Body Oil, giving you the full weekly deep-clean treatment on top. If you want the complete system, RITUAL is the one.',
+    a: 'GROUND has 5 products: body wash, exfoliating mitt, back scrub cloth, scalp massager and body lotion. That covers the complete daily ritual. RITUAL adds two more: Rhassoul Clay Mask and Argan Body Oil, giving you the full weekly deep-clean treatment on top. If you want the complete system, RITUAL is the one.',
   },
   {
     q: 'What about SOVEREIGN?',
-    a: 'SOVEREIGN replaces the Italy Towel Mitt with a hand-woven Turkish Kese Mitt from Istanbul, and adds Beidi Black Soap. It is the artisan tier — listed on site but not yet available to order. We will notify the early access list when it ships.',
+    a: 'SOVEREIGN replaces the Italy Towel Mitt with a hand-woven Turkish Kese Mitt from Istanbul, and adds Beidi Black Soap. It is the artisan tier, listed on site but not yet available to order. We will notify the early access list when it ships.',
   },
   {
     q: 'Is this for my face or my body?',
-    a: 'Your body. Entirely. SOLUM is the first serious body care system for men — it does not replace your face routine, shampoo, or deodorant. It addresses skin from your neck down: exfoliation, back care, scalp health, and daily moisturisation. The 90% of your skin that most products ignore.',
+    a: 'Your body. Entirely. SOLUM is the first serious body care system for men. It does not replace your face routine, shampoo or deodorant. It addresses everything from your neck down: exfoliation, back care, scalp health and daily moisturisation.',
   },
   {
     q: 'Why does it matter that I use the lotion within 3 minutes?',
-    a: "Immediately after showering, your skin is warm and the outer layer is still hydrated. Moisture absorption is up to 70% higher in this window. Wait 15 minutes and you've largely missed it — the lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.",
+    a: "Right after a shower, your skin is warm and still open. Moisture absorption is up to 70% higher in this window. Wait 15 minutes and you've largely missed it. The lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.",
   },
   {
     q: 'Can I cancel or pause my subscription?',
-    a: 'Subscription is not yet live, so there is nothing to cancel. When it launches, the answer will be yes — one click, no penalty, no phone calls, no retention flows designed to confuse you. We will not make it difficult.',
+    a: 'Subscription is not yet live, so there is nothing to cancel. When it launches, the answer will be yes. One click, no penalty, no phone calls, no retention flows designed to confuse you. We will not make it difficult.',
   },
   {
     q: 'Does it work as a gift?',
-    a: 'Yes. The RITUAL kit is ideal for gifting. Rigid matte black box, steel blue foil strip, ribbon pull, ritual card face-up. It arrives as a complete, self-contained kit — no subscription required. The recipient can choose to join the subscription waitlist when it launches.',
+    a: 'Yes. The RITUAL kit is ideal for gifting. Rigid matte black box, steel blue foil strip, ribbon pull, ritual card face-up. It arrives as a complete, self-contained kit. No subscription required. The recipient can choose to join the subscription waitlist when it launches.',
   },
 ];
 

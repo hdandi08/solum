@@ -23,7 +23,7 @@ export default function SolumFooter() {
         <div className="footer-inner">
           <div>
             <div className="footer-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></div>
-            <div className="footer-tagline">Your body. Done right.</div>
+            <div className="footer-tagline">Body care, finally built for men.</div>
             <div className="footer-scope">Body Care · Men</div>
           </div>
           <div>

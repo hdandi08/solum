@@ -38,7 +38,7 @@ export default function LoyaltySection() {
             <p className="loy-body">
               Six months of continuous subscription. That will be the only qualification.
               No points. No codes. No tiers to unlock. Stay consistent, do the ritual,
-              and at month six it ships with your box. Subscription is coming — and so is this.
+              and at month six it ships with your box. Subscription is coming. And so is this.
             </p>
             <div className="loy-timeline">
               <div className="loy-step">
@@ -70,7 +70,7 @@ export default function LoyaltySection() {
               alt="SOLUM 180 t-shirt — Beyond Clean. Form an Orderly Queue."
               className="loyalty-img"
             />
-            <div className="loyalty-img-label">The SOLUM 180 Tee — Earned, Not Bought</div>
+            <div className="loyalty-img-label">THE SOLUM 180 TEE. EARNED, NOT BOUGHT.</div>
           </div>
         </div>
       </section>

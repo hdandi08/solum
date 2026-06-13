@@ -21,7 +21,7 @@ const ORIGINS = [
     flag: '🇬🇧',
     country: 'United Kingdom',
     product: 'Body Wash · Body Lotion',
-    why: 'Formulated and manufactured to UK Cosmetics Regulation standards — independently safety assessed, GMP certified, UK Responsible Person registered.',
+    why: 'Formulated and manufactured to UK Cosmetics Regulation standards. Independently safety assessed, GMP certified, UK Responsible Person registered.',
   },
   {
     flag: '🇰🇷',
@@ -48,7 +48,7 @@ export default function ProvenanceSection() {
             <h2 className="o-sec-title">Sourced From<br />Where It Works.</h2>
             <p className="o-sec-body">
               Each product is sourced from the country that does that tradition best.
-              Not for the label — for the result.
+              Not for the label. For the result.
             </p>
           </div>
           <div className="origins-grid reveal">

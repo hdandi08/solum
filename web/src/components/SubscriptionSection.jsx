@@ -105,7 +105,7 @@ export default function SubscriptionSection() {
             <div className="reveal">
               <div className="sub-coming-badge">Coming Soon</div>
               <p style={{ fontSize: '15px', color: 'var(--stone)', fontWeight: 300, lineHeight: 1.7, marginBottom: '20px' }}>
-                This is how the subscription will work. Pay once for your kit. After that, only what runs out arrives at your door — at a flat monthly price, regardless of which box ships that month.
+                This is how the subscription will work. Pay once for your kit. After that, only what you've run out of arrives at your door. One flat monthly price, no matter what ships.
               </p>
               <div className="cadence-list">
                 {CADENCE.map(c => (
@@ -130,7 +130,7 @@ export default function SubscriptionSection() {
                 ))}
               </div>
               <div className="sub-footnote" style={{ marginBottom: '24px' }}>
-                Right now, SOLUM is available as a one-time purchase only. Subscription is coming soon: refills that arrive automatically before you run out. Join the early access list and we will notify you the moment it launches.
+                Right now, SOLUM is available as a one-time purchase only. Subscription, where refills arrive automatically before you run out, is coming soon. Join the early access list and we will notify you the moment it launches.
               </div>
               <div className="sub-early-access">
                 <div className="sub-early-access-label">Early Access</div>

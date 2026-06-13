@@ -18,10 +18,10 @@ const CSS = `
 `;
 
 const STATS = [
-  ['Week 1', "Dead skin you didn't know existed rolls off.", "Rinsing never removes it; friction does. You stop carrying years of unseen buildup."],
+  ['Week 1', "Dead skin you didn't know existed rolls off.", "Rinsing never removes it. Friction does. You stop carrying years of unseen buildup."],
   ['Week 2', 'Body odour noticeably reduces.', 'Odour bacteria feed on dead cells, not sweat. Remove the cells, eliminate the source.'],
   ['Week 3', 'Skin holds moisture past midday.', 'No tightness by afternoon. The three-minute lotion rule finally works because the skin beneath is clean.'],
-  ['Month 2', 'Your skin is fundamentally different.', 'Texture, moisture, clarity, and scent. This is what properly maintained skin feels like.'],
+  ['Month 2', 'Your skin is fundamentally different.', 'Texture, moisture, clarity and scent. This is what properly maintained skin feels like.'],
 ];
 
 export default function TruthSection() {
@@ -35,7 +35,7 @@ export default function TruthSection() {
             <div className="truth-quote">The<br />Reality.</div>
             <p className="truth-body">
               You were taught to shower. Nobody told you what actually happens inside one.
-              One product on your whole body, rinsed off in ninety seconds, is a habit — not a system.
+              One product on your whole body, rinsed off in ninety seconds, is a habit. Not a system.
             </p>
             <div className="truth-note">
               SOLUM does not replace your face routine, shampoo, or deodorant.
