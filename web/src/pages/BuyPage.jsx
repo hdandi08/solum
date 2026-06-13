@@ -406,6 +406,7 @@ export default function BuyPage() {
 
   async function handleDetailsNext(e) {
     e.preventDefault();
+    if (loading) return;
     setError('');
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
     const emailVal = form.email.trim();
@@ -448,6 +449,7 @@ export default function BuyPage() {
 
   async function handleDeliveryNext(e) {
     e.preventDefault();
+    if (loading) return;
     setError('');
     if (!form.line1.trim()) { setError('Address line 1 is required.'); return; }
     if (!form.city.trim())  { setError('City is required.'); return; }
@@ -665,8 +667,8 @@ export default function BuyPage() {
 
                   {error && <div className="co-error" data-testid="form-error">{error}</div>}
 
-                  <button className="co-submit" type="submit" data-testid="continue-btn">
-                    Next: Delivery →
+                  <button className="co-submit" type="submit" disabled={loading} data-testid="continue-btn">
+                    {loading ? 'Saving…' : 'Next: Delivery →'}
                   </button>
 
                   <div className="co-inline-trust">
