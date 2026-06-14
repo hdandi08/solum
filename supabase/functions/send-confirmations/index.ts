@@ -17,8 +17,8 @@ function buildConfirmEmail(token: string, position: number, firstName: string | 
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Confirm your spot — spaces filling fast</title>
 </head>
-<body style="margin:0;padding:0;background:#08090b;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#08090b;padding:48px 24px;">
+<body bgcolor="#08090B" style="margin:0;padding:0;background:#08090b;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="background:#08090b;padding:48px 24px;">
   <tr><td align="center">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
 
