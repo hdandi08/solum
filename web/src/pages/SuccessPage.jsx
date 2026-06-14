@@ -72,8 +72,8 @@ export default function SuccessPage() {
   const paymentFailed = redirectStatus === 'failed' || redirectStatus === 'canceled';
 
   const retryUrl = isOneTime
-    ? `/buy${kitId ? `?kit=${kitId}` : ''}`
-    : `/checkout${kitId ? `?kit=${kitId}` : ''}`;
+    ? `/buy?${kitId ? `kit=${kitId}&` : ''}resume=1`
+    : `/checkout?${kitId ? `kit=${kitId}&` : ''}resume=1`;
 
   // Fire purchase events only on genuine success
   useEffect(() => {

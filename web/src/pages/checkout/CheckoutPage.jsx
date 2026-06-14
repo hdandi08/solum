@@ -111,6 +111,21 @@ export default function CheckoutPage() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
+  // Restore state after a failed redirect-based payment (Revolut Pay etc.)
+  useEffect(() => {
+    if (params.get('resume') !== '1') return;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
+      if (!saved.clientSecret || !saved.form) return;
+      setForm(saved.form);
+      setPayInfo(saved.payInfo);
+      setClientSecret(saved.clientSecret);
+      if (saved.kit) setActiveKitId(saved.kit);
+      setStep('payment');
+      sessionStorage.removeItem('solum_payment_retry');
+    } catch {}
+  }, []); // eslint-disable-line
+
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
     birth_year: '', birth_month: '',
@@ -251,6 +266,11 @@ export default function CheckoutPage() {
       setActiveKitId(kId);
       setStep('payment');
       window.scrollTo(0, 0);
+      try {
+        sessionStorage.setItem('solum_payment_retry', JSON.stringify({
+          clientSecret: data.client_secret, payInfo: data, form, kit: kId,
+        }));
+      } catch {}
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {

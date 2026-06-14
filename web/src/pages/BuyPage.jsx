@@ -438,6 +438,22 @@ export default function BuyPage() {
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
+  // Restore state after a failed redirect-based payment (Revolut Pay etc.)
+  useEffect(() => {
+    if (params.get('resume') !== '1') return;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
+      if (!saved.clientSecret || !saved.form) return;
+      setForm(saved.form);
+      setPayInfo(saved.payInfo);
+      setClientSecret(saved.clientSecret);
+      if (saved.kit) setSelectedKit(saved.kit);
+      setStep('payment');
+      window.scrollTo(0, 0);
+      sessionStorage.removeItem('solum_payment_retry');
+    } catch {}
+  }, []); // eslint-disable-line
+
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
     fbViewContent('SOLUM Kit');
@@ -564,6 +580,11 @@ export default function BuyPage() {
       setPayInfo(data);
       setStep('payment');
       window.scrollTo(0, 0);
+      try {
+        sessionStorage.setItem('solum_payment_retry', JSON.stringify({
+          clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, source,
+        }));
+      } catch {}
     } catch {
       setError('Network error. Please try again.');
     } finally {
