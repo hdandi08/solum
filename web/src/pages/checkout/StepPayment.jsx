@@ -55,7 +55,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
 
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
-      } else if (paymentIntent?.status === 'succeeded') {
+      } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
