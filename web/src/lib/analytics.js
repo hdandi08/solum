@@ -79,33 +79,33 @@ export function ttqIdentify(email) {
 }
 
 // User selects a kit card
-export function ttqAddToCart(kitName, value) {
-  ttq('track', 'AddToCart', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+export function ttqAddToCart(kitId, kitName, value) {
+  ttq('track', 'AddToCart', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
 // Payment form mounts — strong intent signal
-export function ttqAddPaymentInfo(kitName, value) {
-  ttq('track', 'AddPaymentInfo', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+export function ttqAddPaymentInfo(kitId, kitName, value) {
+  ttq('track', 'AddPaymentInfo', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
 // Pay button clicked — captures intent even if card is declined
-export function ttqPlaceAnOrder(kitName, value, eventId) {
-  ttq('track', 'PlaceAnOrder', { content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
+export function ttqPlaceAnOrder(kitId, kitName, value, eventId) {
+  ttq('track', 'PlaceAnOrder', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
 }
 
 // Kit page views (/buy, /checkout)
-export function ttqViewContent(kitName, value) {
-  ttq('track', 'ViewContent', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+export function ttqViewContent(kitId, kitName, value) {
+  ttq('track', 'ViewContent', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
 // User reaches payment step
-export function ttqInitiateCheckout(kitName, value) {
-  ttq('track', 'InitiateCheckout', { content_name: kitName, value, currency: 'GBP' });
+export function ttqInitiateCheckout(kitId, kitName, value) {
+  ttq('track', 'InitiateCheckout', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
 // Payment confirmed — event_id ties this to the server-side Events API call for deduplication
-export function ttqCompletePayment(kitName, value, eventId) {
-  ttq('track', 'CompletePayment', { content_name: kitName, value, currency: 'GBP' }, { event_id: eventId });
+export function ttqCompletePayment(kitId, kitName, value, eventId) {
+  ttq('track', 'CompletePayment', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
 }
 
 export { posthog };

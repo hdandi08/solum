@@ -318,7 +318,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       });
 
       const piId = payInfo.client_secret?.split('_secret_')[0];
-      ttqPlaceAnOrder(activeKit.name, payInfo.amount_pence / 100, piId);
+      ttqPlaceAnOrder(activeKit.id, activeKit.name, payInfo.amount_pence / 100, piId);
 
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
@@ -460,7 +460,7 @@ export default function BuyPage() {
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
     fbViewContent('SOLUM Kit');
-    ttqViewContent('SOLUM Kit', 65);
+    ttqViewContent(preselect ?? 'ground', 'SOLUM Kit', 65);
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -579,8 +579,8 @@ export default function BuyPage() {
       capture('checkout_initiated', { kit: selectedKit, source, price });
       fbInitiateCheckout(activeKit?.name ?? selectedKit, price);
       ttqIdentify(form.email.trim().toLowerCase());
-      ttqInitiateCheckout(activeKit?.name ?? selectedKit, price);
-      ttqAddPaymentInfo(activeKit?.name ?? selectedKit, price);
+      ttqInitiateCheckout(selectedKit, activeKit?.name ?? selectedKit, price);
+      ttqAddPaymentInfo(selectedKit, activeKit?.name ?? selectedKit, price);
       try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch {}
 
       setClientSecret(data.client_secret);
@@ -733,7 +733,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => { setSelectedKit(id); ttqAddToCart(kit?.name ?? id, KIT_PRICES[id] ?? 65); }}
+                        onClick={() => { setSelectedKit(id); ttqAddToCart(id, kit?.name ?? id, KIT_PRICES[id] ?? 65); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         <div className="by-kit-name">{kit?.name}</div>

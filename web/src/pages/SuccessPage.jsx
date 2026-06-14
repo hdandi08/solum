@@ -93,7 +93,7 @@ export default function SuccessPage() {
     capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef });
 
     if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
-    if (amountGbp) ttqCompletePayment(kitName, amountGbp, rawRef);
+    if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
   }, []); // eslint-disable-line
 
   if (paymentFailed) {
