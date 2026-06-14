@@ -41,7 +41,7 @@ function buildConfirmEmail(
 
       <!-- Logo -->
       <tr><td style="padding-bottom:40px;">
-        <span style="font-size:28px;letter-spacing:0.18em;color:#f0ece2;font-weight:700;">SOLUM</span>
+        <img src="https://bysolum.co.uk/solum-wordmark-email.png" alt="SOLUM" width="120" style="display:block;height:auto;border:0;" />
       </td></tr>
 
       <!-- Heading -->
