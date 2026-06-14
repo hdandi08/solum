@@ -283,8 +283,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState('');
+  const [paymentType, setPaymentType] = useState('card');
 
   async function handlePay(e) {
     e.preventDefault();
@@ -302,30 +303,31 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
         amount:   String(payInfo.amount_pence),
       });
 
-      const result = await stripe.confirmPayment({
+      const isWallet = paymentType === 'apple_pay' || paymentType === 'google_pay';
+
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/success?${successParams.toString()}`,
-          payment_method_data: {
-            billing_details: {
-              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-              email:   form.email   || undefined,
-              phone:   form.phone   || undefined,
-              address: {
-                line1:       form.line1    || undefined,
-                line2:       form.line2    || undefined,
-                city:        form.city     || undefined,
-                postal_code: form.postcode || undefined,
-                country:     'GB',
+          ...(isWallet ? {} : {
+            payment_method_data: {
+              billing_details: {
+                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+                email:   form.email   || undefined,
+                phone:   form.phone   || undefined,
+                address: {
+                  line1:       form.line1    || undefined,
+                  line2:       form.line2    || undefined,
+                  city:        form.city     || undefined,
+                  postal_code: form.postcode || undefined,
+                  country:     'GB',
+                },
               },
             },
-          },
+          }),
         },
         redirect: 'if_required',
       });
-
-      const { error: confirmError, paymentIntent } = result;
-      console.log('[SOLUM] confirmPayment result:', JSON.stringify({ error: confirmError?.message, status: paymentIntent?.status }));
 
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
@@ -334,11 +336,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        console.warn('[SOLUM] unexpected confirmPayment state:', result);
         setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       }
     } catch (err) {
-      console.error('[SOLUM] confirmPayment threw:', err);
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
     } finally {
       submitting.current = false;
@@ -364,24 +364,27 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
       </div>
 
       <div className="co-payment-element-wrap">
-        <PaymentElement options={{
-          layout: 'tabs',
-          defaultValues: {
-            billingDetails: {
-              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-              email:   form.email || undefined,
-              phone:   form.phone || undefined,
-              address: {
-                line1:       form.line1    || undefined,
-                line2:       form.line2    || undefined,
-                city:        form.city     || undefined,
-                postal_code: form.postcode || undefined,
-                country:     'GB',
+        <PaymentElement
+          onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
+          options={{
+            layout: 'tabs',
+            defaultValues: {
+              billingDetails: {
+                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+                email:   form.email || undefined,
+                phone:   form.phone || undefined,
+                address: {
+                  line1:       form.line1    || undefined,
+                  line2:       form.line2    || undefined,
+                  city:        form.city     || undefined,
+                  postal_code: form.postcode || undefined,
+                  country:     'GB',
+                },
               },
             },
-          },
-          fields: { billingDetails: 'never' },
-        }} />
+            fields: { billingDetails: 'never' },
+          }}
+        />
       </div>
 
       {error && <div className="co-error" data-testid="pay-error">{error}</div>}

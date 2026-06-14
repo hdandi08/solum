@@ -5,8 +5,9 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState('');
+  const [paymentType, setPaymentType] = useState('card');
 
   async function handlePay(e) {
     e.preventDefault();
@@ -23,30 +24,33 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
     });
 
     try {
+      const isWallet = paymentType === 'apple_pay' || paymentType === 'google_pay';
+
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/success?${successParams.toString()}`,
-          payment_method_data: {
-            billing_details: {
-              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-              email:   form.email  || undefined,
-              phone:   form.phone  || undefined,
-              address: {
-                line1:       form.line1    || undefined,
-                line2:       form.line2    || undefined,
-                city:        form.city     || undefined,
-                postal_code: form.postcode || undefined,
-                country:     'GB',
+          ...(isWallet ? {} : {
+            payment_method_data: {
+              billing_details: {
+                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+                email:   form.email  || undefined,
+                phone:   form.phone  || undefined,
+                address: {
+                  line1:       form.line1    || undefined,
+                  line2:       form.line2    || undefined,
+                  city:        form.city     || undefined,
+                  postal_code: form.postcode || undefined,
+                  country:     'GB',
+                },
               },
             },
-          },
+          }),
         },
         redirect: 'if_required',
       });
 
       const { error: confirmError, paymentIntent } = result;
-      console.log('[SOLUM] confirmPayment result:', JSON.stringify({ error: confirmError?.message, status: paymentIntent?.status }));
 
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
@@ -55,11 +59,9 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        console.warn('[SOLUM] unexpected confirmPayment state:', result);
         setError('Something went wrong. Please try again or contact contact@bysolum.com.');
       }
     } catch (err) {
-      console.error('[SOLUM] confirmPayment threw:', err);
       setError('Something went wrong. Please try again or contact contact@bysolum.com.');
     } finally {
       submitting.current = false;
@@ -102,24 +104,27 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
       </div>
 
       <div className="co-payment-element-wrap">
-        <PaymentElement options={{
-          layout: 'tabs',
-          defaultValues: {
-            billingDetails: {
-              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-              email:   form.email || undefined,
-              phone:   form.phone || undefined,
-              address: {
-                line1:       form.line1    || undefined,
-                line2:       form.line2    || undefined,
-                city:        form.city     || undefined,
-                postal_code: form.postcode || undefined,
-                country:     'GB',
+        <PaymentElement
+          onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
+          options={{
+            layout: 'tabs',
+            defaultValues: {
+              billingDetails: {
+                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+                email:   form.email || undefined,
+                phone:   form.phone || undefined,
+                address: {
+                  line1:       form.line1    || undefined,
+                  line2:       form.line2    || undefined,
+                  city:        form.city     || undefined,
+                  postal_code: form.postcode || undefined,
+                  country:     'GB',
+                },
               },
             },
-          },
-          fields: { billingDetails: 'never' },
-        }} />
+            fields: { billingDetails: 'never' },
+          }}
+        />
       </div>
 
       {error && <div className="co-error">{error}</div>}
