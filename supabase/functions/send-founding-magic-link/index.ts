@@ -29,7 +29,7 @@ function buildEmail(email: string, magicLink: string): string {
 
       <!-- Wordmark -->
       <tr><td style="padding-bottom:44px;">
-        <span style="font-size:26px;letter-spacing:0.18em;color:#f0ece2;font-weight:700;text-transform:uppercase;">SOLUM</span>
+        <img src="https://bysolum.co.uk/solum-wordmark-email.png" alt="SOLUM" width="120" style="display:block;height:auto;border:0;" />
       </td></tr>
 
       <!-- Eyebrow -->

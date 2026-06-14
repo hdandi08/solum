@@ -36,7 +36,9 @@ const stripeAppearance = {
     '.Input:focus': { border: '1px solid #4A8FC7', boxShadow: 'none', outline: 'none' },
     '.Label': { fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', color: 'rgba(168,180,188,0.9)', marginBottom: '7px' },
     '.Tab': { border: '1px solid rgba(240,236,226,0.15)', backgroundColor: '#08090B' },
-    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520', color: '#F0ECE2' },
+    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520' },
+    '.TabLabel': { color: '#F0ECE2' },
+    '.TabLabel--selected': { color: '#F0ECE2' },
   },
 };
 
