@@ -55,7 +55,8 @@ const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
 export default function SuccessPage() {
   const [params] = useSearchParams();
   const kitId        = params.get('kit');
-  // payment_intent is appended by Stripe after a 3DS redirect; fall back to ref for direct success
+  const redirectStatus = params.get('redirect_status'); // set by Stripe on redirect-based payments
+  // payment_intent is appended by Stripe after a redirect; ref is set by us for inline payments
   const rawRef       = params.get('ref') ?? params.get('payment_intent') ?? '';
   const source       = params.get('source') ?? '';
   const dispatchDate = params.get('dispatch') ?? '';
@@ -67,13 +68,21 @@ export default function SuccessPage() {
   const isOneTime = ONE_TIME_SOURCES.includes(source);
   const amountGbp = amountPence > 0 ? amountPence / 100 : null;
 
-  // Fire purchase events once — guard with sessionStorage to survive page refreshes
+  // Payment failed or was cancelled by the user on a redirect-based method (Revolut Pay etc.)
+  const paymentFailed = redirectStatus === 'failed' || redirectStatus === 'canceled';
+
+  const retryUrl = isOneTime
+    ? `/buy${kitId ? `?kit=${kitId}` : ''}`
+    : `/checkout${kitId ? `?kit=${kitId}` : ''}`;
+
+  // Fire purchase events only on genuine success
   useEffect(() => {
+    if (paymentFailed) return;
+
     const guardKey = `solum_purchase_fired_${rawRef || 'unknown'}`;
     if (sessionStorage.getItem(guardKey)) return;
     sessionStorage.setItem(guardKey, '1');
 
-    // Identify user if email was stashed during checkout
     const buyerEmail = sessionStorage.getItem('solum_buyer_email');
     if (buyerEmail) {
       identify(buyerEmail, { kit: kitId, source });
@@ -84,6 +93,34 @@ export default function SuccessPage() {
 
     if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
   }, []); // eslint-disable-line
+
+  if (paymentFailed) {
+    return (
+      <>
+        <style>{CSS}</style>
+        <div className="su-page">
+          <div className="su-glow" />
+          <div className="su-inner">
+            <div className="su-check" style={{ borderColor: '#e05c5c', color: '#e05c5c' }}>✕</div>
+            <div className="su-eyebrow" style={{ color: '#e05c5c' }}>
+              {redirectStatus === 'canceled' ? 'Payment cancelled' : 'Payment failed'}
+            </div>
+            <h1 className="su-heading" style={{ fontSize: 'clamp(42px,6vw,72px)' }}>
+              {redirectStatus === 'canceled' ? 'No charge made.' : 'Not processed.'}
+            </h1>
+            <p style={{ fontSize: 15, color: 'rgba(240,236,226,0.6)', lineHeight: 1.7, marginBottom: 40, fontWeight: 300 }}>
+              {redirectStatus === 'canceled'
+                ? 'You cancelled the payment — your card was not charged. You can try again below.'
+                : 'The payment was declined or could not be completed. Your card was not charged. Please try a different payment method.'}
+            </p>
+            <div className="su-actions">
+              <a href={retryUrl} className="su-btn-primary">Try Again →</a>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
