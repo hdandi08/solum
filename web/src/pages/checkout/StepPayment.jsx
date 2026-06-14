@@ -41,7 +41,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
                   line2:       form.line2    || undefined,
                   city:        form.city     || undefined,
                   postal_code: form.postcode || undefined,
-                  state:       null,
+                  state:       form.county   || null,
                   country:     'GB',
                 },
               },

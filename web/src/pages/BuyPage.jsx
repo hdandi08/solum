@@ -36,7 +36,7 @@ const stripeAppearance = {
     '.Input:focus': { border: '1px solid #4A8FC7', boxShadow: 'none', outline: 'none' },
     '.Label': { fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '600', color: 'rgba(168,180,188,0.9)', marginBottom: '7px' },
     '.Tab': { border: '1px solid rgba(240,236,226,0.15)', backgroundColor: '#08090B' },
-    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520' },
+    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520', color: '#F0ECE2' },
   },
 };
 
@@ -332,7 +332,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
                   line2:       form.line2    || undefined,
                   city:        form.city     || undefined,
                   postal_code: form.postcode || undefined,
-                  state:       null,
+                  state:       form.county   || null,
                   country:     'GB',
                 },
               },
@@ -431,7 +431,7 @@ export default function BuyPage() {
   const [inventory, setInventory]       = useState(null);
   const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
   const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
-  const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', postcode: '' });
+  const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', county: '', postcode: '' });
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
   const [clientSecret, setClientSecret] = useState(null);
@@ -547,6 +547,7 @@ export default function BuyPage() {
           line1:      form.line1.trim(),
           line2:      form.line2.trim() || null,
           city:       form.city.trim(),
+          county:     form.county.trim() || null,
           postcode:   form.postcode.trim(),
         }),
       });
@@ -788,6 +789,10 @@ export default function BuyPage() {
                       <label className="co-label">Postcode</label>
                       <input className="co-input" type="text" value={form.postcode} onChange={onChange('postcode')} placeholder="SW1A 1AA" autoComplete="postal-code" style={{ textTransform: 'uppercase' }} data-testid="postcode" />
                     </div>
+                  </div>
+                  <div className="co-field">
+                    <label className="co-label">County <span className="co-label-opt">optional</span></label>
+                    <input className="co-input" type="text" value={form.county} onChange={onChange('county')} placeholder="Buckinghamshire" autoComplete="address-level1" />
                   </div>
 
                   <div className="co-ship-strip">

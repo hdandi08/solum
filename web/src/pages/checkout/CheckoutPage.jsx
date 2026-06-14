@@ -45,7 +45,7 @@ const stripeAppearance = {
       fontWeight: '600', color: 'rgba(168,180,188,0.9)', marginBottom: '7px',
     },
     '.Tab': { border: '1px solid rgba(240,236,226,0.15)', backgroundColor: '#08090B' },
-    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520' },
+    '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520', color: '#F0ECE2' },
   },
 };
 
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
     birth_year: '', birth_month: '',
-    line1: '', line2: '', city: '', postcode: '',
+    line1: '', line2: '', city: '', county: '', postcode: '',
   });
 
   const [step, setStep]           = useState('details');
@@ -229,6 +229,7 @@ export default function CheckoutPage() {
           line1:       form.line1.trim(),
           line2:       form.line2.trim() || null,
           city:        form.city.trim(),
+          county:      form.county.trim() || null,
           postcode:    form.postcode.trim(),
           addons,
         }),

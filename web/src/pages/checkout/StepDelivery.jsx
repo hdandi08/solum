@@ -61,6 +61,19 @@ export default function StepDelivery({ form, onChange, onBack, onNext, loading, 
         </div>
       </div>
 
+      <div className="co-field">
+        <label className="co-label">
+          County <span className="co-label-opt">optional</span>
+        </label>
+        <input
+          className="co-input"
+          value={form.county}
+          onChange={onChange('county')}
+          placeholder="Buckinghamshire"
+          autoComplete="address-level1"
+        />
+      </div>
+
       {/* Shipping date — shown at the moment the customer is entering their address */}
       <div className="co-ship-strip">
         <span className="co-ship-strip-icon">📦</span>
