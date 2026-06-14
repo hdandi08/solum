@@ -302,7 +302,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
         amount:   String(payInfo.amount_pence),
       });
 
-      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+      const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/success?${successParams.toString()}`,
@@ -324,6 +324,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
         redirect: 'if_required',
       });
 
+      const { error: confirmError, paymentIntent } = result;
+      console.log('[SOLUM] confirmPayment result:', JSON.stringify({ error: confirmError?.message, status: paymentIntent?.status }));
+
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded') {
@@ -331,8 +334,12 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
+        console.warn('[SOLUM] unexpected confirmPayment state:', result);
         setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       }
+    } catch (err) {
+      console.error('[SOLUM] confirmPayment threw:', err);
+      setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
     } finally {
       submitting.current = false;
       setLoading(false);
