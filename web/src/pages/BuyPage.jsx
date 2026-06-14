@@ -351,7 +351,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
+        setError(`Payment status: ${paymentIntent?.status ?? 'no intent returned'}. Please try again or contact contact@bysolum.co.uk.`);
       }
     } catch (err) {
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');

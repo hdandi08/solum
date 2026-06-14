@@ -60,10 +60,10 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        setError('Something went wrong. Please try again or contact contact@bysolum.com.');
+        setError(`Payment status: ${paymentIntent?.status ?? 'no intent returned'}. Please try again or contact contact@bysolum.com.`);
       }
     } catch (err) {
-      setError('Something went wrong. Please try again or contact contact@bysolum.com.');
+      setError(`Error: ${err?.message ?? 'unknown'}. Please try again or contact contact@bysolum.com.`);
     } finally {
       submitting.current = false;
       setLoading(false);
