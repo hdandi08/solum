@@ -83,6 +83,16 @@ export function ttqAddToCart(kitName, value) {
   ttq('track', 'AddToCart', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
+// Payment form mounts — strong intent signal
+export function ttqAddPaymentInfo(kitName, value) {
+  ttq('track', 'AddPaymentInfo', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+}
+
+// Pay button clicked — captures intent even if card is declined
+export function ttqPlaceAnOrder(kitName, value, eventId) {
+  ttq('track', 'PlaceAnOrder', { content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
+}
+
 // Kit page views (/buy, /checkout)
 export function ttqViewContent(kitName, value) {
   ttq('track', 'ViewContent', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });

@@ -4,7 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -317,6 +317,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         amount:   String(payInfo.amount_pence),
       });
 
+      const piId = payInfo.client_secret?.split('_secret_')[0];
+      ttqPlaceAnOrder(activeKit.name, payInfo.amount_pence / 100, piId);
+
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -577,6 +580,7 @@ export default function BuyPage() {
       fbInitiateCheckout(activeKit?.name ?? selectedKit, price);
       ttqIdentify(form.email.trim().toLowerCase());
       ttqInitiateCheckout(activeKit?.name ?? selectedKit, price);
+      ttqAddPaymentInfo(activeKit?.name ?? selectedKit, price);
       try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch {}
 
       setClientSecret(data.client_secret);
