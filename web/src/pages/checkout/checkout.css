@@ -441,6 +441,50 @@ select.co-input option {
   line-height: 1.4;
 }
 
+/* ── Email confirm bar (Step 3 — Payment) ────────────────────────────────── */
+
+.co-email-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  background: rgba(46,109,164,0.07);
+  border: 1px solid rgba(46,109,164,0.25);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.co-email-confirm-label {
+  color: var(--stone);
+  font-weight: 300;
+}
+
+.co-email-confirm-value {
+  color: var(--bone);
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.co-email-confirm-edit {
+  margin-left: auto;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--blit);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.co-email-confirm-edit:hover {
+  color: var(--sky);
+}
+
 /* ── Error ────────────────────────────────────────────────────────────────── */
 
 .co-error {

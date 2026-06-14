@@ -18,15 +18,18 @@ const KIT_PRICES = { ground: 65, ritual: 85 };
 const stripeAppearance = {
   theme: 'night',
   variables: {
-    colorPrimary:       '#4A8FC7',
-    colorBackground:    '#08090B',
-    colorText:          '#F0ECE2',
-    colorTextSecondary: 'rgba(168,180,188,0.8)',
-    colorDanger:        '#e05c5c',
-    fontFamily:         '"Barlow Condensed", system-ui, sans-serif',
-    fontSizeBase:       '16px',
-    borderRadius:       '0px',
-    spacingUnit:        '5px',
+    colorPrimary:            '#4A8FC7',
+    colorBackground:         '#08090B',
+    colorText:               '#F0ECE2',
+    colorTextSecondary:      'rgba(168,180,188,0.8)',
+    colorDanger:             '#e05c5c',
+    colorIconTab:            '#F0ECE2',
+    colorIconTabSelected:    '#F0ECE2',
+    colorIconTabHover:       '#F0ECE2',
+    fontFamily:              '"Barlow Condensed", system-ui, sans-serif',
+    fontSizeBase:            '16px',
+    borderRadius:            '0px',
+    spacingUnit:             '5px',
   },
   rules: {
     '.Input': { border: '1px solid rgba(240,236,226,0.15)', backgroundColor: '#08090B', padding: '14px 16px' },
@@ -36,6 +39,15 @@ const stripeAppearance = {
     '.Tab--selected': { border: '1px solid #4A8FC7', backgroundColor: '#0d1520' },
   },
 };
+
+function isValidUKPhone(raw) {
+  const cleaned = raw.replace(/[\s\-().]/g, '');
+  const digits  = cleaned.replace(/^\+/, '');
+  if (!/^\d+$/.test(digits)) return false;
+  if (digits.startsWith('44')) return digits.length === 12;
+  if (digits.startsWith('0'))  return digits.length === 11;
+  return false;
+}
 
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
@@ -279,7 +291,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
 
 // ── Step 3: Payment ───────────────────────────────────────────────────────────
 
-function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
+function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDetails }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
@@ -351,6 +363,12 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
     <form onSubmit={handlePay} noValidate>
       <div className="co-step-heading">Payment.</div>
       <div className="co-step-subhead">Your card details are encrypted — never stored on our servers.</div>
+
+      <div className="co-email-confirm">
+        <span className="co-email-confirm-label">Paying as</span>
+        <span className="co-email-confirm-value">{form.email}</span>
+        <button type="button" className="co-email-confirm-edit" onClick={onEditDetails}>Wrong? Edit ›</button>
+      </div>
 
       <div className="co-order-pill">
         <div className="co-order-pill-kit">{activeKit.name} · First Box · One-Time</div>
@@ -454,6 +472,25 @@ export default function BuyPage() {
       setError('Please enter a valid email address.'); return;
     }
     if (!form.phone.trim()) { setError('Phone number is required for delivery updates.'); return; }
+    if (!isValidUKPhone(form.phone)) {
+      setError('Please enter a valid UK phone number (e.g. 07700 900000 or +44 7700 900000).'); return;
+    }
+
+    // MX record check — catches typos like gmail.con, hotmal.com etc.
+    setLoading(true);
+    try {
+      const domain = emailVal.split('@')[1];
+      const dnsRes = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=MX`,
+        { headers: { Accept: 'application/dns-json' } },
+      );
+      const dns = await dnsRes.json();
+      if (dns.Status === 3 || !dns.Answer?.length) {
+        setError(`We couldn't find a mail server for ${domain}. Please double-check your email.`);
+        setLoading(false); return;
+      }
+    } catch { /* allow through if DNS lookup fails */ }
+    setLoading(false);
 
     const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
     if (kitSoldOut) {
@@ -635,6 +672,7 @@ export default function BuyPage() {
                 form={form}
                 source={source}
                 onBack={() => { setStep('delivery'); window.scrollTo(0, 0); }}
+                onEditDetails={() => { setStep('details'); window.scrollTo(0, 0); }}
               />
             </div>
             <BuyOrderSummary {...headerProps} />

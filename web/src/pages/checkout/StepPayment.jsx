@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-export default function StepPayment({ activeKit, payInfo, form, onBack }) {
+export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDetails }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
@@ -77,6 +77,12 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
       <div className="co-step-heading">Payment.</div>
       <div className="co-step-subhead">
         Your card details are encrypted — never stored on our servers.
+      </div>
+
+      <div className="co-email-confirm">
+        <span className="co-email-confirm-label">Paying as</span>
+        <span className="co-email-confirm-value">{form.email}</span>
+        <button type="button" className="co-email-confirm-edit" onClick={onEditDetails}>Wrong? Edit ›</button>
       </div>
 
       {/* Order summary pill — two clearly separated charges */}

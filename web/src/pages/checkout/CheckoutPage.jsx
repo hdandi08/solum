@@ -20,15 +20,18 @@ const stripePromise = loadStripe(STRIPE_KEY);
 const stripeAppearance = {
   theme: 'night',
   variables: {
-    colorPrimary:       '#4A8FC7',
-    colorBackground:    '#08090B',
-    colorText:          '#F0ECE2',
-    colorTextSecondary: 'rgba(168,180,188,0.8)',
-    colorDanger:        '#e05c5c',
-    fontFamily:         '"Barlow Condensed", system-ui, sans-serif',
-    fontSizeBase:       '16px',
-    borderRadius:       '0px',
-    spacingUnit:        '5px',
+    colorPrimary:            '#4A8FC7',
+    colorBackground:         '#08090B',
+    colorText:               '#F0ECE2',
+    colorTextSecondary:      'rgba(168,180,188,0.8)',
+    colorDanger:             '#e05c5c',
+    colorIconTab:            '#F0ECE2',
+    colorIconTabSelected:    '#F0ECE2',
+    colorIconTabHover:       '#F0ECE2',
+    fontFamily:              '"Barlow Condensed", system-ui, sans-serif',
+    fontSizeBase:            '16px',
+    borderRadius:            '0px',
+    spacingUnit:             '5px',
   },
   rules: {
     '.Input': {
@@ -407,6 +410,7 @@ export default function CheckoutPage() {
                 payInfo={payInfo}
                 form={form}
                 onBack={() => { setStep('delivery'); window.scrollTo(0, 0); }}
+                onEditDetails={() => { setStep('details'); window.scrollTo(0, 0); }}
               />
             </div>
             <OrderSummary {...summaryProps} />
