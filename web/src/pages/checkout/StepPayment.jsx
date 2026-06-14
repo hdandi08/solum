@@ -24,29 +24,25 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
     });
 
     try {
-      const isWallet = paymentType === 'apple_pay' || paymentType === 'google_pay';
-
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/success?${successParams.toString()}`,
-          ...(isWallet ? {} : {
-            payment_method_data: {
-              billing_details: {
-                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-                email:   form.email  || undefined,
-                phone:   form.phone  || undefined,
-                address: {
-                  line1:       form.line1    || undefined,
-                  line2:       form.line2    || undefined,
-                  city:        form.city     || undefined,
-                  postal_code: form.postcode || undefined,
-                  state:       form.county   || null,
-                  country:     'GB',
-                },
+          payment_method_data: {
+            billing_details: {
+              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+              email:   form.email  || undefined,
+              phone:   form.phone  || undefined,
+              address: {
+                line1:       form.line1    || undefined,
+                line2:       form.line2    || undefined,
+                city:        form.city     || undefined,
+                postal_code: form.postcode || undefined,
+                state:       form.county   || null,
+                country:     'GB',
               },
             },
-          }),
+          },
         },
         redirect: 'if_required',
       });
