@@ -341,16 +341,16 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       });
 
       if (confirmError) {
-        setError(`[DEBUG] type:${confirmError.type} code:${confirmError.code} decline:${confirmError.decline_code ?? '-'} — ${confirmError.message}`);
+        setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        setError(`[DEBUG] status:${paymentIntent?.status ?? 'no-intent'} id:${paymentIntent?.id ?? '-'} paymentType:${paymentType}`);
+        setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       }
     } catch (err) {
-      setError(`[DEBUG] threw: ${err?.message ?? String(err)}`);
+      setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
     } finally {
       submitting.current = false;
       setLoading(false);
