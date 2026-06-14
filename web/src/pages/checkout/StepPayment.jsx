@@ -54,16 +54,16 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
       const { error: confirmError, paymentIntent } = result;
 
       if (confirmError) {
-        setError(confirmError.message ?? 'Payment failed. Please try again.');
+        setError(`[DEBUG] type:${confirmError.type} code:${confirmError.code} decline:${confirmError.decline_code ?? '-'} — ${confirmError.message}`);
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
-        setError(`Payment status: ${paymentIntent?.status ?? 'no intent returned'}. Please try again or contact contact@bysolum.com.`);
+        setError(`[DEBUG] status:${paymentIntent?.status ?? 'no-intent'} id:${paymentIntent?.id ?? '-'} paymentType:${paymentType}`);
       }
     } catch (err) {
-      setError(`Error: ${err?.message ?? 'unknown'}. Please try again or contact contact@bysolum.com.`);
+      setError(`[DEBUG] threw: ${err?.message ?? String(err)}`);
     } finally {
       submitting.current = false;
       setLoading(false);
