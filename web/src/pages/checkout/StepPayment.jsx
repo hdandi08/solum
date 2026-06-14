@@ -1,33 +1,61 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 export default function StepPayment({ activeKit, payInfo, form, onBack }) {
-  const stripe   = useStripe();
-  const elements = useElements();
+  const stripe     = useStripe();
+  const elements   = useElements();
+  const submitting = useRef(false);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
 
   async function handlePay(e) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || submitting.current) return;
+    submitting.current = true;
     setLoading(true);
     setError('');
 
-    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success?kit=${activeKit.id}`,
-      },
-      redirect: 'if_required',
+    const successParams = new URLSearchParams({
+      kit:      activeKit.id,
+      dispatch: payInfo.dispatch_date,
+      arrival:  payInfo.arrival_date,
+      amount:   String(payInfo.amount_pence),
     });
 
-    if (confirmError) {
-      setError(confirmError.message ?? 'Payment failed. Please try again.');
-      setLoading(false);
-    } else if (paymentIntent?.status === 'succeeded') {
-      window.location.href = `/success?kit=${activeKit.id}`;
-    } else {
-      setError('Something went wrong. Please try again or contact contact@bysolum.com.');
+    try {
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/success?${successParams.toString()}`,
+          payment_method_data: {
+            billing_details: {
+              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+              email:   form.email  || undefined,
+              phone:   form.phone  || undefined,
+              address: {
+                line1:       form.line1    || undefined,
+                line2:       form.line2    || undefined,
+                city:        form.city     || undefined,
+                postal_code: form.postcode || undefined,
+                country:     'GB',
+              },
+            },
+          },
+        },
+        redirect: 'if_required',
+      });
+
+      if (confirmError) {
+        setError(confirmError.message ?? 'Payment failed. Please try again.');
+      } else if (paymentIntent?.status === 'succeeded') {
+        successParams.set('ref', paymentIntent.id);
+        window.location.href = `/success?${successParams.toString()}`;
+        return;
+      } else {
+        setError('Something went wrong. Please try again or contact contact@bysolum.com.');
+      }
+    } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }

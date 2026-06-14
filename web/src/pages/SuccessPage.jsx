@@ -55,7 +55,8 @@ const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
 export default function SuccessPage() {
   const [params] = useSearchParams();
   const kitId        = params.get('kit');
-  const rawRef       = params.get('ref') ?? '';
+  // payment_intent is appended by Stripe after a 3DS redirect; fall back to ref for direct success
+  const rawRef       = params.get('ref') ?? params.get('payment_intent') ?? '';
   const source       = params.get('source') ?? '';
   const dispatchDate = params.get('dispatch') ?? '';
   const arrivalDate  = params.get('arrival') ?? '';

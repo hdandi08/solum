@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -280,35 +280,61 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
 // ── Step 3: Payment ───────────────────────────────────────────────────────────
 
 function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
-  const stripe   = useStripe();
-  const elements = useElements();
+  const stripe     = useStripe();
+  const elements   = useElements();
+  const submitting = useRef(false);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
 
   async function handlePay(e) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || submitting.current) return;
+    submitting.current = true;
     setLoading(true);
     setError('');
 
-    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success?kit=${activeKit.id}&source=${source}&amount=${payInfo.amount_pence}`,
-      },
-      redirect: 'if_required',
-    });
+    try {
+      const successParams = new URLSearchParams({
+        kit:      activeKit.id,
+        source,
+        dispatch: payInfo.dispatch_date ?? '',
+        arrival:  payInfo.arrival_date  ?? '',
+        amount:   String(payInfo.amount_pence),
+      });
 
-    if (confirmError) {
-      setError(confirmError.message ?? 'Payment failed. Please try again.');
-      setLoading(false);
-    } else if (paymentIntent?.status === 'succeeded') {
-      const ref      = paymentIntent.id ?? '';
-      const dispatch = encodeURIComponent(payInfo.dispatch_date ?? '');
-      const arrival  = encodeURIComponent(payInfo.arrival_date ?? '');
-      window.location.href = `/success?kit=${activeKit.id}&source=${source}&ref=${ref}&dispatch=${dispatch}&arrival=${arrival}&amount=${payInfo.amount_pence}`;
-    } else {
-      setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/success?${successParams.toString()}`,
+          payment_method_data: {
+            billing_details: {
+              name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
+              email:   form.email   || undefined,
+              phone:   form.phone   || undefined,
+              address: {
+                line1:       form.line1    || undefined,
+                line2:       form.line2    || undefined,
+                city:        form.city     || undefined,
+                postal_code: form.postcode || undefined,
+                country:     'GB',
+              },
+            },
+          },
+        },
+        redirect: 'if_required',
+      });
+
+      if (confirmError) {
+        setError(confirmError.message ?? 'Payment failed. Please try again.');
+      } else if (paymentIntent?.status === 'succeeded') {
+        successParams.set('ref', paymentIntent.id);
+        window.location.href = `/success?${successParams.toString()}`;
+        return;
+      } else {
+        setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
+      }
+    } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }

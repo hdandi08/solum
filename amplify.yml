@@ -21,6 +21,10 @@ frontend:
     paths:
       - web/node_modules/**/*
   customRules:
+    # Serve .well-known files as-is (required for Apple Pay domain verification)
+    - source: '/.well-known/<*>'
+      target: '/.well-known/<*>'
+      status: '200'
     - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>'
       target: /index.html
       status: '200'

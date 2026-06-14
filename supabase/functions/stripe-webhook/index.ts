@@ -662,9 +662,8 @@ Deno.serve(async (req) => {
           .eq('order_type', 'first_box')
           .maybeSingle();
 
-        let firstBoxOrderId: string | null = existingOrder?.id ?? null;
         if (!existingOrder) {
-          const { data: newOrder } = await supabase.from('orders').insert({
+          await supabase.from('orders').insert({
             customer_id: customer.id,
             subscription_id: sub?.id,
             stripe_payment_id: pi.id,
@@ -673,21 +672,7 @@ Deno.serve(async (req) => {
             box_number: null,
             amount_pence: pi.amount,
             status: 'paid',
-          }).select('id').single();
-          firstBoxOrderId = newOrder?.id ?? null;
-        }
-
-        // Log payment attempt
-        if (!existingOrder) {
-          await supabase.from('payment_attempts').insert({
-            customer_id: customer.id,
-            order_id: firstBoxOrderId,
-            stripe_invoice_id: null,
-            stripe_payment_intent_id: pi.id,
-            amount_pence: pi.amount,
-            status: 'succeeded',
-            attempt_number: 1,
-          }).select();
+          });
         }
 
         // Deduct inventory
