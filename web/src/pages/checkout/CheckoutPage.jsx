@@ -9,6 +9,7 @@ import OrderSummary from './OrderSummary.jsx';
 import StepDetails from './StepDetails.jsx';
 import StepDelivery from './StepDelivery.jsx';
 import StepPayment from './StepPayment.jsx';
+import SolumWordmark from '../../components/SolumWordmark.jsx';
 import './checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -312,6 +313,17 @@ export default function CheckoutPage() {
 
   return (
     <>
+      <nav className="co-checkout-nav">
+        <SolumWordmark />
+        <span className="co-checkout-nav-lock">
+          <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true">
+            <rect x="0.75" y="5.75" width="9.5" height="6.5" rx="0.75" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M3 5.5V3.5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          Secure Checkout
+        </span>
+      </nav>
+
       {/* Interstitial: Upgrade to RITUAL? */}
       {interstitial === 'upgrade' && ritualKit && (
         <div className="co-overlay-step">

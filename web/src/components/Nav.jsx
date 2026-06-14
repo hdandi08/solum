@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useVariant } from '../hooks/useVariant';
+import SolumWordmark from './SolumWordmark';
 
 const CTA_COPY = { control: 'Choose Your Kit', ritual: 'Build Your Ritual' };
 
 const CSS = `
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(8,9,11,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--lineb);}
-.nav-logo{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-decoration:none;}.nav-logo img{height:20px;width:auto;display:block;}
-.nav-tagline{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--stone);font-style:italic;line-height:1;}
 .nav-links{display:flex;gap:36px;list-style:none;margin:0;padding:0;}
 .nav-links a{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s;}
 .nav-links a:hover,.nav-links a.active-link{color:var(--bone);}
@@ -117,10 +116,7 @@ export default function Nav() {
     <>
       <style>{CSS}</style>
       <nav>
-        <a href={resolve('#home')} className="nav-logo" onClick={close}>
-          <img src="/solum-wordmark-clean.svg" alt="SOLUM" />
-          <span className="nav-tagline">Your body. Done right.</span>
-        </a>
+        <SolumWordmark href={resolve('#home')} onClick={close} />
 
         {/* desktop links */}
         <ul className="nav-links">

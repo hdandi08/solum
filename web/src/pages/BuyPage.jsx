@@ -5,6 +5,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import SolumWordmark from '../components/SolumWordmark.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -213,7 +214,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
 function BuyCheckoutNav() {
   return (
     <nav className="co-checkout-nav">
-      <a href="/" className="co-checkout-nav-logo">SOLUM</a>
+      <SolumWordmark />
       <span className="co-checkout-nav-lock">
         <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true">
           <rect x="0.75" y="5.75" width="9.5" height="6.5" rx="0.75" stroke="currentColor" strokeWidth="1.5"/>
