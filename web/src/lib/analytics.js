@@ -65,4 +65,32 @@ export function fbPurchase(kitName, value, eventId) {
   fbq('track', 'Purchase', { content_name: kitName, value, currency: 'GBP' }, { eventID: eventId });
 }
 
+// ─── TikTok Pixel helpers ────────────────────────────────────────────────────
+
+function ttq(method, ...args) {
+  if (IS_PROD && window.ttq) window.ttq[method](...args);
+}
+
+// Call after we know the user's email (checkout delivery step, success page)
+export function ttqIdentify(email) {
+  if (IS_PROD && window.ttq) {
+    window.ttq.identify({ email: email.trim().toLowerCase() });
+  }
+}
+
+// Kit page views (/buy, /checkout)
+export function ttqViewContent(kitName, value) {
+  ttq('track', 'ViewContent', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+}
+
+// User reaches payment step
+export function ttqInitiateCheckout(kitName, value) {
+  ttq('track', 'InitiateCheckout', { content_name: kitName, value, currency: 'GBP' });
+}
+
+// Payment confirmed — event_id ties this to the server-side Events API call for deduplication
+export function ttqCompletePayment(kitName, value, eventId) {
+  ttq('track', 'CompletePayment', { content_name: kitName, value, currency: 'GBP' }, { event_id: eventId });
+}
+
 export { posthog };

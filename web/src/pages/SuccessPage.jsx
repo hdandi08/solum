@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
-import { capture, identify, fbPurchase } from '../lib/analytics.js';
+import { capture, identify, fbPurchase, ttqIdentify, ttqCompletePayment } from '../lib/analytics.js';
 
 const CSS = `
 .su-page{min-height:100vh;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;position:relative;overflow:hidden;}
@@ -86,12 +86,14 @@ export default function SuccessPage() {
     const buyerEmail = sessionStorage.getItem('solum_buyer_email');
     if (buyerEmail) {
       identify(buyerEmail, { kit: kitId, source });
+      ttqIdentify(buyerEmail);
       try { sessionStorage.removeItem('solum_buyer_email'); } catch {}
     }
 
     capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef });
 
     if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
+    if (amountGbp) ttqCompletePayment(kitName, amountGbp, rawRef);
   }, []); // eslint-disable-line
 
   if (paymentFailed) {

@@ -182,6 +182,57 @@ async function logEvent(
 ) {
   await supabase.from('events').insert({ stripe_event_id, event_type, customer_id, data });
 }
+
+async function sha256hex(value: string): Promise<string> {
+  const data = new TextEncoder().encode(value.trim().toLowerCase());
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function sendTikTokPurchaseEvent(opts: {
+  email?: string | null;
+  phone?: string | null;
+  kitId?: string | null;
+  kitName: string;
+  amountPence: number;
+  eventId: string;
+}) {
+  const accessToken = Deno.env.get('TIKTOK_EVENTS_ACCESS_TOKEN');
+  if (!accessToken) { console.warn('TIKTOK_EVENTS_ACCESS_TOKEN not set — skipping TikTok event'); return; }
+
+  const user: Record<string, string> = {};
+  if (opts.email) user['email'] = await sha256hex(opts.email);
+  if (opts.phone) user['phone_number'] = await sha256hex(opts.phone.replace(/\D/g, ''));
+
+  try {
+    const res = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+      method: 'POST',
+      headers: { 'Authorization': `TikTok ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pixel_id: 'D8NHU2RC77UCVEHVNJNG',
+        event: 'CompletePayment',
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: opts.eventId,
+        event_source: 'web',
+        event_source_id: 'https://bysolum.co.uk',
+        user,
+        properties: {
+          value: (opts.amountPence / 100).toFixed(2),
+          currency: 'GBP',
+          content_name: opts.kitName,
+          content_type: 'product',
+          content_id: opts.kitId ?? 'unknown',
+        },
+      }),
+    });
+    const result = await res.json();
+    if (result.code !== 0) console.error('tiktok_events_api_error', JSON.stringify(result));
+    else console.log('tiktok_events_api_ok', opts.eventId);
+  } catch (err) {
+    console.error('tiktok_events_api_throw', err.message);
+  }
+}
+
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
@@ -241,10 +292,11 @@ async function handleOneTimeOrderFromPI(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', pi.id);
 
-  // Send confirmation email
+  // Send confirmation email + TikTok server-side event
   if (email && order) {
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
+    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
   }
 
   // Store shipping address from pi.shipping
@@ -327,10 +379,11 @@ async function handleOneTimeOrder(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', session.id);
 
-  // Send confirmation email
+  // Send confirmation email + TikTok server-side event
   if (email && order) {
     const orderRef = session.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
+    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
   }
 
   // Store shipping address
@@ -522,10 +575,11 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_session_id', session.id);
 
-        // Send confirmation email — only on first processing, not on webhook retries
+        // Send confirmation email + TikTok server-side event — only on first processing
         if (email && !existingOrder) {
           const orderRef = session.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
+          await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
         }
 
         // Store shipping address (null guard + idempotency via stripe_session_id unique index)
@@ -685,10 +739,11 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_customer_id', stripe_customer_id);
 
-        // Send confirmation email
+        // Send confirmation email + TikTok server-side event
         if (!existingOrder) {
           const orderRef = pi.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
+          await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
         }
 
         // Store address from pi.shipping

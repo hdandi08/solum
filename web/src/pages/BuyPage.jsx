@@ -4,7 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -457,6 +457,7 @@ export default function BuyPage() {
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
     fbViewContent('SOLUM Kit');
+    ttqViewContent('SOLUM Kit', 65);
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -574,6 +575,8 @@ export default function BuyPage() {
       identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
       capture('checkout_initiated', { kit: selectedKit, source, price });
       fbInitiateCheckout(activeKit?.name ?? selectedKit, price);
+      ttqIdentify(form.email.trim().toLowerCase());
+      ttqInitiateCheckout(activeKit?.name ?? selectedKit, price);
       try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch {}
 
       setClientSecret(data.client_secret);
