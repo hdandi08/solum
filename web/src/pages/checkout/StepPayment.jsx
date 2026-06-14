@@ -41,6 +41,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
                   line2:       form.line2    || undefined,
                   city:        form.city     || undefined,
                   postal_code: form.postcode || undefined,
+                  state:       null,
                   country:     'GB',
                 },
               },
@@ -108,20 +109,6 @@ export default function StepPayment({ activeKit, payInfo, form, onBack }) {
           onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
           options={{
             layout: 'tabs',
-            defaultValues: {
-              billingDetails: {
-                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-                email:   form.email || undefined,
-                phone:   form.phone || undefined,
-                address: {
-                  line1:       form.line1    || undefined,
-                  line2:       form.line2    || undefined,
-                  city:        form.city     || undefined,
-                  postal_code: form.postcode || undefined,
-                  country:     'GB',
-                },
-              },
-            },
             fields: { billingDetails: 'never' },
           }}
         />

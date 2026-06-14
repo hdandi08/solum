@@ -320,6 +320,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
                   line2:       form.line2    || undefined,
                   city:        form.city     || undefined,
                   postal_code: form.postcode || undefined,
+                  state:       null,
                   country:     'GB',
                 },
               },
@@ -368,20 +369,6 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack }) {
           onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
           options={{
             layout: 'tabs',
-            defaultValues: {
-              billingDetails: {
-                name:    [form.first_name, form.last_name].filter(Boolean).join(' ') || undefined,
-                email:   form.email || undefined,
-                phone:   form.phone || undefined,
-                address: {
-                  line1:       form.line1    || undefined,
-                  line2:       form.line2    || undefined,
-                  city:        form.city     || undefined,
-                  postal_code: form.postcode || undefined,
-                  country:     'GB',
-                },
-              },
-            },
             fields: { billingDetails: 'never' },
           }}
         />
