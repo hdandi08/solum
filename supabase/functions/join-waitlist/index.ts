@@ -145,7 +145,7 @@ function buildConfirmEmail(email: string, firstName: string | null, _token: stri
   <!-- Footer -->
   <tr><td style="background:#08090B;border-top:1px solid #1e2530;padding:28px 48px 36px;">
     <p style="margin:0 0 6px;font-size:12px;color:rgba(240,236,226,0.35);line-height:1.7;">
-      Questions? Reply to this email or write to <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a>
+      Questions? Email us at <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a>
     </p>
     <p style="margin:0;font-size:11px;color:rgba(240,236,226,0.2);letter-spacing:1px;">SOLUM &nbsp;·&nbsp; bysolum.co.uk &nbsp;·&nbsp; Your body. Done right.</p>
   </td></tr>
