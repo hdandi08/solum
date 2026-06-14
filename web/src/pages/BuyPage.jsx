@@ -4,7 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -729,7 +729,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => setSelectedKit(id)}
+                        onClick={() => { setSelectedKit(id); ttqAddToCart(kit?.name ?? id, KIT_PRICES[id] ?? 65); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         <div className="by-kit-name">{kit?.name}</div>

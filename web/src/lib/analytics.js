@@ -78,6 +78,11 @@ export function ttqIdentify(email) {
   }
 }
 
+// User selects a kit card
+export function ttqAddToCart(kitName, value) {
+  ttq('track', 'AddToCart', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+}
+
 // Kit page views (/buy, /checkout)
 export function ttqViewContent(kitName, value) {
   ttq('track', 'ViewContent', { content_name: kitName, value, currency: 'GBP', content_type: 'product' });
