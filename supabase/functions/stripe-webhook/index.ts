@@ -277,6 +277,52 @@ async function sendTikTokPurchaseEvent(opts: {
   }
 }
 
+async function sendMetaPurchaseEvent(opts: {
+  email?: string | null;
+  phone?: string | null;
+  kitId?: string | null;
+  kitName: string;
+  amountPence: number;
+  eventId: string;
+}) {
+  const accessToken = Deno.env.get('META_CAPI_ACCESS_TOKEN');
+  if (!accessToken) { console.warn('META_CAPI_ACCESS_TOKEN not set — skipping Meta event'); return; }
+
+  const userData: Record<string, string[]> = {};
+  if (opts.email) userData['em'] = [await sha256hex(opts.email)];
+  if (opts.phone) userData['ph'] = [await sha256hex(opts.phone.replace(/\D/g, ''))];
+
+  try {
+    const res = await fetch('https://graph.facebook.com/v21.0/690345887768095/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_token: accessToken,
+        data: [{
+          event_name: 'Purchase',
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: opts.eventId,
+          event_source_url: 'https://bysolum.co.uk/buy',
+          action_source: 'website',
+          user_data: userData,
+          custom_data: {
+            currency: 'GBP',
+            value: (opts.amountPence / 100).toFixed(2),
+            content_name: opts.kitName,
+            content_type: 'product',
+            content_ids: [opts.kitId ?? 'unknown'],
+          },
+        }],
+      }),
+    });
+    const result = await res.json();
+    if (result.error) console.error('meta_capi_error', JSON.stringify(result.error));
+    else console.log('meta_capi_ok', opts.eventId, result.events_received);
+  } catch (err) {
+    console.error('meta_capi_throw', err.message);
+  }
+}
+
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
@@ -342,6 +388,7 @@ async function handleOneTimeOrderFromPI(
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
   }
 
   // Store shipping address from pi.shipping
@@ -430,6 +477,7 @@ async function handleOneTimeOrder(
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
+    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
   }
 
   // Store shipping address
@@ -627,6 +675,7 @@ Deno.serve(async (req) => {
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
           await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
+          await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
         }
 
         // Store shipping address (null guard + idempotency via stripe_session_id unique index)
@@ -792,6 +841,7 @@ Deno.serve(async (req) => {
           await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
           await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+          await sendMetaPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
         }
 
         // Store address from pi.shipping
