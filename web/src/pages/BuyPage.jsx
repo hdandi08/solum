@@ -185,11 +185,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
           <div className="co-mobile-dispatch">
             No subscription — this is your only charge
           </div>
-          {inventory && (
-            <div style={{ fontSize: 12, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--blit)', fontWeight: 600 }}>
-              {totalRemaining} of 250 remaining
-            </div>
-          )}
           <div className="co-mobile-products">
             {products.map(p => (
               <div key={p.num} className="co-mobile-product">
@@ -241,12 +236,6 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
       </div>
       <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</div>
       <div className="co-price-sub" style={{ marginTop: 3 }}>Royal Mail Tracked 48 · Free · UK only</div>
-      {inventory && (
-        <div className="by-stock-pill">
-          <span className="by-stock-dot" />
-          {totalRemaining} of 250 remaining
-        </div>
-      )}
 
       <div className="co-divider" />
 
