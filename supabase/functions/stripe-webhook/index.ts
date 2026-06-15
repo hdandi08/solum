@@ -289,7 +289,7 @@ async function sendMetaPurchaseEvent(opts: {
   if (!accessToken) { console.warn('META_CAPI_ACCESS_TOKEN not set — skipping Meta event'); return; }
 
   const userData: Record<string, string[]> = {};
-  if (opts.email) userData['em'] = [await sha256hex(opts.email)];
+  if (opts.email) userData['em'] = [await sha256hex(opts.email.trim().toLowerCase())];
   if (opts.phone) userData['ph'] = [await sha256hex(opts.phone.replace(/\D/g, ''))];
 
   try {
@@ -307,7 +307,7 @@ async function sendMetaPurchaseEvent(opts: {
           user_data: userData,
           custom_data: {
             currency: 'GBP',
-            value: (opts.amountPence / 100).toFixed(2),
+            value: parseFloat((opts.amountPence / 100).toFixed(2)),
             content_name: opts.kitName,
             content_type: 'product',
             content_ids: [opts.kitId ?? 'unknown'],
