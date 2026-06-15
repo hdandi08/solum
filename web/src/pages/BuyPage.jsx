@@ -298,9 +298,10 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState('');
-  const [paymentType, setPaymentType] = useState('card');
+  const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState('');
+  const [paymentType, setPaymentType]     = useState('card');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   async function handlePay(e) {
     e.preventDefault();
@@ -396,16 +397,23 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
 
       {error && <div className="co-error" data-testid="pay-error">{error}</div>}
 
-      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading} data-testid="pay-btn">
+      <label className="co-terms-check">
+        <input
+          type="checkbox"
+          checked={termsAccepted}
+          onChange={e => setTermsAccepted(e.target.checked)}
+        />
+        <span>
+          I agree to the{' '}
+          <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+          {' '}and{' '}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </span>
+      </label>
+
+      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted} data-testid="pay-btn">
         {loading ? 'Processing…' : `Pay £${price} Now →`}
       </button>
-
-      <div className="co-secure-note">
-        By paying you agree to our{' '}
-        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>
-        {' '}and{' '}
-        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-      </div>
 
       <div className="co-trust-row">
         <span style={{ fontSize: 13, color: '#a09bff' }}>🔒</span>
