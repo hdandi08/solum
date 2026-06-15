@@ -90,11 +90,10 @@ async function sendConfirmationEmail(
     : `<p style="margin:4px 0 0;font-size:11px;color:rgba(240,236,226,0.2);">You can cancel any time from your account.</p>`;
 
   const html = `<!DOCTYPE html>
-<html bgcolor="#08090B" style="background-color:#08090B;">
+<html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light">
-<style>html,body,#bgwrap{background-color:#08090B !important;} body{-webkit-text-size-adjust:100%;}</style>
+<style>body,#bgwrap{background-color:#08090B !important;}</style>
 </head>
 <body bgcolor="#08090B" style="margin:0;padding:0;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <table id="bgwrap" width="100%" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="background-color:#08090B;border-collapse:collapse;">
@@ -183,16 +182,14 @@ async function sendAdminNotification(
   kitId: string,
   amountPence: number,
 ) {
+  try {
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) return;
 
   const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
   const amount = `£${(amountPence / 100).toFixed(2)}`;
-  const dateTime = new Date().toLocaleString('en-GB', {
-    timeZone: 'Europe/London',
-    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  });
+  const now = new Date();
+  const dateTime = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)} UTC`;
 
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -213,6 +210,7 @@ async function sendAdminNotification(
 </body></html>`,
     }),
   }).catch(e => console.error('admin_notification_error', e));
+  } catch(e) { console.error('admin_notification_catch', e); }
 }
 
 async function logEvent(
