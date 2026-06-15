@@ -80,6 +80,10 @@ const CSS = `
 .co-submit:hover:not(:disabled){background:#fff;transform:translateY(-1px);}
 .co-submit:disabled{background:var(--stone);cursor:wait;transform:none;}
 .co-secure{font-size:13px;color:var(--stone);font-weight:300;margin-top:14px;text-align:center;}
+.co-terms-check{display:flex;align-items:flex-start;gap:10px;margin-top:20px;cursor:pointer;}
+.co-terms-check input[type="checkbox"]{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--blue);cursor:pointer;}
+.co-terms-check span{font-size:13px;color:var(--stone);font-weight:300;line-height:1.5;}
+.co-terms-check a{color:var(--mist);text-decoration:underline;}
 .co-error{font-size:14px;color:#e05c5c;margin-top:14px;line-height:1.5;padding:12px 16px;border:1px solid rgba(224,92,92,0.3);background:rgba(224,92,92,0.05);}
 .co-section-divider{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;margin:32px 0 24px;padding-bottom:10px;border-bottom:1px solid var(--line);}
 
@@ -245,8 +249,9 @@ function fmtDate(date) {
 function PaymentStep({ activeKit, payInfo, onBack }) {
   const stripe   = useStripe();
   const elements = useElements();
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   async function handlePay(e) {
     e.preventDefault();
@@ -295,16 +300,23 @@ function PaymentStep({ activeKit, payInfo, onBack }) {
 
       {error && <div className="co-error">{error}</div>}
 
-      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading}>
+      <label className="co-terms-check">
+        <input
+          type="checkbox"
+          checked={termsAccepted}
+          onChange={e => setTermsAccepted(e.target.checked)}
+        />
+        <span>
+          I agree to the{' '}
+          <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+          {' '}and{' '}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </span>
+      </label>
+
+      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted}>
         {loading ? 'Processing…' : `Pay £${totalPrice} Now →`}
       </button>
-
-      <div className="co-secure" style={{ marginTop: 10 }}>
-        By paying you agree to our{' '}
-        <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Terms</a>
-        {' '}and{' '}
-        <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--stone)', textDecoration: 'underline' }}>Privacy Policy</a>
-      </div>
 
       <div className="co-trust-badge">
         <span style={{ fontSize: 13, color: '#a09bff' }}>🔒</span>

@@ -401,6 +401,35 @@ select.co-input option {
   color: #a09bff;
 }
 
+.co-terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.co-terms-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.co-terms-check span {
+  font-size: 13px;
+  color: var(--stone);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.co-terms-check a {
+  color: var(--mist);
+  text-decoration: underline;
+}
+
 .co-secure-note {
   font-size: 13px;
   color: var(--stone);
