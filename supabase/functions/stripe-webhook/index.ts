@@ -197,7 +197,7 @@ async function sendAdminNotification(
       headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: 'SOLUM Orders <no-reply@orders.bysolum.co.uk>',
-        to: 'harsha@bysolum.com',
+        to: 'harsha@bysolum.co.uk',
         subject: `New order — ${firstName} · ${kitName} · #${orderRef}`,
         html: `<!DOCTYPE html><html lang="en"><body bgcolor="#08090B" style="margin:0;padding:32px;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <p style="margin:0 0 24px;font-size:20px;font-weight:700;color:#F0ECE2;letter-spacing:0.05em;">NEW ORDER</p>
@@ -251,7 +251,7 @@ async function sendTikTokPurchaseEvent(opts: {
   try {
     const res = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
       method: 'POST',
-      headers: { 'Authorization': `TikTok ${accessToken}`, 'Content-Type': 'application/json' },
+      headers: { 'Access-Token': accessToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         pixel_id: 'D8NHU2RC77UCVEHVNJNG',
         event: 'CompletePayment',
