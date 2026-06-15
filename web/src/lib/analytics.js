@@ -33,8 +33,10 @@ export function identify(userId, traits = {}) {
   }
 }
 
+const IS_PROD = window.location.hostname.includes('bysolum');
+
 function fbq(...args) {
-  if (window.fbq) window.fbq(...args);
+  if (IS_PROD && window.fbq) window.fbq(...args);
 }
 
 // eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added
