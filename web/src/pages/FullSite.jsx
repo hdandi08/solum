@@ -17,6 +17,7 @@ import FAQ from '../components/FAQ.jsx';
 import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import ABDevPanel from '../components/ABDevPanel.jsx';
+import FathersDayPopup from '../components/FathersDayPopup.jsx';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 
@@ -84,6 +85,7 @@ export default function FullSite() {
 
   return (
     <>
+      <FathersDayPopup />
       <Nav />
       <Hero />
       <Marquee />
