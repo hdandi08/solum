@@ -90,15 +90,16 @@ async function sendConfirmationEmail(
     : `<p style="margin:4px 0 0;font-size:11px;color:rgba(240,236,226,0.2);">You can cancel any time from your account.</p>`;
 
   const html = `<!DOCTYPE html>
-<html>
+<html bgcolor="#08090B" style="background-color:#08090B;">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body,#bgwrap{background-color:#08090B !important;}</style>
+<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light">
+<style>html,body,#bgwrap{background-color:#08090B !important;} body{-webkit-text-size-adjust:100%;}</style>
 </head>
 <body bgcolor="#08090B" style="margin:0;padding:0;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <table id="bgwrap" width="100%" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="background-color:#08090B;border-collapse:collapse;">
     <tr><td align="center" bgcolor="#08090B" style="background-color:#08090B;padding:0;">
-      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="max-width:600px;width:100%;background-color:#08090B;">
+      <table width="600" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="max-width:600px;width:100%;background-color:#08090B;border-collapse:collapse;">
 
         <!-- Header -->
         <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:32px 48px 26px;border-bottom:1px solid #181c24;">
@@ -116,8 +117,8 @@ async function sendConfirmationEmail(
 
         <!-- Order ref -->
         <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 36px;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#181C24;border:1px solid #1e2530;">
-            <tr><td style="padding:22px 28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#181C24" style="background-color:#181C24;border:1px solid #1e2530;">
+            <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:22px 28px;">
               <p style="margin:0 0 6px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(240,236,226,0.35);font-weight:600;">Order Reference</p>
               <p style="margin:0 0 4px;font-size:30px;font-weight:700;letter-spacing:0.1em;color:#F0ECE2;">#${orderRef}</p>
               <p style="margin:0;font-size:11px;color:rgba(240,236,226,0.3);letter-spacing:1px;">Keep this for your records</p>
@@ -128,7 +129,7 @@ async function sendConfirmationEmail(
         <!-- What happens next -->
         <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 48px;">
           <p style="margin:0 0 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">What Happens Next</p>
-          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2530;">
+          <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#08090B" style="background-color:#08090B;border-collapse:collapse;border:1px solid #1e2530;">
             <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">1</td>
@@ -174,6 +175,44 @@ async function sendConfirmationEmail(
       html,
     }),
   }).catch(e => console.error('Resend error:', e));
+}
+
+async function sendAdminNotification(
+  firstName: string,
+  orderRef: string,
+  kitId: string,
+  amountPence: number,
+) {
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (!resendKey) return;
+
+  const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+  const amount = `£${(amountPence / 100).toFixed(2)}`;
+  const dateTime = new Date().toLocaleString('en-GB', {
+    timeZone: 'Europe/London',
+    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'SOLUM Orders <no-reply@orders.bysolum.co.uk>',
+      to: 'harsha@bysolum.com',
+      subject: `New order — ${firstName} · ${kitName} · #${orderRef}`,
+      html: `<!DOCTYPE html><html><body bgcolor="#08090B" style="margin:0;padding:32px;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<p style="margin:0 0 24px;font-size:20px;font-weight:700;color:#F0ECE2;letter-spacing:0.05em;">NEW ORDER</p>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:400px;">
+  <tr><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;width:120px;">Order</td><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:16px;font-weight:700;letter-spacing:0.08em;">#${orderRef}</td></tr>
+  <tr><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Name</td><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${firstName}</td></tr>
+  <tr><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Kit</td><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${kitName}</td></tr>
+  <tr><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Amount</td><td style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#4A8FC7;font-size:14px;font-weight:700;">${amount}</td></tr>
+  <tr><td style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Date</td><td style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.6);font-size:13px;">${dateTime}</td></tr>
+</table>
+</body></html>`,
+    }),
+  }).catch(e => console.error('admin_notification_error', e));
 }
 
 async function logEvent(
@@ -295,10 +334,11 @@ async function handleOneTimeOrderFromPI(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', pi.id);
 
-  // Send confirmation email + TikTok server-side event
+  // Send confirmation email + admin notification + TikTok server-side event
   if (email && order) {
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
+    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
   }
 
@@ -382,10 +422,11 @@ async function handleOneTimeOrder(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', session.id);
 
-  // Send confirmation email + TikTok server-side event
+  // Send confirmation email + admin notification + TikTok server-side event
   if (email && order) {
     const orderRef = session.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
+    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
   }
 
@@ -578,10 +619,11 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_session_id', session.id);
 
-        // Send confirmation email + TikTok server-side event — only on first processing
+        // Send confirmation email + admin notification + TikTok server-side event — only on first processing
         if (email && !existingOrder) {
           const orderRef = session.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
+          await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
           await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
         }
 
@@ -742,10 +784,11 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_customer_id', stripe_customer_id);
 
-        // Send confirmation email + TikTok server-side event
+        // Send confirmation email + admin notification + TikTok server-side event
         if (!existingOrder) {
           const orderRef = pi.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
+          await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
           await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
         }
 
