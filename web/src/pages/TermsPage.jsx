@@ -235,8 +235,8 @@ export default function TermsPage() {
             <section className="terms-section" id="s1">
               <span className="terms-section-num">Section 01</span>
               <h2 className="terms-section-title">About SOLUM</h2>
-              <p className="terms-p">SOLUM is a men's body care brand operated as a sole trader by <strong>Harsha Dandi</strong> ("we", "us", "our"). The business trades under the name SOLUM via the website <strong>bysolum.co.uk</strong>.</p>
-              <p className="terms-p">As a sole trader, SOLUM is not a limited company and does not have a separate legal personality. Harsha Dandi is personally responsible for the obligations of the business.</p>
+              <p className="terms-p">SOLUM is a men's body care brand operated by <strong>SOLUM Limited</strong> ("we", "us", "our"). The business trades under the name SOLUM via the website <strong>bysolum.co.uk</strong>.</p>
+              <p className="terms-p">SOLUM Limited is a company registered in England and Wales.</p>
               <div className="terms-info-block">
                 <div className="terms-info-row">
                   <span className="terms-info-label">Trading Name</span>
@@ -244,7 +244,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Trader</span>
-                  <span className="terms-info-value">Harsha Dandi (sole trader)</span>
+                  <span className="terms-info-value">SOLUM Limited</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Address</span>
@@ -483,7 +483,7 @@ export default function TermsPage() {
               <div className="terms-callout">
                 <p><strong>Model Cancellation Form:</strong> You may use the following to notify cancellation:</p>
                 <p style={{marginTop: '10px', fontStyle: 'italic', opacity: 0.8}}>
-                  "To SOLUM (Harsha Dandi), contact@bysolum.com — I/We hereby give notice that I/We cancel my/our contract of sale of the following goods: [describe goods], ordered on [date], received on [date], Order Number [number]. Name: [name], Address: [address], Date: [date]."
+                  "To SOLUM Limited, contact@bysolum.com — I/We hereby give notice that I/We cancel my/our contract of sale of the following goods: [describe goods], ordered on [date], received on [date], Order Number [number]. Name: [name], Address: [address], Date: [date]."
                 </p>
               </div>
             </section>
@@ -546,7 +546,7 @@ export default function TermsPage() {
               <div className="terms-info-block">
                 <div className="terms-info-row">
                   <span className="terms-info-label">Name</span>
-                  <span className="terms-info-value">Harsha Dandi</span>
+                  <span className="terms-info-value">SOLUM Limited</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Address</span>
@@ -566,7 +566,7 @@ export default function TermsPage() {
                 </div>
               </div>
 
-              <p className="terms-p">As Responsible Person, Harsha Dandi is accountable for ensuring that all SOLUM cosmetic products comply with the UK Cosmetics Regulation, including product safety, labelling, notification requirements, and maintenance of Product Information Files.</p>
+              <p className="terms-p">As Responsible Person, SOLUM Limited is accountable for ensuring that all SOLUM cosmetic products comply with the UK Cosmetics Regulation, including product safety, labelling, notification requirements, and maintenance of Product Information Files.</p>
             </section>
 
             {/* 10 — Statutory Rights */}
@@ -633,7 +633,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s12">
               <span className="terms-section-num">Section 12</span>
               <h2 className="terms-section-title">Intellectual Property</h2>
-              <p className="terms-p">All intellectual property rights in the SOLUM brand, wordmark, product names, website content, images, copy, and design are owned by or licensed to Harsha Dandi (trading as SOLUM). All rights are reserved.</p>
+              <p className="terms-p">All intellectual property rights in the SOLUM brand, wordmark, product names, website content, images, copy, and design are owned by or licensed to SOLUM Limited. All rights are reserved.</p>
               <p className="terms-p">You may not reproduce, distribute, modify, or create derivative works from any SOLUM intellectual property without our prior written consent. This includes the SOLUM wordmark, product names, label designs, and website content.</p>
               <p className="terms-p">Purchasing a SOLUM product does not transfer any intellectual property rights to you.</p>
             </section>
@@ -642,7 +642,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s13">
               <span className="terms-section-num">Section 13</span>
               <h2 className="terms-section-title">Data Protection &amp; Privacy</h2>
-              <p className="terms-p">SOLUM (Harsha Dandi) is the data controller for personal data collected via bysolum.co.uk. We process your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+              <p className="terms-p">SOLUM Limited is the data controller for personal data collected via bysolum.co.uk. We process your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
               <p className="terms-p">We collect and use your personal data to process and fulfil your orders, manage your subscription, send you order and renewal communications, and comply with our legal obligations.</p>
               <p className="terms-p">Your data is shared with Stripe (for payment processing) and Royal Mail (for delivery). We do not sell your personal data to third parties.</p>
               <p className="terms-p">You have the right to access, correct, or delete your personal data, and the right to object to or restrict its processing. To exercise these rights, contact contact@bysolum.com.</p>
@@ -692,7 +692,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Post</span>
-                  <span className="terms-info-value">SOLUM (Harsha Dandi), Gerrards Cross, Buckinghamshire, SL9 7HW</span>
+                  <span className="terms-info-value">SOLUM Limited, Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Response Time</span>

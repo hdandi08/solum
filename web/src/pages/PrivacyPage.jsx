@@ -215,11 +215,11 @@ export default function PrivacyPage() {
             <section className="privacy-section" id="p1">
               <span className="privacy-section-num">Section 01</span>
               <h2 className="privacy-section-title">Who We Are</h2>
-              <p className="privacy-p">SOLUM is a men's body care brand operated by <strong>Harsha Dandi</strong> (sole trader) via bysolum.co.uk. Harsha Dandi is the <strong>data controller</strong> for personal data collected through this website and any associated services.</p>
+              <p className="privacy-p">SOLUM is a men's body care brand operated by <strong>SOLUM Limited</strong> via bysolum.co.uk. SOLUM Limited is the <strong>data controller</strong> for personal data collected through this website and any associated services.</p>
               <div className="privacy-info-block">
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Controller</span>
-                  <span className="privacy-info-value">Harsha Dandi (trading as SOLUM)</span>
+                  <span className="privacy-info-value">SOLUM Limited</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Address</span>
@@ -556,7 +556,7 @@ export default function PrivacyPage() {
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Post</span>
-                  <span className="privacy-info-value">SOLUM (Harsha Dandi), [Business address — to be completed]</span>
+                  <span className="privacy-info-value">SOLUM Limited, Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Response Time</span>
