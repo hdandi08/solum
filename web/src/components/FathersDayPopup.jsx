@@ -88,6 +88,20 @@ const CSS = `
   transition:color .2s;
 }
 .fd-popup-dismiss:hover{color:#F0ECE2;}
+
+.fd-popup-close{
+  position:absolute;top:12px;right:12px;
+  width:32px;height:32px;
+  background:rgba(8,9,11,0.7);
+  border:1px solid rgba(240,236,226,0.15);
+  border-radius:50%;
+  color:rgba(240,236,226,0.7);
+  font-size:16px;line-height:1;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,color .2s;
+}
+.fd-popup-close:hover{background:rgba(240,236,226,0.12);color:#F0ECE2;}
 `;
 
 export default function FathersDayPopup() {
@@ -119,7 +133,8 @@ export default function FathersDayPopup() {
     <>
       <style>{CSS}</style>
       <div className="fd-popup-overlay" onClick={dismiss}>
-        <div className="fd-popup-card" onClick={e => e.stopPropagation()}>
+        <div className="fd-popup-card" onClick={e => e.stopPropagation()} style={{position:'relative'}}>
+          <button className="fd-popup-close" onClick={dismiss} aria-label="Close">✕</button>
           <img
             src="/email/fd-popup-hero.jpg"
             alt="The perfect Father's Day gift — SOLUM"
