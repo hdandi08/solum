@@ -197,7 +197,7 @@ async function sendAdminNotification(
       headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: 'SOLUM Orders <no-reply@orders.bysolum.co.uk>',
-        to: 'harsha@bysolum.co.uk',
+        to: 'harsha@bysolum.com',
         subject: `New order — ${firstName} · ${kitName} · #${orderRef}`,
         html: `<!DOCTYPE html><html lang="en"><body bgcolor="#08090B" style="margin:0;padding:32px;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <p style="margin:0 0 24px;font-size:20px;font-weight:700;color:#F0ECE2;letter-spacing:0.05em;">NEW ORDER</p>
