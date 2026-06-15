@@ -72,13 +72,13 @@ async function sendConfirmationEmail(
   const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
 
   const step3 = isOneTime
-    ? `<tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+    ? `<tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
                 <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">We'll check in at two weeks</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Once you've had time to use the kit properly, we'll ask a few quick questions. Your feedback directly shapes what we build next.</p></td>
               </tr></table>
             </td></tr>`
-    : `<tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+    : `<tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">3</td>
                 <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">Refills every 30 days</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Your first refill is charged 30 days from today — you saw the exact date at checkout. Every 30 days after that. You'll never run out.</p></td>
@@ -107,7 +107,7 @@ async function sendConfirmationEmail(
         </td></tr>
 
         <!-- Hero -->
-        <tr><td style="background-color:#08090B;padding:48px 48px 36px;">
+        <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:48px 48px 36px;">
           <p style="margin:0 0 8px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">Order Confirmed</p>
           <h1 style="margin:0 0 20px;font-size:44px;font-weight:700;letter-spacing:0.04em;color:#F0ECE2;text-transform:uppercase;line-height:0.95;">Ritual Begins,<br>${firstName}.</h1>
           <div style="width:48px;height:1px;background:#2E6DA4;margin-bottom:20px;"></div>
@@ -115,7 +115,7 @@ async function sendConfirmationEmail(
         </td></tr>
 
         <!-- Order ref -->
-        <tr><td style="background-color:#08090B;padding:0 48px 36px;">
+        <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 36px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#181C24;border:1px solid #1e2530;">
             <tr><td style="padding:22px 28px;">
               <p style="margin:0 0 6px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(240,236,226,0.35);font-weight:600;">Order Reference</p>
@@ -126,23 +126,23 @@ async function sendConfirmationEmail(
         </td></tr>
 
         <!-- What happens next -->
-        <tr><td style="background-color:#08090B;padding:0 48px 48px;">
+        <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 48px;">
           <p style="margin:0 0 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">What Happens Next</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2530;">
-            <tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+            <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">1</td>
                 <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">Confirmation email</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">That's this one. You're all set.</p></td>
               </tr></table>
             </td></tr>
-            <tr><td style="background:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
+            <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
                 <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             ${step3}
-            <tr><td style="background:#181C24;padding:20px 24px;">
+            <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">4</td>
                 <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">Your ritual guide</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Full step-by-step for your daily and weekly ritual. Scan the QR code in the box or go to <a href="https://bysolum.co.uk/ritual" style="color:#4A8FC7;text-decoration:none;">bysolum.co.uk/ritual</a></p></td>
@@ -152,7 +152,7 @@ async function sendConfirmationEmail(
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background-color:#08090B;border-top:1px solid #1e2530;padding:28px 48px 36px;">
+        <tr><td bgcolor="#08090B" style="background-color:#08090B;border-top:1px solid #1e2530;padding:28px 48px 36px;">
           <p style="margin:0 0 6px;font-size:12px;color:rgba(240,236,226,0.35);line-height:1.7;">Questions? Email us at <a href="mailto:contact@bysolum.com" style="color:#4A8FC7;text-decoration:none;">contact@bysolum.com</a></p>
           <p style="margin:0;font-size:11px;color:rgba(240,236,226,0.2);letter-spacing:1px;">SOLUM &nbsp;·&nbsp; bysolum.co.uk &nbsp;·&nbsp; Your body. Done right.</p>
           ${footerLine}
