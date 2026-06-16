@@ -44,7 +44,7 @@ function buildLaunchEmail(firstName: string | null): string {
     <table cellpadding="0" cellspacing="0" style="margin:0 0 12px;">
       <tr>
         <td bgcolor="#F0ECE2" style="background:#F0ECE2;">
-          <a href="https://bysolum.co.uk/buy"
+          <a href="https://bysolum.co.uk/?utm_source=email&utm_medium=email&utm_campaign=launch_blast"
              style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:18px 48px;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
             ORDER NOW →
           </a>
@@ -55,7 +55,7 @@ function buildLaunchEmail(firstName: string | null): string {
   </td></tr>
 
   <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0;line-height:0;">
-    <a href="https://bysolum.co.uk/buy" style="display:block;">
+    <a href="https://bysolum.co.uk/?utm_source=email&utm_medium=email&utm_campaign=launch_blast" style="display:block;">
       <img src="https://bysolum.co.uk/email/hero-products.jpg" alt="SOLUM. Head to toe. Cleaned. Nourished. Cared for." width="600" style="display:block;width:100%;max-width:600px;border:0;" />
     </a>
   </td></tr>
@@ -67,7 +67,7 @@ function buildLaunchEmail(firstName: string | null): string {
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
       <tr>
         <td bgcolor="#F0ECE2" style="background:#F0ECE2;">
-          <a href="https://bysolum.co.uk/buy"
+          <a href="https://bysolum.co.uk/?utm_source=email&utm_medium=email&utm_campaign=launch_blast"
              style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:18px 48px;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
             ORDER NOW →
           </a>
