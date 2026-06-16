@@ -33,37 +33,45 @@ function buildLaunchEmail(firstName: string | null): string {
     </a>
   </td></tr>
 
-  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:40px 36px 32px;">
-    <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#F0ECE2;line-height:1.3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">${greeting} You signed up. Now it's here. 🎉</p>
-    <p style="margin:0 0 16px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      You joined the waitlist a while back and we've been heads down building ever since. Today we're officially live and we wanted you to be the first to know.
+  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:40px 36px 28px;">
+    <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#F0ECE2;line-height:1.3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">${greeting} You signed up. Now it's here.</p>
+    <p style="margin:0 0 28px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      SOLUM is the first complete body ritual built for men — sourced from Korea, Morocco, and the UK. A daily ritual and a weekly deep clean. The system most men have never had.
     </p>
-    <p style="margin:0;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      SOLUM is the first complete body ritual built for men. Sourced from Korea, Morocco, and the UK. Not just products thrown together but a proper system, with a daily ritual and a weekly deep clean that most men have never had.
-    </p>
-  </td></tr>
-
-  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0;line-height:0;">
-    <a href="https://bysolum.co.uk/" style="display:block;">
-      <img src="https://bysolum.co.uk/email/hero-products.jpg" alt="SOLUM. Head to toe. Cleaned. Nourished. Cared for." width="600" style="display:block;width:100%;max-width:600px;border:0;" />
-    </a>
-  </td></tr>
-
-  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:36px 36px 32px;">
-    <p style="margin:0 0 24px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      We made a small first batch and it's going fast. If you've been thinking about finally doing this properly, don't sit on it. 👇
-    </p>
-    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 12px;">
       <tr>
         <td bgcolor="#F0ECE2" style="background:#F0ECE2;">
-          <a href="https://bysolum.co.uk/"
+          <a href="https://bysolum.co.uk/buy"
              style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:18px 48px;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
             ORDER NOW →
           </a>
         </td>
       </tr>
     </table>
-    <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.3);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Free UK delivery. Ships in 2 days. 🇬🇧</p>
+    <p style="margin:0 0 0;font-size:12px;color:rgba(240,236,226,0.3);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Free UK delivery · Ships in 2 days · Small first batch</p>
+  </td></tr>
+
+  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0;line-height:0;">
+    <a href="https://bysolum.co.uk/buy" style="display:block;">
+      <img src="https://bysolum.co.uk/email/hero-products.jpg" alt="SOLUM. Head to toe. Cleaned. Nourished. Cared for." width="600" style="display:block;width:100%;max-width:600px;border:0;" />
+    </a>
+  </td></tr>
+
+  <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:36px 36px 32px;">
+    <p style="margin:0 0 24px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      We made a small first batch and it's going fast. If you've been thinking about finally doing this properly — or know someone who needs it — don't sit on it.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+      <tr>
+        <td bgcolor="#F0ECE2" style="background:#F0ECE2;">
+          <a href="https://bysolum.co.uk/buy"
+             style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:18px 48px;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+            ORDER NOW →
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:12px;color:rgba(240,236,226,0.3);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Free UK delivery · Ships in 2 days 🇬🇧</p>
   </td></tr>
 
   <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 36px;">
@@ -123,7 +131,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
           to: [lead.email],
-          subject: "You're first. SOLUM is live. 🚀",
+          subject: "The body routine most men don't have — now it's here",
           html: buildLaunchEmail(lead.first_name ?? null),
         }),
       })
