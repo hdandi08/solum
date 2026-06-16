@@ -1,0 +1,2 @@
+[functions.founder-chat]
+verify_jwt = false

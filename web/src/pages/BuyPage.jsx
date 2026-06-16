@@ -6,6 +6,7 @@ import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
+import FounderChat from '../components/FounderChat.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -843,6 +844,7 @@ export default function BuyPage() {
 
         <BuyOrderSummary {...headerProps} />
       </div>
+      <FounderChat />
     </>
   );
 }
