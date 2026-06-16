@@ -110,21 +110,25 @@ Deno.serve(async (req) => {
   const resendKey = Deno.env.get('RESEND_API_KEY')
   if (!resendKey) return new Response(JSON.stringify({ error: 'RESEND_API_KEY not set' }), { status: 500 })
 
+  const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {}
+  const offset = Number(body.offset ?? 0)
+  const limit  = Number(body.limit  ?? 30)
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   )
 
-  // Fetch all leads (email + first_name)
   const { data: leads, error } = await supabase
     .from('leads')
     .select('email, first_name')
     .not('email', 'is', null)
     .order('created_at', { ascending: true })
+    .range(offset, offset + limit - 1)
 
   if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
 
-  const results = { sent: 0, failed: 0, errors: [] as string[] }
+  const results = { offset, limit, sent: 0, failed: 0, errors: [] as string[] }
 
   for (const lead of leads ?? []) {
     try {
@@ -132,10 +136,15 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
+          from: 'Harsha from SOLUM <no-reply@orders.bysolum.co.uk>',
+          reply_to: 'harsha@bysolum.com',
           to: [lead.email],
           subject: "You signed up for a reason. Now sort it.",
           html: buildLaunchEmail(lead.first_name ?? null),
+          headers: {
+            'List-Unsubscribe': '<mailto:unsubscribe@bysolum.co.uk>',
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
         }),
       })
       if (res.ok) { results.sent++ } else {
@@ -147,11 +156,11 @@ Deno.serve(async (req) => {
       results.failed++
       results.errors.push(`${lead.email}: ${e}`)
     }
-    // 3 emails/sec — stay within Resend free tier rate limit
-    await sleep(350)
+    // ~4s between each email — 30 emails ≈ 2 mins per batch
+    await sleep(4000)
   }
 
-  return new Response(JSON.stringify({ total: leads?.length ?? 0, ...results }), {
+  return new Response(JSON.stringify({ total: leads?.length ?? 0, next_offset: offset + limit, ...results }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 })
