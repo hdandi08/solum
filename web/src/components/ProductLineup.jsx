@@ -42,6 +42,7 @@ const CSS = `
 .prod-highlight.daily{color:#7ab8e8;background:rgba(46,109,164,0.15);border-color:rgba(46,109,164,0.5);}
 .prod-highlight.weekly{color:#d4a847;background:rgba(200,169,110,0.15);border-color:rgba(200,169,110,0.5);}
 .prod-highlight.neutral{color:rgba(240,236,226,0.7);background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);}
+.prod-lifespan{font-size:10px;color:var(--stone);font-weight:400;margin-top:6px;letter-spacing:.2px;}
 
 /* View details button — pinned to bottom of card */
 .prod-view-details{
@@ -175,6 +176,9 @@ function ProductModal({ product, onClose }) {
         <button className="pd-drawer-close" onClick={onClose} aria-label="Close">✕</button>
       </div>
       <div className="pd-drawer-tagline">{product.tagline}</div>
+      {product.lifespan && (
+        <div style={{fontSize:11,color:'var(--stone)',padding:'8px 24px 0',letterSpacing:'.2px'}}>⏱ {product.lifespan}</div>
+      )}
       {product.highlights?.length > 0 && (
         <div style={{display:'flex',flexWrap:'wrap',gap:5,padding:'10px 24px 0'}}>
           {product.highlights.map((h, i) => {
@@ -265,6 +269,7 @@ export default function ProductLineup() {
                       ))}
                     </div>
                   )}
+                  {p.lifespan && <div className="prod-lifespan">⏱ {p.lifespan}</div>}
                   <button className="prod-view-details" onClick={() => openModal(p)}>
                     View Details ↓
                   </button>
