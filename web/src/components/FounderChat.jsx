@@ -223,7 +223,11 @@ export default function FounderChat() {
         },
       });
       if (error) throw error;
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      const reply = data.reply ?? '';
+      // Hold the reply back — delay based on response length (simulates typing) + random jitter
+      const typingMs = Math.min(1500 + reply.length * 14 + Math.random() * 900, 5500);
+      await new Promise(r => setTimeout(r, typingMs));
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
