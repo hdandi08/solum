@@ -30,8 +30,8 @@ Cedarwood and vetiver. Runs through both the Body Wash and Body Lotion so the sc
 ## Every Product — Outcome First
 
 **01 · Body Wash 250ml — £20 — Made in UK**
-Outcome: Skin that stays balanced, hydrated and non-tight after every shower.
-Most body wash uses SLS — a detergent that raises skin pH to 9-10 and strips the acid mantle your skin spent all day rebuilding. It takes up to 17 hours to recover, and you shower again before it does. That post-shower tightness isn't normal — it's damage. SOLUM's amino acid surfactants at pH 4.5 are clinically 75× milder than SLS. Cleans effectively, leaves the skin barrier intact. Sulphate-free. SOLUM signature scent: cedarwood + vetiver. 250ml.
+Outcome: One wash for your whole body — including sensitive skin and intimate areas — without stripping anything.
+The amino acid formula at pH 4.5 is gentle enough for every area. Most body wash uses SLS, which forces pH to 9-10, destroys the acid mantle, and takes 17 hours to recover. You shower again before it does. That tightness afterwards is damaged skin, not clean skin. SOLUM cleans every part of your body without damaging any of it. Sulphate-free. Cedarwood + vetiver. 250ml.
 
 **02 · Italy Towel Mitt 25×20cm — £10 — Korean bathhouse tradition**
 Outcome: Softer, smoother skin — and the end of the body odour that comes from dead skin buildup.
@@ -54,8 +54,8 @@ Outcome: Skin that's properly restored — not just coated.
 Single ingredient: 100% certified organic cold-pressed Argania Spinosa Kernel Oil. Nothing added. 43-52% oleic acid — same fatty acid as human sebum — is why it absorbs completely without leaving a film. Linoleic acid rebuilds the skin barrier structurally; your body can't produce it on its own. Apply on damp skin immediately after the weekly clay wash — absorption is highest on freshly cleared, still-warm skin. 10-15 drops, pressed in. No lotion needed on weekly days. 50ml.
 
 **07 · Body Lotion 200ml — £22 — Made in UK**
-Outcome: All-day hydration — from the 3 minutes most men waste every day.
-Skin is up to 10× more permeable immediately after a shower. That window closes within 3 minutes as moisture begins evaporating. The American Academy of Dermatology formally recommends application in this window. Most men dry off, get dressed, make coffee — and by then the window is gone. Two pumps, press in, done before you've thought about it. Fast-absorbing, no residue, get dressed straight after. SOLUM signature scent: cedarwood + vetiver. 200ml.
+Outcome: Skin that's restored, repaired and hydrated — from 3 minutes of daily use.
+Every shower takes something from your skin. The lotion gives it back. It restores the barrier, repairs damage from daily washing, and hydrates at up to 10× the rate of applying later — skin is at peak permeability in the 3 minutes immediately after drying. With daily use the difference compounds. The barrier gets stronger, rough patches repair, skin stays comfortable through the day. Two pumps, press in, done. Cedarwood + vetiver. 200ml.
 
 **08 · Bamboo + Cotton Cleansing Cloth — Coming soon**
 Outcome: Proper intimate hygiene — the gap in most men's routines they don't know exists.

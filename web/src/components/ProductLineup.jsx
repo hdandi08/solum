@@ -38,13 +38,17 @@ const CSS = `
 .prod-size{font-size:10px;letter-spacing:1.5px;color:var(--blit);font-weight:600;background:rgba(46,109,164,0.12);border:1px solid rgba(46,109,164,0.25);padding:2px 7px;border-radius:3px;}
 .prod-tagline{font-size:13px;font-weight:600;color:var(--bone);line-height:1.4;margin-top:8px;}
 .prod-highlights{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.prod-highlight{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600;color:rgba(240,236,226,0.55);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:2px 6px;border-radius:3px;}
+.prod-highlight{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:700;padding:3px 7px;border-radius:3px;border:1px solid;}
+.prod-highlight.daily{color:#7ab8e8;background:rgba(46,109,164,0.15);border-color:rgba(46,109,164,0.5);}
+.prod-highlight.weekly{color:#d4a847;background:rgba(200,169,110,0.15);border-color:rgba(200,169,110,0.5);}
+.prod-highlight.neutral{color:rgba(240,236,226,0.7);background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);}
 
-/* View details button — visible on all sizes */
+/* View details button — pinned to bottom of card */
 .prod-view-details{
   display:flex;align-items:center;justify-content:center;gap:6px;
-  margin-top:12px;
+  margin-top:auto;
   padding:10px 0;
+  padding-top:16px;
   background:rgba(46,109,164,0.1);
   border:1px solid rgba(46,109,164,0.3);
   border-radius:4px;
@@ -173,9 +177,13 @@ function ProductModal({ product, onClose }) {
       <div className="pd-drawer-tagline">{product.tagline}</div>
       {product.highlights?.length > 0 && (
         <div style={{display:'flex',flexWrap:'wrap',gap:5,padding:'10px 24px 0'}}>
-          {product.highlights.map((h, i) => (
-            <span key={i} style={{fontSize:10,letterSpacing:'1px',textTransform:'uppercase',fontWeight:600,color:'var(--blit)',background:'rgba(46,109,164,0.1)',border:'1px solid rgba(46,109,164,0.25)',padding:'3px 8px',borderRadius:3}}>{h}</span>
-          ))}
+          {product.highlights.map((h, i) => {
+            const isWeekly = product.tag.toLowerCase().includes('weekly');
+            const style = isWeekly
+              ? {fontSize:10,letterSpacing:'1px',textTransform:'uppercase',fontWeight:700,color:'#d4a847',background:'rgba(200,169,110,0.15)',border:'1px solid rgba(200,169,110,0.5)',padding:'3px 8px',borderRadius:3}
+              : {fontSize:10,letterSpacing:'1px',textTransform:'uppercase',fontWeight:700,color:'#7ab8e8',background:'rgba(46,109,164,0.15)',border:'1px solid rgba(46,109,164,0.5)',padding:'3px 8px',borderRadius:3};
+            return <span key={i} style={style}>{h}</span>;
+          })}
         </div>
       )}
       <div className="pd-drawer-desc">{product.desc}</div>
@@ -253,7 +261,7 @@ export default function ProductLineup() {
                   {p.highlights?.length > 0 && (
                     <div className="prod-highlights">
                       {p.highlights.map((h, i) => (
-                        <span key={i} className="prod-highlight">{h}</span>
+                        <span key={i} className={`prod-highlight ${freqClass === 'weekly' ? 'weekly' : freqClass === 'daily' ? 'daily' : 'neutral'}`}>{h}</span>
                       ))}
                     </div>
                   )}

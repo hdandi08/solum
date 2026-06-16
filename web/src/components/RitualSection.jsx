@@ -192,6 +192,7 @@ export default function RitualSection() {
                 Daily · 10 Minutes · Every Shower
               </div>
               <div className="ritual-panel-title">Five steps. In the shower you already take.</div>
+              <p className="ritual-panel-desc">Same 10 minutes. Right tools. Right sequence. Completely different outcome.</p>
               <StepFlow steps={DAILY} variant="daily" />
               <a href="/ritual?ritual=daily" className="ritual-panel-cta daily"
                  onClick={() => capture('ritual_cta_clicked', { ritual: 'daily' })}>
