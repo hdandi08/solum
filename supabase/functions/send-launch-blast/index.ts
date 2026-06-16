@@ -34,9 +34,12 @@ function buildLaunchEmail(firstName: string | null): string {
   </td></tr>
 
   <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:40px 36px 28px;">
-    <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#F0ECE2;line-height:1.3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">${greeting} You signed up. Now it's here.</p>
+    <p style="margin:0 0 20px;font-size:22px;font-weight:700;color:#F0ECE2;line-height:1.3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">${greeting} You signed up for a reason.</p>
+    <p style="margin:0 0 16px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      Something in that ad was true. Most men shower every day and still have rough skin, a back nobody's ever properly cleaned, and a scalp they've ignored for years. Not laziness — nobody ever built them a system worth following.
+    </p>
     <p style="margin:0 0 28px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      SOLUM is the first complete body ritual built for men — sourced from Korea, Morocco, and the UK. A daily ritual and a weekly deep clean. The system most men have never had.
+      SOLUM is that system. And it's ready.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 12px;">
       <tr>
@@ -48,7 +51,7 @@ function buildLaunchEmail(firstName: string | null): string {
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 0;font-size:12px;color:rgba(240,236,226,0.3);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Free UK delivery · Ships in 2 days · Small first batch</p>
+    <p style="margin:0 0 0;font-size:12px;color:rgba(240,236,226,0.3);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Free UK delivery · Ships in 2 days · Only 100 kits available</p>
   </td></tr>
 
   <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0;line-height:0;">
@@ -59,7 +62,7 @@ function buildLaunchEmail(firstName: string | null): string {
 
   <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:36px 36px 32px;">
     <p style="margin:0 0 24px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-      We made a small first batch and it's going fast. If you've been thinking about finally doing this properly — or know someone who needs it — don't sit on it.
+      First batch. 100 kits. Once they're gone, that's it until the next run. If you've been sitting on it — now's the time.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
       <tr>
@@ -131,7 +134,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
           to: [lead.email],
-          subject: "The body routine most men don't have — now it's here",
+          subject: "You signed up for a reason. Now sort it.",
           html: buildLaunchEmail(lead.first_name ?? null),
         }),
       })
