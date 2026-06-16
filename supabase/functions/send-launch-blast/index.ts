@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
           subject: "You signed up for a reason. Now sort it.",
           html: buildLaunchEmail(lead.first_name ?? null),
           headers: {
-            'List-Unsubscribe': '<mailto:unsubscribe@bysolum.co.uk>',
+            'List-Unsubscribe': '<mailto:unsubscribe@bysolum.com>',
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
         }),
