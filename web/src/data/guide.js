@@ -18,7 +18,7 @@ export const ARTICLES = [
       {
         h2: 'The Two Rituals You Need',
         paras: [
-          "Body care isn't complicated. It's two routines: a 10-minute daily ritual and a 22-minute weekly deep ritual. The daily one keeps your skin clean and hydrated. The weekly one resets it. Every product in the SOLUM system belongs to one or both.",
+          "Body care isn't complicated. It's two routines: a 10-minute daily ritual and an 18-minute weekly deep ritual. The daily one keeps your skin clean and hydrated. The weekly one resets it. Every product in the SOLUM system belongs to one or both.",
           "The order matters. Each step prepares the next. Scalp first, then body. Exfoliate before washing. Moisturise before you get dressed — not after.",
         ],
       },
@@ -162,7 +162,7 @@ export const ARTICLES = [
   {
     slug: 'mens-shower-routine',
     metaTitle: "Men's Shower Routine — Step by Step | SOLUM Guide",
-    metaDescription: "A men's shower routine that actually works. 10 minutes daily, 22 minutes weekly. Here's the exact order, and why the order matters.",
+    metaDescription: "A men's shower routine that actually works. 10 minutes daily, 18 minutes weekly. Here's the exact order, and why the order matters.",
     category: 'The Ritual',
     readMins: 5,
     title: "The Men's Shower Routine That Actually Works",

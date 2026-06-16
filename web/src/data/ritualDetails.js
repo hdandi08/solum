@@ -30,7 +30,7 @@ export const DAILY_DETAILS = {
     steps: [
       'Wet the cloth thoroughly',
       'Add a small amount of body wash',
-      'Use for sensitive areas — thorough but gentle',
+      'Use for intimate areas — thorough but gentle',
     ],
     tip: 'Bamboo weave is gentle enough for daily use. Nothing left uncleaned.',
     why: 'Covers the areas that mitts and cloths shouldn\'t touch. Completes the system.',

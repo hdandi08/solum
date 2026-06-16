@@ -62,7 +62,7 @@ export default function SolumFooter() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Bysolum Limited · bysolum.co.uk</span>
+          <span>© 2026 Bysolum Limited · Co. No. 17117056 · bysolum.co.uk</span>
           <span style={{display:'flex',gap:'20px',alignItems:'center'}}>
             <a href="/terms" style={{color:'inherit',textDecoration:'none',letterSpacing:'2px',fontSize:'12px'}}>Terms &amp; Conditions</a>
             <span>·</span>

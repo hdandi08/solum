@@ -21,7 +21,7 @@ I built SOLUM because I couldn't find all the tools and products that fit into m
 
 ## The Core Idea
 
-You already shower every morning. SOLUM doesn't ask for more time. It gives you the tools and the sequence that make those same minutes count. Daily ritual: 10 minutes. Weekly deep clean: 22 minutes once a week, replaces the daily on that day. Same time you were already spending. Completely different outcome.
+You already shower every morning. SOLUM doesn't ask for more time. It gives you the tools and the sequence that make those same minutes count. Daily ritual: 10 minutes. Weekly deep clean: 18 minutes once a week, replaces the daily on that day. Same time you were already spending. Completely different outcome.
 
 The real result isn't just cleaner skin. It's walking out of the shower genuinely confident — no second-guessing, no wondering if you smell, no rough skin you're embarrassed about. Most men shower every day and still carry that low-level doubt. SOLUM fixes the root cause. Dead skin cells are where odour-causing bacteria live and multiply. A regular shower moves water over them. The right tools actually remove them. That's the difference between washing and being clean.
 
@@ -32,7 +32,7 @@ Cedarwood and vetiver. Runs through both the Body Wash and Body Lotion so the sc
 ## Every Product — Outcome First
 
 **01 · Body Wash 250ml — £20 — Made in UK**
-Outcome: One wash for your whole body — including sensitive skin and intimate areas — without stripping anything.
+Outcome: One wash for your whole body — including intimate areas — without stripping anything.
 The amino acid formula at pH 4.5 is gentle enough for every area. Most body wash uses SLS, which forces pH to 9-10, destroys the acid mantle, and takes 17 hours to recover. You shower again before it does. That tightness afterwards is damaged skin, not clean skin. SOLUM cleans every part of your body without damaging any of it. Sulphate-free. Cedarwood + vetiver. 250ml.
 
 **02 · Italy Towel Mitt 25×20cm — £10 — Korean bathhouse tradition**
@@ -88,7 +88,7 @@ Daily — 10 minutes every morning:
 4. Back Scrub Cloth — full body cleanse, then one handle each hand, over shoulder, saw back and forth. 60 seconds. Full back done. Milder than the mitt — safe for daily use everywhere.
 5. Body Lotion — within 3 minutes of towelling. Two pumps, press in. Skin 10× more absorbent right now.
 
-Weekly deep clean — 22 minutes, replaces daily:
+Weekly deep clean — 18 minutes, replaces daily:
 1. Scalp Massager — 5 minutes, more pressure.
 2. Atlas Clay Mask — mix with a drop of argan in the bowl. Apply head to toe on damp skin. Leave 8-10 min.
 3. Italy Towel Mitt + Back Cloth — work the clay off with firm slow strokes simultaneously.

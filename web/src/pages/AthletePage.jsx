@@ -768,7 +768,7 @@ export default function AthletePage() {
                 <div className="ath-ritual-header">
                   <span className="ath-ritual-badge weekly">Weekly</span>
                   <span className="ath-ritual-badge-title">Recovery Ritual</span>
-                  <span className="ath-ritual-time">22 min</span>
+                  <span className="ath-ritual-time">18 min</span>
                 </div>
                 <div className="ath-ritual-steps">
                   {WEEKLY_STEPS.map(s => (
@@ -823,7 +823,7 @@ export default function AthletePage() {
                 </div>
                 <div style={{ marginTop: '16px', display: 'flex', gap: '20px' }}>
                   <span style={{ fontSize: '11px', letterSpacing: '2px', color: 'var(--blit)', fontWeight: 600 }}>D — DAILY (10 min)</span>
-                  <span style={{ fontSize: '11px', letterSpacing: '2px', color: '#c9a84c', fontWeight: 600 }}>W — WEEKLY (22 min)</span>
+                  <span style={{ fontSize: '11px', letterSpacing: '2px', color: '#c9a84c', fontWeight: 600 }}>W — WEEKLY (18 min)</span>
                 </div>
               </div>
             </div>

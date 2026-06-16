@@ -100,7 +100,7 @@ const DAILY = [
   { num: '04', name: 'Scalp Massager',  time: '2–3 MIN', note: 'Small firm circles, hairline to back.' },
   { num: '01', name: 'Body Wash',        time: '1 MIN',   note: 'Amino acid formula. No sulphates.' },
   { num: '03', name: 'Back Scrub Cloth', time: '1 MIN',   note: 'Drape over shoulder, saw back and forth.' },
-  { num: '08', name: 'Cleansing Cloth',  time: '30 SEC',  note: 'Sensitive areas. Nothing left uncleaned.' },
+  { num: '08', name: 'Cleansing Cloth',  time: '30 SEC',  note: 'Intimate areas. Nothing left uncleaned.' },
   { num: '07', name: 'Body Lotion',      time: '1 MIN',   note: 'Within 3 minutes of towelling.' },
 ];
 

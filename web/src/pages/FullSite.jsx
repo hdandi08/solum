@@ -19,6 +19,7 @@ import SolumFooter from '../components/SolumFooter.jsx';
 import ABDevPanel from '../components/ABDevPanel.jsx';
 import FathersDayPopup from '../components/FathersDayPopup.jsx';
 import FounderChat from '../components/FounderChat.jsx';
+import TrustBar from '../components/TrustBar.jsx';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 
@@ -88,6 +89,7 @@ export default function FullSite() {
     <>
       <FathersDayPopup />
       <Nav />
+      <TrustBar />
       <Hero />
       <Marquee />
       <KitComparison />

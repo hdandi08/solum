@@ -7,6 +7,7 @@ import { PRODUCTS } from '../data/products.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
+import TrustBar from '../components/TrustBar.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -712,6 +713,7 @@ export default function BuyPage() {
     <>
       <style>{CSS}</style>
       <BuyCheckoutNav />
+      <TrustBar />
       <div className="co-page">
         <div className="co-left">
           <BuyMobileHeader {...headerProps} />
