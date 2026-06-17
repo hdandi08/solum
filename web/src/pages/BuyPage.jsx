@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
@@ -57,6 +57,9 @@ function isValidUKPhone(raw) {
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
 const CSS = `
+.by-express-wrap{margin-bottom:8px;}
+.by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
+.by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:32px;}
 @media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
 .by-kit{background:var(--black);padding:24px 20px;cursor:pointer;transition:background .15s;}
@@ -419,6 +422,99 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
   );
 }
 
+// ── Express Checkout (Apple Pay / Google Pay / Link) ──────────────────────────
+// Deferred PaymentIntent flow: wallet supplies email + shipping address, then we
+// create the PI server-side (existing function) and confirm. One tap, no form.
+
+function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailability }) {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  async function onConfirm(event) {
+    if (!stripe || !elements) return;
+    onError('');
+    const { error: submitError } = await elements.submit();
+    if (submitError) { onError(submitError.message ?? 'Could not start payment.'); return; }
+
+    const ship   = event.shippingAddress ?? {};
+    const addr    = ship.address ?? {};
+    const billing = event.billingDetails ?? {};
+    const fullName = (ship.name || billing.name || '').trim();
+    const [first_name, ...rest] = fullName.split(/\s+/);
+    const last_name = rest.join(' ') || null;
+    const email = (billing.email || '').trim().toLowerCase();
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kit_id:     kitId,
+          email,
+          first_name: first_name || (fullName || 'Customer'),
+          last_name,
+          phone:      billing.phone || null,
+          source,
+          line1:      addr.line1 || '',
+          line2:      addr.line2 || null,
+          city:       addr.city || '',
+          county:     addr.state || null,
+          postcode:   addr.postal_code || '',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { onError(data.message ?? data.error ?? 'Something went wrong. Please try again.'); return; }
+
+      identify(email, { first_name: first_name || '', kit: kitId, source });
+      capture('checkout_initiated', { kit: kitId, source, price, method: 'express' });
+      fbInitiateCheckout(kitId, price);
+      try { sessionStorage.setItem('solum_buyer_email', email); } catch {}
+
+      const successParams = new URLSearchParams({
+        kit: kitId, source,
+        dispatch: data.dispatch_date ?? '', arrival: data.arrival_date ?? '',
+        amount: String(data.amount_pence),
+      });
+
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret: data.client_secret,
+        confirmParams: { return_url: `${window.location.origin}/success?${successParams.toString()}` },
+        redirect: 'if_required',
+      });
+
+      if (confirmError) { onError(confirmError.message ?? 'Payment failed. Please try again.'); return; }
+      if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
+        successParams.set('ref', paymentIntent.id);
+        window.location.href = `/success?${successParams.toString()}`;
+      }
+    } catch {
+      onError('Network error. Please try again.');
+    }
+  }
+
+  return (
+    <ExpressCheckoutElement
+      options={{
+        buttonHeight: 48,
+        paymentMethods: {
+          applePay: 'auto', googlePay: 'auto', link: 'auto',
+          amazonPay: 'never', klarna: 'never', paypal: 'never',
+        },
+      }}
+      onReady={({ availablePaymentMethods }) => onAvailability(!!availablePaymentMethods)}
+      onClick={({ resolve }) => resolve({
+        emailRequired: true,
+        shippingAddressRequired: true,
+        phoneNumberRequired: false,
+        allowedShippingCountries: ['GB'],
+      })}
+      onConfirm={onConfirm}
+      onCancel={() => {}}
+    />
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function BuyPage() {
@@ -438,6 +534,7 @@ export default function BuyPage() {
   const [clientSecret, setClientSecret] = useState(null);
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
+  const [expressAvailable, setExpressAvailable] = useState(false);
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
@@ -489,8 +586,7 @@ export default function BuyPage() {
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
       setError('Please enter a valid email address.'); return;
     }
-    if (!form.phone.trim()) { setError('Phone number is required for delivery updates.'); return; }
-    if (!isValidUKPhone(form.phone)) {
+    if (form.phone.trim() && !isValidUKPhone(form.phone)) {
       setError('Please enter a valid UK phone number (e.g. 07700 900000 or +44 7700 900000).'); return;
     }
 
@@ -747,6 +843,29 @@ export default function BuyPage() {
                 </div>
               )}
 
+              {/* Express checkout — one-tap wallets, above the manual form */}
+              {step === 'details' && (
+                <div className="by-express-wrap">
+                  <Elements
+                    key={selectedKit}
+                    stripe={stripePromise}
+                    options={{ mode: 'payment', amount: price * 100, currency: 'gbp', appearance: stripeAppearance }}
+                  >
+                    <ExpressCheckout
+                      kitId={selectedKit}
+                      price={price}
+                      source={source}
+                      authHeaders={authHeaders}
+                      onError={setError}
+                      onAvailability={setExpressAvailable}
+                    />
+                  </Elements>
+                  {expressAvailable && (
+                    <div className="by-express-or"><span>or pay by card</span></div>
+                  )}
+                </div>
+              )}
+
               {/* Step 1: Details */}
               {step === 'details' && (
                 <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
@@ -770,7 +889,7 @@ export default function BuyPage() {
                   </div>
 
                   <div className="co-field">
-                    <label className="co-label">Phone <span className="co-label-opt">for delivery updates</span></label>
+                    <label className="co-label">Phone <span className="co-label-opt">optional · for delivery updates</span></label>
                     <input className="co-input" type="tel" value={form.phone} onChange={onChange('phone')} placeholder="+44 7700 900000" autoComplete="tel" data-testid="phone" />
                   </div>
 
