@@ -90,7 +90,9 @@ const CSS = `
 }
 .fc-header-name{font-size:13px;font-weight:600;color:#F0ECE2;}
 .fc-header-title{font-size:10px;color:#4A8FC7;letter-spacing:1px;margin-top:1px;}
-.fc-online{width:8px;height:8px;border-radius:50%;background:#22c55e;margin-left:auto;flex-shrink:0;}
+.fc-status{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;}
+.fc-status-dot{width:8px;height:8px;border-radius:50%;background:rgba(240,236,226,0.3);flex-shrink:0;}
+.fc-status-text{font-size:11px;color:rgba(240,236,226,0.4);letter-spacing:0.3px;}
 .fc-close{
   background:none;border:none;color:rgba(240,236,226,0.4);
   font-size:18px;cursor:pointer;padding:0 0 0 8px;line-height:1;
@@ -264,7 +266,10 @@ export default function FounderChat() {
               <div className="fc-header-name">Harsha</div>
               <div className="fc-header-title">Founder · SOLUM</div>
             </div>
-            <div className="fc-online" />
+            <div className="fc-status">
+              <span className="fc-status-dot" />
+              <span className="fc-status-text">Offline</span>
+            </div>
             <button className="fc-close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
           </div>
 
