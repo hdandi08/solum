@@ -209,6 +209,10 @@ export default function ProductLineup() {
   function openModal(p) { setSelected(p); }
   function closeModal()  { setSelected(null); }
 
+  // Only show products that have real imagery (excludes coming-soon Kese / Beidi).
+  // When their photos are added to products.js, they reappear automatically.
+  const shown = PRODUCTS.filter((p) => p.image);
+
   return (
     <>
       <style>{CSS}</style>
@@ -219,7 +223,7 @@ export default function ProductLineup() {
       <section className="products-section" id="products">
         <div className="products-header reveal">
           <div className="p-sec-left">
-            <div className="p-sec-tag">Ten products. One system.</div>
+            <div className="p-sec-tag">{shown.length} products. One system.</div>
             <h2 className="p-sec-title">The<br />Products.</h2>
           </div>
           <p className="p-sec-sub">
@@ -228,7 +232,7 @@ export default function ProductLineup() {
         </div>
 
         <div className="products-grid reveal">
-          {PRODUCTS.map((p, idx) => {
+          {shown.map((p, idx) => {
             const isWeekly = p.tag.toLowerCase().includes('weekly');
             const freqLabel = isWeekly ? 'WEEKLY' : 'DAILY';
             const freqClass = p.comingSoon ? 'soon' : isWeekly ? 'weekly' : 'daily';
@@ -281,7 +285,7 @@ export default function ProductLineup() {
 
         {!allVisible && (
           <button className="products-see-all" onClick={() => setAllVisible(true)}>
-            See all 10 products <span className="products-see-all-arrow">↓</span>
+            See all {shown.length} products <span className="products-see-all-arrow">↓</span>
           </button>
         )}
       </section>
