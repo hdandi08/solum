@@ -48,6 +48,22 @@ const CSS = `
 .rt-soon-h{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.04em;color:var(--bone);line-height:1;}
 .rt-soon-p{font-size:13px;font-weight:300;color:var(--stone);line-height:1.55;max-width:230px;}
 
+/* end-of-video cross-promo */
+.rt-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:28px;background:rgba(8,9,11,0.84);backdrop-filter:blur(2px);animation:rtfade .45s ease both;}
+.rt-end-done{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.rt-end-next{display:inline-flex;align-items:center;gap:11px;font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,4.5vw,27px);letter-spacing:.05em;background:none;border:none;cursor:pointer;padding:0;line-height:1.05;}
+.rt-end.to-weekly .rt-end-next{color:${GOLD};}
+.rt-end.to-daily .rt-end-next{color:var(--blit);}
+.rt-end-next .arw{display:inline-flex;animation:rtnudge 1.1s ease-in-out infinite;}
+.rt-end-line{width:40px;height:2px;animation:rtgrow 1.5s ease-in-out infinite;transform-origin:center;}
+.rt-end.to-weekly .rt-end-line{background:${GOLD};}
+.rt-end.to-daily .rt-end-line{background:var(--blit);}
+.rt-replay{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);background:none;border:1px solid rgba(240,236,226,0.25);padding:9px 16px;cursor:pointer;transition:border-color .2s,color .2s;}
+.rt-replay:hover{border-color:var(--bone);color:var(--bone);}
+@keyframes rtfade{from{opacity:0;}to{opacity:1;}}
+@keyframes rtnudge{0%,100%{transform:translateX(0);}50%{transform:translateX(7px);}}
+@keyframes rtgrow{0%,100%{opacity:.5;transform:scaleX(.65);}50%{opacity:1;transform:scaleX(1);}}
+
 /* ── Full-ritual link ──────────────────────────── */
 .rt-more{display:flex;justify-content:center;margin-top:28px;}
 .rt-more a{display:inline-flex;align-items:center;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--bone);text-decoration:none;padding:12px 28px;border:1px solid rgba(240,236,226,0.25);transition:border-color .2s;}
@@ -74,6 +90,12 @@ const ARROW = (
 const PLAY = (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 3 }}>
     <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+const ENDARROW = (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 4l6 6-6 6" />
   </svg>
 );
 
@@ -104,12 +126,15 @@ function Tab({ id, active, onSelect }) {
 export default function RitualSection() {
   const [active, setActive] = useState('daily');
   const [playing, setPlaying] = useState(false);
+  const [ended, setEnded] = useState(false);
   const videoRef = useRef(null);
+  const other = active === 'daily' ? 'weekly' : 'daily';
 
   const select = (id) => {
     if (id === active) return;
     if (videoRef.current) videoRef.current.pause();
     setPlaying(false);
+    setEnded(false);
     setActive(id);
     capture('ritual_selected', { ritual: id, source: 'home_teaser' });
   };
@@ -117,9 +142,19 @@ export default function RitualSection() {
   const play = () => {
     const v = videoRef.current;
     if (!v) return;
+    setEnded(false);
     v.play();
     setPlaying(true);
-    capture('ritual_video_played', { ritual: 'daily', source: 'home_teaser' });
+    capture('ritual_video_played', { ritual: active, source: 'home_teaser' });
+  };
+
+  const replay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    setEnded(false);
+    v.play();
+    setPlaying(true);
   };
 
   const showVideo = active === 'daily' || WEEKLY_READY;
@@ -148,12 +183,12 @@ export default function RitualSection() {
                   controls={playing}
                   preload="metadata"
                   playsInline
-                  onEnded={() => setPlaying(false)}
+                  onEnded={() => { setPlaying(false); setEnded(true); }}
                 >
                   <source src={DAILY_VIDEO.mobile} media="(max-width:768px)" />
                   <source src={DAILY_VIDEO.desktop} />
                 </video>
-                {!playing && (
+                {!playing && !ended && (
                   <button className="rt-poster" onClick={play} aria-label="Watch the daily ritual film">
                     <span className="rt-poster-img rt-pi-d" />
                     <span className="rt-poster-img rt-pi-m" />
@@ -164,6 +199,17 @@ export default function RitualSection() {
                     </span>
                     {daily.duration && <span className="rt-dur">{daily.duration}</span>}
                   </button>
+                )}
+                {ended && (
+                  <div className={`rt-end to-${other}`}>
+                    <span className="rt-end-done">{RITUALS[active].title} · Complete</span>
+                    <button className="rt-end-next" onClick={() => select(other)}>
+                      Now watch the {other === 'weekly' ? 'Weekly' : 'Daily'} Ritual
+                      <span className="arw">{ENDARROW}</span>
+                    </button>
+                    <span className="rt-end-line" />
+                    <button className="rt-replay" onClick={replay}>↻ Replay</button>
+                  </div>
                 )}
               </>
             ) : (

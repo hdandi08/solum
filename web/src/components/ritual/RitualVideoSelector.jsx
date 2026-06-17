@@ -57,6 +57,22 @@ const CSS = `
 .rv-soon-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:${GOLD};font-weight:600;border:1px solid rgba(200,169,110,0.45);padding:7px 14px;}
 .rv-soon-h{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.04em;color:var(--bone);line-height:1;}
 
+/* end-of-video cross-promo */
+.rv-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:28px;background:rgba(8,9,11,0.84);backdrop-filter:blur(2px);animation:rvfade .45s ease both;}
+.rv-end-done{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.rv-end-next{display:inline-flex;align-items:center;gap:11px;font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,4.5vw,27px);letter-spacing:.05em;background:none;border:none;cursor:pointer;padding:0;line-height:1.05;}
+.rv-end.to-weekly .rv-end-next{color:${GOLD};}
+.rv-end.to-daily .rv-end-next{color:var(--blit);}
+.rv-end-next .arw{display:inline-flex;animation:rvnudge 1.1s ease-in-out infinite;}
+.rv-end-line{width:40px;height:2px;animation:rvgrow 1.5s ease-in-out infinite;transform-origin:center;}
+.rv-end.to-weekly .rv-end-line{background:${GOLD};}
+.rv-end.to-daily .rv-end-line{background:var(--blit);}
+.rv-replay{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);background:none;border:1px solid rgba(240,236,226,0.25);padding:9px 16px;cursor:pointer;transition:border-color .2s,color .2s;}
+.rv-replay:hover{border-color:var(--bone);color:var(--bone);}
+@keyframes rvfade{from{opacity:0;}to{opacity:1;}}
+@keyframes rvnudge{0%,100%{transform:translateX(0);}50%{transform:translateX(7px);}}
+@keyframes rvgrow{0%,100%{opacity:.5;transform:scaleX(.65);}50%{opacity:1;transform:scaleX(1);}}
+
 /* ── Product rail ──────────────────────────────── */
 .rv-rail{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px;}
 .rv-rail.weekly{grid-template-columns:repeat(4,1fr);}
@@ -126,12 +142,15 @@ function Pill({ id, active, onSelect }) {
 export default function RitualVideoSelector({ eyebrow = 'The Ritual System', heading = 'The Ritual.', sub = 'Daily every shower. Weekly once a week. Both matter.' }) {
   const [active, setActive] = useState('daily');
   const [playing, setPlaying] = useState(false);
+  const [ended, setEnded] = useState(false);
   const videoRef = useRef(null);
+  const other = active === 'daily' ? 'weekly' : 'daily';
 
   const select = (id) => {
     if (id === active) return;
     if (videoRef.current) videoRef.current.pause();
     setPlaying(false);
+    setEnded(false);
     setActive(id);
     capture('ritual_selected', { ritual: id, source: 'ritual_page' });
   };
@@ -139,9 +158,19 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
   const play = () => {
     const v = videoRef.current;
     if (!v) return;
+    setEnded(false);
     v.play();
     setPlaying(true);
-    capture('ritual_video_played', { ritual: 'daily', source: 'ritual_page' });
+    capture('ritual_video_played', { ritual: active, source: 'ritual_page' });
+  };
+
+  const replay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    setEnded(false);
+    v.play();
+    setPlaying(true);
   };
 
   const ritual = RITUALS[active];
@@ -176,12 +205,12 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                       controls={playing}
                       preload="metadata"
                       playsInline
-                      onEnded={() => setPlaying(false)}
+                      onEnded={() => { setPlaying(false); setEnded(true); }}
                     >
                       <source src={DAILY_VIDEO.mobile} media="(max-width:768px)" />
                       <source src={DAILY_VIDEO.desktop} />
                     </video>
-                    {!playing && (
+                    {!playing && !ended && (
                       <button className="rv-poster" onClick={play} aria-label="Play the daily ritual film">
                         <span className="rv-poster-img rv-pi-d" />
                         <span className="rv-poster-img rv-pi-m" />
@@ -190,6 +219,17 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                         {ritual.duration && <span className="rv-dur">{ritual.duration}</span>}
                         <span className="rv-vlabel">● {ritual.title}</span>
                       </button>
+                    )}
+                    {ended && (
+                      <div className={`rv-end to-${other}`}>
+                        <span className="rv-end-done">{ritual.title} · Complete</span>
+                        <button className="rv-end-next" onClick={() => select(other)}>
+                          Now watch the {other === 'weekly' ? 'Weekly' : 'Daily'} Ritual
+                          <span className="arw">{CHEVRON}</span>
+                        </button>
+                        <span className="rv-end-line" />
+                        <button className="rv-replay" onClick={replay}>↻ Replay</button>
+                      </div>
                     )}
                   </>
                 ) : (
