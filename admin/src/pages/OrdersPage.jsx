@@ -341,12 +341,40 @@ export default function OrdersPage() {
       )
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
-      setLastLabel({ orderId, tracking_number: data.tracking_number, label_url: data.label_url })
+      setLastLabel({ orderId, tracking_number: data.tracking_number })
       await Promise.all([fetchOrders(), fetchBatches()])
     } catch (err) {
       setSaveError(err.message)
     } finally {
       setSaving(null)
+    }
+  }
+
+  async function handleViewLabel(orderId) {
+    setSaveError('')
+    try {
+      const { data: { session } } = await config.authClient.auth.getSession()
+      const res = await fetch(
+        `${config.url}/functions/v1/create-sendcloud-parcel`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': config.anonKey,
+          },
+          body: JSON.stringify({ order_id: orderId, get_label: true }),
+        }
+      )
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
+      const byteChars = atob(data.pdf_base64)
+      const byteNumbers = new Array(byteChars.length)
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i)
+      const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'application/pdf' })
+      window.open(URL.createObjectURL(blob), '_blank')
+    } catch (err) {
+      setSaveError(err.message)
     }
   }
 
@@ -477,13 +505,16 @@ export default function OrdersPage() {
                           {lastLabel?.orderId === order.id && (
                             <div style={{ marginTop: 6, fontSize: 11, color: 'var(--sky-blue)' }}>
                               ✓ Label created — {lastLabel.tracking_number}
-                              {lastLabel.label_url && (
-                                <>
-                                  {' · '}
-                                  <a href={lastLabel.label_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sky-blue)' }}>View label</a>
-                                </>
-                              )}
                             </div>
+                          )}
+                          {order.sendcloud_parcel_id && (
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              style={{ marginTop: 6, fontSize: 11, padding: '3px 8px' }}
+                              onClick={() => handleViewLabel(order.id)}
+                            >
+                              View Label
+                            </button>
                           )}
                         </td>
                         <td style={{ whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>

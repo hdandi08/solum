@@ -43,12 +43,50 @@ Deno.serve(async (req) => {
 
   let order_id: string;
   let listOptions = false;
+  let getLabel = false;
   try {
     const body = await req.json();
     order_id = body.order_id;
     listOptions = body.list_options === true;
+    getLabel = body.get_label === true;
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: corsHeaders });
+  }
+
+  // Fetch the label PDF for an already-created parcel. SendCloud's document
+  // links require Basic Auth, so the browser can't open them directly —
+  // we fetch server-side and hand back base64 for the client to open as a blob.
+  if (getLabel) {
+    if (!order_id) {
+      return new Response(JSON.stringify({ error: 'order_id required' }), { status: 400, headers: corsHeaders });
+    }
+    const { data: order, error: orderErr } = await db
+      .from('orders')
+      .select('sendcloud_parcel_id')
+      .eq('id', order_id)
+      .single();
+    if (orderErr || !order?.sendcloud_parcel_id) {
+      return new Response(JSON.stringify({ error: 'No SendCloud parcel found for this order' }), { status: 404, headers: corsHeaders });
+    }
+    const publicKey = Deno.env.get('SENDCLOUD_PUBLIC_KEY');
+    const secretKey = Deno.env.get('SENDCLOUD_SECRET_KEY');
+    if (!publicKey || !secretKey) {
+      return new Response(JSON.stringify({ error: 'SendCloud credentials not configured' }), { status: 500, headers: corsHeaders });
+    }
+    const scAuth = 'Basic ' + btoa(`${publicKey}:${secretKey}`);
+    const docRes = await fetch(`https://panel.sendcloud.sc/api/v3/parcels/${order.sendcloud_parcel_id}/documents/label`, {
+      headers: { 'Authorization': scAuth, 'Accept': 'application/pdf' },
+    });
+    if (!docRes.ok) {
+      const errBody = await docRes.text();
+      console.error('SENDCLOUD_GET_LABEL_ERROR', docRes.status, errBody);
+      return new Response(JSON.stringify({ error: `SendCloud error ${docRes.status}`, detail: errBody }), { status: 502, headers: corsHeaders });
+    }
+    const pdfBytes = new Uint8Array(await docRes.arrayBuffer());
+    let binary = '';
+    for (const byte of pdfBytes) binary += String.fromCharCode(byte);
+    const base64 = btoa(binary);
+    return new Response(JSON.stringify({ pdf_base64: base64 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
   // Debug/admin-only: list available SendCloud shipping options without creating a shipment.
