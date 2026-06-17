@@ -255,10 +255,6 @@ export default function TermsPage() {
                   <span className="terms-info-value">contact@bysolum.com</span>
                 </div>
                 <div className="terms-info-row">
-                  <span className="terms-info-label">Phone</span>
-                  <span className="terms-info-value">07748 370419</span>
-                </div>
-                <div className="terms-info-row">
                   <span className="terms-info-label">Website</span>
                   <span className="terms-info-value">bysolum.co.uk</span>
                 </div>
@@ -685,10 +681,6 @@ export default function TermsPage() {
                 <div className="terms-info-row">
                   <span className="terms-info-label">Email</span>
                   <span className="terms-info-value">contact@bysolum.com</span>
-                </div>
-                <div className="terms-info-row">
-                  <span className="terms-info-label">Phone</span>
-                  <span className="terms-info-value">07748 370419</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Post</span>

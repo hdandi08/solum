@@ -223,15 +223,11 @@ export default function PrivacyPage() {
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Address</span>
-                  <span className="privacy-info-value">[Business address — to be completed on registration]</span>
+                  <span className="privacy-info-value">Gerrards Cross, Buckinghamshire, SL9 7HW</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">Email</span>
                   <span className="privacy-info-value">contact@bysolum.com</span>
-                </div>
-                <div className="privacy-info-row">
-                  <span className="privacy-info-label">Phone</span>
-                  <span className="privacy-info-value">07748 370419</span>
                 </div>
                 <div className="privacy-info-row">
                   <span className="privacy-info-label">ICO Registration</span>
