@@ -1,6 +1,7 @@
 // supabase/functions/cancel-order/index.ts
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { sendCancelEmail } from '../_shared/emails.ts';
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com', 'hdandibrwz@gmail.com'];
 
@@ -47,7 +48,7 @@ Deno.serve(async (req) => {
   // ── Fetch order ──────────────────────────────────────────────────────────
   const { data: order, error: orderErr } = await db
     .from('orders')
-    .select('id, status, stripe_payment_id, sendcloud_parcel_id, amount_pence')
+    .select('id, status, stripe_payment_id, sendcloud_parcel_id, amount_pence, customers(email, first_name)')
     .eq('id', order_id)
     .single();
 
@@ -125,6 +126,17 @@ Deno.serve(async (req) => {
   }
 
   console.log('CANCEL_ORDER_COMPLETE', JSON.stringify({ order_id, refund_id: refundId, sendcloud_cancelled: sendcloudCancelled }));
+
+  // Send cancel email (best-effort)
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (resendKey) {
+    const customer = order.customers as { email: string; first_name: string | null } | null;
+    if (customer?.email) {
+      const emailResult = await sendCancelEmail(resendKey, customer.email, customer.first_name ?? null, refundId, order.amount_pence);
+      if (!emailResult.ok) console.error('CANCEL_EMAIL_ERROR', emailResult.error);
+      else console.log('CANCEL_EMAIL_SENT', customer.email);
+    }
+  }
 
   return new Response(
     JSON.stringify({ refund_id: refundId, sendcloud_cancelled: sendcloudCancelled, cancel_notes: cancelNotes }),

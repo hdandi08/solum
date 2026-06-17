@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { sendDispatchEmail } from '../_shared/emails.ts';
 
 const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com', 'hdandibrwz@gmail.com'];
 
@@ -265,6 +266,7 @@ Deno.serve(async (req) => {
   }
   const parcelId    = parcel.id as number;
   const trackingNum = parcel.tracking_number as string;
+  const trackingUrl = (parcel.tracking_url ?? null) as string | null;
   const labelUrl     = (parcel.documents?.find((d: { type: string }) => d.type === 'label')?.link ?? null) as string | null;
   const carrierCode  = scData.data?.carrier?.code ?? 'royal-mail';
 
@@ -295,6 +297,17 @@ Deno.serve(async (req) => {
   }
 
   console.log('SENDCLOUD_PARCEL_CREATED', JSON.stringify({ order_id, parcel_id: parcelId, tracking_number: trackingNum }));
+
+  // Send dispatch email (best-effort)
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (resendKey) {
+    const customer = order.customers as { email: string; first_name: string | null } | null;
+    if (customer?.email) {
+      const emailResult = await sendDispatchEmail(resendKey, customer.email, customer.first_name ?? null, trackingNum, trackingUrl);
+      if (!emailResult.ok) console.error('DISPATCH_EMAIL_ERROR', emailResult.error);
+      else console.log('DISPATCH_EMAIL_SENT', customer.email);
+    }
+  }
 
   return new Response(JSON.stringify({ parcel_id: parcelId, tracking_number: trackingNum, label_url: labelUrl }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },

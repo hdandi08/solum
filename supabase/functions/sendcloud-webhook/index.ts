@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { sendDeliveredEmail, sendFailedDeliveryEmail } from '../_shared/emails.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -112,6 +113,13 @@ Deno.serve(async (req) => {
     const newDispatchStatus = STATUS_MAP[statusId];
 
     if (newDispatchStatus) {
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('dispatch_status')
+        .eq('id', orderNumber)
+        .single();
+      const statusChanged = existingOrder?.dispatch_status !== newDispatchStatus;
+
       const update: Record<string, string> = { dispatch_status: newDispatchStatus };
       if (newDispatchStatus === 'delivered') {
         update.delivered_at = new Date().toISOString();
@@ -125,6 +133,26 @@ Deno.serve(async (req) => {
       if (error) {
         console.error('SENDCLOUD_WEBHOOK: order update failed', error.message, { orderNumber });
         return new Response('DB error', { status: 500 });
+      }
+
+      // Send customer email for delivered / failed (best-effort) — only on the actual transition,
+      // since multiple SendCloud status IDs can map to the same outcome (e.g. 8 and 11 both = delivered)
+      const resendKey = Deno.env.get('RESEND_API_KEY');
+      if (resendKey && statusChanged && (newDispatchStatus === 'delivered' || newDispatchStatus === 'failed')) {
+        const { data: orderWithCustomer } = await supabase
+          .from('orders')
+          .select('customers(email, first_name)')
+          .eq('id', orderNumber)
+          .single();
+        const customer = orderWithCustomer?.customers as { email: string; first_name: string | null } | null;
+        if (customer?.email) {
+          const statusMessage = (parcel.status as Record<string, unknown>)?.message as string | null ?? null;
+          const emailResult = newDispatchStatus === 'delivered'
+            ? await sendDeliveredEmail(resendKey, customer.email, customer.first_name ?? null)
+            : await sendFailedDeliveryEmail(resendKey, customer.email, customer.first_name ?? null, statusMessage);
+          if (!emailResult.ok) console.error('SENDCLOUD_EMAIL_ERROR', emailResult.error, { orderNumber, newDispatchStatus });
+          else console.log('SENDCLOUD_EMAIL_SENT', { orderNumber, newDispatchStatus, to: customer.email });
+        }
       }
     }
 
