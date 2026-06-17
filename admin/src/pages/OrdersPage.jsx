@@ -148,6 +148,7 @@ export default function OrdersPage() {
   const [saving, setSaving]             = useState(null)
   const [saveError, setSaveError]       = useState('')
   const [selectedCustomerId, setSelectedCustomerId] = useState(null)
+  const [lastLabel, setLastLabel]       = useState(null)
 
   const fetchBatches = useCallback(async () => {
     try {
@@ -245,6 +246,50 @@ export default function OrdersPage() {
     }
   }
 
+  async function handleListShippingOptions() {
+    try {
+      const { data: { session } } = await config.authClient.auth.getSession()
+      const res = await fetch(
+        `${config.url}/functions/v1/create-sendcloud-parcel`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': config.anonKey,
+          },
+          body: JSON.stringify({ list_options: true }),
+        }
+      )
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
+      console.log('SendCloud shipping options:', data.options)
+      alert(data.options.map(o => `${o.code}  —  ${o.name} (${o.carrier})`).join('\n'))
+    } catch (err) {
+      setSaveError(err.message)
+    }
+  }
+
+  async function handleResetToPending(orderId) {
+    if (!window.confirm('Reset this order to pending? This clears its tracking number, carrier, and SendCloud parcel link — it will NOT cancel any existing SendCloud parcel or DPD/Royal Mail shipment, only this record.')) return
+    setSaving(orderId)
+    setSaveError('')
+    try {
+      const { error: err } = await config.client.from('orders').update({
+        dispatch_status:     'pending',
+        tracking_number:     null,
+        dispatched_at:       null,
+        sendcloud_parcel_id: null,
+      }).eq('id', orderId)
+      if (err) throw err
+      await Promise.all([fetchOrders(), fetchBatches()])
+    } catch (err) {
+      setSaveError(err.message)
+    } finally {
+      setSaving(null)
+    }
+  }
+
   async function handleCancel(orderId) {
     if (!window.confirm('Cancel this order and issue a full refund? This cannot be undone.')) return
     setSaving(orderId)
@@ -268,6 +313,35 @@ export default function OrdersPage() {
       if (data.cancel_notes) {
         alert(`Refund issued (${data.refund_id}). Note: ${data.cancel_notes}`)
       }
+      await Promise.all([fetchOrders(), fetchBatches()])
+    } catch (err) {
+      setSaveError(err.message)
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  async function handleCreateLabel(orderId) {
+    setSaving(orderId)
+    setSaveError('')
+    setLastLabel(null)
+    try {
+      const { data: { session } } = await config.authClient.auth.getSession()
+      const res = await fetch(
+        `${config.url}/functions/v1/create-sendcloud-parcel`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': config.anonKey,
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        }
+      )
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
+      setLastLabel({ orderId, tracking_number: data.tracking_number, label_url: data.label_url })
       await Promise.all([fetchOrders(), fetchBatches()])
     } catch (err) {
       setSaveError(err.message)
@@ -305,6 +379,11 @@ export default function OrdersPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
           <button className="btn btn-secondary" onClick={() => { setTypeFilter(''); setStatusFilter(''); setPage(0) }}>Clear</button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <button className="btn btn-secondary btn-sm" onClick={handleListShippingOptions} title="Debug — lists SendCloud shipping option codes, creates nothing">
+            List Shipping Options (debug)
+          </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', marginLeft: 'auto', fontSize: 13, color: 'var(--bone-muted)' }}>
           {total} orders
@@ -395,18 +474,39 @@ export default function OrdersPage() {
                           ) : (
                             <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>No tracking</span>
                           )}
+                          {lastLabel?.orderId === order.id && (
+                            <div style={{ marginTop: 6, fontSize: 11, color: 'var(--sky-blue)' }}>
+                              ✓ Label created — {lastLabel.tracking_number}
+                              {lastLabel.label_url && (
+                                <>
+                                  {' · '}
+                                  <a href={lastLabel.label_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sky-blue)' }}>View label</a>
+                                </>
+                              )}
+                            </div>
+                          )}
                         </td>
                         <td style={{ whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
                             {order.dispatch_status === 'pending' && (
-                              <button className="btn btn-sm btn-primary" onClick={() => handleDispatch(order)} disabled={saving === order.id}>
-                                {saving === order.id ? '...' : 'Dispatch'}
-                              </button>
+                              <>
+                                <button className="btn btn-sm btn-primary" onClick={() => handleCreateLabel(order.id)} disabled={saving === order.id}>
+                                  {saving === order.id ? '...' : 'Create Label'}
+                                </button>
+                                <button className="btn btn-sm btn-secondary" onClick={() => handleDispatch(order)} disabled={saving === order.id}>
+                                  {saving === order.id ? '...' : 'Dispatch'}
+                                </button>
+                              </>
                             )}
                             {order.dispatch_status === 'dispatched' && (
-                              <button className="btn btn-sm btn-secondary" onClick={() => handleMarkDelivered(order.id)} disabled={saving === order.id}>
-                                {saving === order.id ? '...' : 'Delivered'}
-                              </button>
+                              <>
+                                <button className="btn btn-sm btn-secondary" onClick={() => handleMarkDelivered(order.id)} disabled={saving === order.id}>
+                                  {saving === order.id ? '...' : 'Delivered'}
+                                </button>
+                                <button className="btn btn-sm btn-secondary" onClick={() => handleResetToPending(order.id)} disabled={saving === order.id} title="Clears tracking/parcel link on this record only — does not cancel the carrier shipment">
+                                  {saving === order.id ? '...' : 'Reset to Pending'}
+                                </button>
+                              </>
                             )}
                             {order.dispatch_status === 'delivered' && (
                               <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
