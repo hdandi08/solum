@@ -92,9 +92,9 @@ export default function FullSite() {
       <TrustBar />
       <Hero />
       <Marquee />
+      <RitualSection />
       <KitComparison />
       <ProductLineup />
-      <RitualSection />
       <TruthSection />
       <CredibilityStrip />
       <SubscriptionSection />
