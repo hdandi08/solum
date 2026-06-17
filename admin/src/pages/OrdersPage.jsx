@@ -213,6 +213,7 @@ export default function OrdersPage() {
   function toggleExpand(id) { setExpanded(p => ({ ...p, [id]: !p[id] })) }
 
   async function handleDispatch(order) {
+    if (!window.confirm('Mark this order dispatched with the entered carrier and tracking number?')) return
     const { tracking, carrier } = getInput(order.id)
     setSaving(order.id)
     setSaveError('')
@@ -233,6 +234,7 @@ export default function OrdersPage() {
   }
 
   async function handleMarkDelivered(orderId) {
+    if (!window.confirm('Mark this order as delivered?')) return
     setSaving(orderId)
     setSaveError('')
     try {
@@ -322,6 +324,7 @@ export default function OrdersPage() {
   }
 
   async function handleCreateLabel(orderId) {
+    if (!window.confirm('Create a real SendCloud label for this order? This creates an actual shipment and cannot be undone from here.')) return
     setSaving(orderId)
     setSaveError('')
     setLastLabel(null)
