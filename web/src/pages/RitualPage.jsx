@@ -1,84 +1,60 @@
-import { useState } from 'react';
 import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
-import RitualChooser from '../components/ritual/RitualChooser';
-import RitualDailyGuide from '../components/ritual/RitualDailyGuide';
-import RitualStepList from '../components/ritual/RitualStepList';
+import RitualVideoSelector from '../components/ritual/RitualVideoSelector';
 import RitualShopCTA from '../components/ritual/RitualShopCTA';
-import { DAILY_STEPS, WEEKLY_STEPS } from '../data/rituals.js';
-import { DAILY_DETAILS, WEEKLY_DETAILS } from '../data/ritualDetails.js';
-
-const CONFIG = {
-  daily:  { steps: DAILY_STEPS,  details: DAILY_DETAILS,  totalTime: '10 MIN', stepCount: 3, label: 'DAILY RITUAL',  color: 'var(--blue)' },
-  weekly: { steps: WEEKLY_STEPS, details: WEEKLY_DETAILS, totalTime: '22 MIN', stepCount: 4, label: 'WEEKLY RITUAL', color: '#c8a96e'     },
-};
 
 const CSS = `
-.ritual-page { background: var(--black); min-height: 100vh; padding-top: 64px; }
+.ritual-page{background:var(--black);min-height:100vh;padding-top:64px;}
+/* tighten the selector's first-section spacing under the nav */
+.ritual-page .rv-section{padding-top:52px;border-top:none;}
 
-.ritual-bar {
-  border-bottom: 1px solid var(--line);
-  background: var(--char);
-  padding: 0 48px;
-  position: sticky; top: 64px; z-index: 10;
-}
-.ritual-bar-inner {
-  max-width: 1400px; margin: 0 auto;
-  display: flex; align-items: center; gap: 20px;
-  height: 52px;
-}
-.ritual-back {
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--stone); background: none; border: none; cursor: pointer;
-  padding: 0; transition: color .2s; white-space: nowrap; flex-shrink: 0;
-}
-.ritual-back:hover { color: var(--bone); }
-.ritual-bar-divider { width: 1px; height: 18px; background: var(--line); flex-shrink: 0; }
-.ritual-bar-label {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px; letter-spacing: .08em;
-}
-.ritual-bar-meta {
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--stone);
-}
-
-@media(max-width: 768px) {
-  .ritual-bar { padding: 0 20px; }
-  .ritual-bar-meta { display: none; }
+/* ── Two-tier system band ──────────────────────── */
+.rp-system{background:var(--char);border-top:1px solid var(--line);padding:56px 24px;}
+.rp-system-inner{max-width:900px;margin:0 auto;}
+.rp-system-tag{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--stone);font-weight:600;text-align:center;margin-bottom:32px;}
+.rp-system-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+.rp-tier{background:var(--char);padding:28px 26px;}
+.rp-tier-label{display:inline-flex;align-items:center;gap:9px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:12px;}
+.rp-tier-label .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rp-tier.daily .rp-tier-label{color:var(--blit);}
+.rp-tier.daily .dot{background:var(--blue);}
+.rp-tier.weekly .rp-tier-label{color:#c8a96e;}
+.rp-tier.weekly .dot{background:#c8a96e;}
+.rp-tier-copy{font-size:15px;font-weight:300;color:var(--mist);line-height:1.6;}
+@media(min-width:769px){
+  .rp-system-grid{grid-template-columns:1fr 1fr;}
 }
 `;
 
 export default function RitualPage() {
-  const params = new URLSearchParams(window.location.search);
-  const preselect = params.get('ritual');
-  const [selected, setSelected] = useState(preselect === 'daily' || preselect === 'weekly' ? preselect : null);
-  const config = selected ? CONFIG[selected] : null;
-
   return (
     <>
       <style>{CSS}</style>
       <Nav />
       <div className="ritual-page">
-        {!selected ? (
-          <RitualChooser onSelect={setSelected} />
-        ) : (
-          <>
-            <div className="ritual-bar">
-              <div className="ritual-bar-inner">
-                <button className="ritual-back" onClick={() => setSelected(null)}>← Switch</button>
-                <div className="ritual-bar-divider" />
-                <span className="ritual-bar-label" style={{ color: config.color }}>{config.label}</span>
-                <span className="ritual-bar-meta">· {config.totalTime} · {config.stepCount} STEPS</span>
+        <RitualVideoSelector
+          eyebrow="The System"
+          heading="The Ritual."
+          sub="Daily keeps you maintained. Weekly resets you. Pick one to watch it run and see the products."
+        />
+
+        <div className="rp-system">
+          <div className="rp-system-inner">
+            <div className="rp-system-tag">The Two-Tier System</div>
+            <div className="rp-system-grid">
+              <div className="rp-tier daily">
+                <div className="rp-tier-label"><span className="dot" />Daily · Every shower</div>
+                <p className="rp-tier-copy">The maintenance pass. Ten minutes, head to toe, in the shower you already take.</p>
+              </div>
+              <div className="rp-tier weekly">
+                <div className="rp-tier-label"><span className="dot" />Weekly · Once a week</div>
+                <p className="rp-tier-copy">The deep reset. Clay draws out, exfoliation clears off, oil feeds back in.</p>
               </div>
             </div>
-            {selected === 'daily'
-              ? <RitualDailyGuide />
-              : <RitualStepList steps={config.steps} details={config.details} variant={selected} />
-            }
-            <RitualShopCTA />
-          </>
-        )}
+          </div>
+        </div>
+
+        <RitualShopCTA />
         <SolumFooter />
       </div>
     </>

@@ -15,10 +15,10 @@ export default function RitualShopCTA() {
       <div className="rp-cta">
         <div className="rp-cta-inner">
           <div>
-            <div className="rp-cta-title">Ready to start?</div>
-            <div className="rp-cta-sub">Everything you need is in one kit. Ships together.</div>
+            <div className="rp-cta-title">Get the ritual.</div>
+            <div className="rp-cta-sub">Every product above ships together in the RITUAL kit.</div>
           </div>
-          <a href="/#kits" className="rp-cta-btn">Choose Your Kit</a>
+          <a href="/#kits" className="rp-cta-btn">Shop the kit</a>
         </div>
       </div>
     </>
