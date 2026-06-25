@@ -14,6 +14,11 @@ const CSS = `
 @keyframes wsiFace{0%,38%{opacity:0;transform:translateY(8px);}46%,76%{opacity:1;transform:translateY(0);}84%,100%{opacity:0;transform:translateY(8px);}}
 @keyframes wsiStrike{0%,44%{transform:scaleX(0);}56%,100%{transform:scaleX(1);}}
 .wsi-sub{font-size:14px;font-weight:300;color:var(--stone);text-align:center;max-width:520px;margin:0 auto 52px;line-height:1.6;}
+/* full hero paragraph shows on mobile (where the hero hides it); short intro on desktop */
+.wsi-sub-d{display:none;}
+.wsi-sub-m{display:inline;}
+@media(min-width:769px){.wsi-sub-d{display:inline;}.wsi-sub-m{display:none;}}
+@media(max-width:768px){.wsi-sub{font-size:16px;line-height:1.65;max-width:none;}}
 .wsi-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
 .wsi-pillar{background:var(--char);padding:36px 30px;display:flex;flex-direction:column;gap:12px;}
 .wsi-num{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--blit);line-height:1;}
@@ -26,7 +31,7 @@ const CSS = `
 
 const PILLARS = [
   { n: '01', title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
-  { n: '02', title: 'Guided, not guessed.', body: "We don't hand you bottles. We hand you the ritual: what, in what order, how." },
+  { n: '02', title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
   { n: '03', title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
 ];
 
@@ -44,7 +49,10 @@ export default function WhatSolumIs() {
             </span>{' '}
             Ritual for Men
           </h2>
-          <p className="wsi-sub reveal">A shower only wets the surface. SOLUM clears what it leaves behind. Head to toe, in the shower you already take.</p>
+          <p className="wsi-sub reveal">
+            <span className="wsi-sub-d">A shower only wets the surface. SOLUM clears what it leaves behind. Head to toe, in the shower you already take.</span>
+            <span className="wsi-sub-m">A shower only wets the surface, so the dead skin and bacteria are back within hours and the freshness fades. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Clean that actually lasts.</span>
+          </p>
           <div className="wsi-grid reveal">
             {PILLARS.map((p) => (
               <div className="wsi-pillar" key={p.n}>

@@ -7,7 +7,7 @@ const CSS = `
 `;
 
 const ITEMS = [
-  'GROUND · RITUAL · SOVEREIGN',
+  'GROUND · RITUAL',
   'TEN PRODUCTS. ONE SYSTEM.',
   'BODY CARE. NOT FACE, NOT HAIR.',
   'BUILT FOR MEN.',

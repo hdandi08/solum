@@ -62,6 +62,9 @@ const CSS = `
 .products-see-all{display:none;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:1px;padding:18px 24px;background:var(--char);border:none;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);font-weight:600;cursor:pointer;transition:color .2s,background .2s;}
 .products-see-all:hover{background:var(--mid);color:var(--bone);}
 .products-see-all-arrow{font-size:16px;}
+/* magnifier badge — signals the tile opens the product (hover on desktop, always on mobile) */
+.prod-zoom-badge{position:absolute;bottom:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;background:rgba(8,9,11,0.55);backdrop-filter:blur(4px);border:1px solid rgba(240,236,226,0.35);display:flex;align-items:center;justify-content:center;color:var(--bone);opacity:0;transition:opacity .25s,background .2s,border-color .2s;}
+.product-card:hover .prod-zoom-badge{opacity:1;background:var(--blue);border-color:var(--blue);}
 
 /* ── Responsive grid ────────────────────────────── */
 @media(max-width:960px){
@@ -73,8 +76,9 @@ const CSS = `
   .products-header{padding:0 24px;gap:16px;}
   .p-sec-sub{text-align:left;max-width:none;}
   .prod-info{padding:12px 12px 14px;}
-  .product-card.mob-hidden{display:none;}
-  .products-see-all{display:flex;}
+  /* show every product on mobile (no "see all" gate) + make the view affordance pop + always show the badge */
+  .prod-view-details{color:var(--bone);background:rgba(46,109,164,0.22);border-color:rgba(46,109,164,0.6);}
+  .prod-zoom-badge{opacity:1;}
 }
 `;
 
@@ -123,6 +127,11 @@ export default function ProductLineup() {
                 {p.tag?.includes('Daily') && <span className="prod-badge-freq daily">Daily</span>}
                 {p.tag?.includes('Weekly') && <span className="prod-badge-freq weekly">Weekly</span>}
                 {p.comingSoon && <span className="prod-badge-freq soon">Soon</span>}
+                {!p.comingSoon && (
+                  <span className="prod-zoom-badge" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+                  </span>
+                )}
               </div>
             );
 

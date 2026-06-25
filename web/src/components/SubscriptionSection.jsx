@@ -60,9 +60,15 @@ const CSS = `
 const CADENCE = [
   {
     label: 'Every Month',
-    products: 'Body Wash · Body Lotion · Cleansing Cloth · Italy Towel Mitt · Atlas Clay',
+    products: 'Body Wash · Body Lotion · Cleansing Cloth · Atlas Clay',
     note: '+ Argan Body Oil (RITUAL only)',
     copy: 'Everything that depletes or wears within a month. Always fresh, always ready.',
+  },
+  {
+    label: 'Every 2 Months',
+    products: 'Italy Towel Mitt',
+    note: null,
+    copy: 'The exfoliating mitt holds onto bacteria over time. Swapped before it stops being hygienic.',
   },
   {
     label: 'Every 3 Months',

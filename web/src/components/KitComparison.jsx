@@ -42,6 +42,9 @@ const CSS = `
 .kit-product-preview{position:absolute;bottom:calc(100% + 12px);left:0;width:220px;height:275px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.6);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease;z-index:50;}
 .kit-product-thumb-wrap.flip-left .kit-product-preview{left:auto;right:0;}
 .kit-product-thumb-wrap:hover .kit-product-preview{opacity:1;visibility:visible;}
+/* tiny magnifier on the small kit thumbs — signals they enlarge on hover/tap */
+.kit-zoom-dot{position:absolute;bottom:2px;right:2px;width:15px;height:15px;border-radius:50%;background:rgba(8,9,11,0.72);border:1px solid rgba(240,236,226,0.4);display:flex;align-items:center;justify-content:center;color:var(--bone);pointer-events:none;transition:opacity .15s;}
+.kit-product-thumb-wrap:hover .kit-zoom-dot{opacity:0;}
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
 .kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
@@ -127,6 +130,9 @@ export default function KitComparison() {
                             <div className={`kit-product-thumb-wrap${isSovereign ? ' flip-left' : ''}`}>
                               <img src={p.media.still} alt={p.name} className="kit-product-thumb" loading="lazy" />
                               <img src={p.media.still} alt="" aria-hidden="true" className="kit-product-preview" loading="lazy" />
+                              <span className="kit-zoom-dot" aria-hidden="true">
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+                              </span>
                             </div>
                           )
                           : <div className="kit-product-thumb-placeholder" />
