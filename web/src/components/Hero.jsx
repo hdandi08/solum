@@ -1,7 +1,9 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
+import { BANNER } from '../data/productMedia.js';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const IS_FATHERS_DAY = new URLSearchParams(window.location.search).get('occasion') === 'fathers-day';
+const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const CSS = `
 /* ── Mobile first ─────────────────────────────────── */
@@ -154,8 +156,30 @@ export default function Hero() {
           </div>
         </div>
         <div className="hero-visual" style={{ position: 'relative' }}>
-          <img src="/solum-hero.jpg" alt="SOLUM kit — open box with all products" className="hero-box-img" />
-          <span className="hero-visual-caption">RITUAL Kit · bysolum.co.uk</span>
+          {BANNER.ready && !REDUCE_MOTION ? (
+            <video
+              className="hero-box-img"
+              poster={BANNER.poster}
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="none"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+            >
+              <source src={BANNER.webm} type="video/webm" />
+              <source src={BANNER.mp4} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              src={BANNER.poster}
+              alt=""
+              aria-hidden="true"
+              className="hero-box-img"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+            />
+          )}
+          <span className="hero-visual-caption" style={{ position: 'relative', zIndex: 1 }}>RITUAL Kit · bysolum.co.uk</span>
         </div>
         <div className="scroll-cue"><div className="scroll-line" />Scroll</div>
       </section>
