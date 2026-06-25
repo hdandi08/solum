@@ -13,9 +13,10 @@ vert () { # $1 src file  $2 NN  (720x1280 H.264 + webm + committed poster)
 }
 
 # banner: 4K 16:9 -> 1080p H.264 + webm + committed poster
+# poster taken at 00:30 (open-kit reveal w/ branding + products) — 00:02 is a black title card.
 ffmpeg -y -i "$SRC/SOLUM - BANNER FILM.mp4" -vf "scale=1920:1080" -c:v libx264 -crf 23 -preset slow -an -movflags +faststart "$OUT/banner_1080.mp4"
 ffmpeg -y -i "$SRC/SOLUM - BANNER FILM.mp4" -vf "scale=1920:1080" -c:v libvpx-vp9 -crf 32 -b:v 0 -an "$OUT/banner_1080.webm"
-ffmpeg -y -ss 00:00:02 -i "$SRC/SOLUM - BANNER FILM.mp4" -frames:v 1 -vf "scale=1920:1080" "$PUB/video/banner-poster.jpg"
+ffmpeg -y -ss 00:00:30 -i "$SRC/SOLUM - BANNER FILM.mp4" -frames:v 1 -vf "scale=1920:1080" "$PUB/video/banner-poster.jpg"
 
 vert "SOLUM - BODY WASH.mp4"       01
 vert "SOLUM - ITALY TOWEL MITT.mp4" 02
