@@ -123,7 +123,7 @@ export default function ProductLineup() {
               <div className="prod-info">
                 <div className="prod-name">{p.name}</div>
                 <div className="prod-tagline">{p.tagline}</div>
-                {!p.comingSoon && <span className="prod-view-details">View ↗</span>}
+                {!p.comingSoon && <span className="prod-view-details">View Product →</span>}
               </div>
             );
 

@@ -15,17 +15,24 @@ const CSS = `
 .pp-back:hover{color:var(--blit);}
 .pp-back svg{transition:transform .2s;}
 .pp-back:hover svg{transform:translateX(-3px);}
-.pp-hero{position:relative;width:100%;aspect-ratio:9/16;max-height:86vh;background:#000;overflow:hidden;}
-@media(min-width:769px){.pp-hero{aspect-ratio:16/10;max-height:80vh;}}
-.pp-hero video,.pp-hero img{width:100%;height:100%;object-fit:cover;display:block;}
-.pp-hero-overlay{position:absolute;left:0;bottom:0;padding:32px 24px;background:linear-gradient(transparent,rgba(8,9,11,.85));width:100%;}
-.pp-num{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--bone);opacity:.7;}
-.pp-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,84px);letter-spacing:.04em;line-height:.92;margin:4px 0;}
-.pp-tagline{font-size:17px;font-weight:300;color:var(--mist);max-width:520px;}
+/* HERO — mobile: media full-width on top, info below. Desktop: split (vertical media | info). */
+.pp-hero{display:grid;grid-template-columns:1fr;background:#000;}
+.pp-hero-media{position:relative;width:100%;aspect-ratio:9/16;max-height:88vh;background:#000;overflow:hidden;}
+.pp-hero-media video,.pp-hero-media img{width:100%;height:100%;object-fit:cover;display:block;}
+.pp-hero-info{display:flex;flex-direction:column;justify-content:center;gap:15px;padding:36px 24px 44px;}
+@media(min-width:769px){
+  .pp-hero{grid-template-columns:1fr 1fr;min-height:82vh;align-items:stretch;}
+  .pp-hero-media{aspect-ratio:auto;height:auto;max-height:none;}
+  .pp-hero-info{padding:48px 6vw;}
+}
+.pp-num{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--blit);}
+.pp-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6.5vw,74px);letter-spacing:.04em;line-height:.92;margin:2px 0;color:var(--bone);}
+.pp-tagline{font-size:17px;font-weight:300;color:var(--mist);max-width:460px;line-height:1.4;}
 .pp-body{max-width:760px;margin:0 auto;padding:56px 24px;}
 .pp-desc{font-size:16px;line-height:1.7;font-weight:300;color:var(--mist);}
-.pp-gallery{display:grid;gap:2px;margin:40px 0;}
-.pp-gallery img{width:100%;display:block;}
+.pp-gallery{display:grid;grid-template-columns:1fr;gap:10px;max-width:760px;margin:48px auto;padding:0 24px;}
+@media(min-width:769px){.pp-gallery{grid-template-columns:1fr 1fr;gap:12px;max-width:1000px;padding:0;}}
+.pp-gallery img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;display:block;border:1px solid var(--line);}
 .pp-benefits{list-style:none;padding:0;margin:32px 0;display:flex;flex-direction:column;gap:14px;}
 .pp-benefits li{font-size:15px;line-height:1.6;font-weight:300;color:var(--mist);padding-left:18px;position:relative;}
 .pp-benefits li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--blue);}
@@ -53,6 +60,10 @@ export default function ProductPage() {
   const navigate = useNavigate();
   const idx = PRODUCTS.findIndex(p => p.slug === slug);
   const p = PRODUCTS[idx];
+
+  // Land at the top of the page on navigation (incl. prev/next between products), not at the
+  // retained scroll position of wherever the click came from.
+  useEffect(() => { window.scrollTo({ top: 0, left: 0 }); }, [slug]);
 
   // Return to wherever they came from; fall back to the homepage products grid on a direct landing.
   const goBack = () => {
@@ -88,25 +99,28 @@ export default function ProductPage() {
           <button className="pp-back" onClick={goBack}>{BACK_ARROW} Back</button>
         </div>
         <div className="pp-hero">
-          {film
-            ? <video key={slug} poster={heroPoster} muted autoPlay loop playsInline preload="none">
-                <source src={film.webm} type="video/webm" />
-                <source src={film.mp4} type="video/mp4" />
-              </video>
-            : <img key={slug} src={p.media?.still} alt={`${p.name} — SOLUM`} />}
-          <div className="pp-hero-overlay">
+          <div className="pp-hero-media">
+            {film
+              ? <video key={slug} poster={heroPoster} muted autoPlay loop playsInline preload="none">
+                  <source src={film.webm} type="video/webm" />
+                  <source src={film.mp4} type="video/mp4" />
+                </video>
+              : <img key={slug} src={p.media?.still} alt={`${p.name} — SOLUM`} />}
+          </div>
+          <div className="pp-hero-info">
             <div className="pp-num">PRODUCT · {p.num}</div>
             <h1 className="pp-name">{p.name}</h1>
             <p className="pp-tagline">{p.tagline}</p>
+            <div className="pp-meta">
+              <span>{p.origin}</span>{p.size && <span>{p.size}</span>}{p.lifespan && <span>{p.lifespan}</span>}
+            </div>
+            <div className="pp-chips">{(p.highlights || []).map(h => <span key={h} className="pp-chip">{h}</span>)}</div>
+            <div><Link to="/buy" className="pp-cta" onClick={() => capture('product_buy_clicked', { slug })}>Shop the kits</Link></div>
           </div>
         </div>
 
         <div className="pp-body">
-          <div className="pp-meta">
-            <span>{p.origin}</span>{p.size && <span>{p.size}</span>}{p.lifespan && <span>{p.lifespan}</span>}
-          </div>
           <p className="pp-desc">{p.desc}</p>
-          <div className="pp-chips">{(p.highlights || []).map(h => <span key={h} className="pp-chip">{h}</span>)}</div>
         </div>
 
         {(p.media?.gallery || []).length > 0 && (
