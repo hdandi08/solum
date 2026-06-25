@@ -108,8 +108,8 @@ export default function KitComparison() {
                   <div className="kit-products">
                     {products.map(p => (
                       <div key={p.num} className={`kit-product${p.comingSoon ? ' kit-product-coming' : ''}`}>
-                        {p.image
-                          ? <img src={p.image} alt={p.name} className="kit-product-thumb" loading="lazy" />
+                        {p.media?.still
+                          ? <img src={p.media.still} alt={p.name} className="kit-product-thumb" loading="lazy" />
                           : <div className="kit-product-thumb-placeholder" />
                         }
                         <span className="kit-product-num">{p.num}</span>

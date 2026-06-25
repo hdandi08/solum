@@ -1470,7 +1470,7 @@ export default function ComingSoon() {
               return (
                 <div key={p.num} className="cs-prod-card">
                   <div className="cs-prod-img-wrap">
-                    {p.image && <img src={p.image} alt={p.fullName} loading="lazy" />}
+                    {p.media?.still && <img src={p.media.still} alt={p.fullName} loading="lazy" />}
                   </div>
                   <div className="cs-prod-info">
                     <div className="cs-prod-num">{p.num}</div>

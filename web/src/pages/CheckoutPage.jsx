@@ -567,8 +567,8 @@ export default function CheckoutPage() {
       <div className="co-product-list">
         {products.map(p => (
           <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
-            {p.image
-              ? <img src={p.image} alt={p.name} className="co-product-thumb" loading="lazy" />
+            {p.media?.still
+              ? <img src={p.media.still} alt={p.name} className="co-product-thumb" loading="lazy" />
               : <div className="co-product-thumb-placeholder" />
             }
             <span className="co-product-num">{p.num}</span>

@@ -80,7 +80,7 @@ export default function ProductLineup() {
 
   // Only show products that have real imagery (excludes coming-soon Kese / Beidi).
   // When their photos are added to products.js, they reappear automatically.
-  const shown = PRODUCTS.filter((p) => p.image);
+  const shown = PRODUCTS.filter((p) => p.media?.still);
 
   return (
     <>
@@ -104,7 +104,7 @@ export default function ProductLineup() {
             const imgEl = (
               <div className="prod-img-wrap">
                 <img
-                  src={p.media?.still || p.image}
+                  src={p.media?.still}
                   srcSet={p.media?.stillMobile ? `${p.media.stillMobile} 600w, ${p.media.still} 1200w` : undefined}
                   sizes="(max-width:768px) 50vw, 25vw"
                   alt={p.name}

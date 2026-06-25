@@ -9,13 +9,13 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const PRODUCT_IMAGES = {
-  'Body Wash':       '/products/01-body-wash.png',
-  'Italy Towel Mitt':'/products/02-italy-towel-mitt.png',
-  'Back Scrub Cloth':'/products/03-back-scrub-cloth.png',
-  'Scalp Massager':  '/products/04-scalp-massager.png',
-  'Atlas Clay Mask': '/products/05-atlas-clay.png',
-  'Argan Body Oil':  '/products/06-argan-oil.png',
-  'Body Lotion':     '/products/07-body-lotion.png',
+  'Body Wash':       '/products/01/still.webp',
+  'Italy Towel Mitt':'/products/02/still.webp',
+  'Back Scrub Cloth':'/products/03/still.webp',
+  'Scalp Massager':  '/products/04/still.webp',
+  'Atlas Clay Mask': '/products/05/still.webp',
+  'Argan Body Oil':  '/products/06/still.webp',
+  'Body Lotion':     '/products/07/still.webp',
   'Cleansing Cloth': '/products/08-cleansing-cloth.png',
 };
 
@@ -223,8 +223,8 @@ function KitStrip({ kitId }) {
       <div className="kit-strip-inner">
         {products.map(p => (
           <div key={p.num} className="kit-strip-item">
-            {p.image
-              ? <img src={p.image} alt={p.name} className="kit-strip-img" loading="lazy" />
+            {p.media?.still
+              ? <img src={p.media.still} alt={p.name} className="kit-strip-img" loading="lazy" />
               : <div style={{width:48,height:60,background:'var(--dark)',border:'1px solid var(--line)'}} />
             }
             <span className="kit-strip-num">{p.num}</span>

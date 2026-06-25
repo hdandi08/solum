@@ -733,7 +733,7 @@ export default function AthleteComingSoon() {
               return (
                 <div key={p.num} className="ac-prod-card">
                   <div className="ac-prod-img-wrap">
-                    {p.image && <img src={p.image} alt={p.fullName} loading="lazy" />}
+                    {p.media?.still && <img src={p.media.still} alt={p.fullName} loading="lazy" />}
                   </div>
                   <div className="ac-prod-num">{p.num}</div>
                   <div className="ac-prod-name">{p.name}</div>
