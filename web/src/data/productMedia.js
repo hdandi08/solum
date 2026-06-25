@@ -21,13 +21,19 @@ export const BANNER_FULL = {
   ready: false,
 };
 
-// keyed by product slug
+// keyed by product slug. DEV serves the gitignored local film previews (ready:true) so the
+// product films are visible on `npm run dev` before CDN upload. Prod uses the CDN path with
+// ready:false (poster/still) until each film is uploaded and the flag flipped.
+const film = (nn) => DEV
+  ? { mp4:`/products/${nn}/film.mp4`, webm:`/products/${nn}/film.webm`, poster:`/products/${nn}/poster.jpg`, ready:true }
+  : { mp4:`${P}/${nn}_720.mp4`, webm:`${P}/${nn}_720.webm`, poster:`/products/${nn}/poster.jpg`, ready:false };
+
 export const PRODUCT_VIDEO = {
-  '01-body-wash':        { mp4:`${P}/01_720.mp4`, webm:`${P}/01_720.webm`, poster:'/products/01/poster.jpg', ready:false },
-  '02-italy-towel-mitt': { mp4:`${P}/02_720.mp4`, webm:`${P}/02_720.webm`, poster:'/products/02/poster.jpg', ready:false },
-  '05-atlas-clay':       { mp4:`${P}/05_720.mp4`, webm:`${P}/05_720.webm`, poster:'/products/05/poster.jpg', ready:false },
-  '06-argan-oil':        { mp4:`${P}/06_720.mp4`, webm:`${P}/06_720.webm`, poster:'/products/06/poster.jpg', ready:false },
-  '07-body-lotion':      { mp4:`${P}/07_720.mp4`, webm:`${P}/07_720.webm`, poster:'/products/07/poster.jpg', ready:false },
+  '01-body-wash':        film('01'),
+  '02-italy-towel-mitt': film('02'),
+  '05-atlas-clay':       film('05'),
+  '06-argan-oil':        film('06'),
+  '07-body-lotion':      film('07'),
 };
 
 export function videoFor(slug) {
