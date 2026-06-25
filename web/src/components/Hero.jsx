@@ -40,7 +40,7 @@ const CSS = `
 .btn-ghost{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;align-self:center;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
 /* Mobile: image on top, full width */
-.hero-visual{width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;animation:fadeUp .8s ease .5s both;}
+.hero-visual{position:relative;width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;animation:fadeUp .8s ease .5s both;}
 .hero-box-img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;}
 .hero-visual-caption{display:none;}
 .scroll-cue{position:absolute;bottom:24px;left:24px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);animation:fadeUp .8s ease 1.4s both;}
@@ -61,6 +61,16 @@ const CSS = `
   .hero-actions{flex-direction:row;align-items:center;}
   .btn-primary{display:inline-block;text-align:left;}
   .btn-ghost{align-self:auto;}
+}
+
+/* ── Mobile/tablet: film as a full-bleed background, headline + CTA overlaid ── */
+@media(max-width:959px){
+  .hero-visual{position:absolute;inset:0;width:100%;height:100%;min-height:100%;max-height:none;z-index:0;}
+  .hero-visual .hero-box-img,.hero-visual video{object-position:center 35%;}
+  .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:100svh;padding:120px 24px 44px;
+    background:linear-gradient(to top,rgba(8,9,11,0.94) 0%,rgba(8,9,11,0.8) 30%,rgba(8,9,11,0.4) 58%,rgba(8,9,11,0.08) 86%,rgba(8,9,11,0.5) 100%);}
+  /* keep the film readable — drop the long paragraph, pills and decorative layers on mobile */
+  .hero-subline,.hero-scope,.hero-ghost,.hero-glow{display:none;}
 }
 
 /* ── Desktop ───────────────────────────────────────── */
@@ -155,7 +165,7 @@ export default function Hero() {
             )}
           </div>
         </div>
-        <div className="hero-visual" style={{ position: 'relative' }}>
+        <div className="hero-visual">
           {BANNER.ready && !REDUCE_MOTION ? (
             <video
               className="hero-box-img"
