@@ -92,7 +92,7 @@ function Tile({ step, idx, tileRef }) {
           <source src={film.mp4} type="video/mp4" />
         </video>
       ) : (
-        <img className="ria-media" src={photo} alt={`${step.name} — in use`} loading="lazy" />
+        <img className="ria-media" src={photo} alt={`${step.name} in use`} loading="lazy" />
       )}
       <div className="ria-scrim" />
       <div className="ria-overlay">
@@ -141,7 +141,7 @@ export default function RitualInAction() {
         <div className="ria-head-wrap">
           <div className="ria-eyebrow reveal">The Ritual</div>
           <h2 className="ria-head reveal">Ritual in Action.</h2>
-          <p className="ria-sub reveal">Every step, on real skin. Daily keeps you maintained — weekly resets you.</p>
+          <p className="ria-sub reveal">Every step, on real skin. Daily keeps you maintained. Weekly resets you.</p>
         </div>
 
         <div className="ria-strip" ref={stripRef}>

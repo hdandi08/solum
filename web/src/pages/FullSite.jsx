@@ -102,7 +102,7 @@ export default function FullSite() {
         image="/products/feature/identity.webp"
         eyebrow="The Standard"
         head={<>Your body.<br />Finally done right.</>}
-        sub="One system, head to toe — built for the men who were never given one."
+        sub="One system, head to toe. Built for the men who were never given one."
       />
       <CredibilityStrip />
       <SubscriptionSection />
