@@ -3,6 +3,7 @@ export const KITS = [
   {
     id: 'ground',
     name: 'GROUND',
+    image: null, // TODO: GROUND kit photo not shot yet — placeholder shown until provided
     firstBoxPrice: 65,
     monthlyPrice: 38,
     productNums: ['01','02','03','04','05','07','08'],
@@ -13,6 +14,7 @@ export const KITS = [
   {
     id: 'ritual',
     name: 'RITUAL',
+    image: '/products/kit/use-1.webp', // open-kit flatlay (the actual ritual kit)
     firstBoxPrice: 85,
     monthlyPrice: 48,
     productNums: ['01','02','03','04','05','06','07','08','11'],
@@ -23,6 +25,7 @@ export const KITS = [
   {
     id: 'sovereign',
     name: 'SOVEREIGN',
+    image: null, // TODO: SOVEREIGN (artisan tier) kit photo — placeholder shown until provided
     firstBoxPrice: 130,
     monthlyPrice: 58,
     // 02 replaced by 09 — Italy Towel Mitt → Turkish Kese Mitt
