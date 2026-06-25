@@ -7,6 +7,7 @@ const CSS = `
 .nf-inner{position:relative;z-index:1;max-width:560px;width:100%;text-align:center;}
 .nf-code{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
 .nf-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);letter-spacing:.04em;color:var(--bone);line-height:.9;margin-bottom:20px;}
+.nf-heading .nf-break{display:block;}
 .nf-body{font-size:16px;color:var(--stone);font-weight:300;line-height:1.6;margin-bottom:32px;}
 .nf-countdown{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-bottom:32px;}
 .nf-countdown span{color:var(--blit);font-weight:600;}
@@ -30,7 +31,7 @@ export default function NotFoundPage() {
       <div className="nf-page">
         <div className="nf-inner">
           <div className="nf-code">404</div>
-          <div className="nf-heading">Page not<br />found.</div>
+          <div className="nf-heading">Page <span className="nf-break">not found.</span></div>
           <p className="nf-body">This page doesn't exist. It may have moved or the link may be incorrect.</p>
           <div className="nf-countdown">Redirecting in <span>{count}</span>s</div>
           <a className="nf-link" href="/">Go now →</a>

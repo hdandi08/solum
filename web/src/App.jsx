@@ -17,6 +17,7 @@ import AthletePage from './pages/AthletePage';
 import AthleteComingSoon from './pages/AthleteComingSoon';
 import BuyPage from './pages/BuyPage';
 import EmailPreviewPage from './pages/EmailPreviewPage';
+import ProductPage from './pages/ProductPage.jsx';
 import './styles/global.css';
 
 // Auth pages that handle their own session callbacks — do not redirect these.
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/athletes" element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
         <Route path="/sports"   element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
         <Route path="/email-preview" element={<EmailPreviewPage />} />
+        <Route path="/product/:slug" element={<ProductPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

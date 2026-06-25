@@ -69,4 +69,13 @@
     <priority>0.75</priority>
   </url>
 
+  <!-- Products -->
+  <url><loc>https://bysolum.co.uk/product/01-body-wash</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/02-italy-towel-mitt</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/03-back-scrub-cloth</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/04-scalp-massager</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/05-atlas-clay</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/06-argan-oil</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://bysolum.co.uk/product/07-body-lotion</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
 </urlset>
