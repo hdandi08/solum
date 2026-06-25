@@ -31,11 +31,11 @@ export const RITUALS = {
     copy: 'Start here. The foundation everything builds on.',
     duration: '1:19',
     products: [
-      { num: '04', name: 'Scalp Massager',   img: '/products/04-scalp-massager.png' },
-      { num: '01', name: 'Body Wash',         img: '/products/01-body-wash.png' },
-      { num: '03', name: 'Back Scrub Cloth',  img: '/products/03-back-scrub-cloth.png' },
+      { num: '04', name: 'Scalp Massager',   img: '/products/04/still.webp' },
+      { num: '01', name: 'Body Wash',         img: '/products/01/still.webp' },
+      { num: '03', name: 'Back Scrub Cloth',  img: '/products/03/still.webp' },
       { num: '08', name: 'Cleansing Cloth',   img: '/products/08-cleansing-cloth.png' },
-      { num: '07', name: 'Body Lotion',       img: '/products/07-body-lotion.png' },
+      { num: '07', name: 'Body Lotion',       img: '/products/07/still.webp' },
     ],
   },
   weekly: {
@@ -46,10 +46,10 @@ export const RITUALS = {
     copy: 'Replaces daily that day. Come back once the daily habit is locked in.',
     duration: null,
     products: [
-      { num: '05', name: 'Atlas Clay Mask',   img: '/products/05-atlas-clay.png' },
-      { num: '04', name: 'Scalp Massager',    img: '/products/04-scalp-massager.png' },
-      { num: '02', name: 'Italy Towel Mitt',  img: '/products/02-italy-towel-mitt.png' },
-      { num: '06', name: 'Argan Body Oil',    img: '/products/06-argan-oil.png' },
+      { num: '05', name: 'Atlas Clay Mask',   img: '/products/05/still.webp' },
+      { num: '04', name: 'Scalp Massager',    img: '/products/04/still.webp' },
+      { num: '02', name: 'Italy Towel Mitt',  img: '/products/02/still.webp' },
+      { num: '06', name: 'Argan Body Oil',    img: '/products/06/still.webp' },
     ],
   },
 };
