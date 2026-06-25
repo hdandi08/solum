@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { capture } from '../lib/analytics.js';
 import { PRODUCTS } from '../data/products.js';
 import { videoFor } from '../data/productMedia.js';
@@ -5,13 +6,16 @@ import { videoFor } from '../data/productMedia.js';
 const GOLD = '#c8a96e';
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Composition mirrors the canonical ritual in ritualVideo.js (RITUALS).
+// Daily: 04, 01, 03, 08, 07.  Weekly: 05, 02, 06 (04 is shared — shown once, under daily).
 const STEPS = [
   { num: '04', slug: '04-scalp-massager',   name: 'Scalp Massager',   freq: 'daily',  action: 'Firm circles, hairline to crown.' },
   { num: '01', slug: '01-body-wash',        name: 'Body Wash',        freq: 'daily',  action: 'Lather chest-down. Cleans, never strips.' },
-  { num: '02', slug: '02-italy-towel-mitt', name: 'Italy Towel Mitt', freq: 'daily',  action: 'Long strokes. Dead skin lifts off.' },
   { num: '03', slug: '03-back-scrub-cloth', name: 'Back Scrub Cloth', freq: 'daily',  action: 'Drape, saw shoulder to lower back.' },
+  { num: '08', slug: '08-cleansing-cloth',  name: 'Cleansing Cloth',  freq: 'daily',  action: 'Gentle daily cleanse, where it matters.' },
   { num: '07', slug: '07-body-lotion',      name: 'Body Lotion',      freq: 'daily',  action: 'Within 3 minutes of towelling.' },
   { num: '05', slug: '05-atlas-clay',       name: 'Atlas Clay Mask',  freq: 'weekly', action: 'Head to toe. Draws out the deep stuff.' },
+  { num: '02', slug: '02-italy-towel-mitt', name: 'Italy Towel Mitt', freq: 'weekly', action: 'Long strokes. Dead skin lifts off.' },
   { num: '06', slug: '06-argan-oil',        name: 'Argan Body Oil',   freq: 'weekly', action: 'Press into damp skin. Fully fed.' },
 ];
 
@@ -44,8 +48,19 @@ const CSS = `
 .ria-more svg{transition:transform .2s;}
 .ria-more a:hover svg{transform:translateX(3px);}
 
+/* dot indicators — mobile carousel only */
+.ria-dots{display:none;}
+
 @media(max-width:768px){
   .ria-section{padding:60px 0;}
+  /* one card centred with a peek of the next/prev — obviously swipeable */
+  .ria-strip{gap:12px;padding:4px 14px 18px;scroll-padding:0 14px;}
+  .ria-tile{flex:0 0 80vw;max-width:340px;scroll-snap-align:center;}
+  .ria-name{font-size:23px;}
+  .ria-action{font-size:14px;}
+  .ria-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px;padding:0 24px;flex-wrap:wrap;}
+  .ria-dot{width:7px;height:7px;border-radius:50%;background:rgba(240,236,226,0.22);border:none;padding:0;cursor:pointer;transition:background .25s,transform .25s,width .25s;}
+  .ria-dot.active{background:var(--blit);width:20px;border-radius:4px;}
 }
 `;
 
@@ -55,14 +70,14 @@ const ARROW = (
   </svg>
 );
 
-function Tile({ step }) {
+function Tile({ step, idx, tileRef }) {
   const film = videoFor(step.slug);
   const prod = PRODUCTS.find(p => p.num === step.num);
   const photo = prod?.media?.gallery?.[0] || prod?.media?.still;
   const showVideo = !!film && !REDUCE_MOTION;
 
   return (
-    <div className="ria-tile">
+    <div className="ria-tile" ref={tileRef} data-idx={idx}>
       {showVideo ? (
         <video
           className="ria-media"
@@ -93,6 +108,32 @@ function Tile({ step }) {
 }
 
 export default function RitualInAction() {
+  const stripRef = useRef(null);
+  const tileRefs = useRef([]);
+  const [active, setActive] = useState(0);
+
+  // Track which card is centred so the mobile dots reflect swipe position.
+  useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting && e.intersectionRatio >= 0.6) {
+            setActive(Number(e.target.dataset.idx));
+          }
+        });
+      },
+      { root: strip, threshold: [0.6] },
+    );
+    tileRefs.current.forEach((t) => t && obs.observe(t));
+    return () => obs.disconnect();
+  }, []);
+
+  const goTo = (i) => {
+    tileRefs.current[i]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  };
+
   return (
     <>
       <style>{CSS}</style>
@@ -103,8 +144,22 @@ export default function RitualInAction() {
           <p className="ria-sub reveal">Every step, on real skin. Daily keeps you maintained — weekly resets you.</p>
         </div>
 
-        <div className="ria-strip">
-          {STEPS.map(step => <Tile key={step.slug} step={step} />)}
+        <div className="ria-strip" ref={stripRef}>
+          {STEPS.map((step, i) => (
+            <Tile key={step.slug} step={step} idx={i} tileRef={(el) => { tileRefs.current[i] = el; }} />
+          ))}
+        </div>
+
+        <div className="ria-dots" role="tablist" aria-label="Ritual steps">
+          {STEPS.map((step, i) => (
+            <button
+              key={step.slug}
+              className={`ria-dot${i === active ? ' active' : ''}`}
+              aria-label={`Go to ${step.name}`}
+              aria-selected={i === active}
+              onClick={() => goTo(i)}
+            />
+          ))}
         </div>
 
         <div className="ria-more reveal">
