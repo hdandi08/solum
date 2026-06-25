@@ -23,3 +23,12 @@ Format: date · what changed · where · done?
 | 2026-04-06 | Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY secrets | Supabase → SolumDB-DEV | N/A (dev-only) |
 | 2026-04-06 | Connected dev branch, added VITE_ env vars (master + dev) | Amplify console | Yes — both branches live |
 | 2026-04-06 | Set Stripe test keys on dev, live keys on master | Amplify console | Yes |
+
+## 2026-06-25 — Amplify rewrite rule: allow .webp (+ mp4/webm)
+- App: solum-web (d3pa095gzazg3c). Root cause of broken images on deploy: the SPA rewrite
+  rule's passthrough extension list did not include `webp`, so all new .webp product images
+  were rewritten to /index.html (served HTML, broken image). .jpg/.png were already allowed.
+- Fix (via `aws amplify update-app --custom-rules`): added `webp|mp4|webm` to the negative
+  lookahead. Applies app-wide (dev + master), at the edge, no rebuild. Verified .webp now
+  returns 200 image/webp on the dev deploy.
+- NOTE: this is Amplify app config (not in repo). If the app is recreated, re-apply.
