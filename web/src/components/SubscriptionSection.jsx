@@ -140,11 +140,10 @@ export default function SubscriptionSection() {
                       poster="/products/kit/still.webp"
                       controls={filmPlaying}
                       preload="metadata"
-                      muted
                       playsInline
                       onEnded={() => setFilmPlaying(false)}
                     >
-                      <source src={BANNER_FULL.webm} type="video/webm" />
+                      {/* click-to-play film — plays with sound (user-initiated). mp4 carries the audio. */}
                       <source src={BANNER_FULL.mp4} type="video/mp4" />
                     </video>
                     {!filmPlaying && (

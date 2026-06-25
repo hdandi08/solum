@@ -12,9 +12,9 @@ vert () { # $1 src file  $2 NN  (720x1280 H.264 + webm + committed poster)
   ffmpeg -y -ss 00:00:02 -i "$SRC/$1" -frames:v 1 -vf "scale=720:1280" "$PUB/products/$2/poster.jpg"
 }
 
-# banner: 4K 16:9 -> 1080p H.264 + webm (FULL 71s film, reused in the unboxing section)
-ffmpeg -y -i "$SRC/SOLUM - BANNER FILM.mp4" -vf "scale=1920:1080" -c:v libx264 -crf 23 -preset slow -an -movflags +faststart "$OUT/banner_1080.mp4"
-ffmpeg -y -i "$SRC/SOLUM - BANNER FILM.mp4" -vf "scale=1920:1080" -c:v libvpx-vp9 -crf 32 -b:v 0 -an "$OUT/banner_1080.webm"
+# banner: 4K 16:9 -> 1080p H.264 (FULL 71s film, click-to-play in the unboxing section).
+# KEEP AUDIO here — this one is watched, not an ambient loop. mp4-only (universal for click-to-play).
+ffmpeg -y -i "$SRC/SOLUM - BANNER FILM.mp4" -vf "scale=1920:1080" -c:v libx264 -crf 23 -preset slow -c:a aac -b:a 160k -movflags +faststart "$OUT/banner_1080.mp4"
 # poster taken at 00:30 (open-kit reveal w/ branding + products) — 00:02 is a black title card.
 ffmpeg -y -ss 00:00:30 -i "$SRC/SOLUM - BANNER FILM.mp4" -frames:v 1 -vf "scale=1920:1080" "$PUB/video/banner-poster.jpg"
 
