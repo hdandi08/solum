@@ -14,7 +14,7 @@ export const KITS = [
   {
     id: 'ritual',
     name: 'RITUAL',
-    image: '/products/kit/use-1.webp', // open-kit flatlay (the actual ritual kit)
+    image: '/products/kit/still.webp', // top-down flatlay — full kit visible
     firstBoxPrice: 85,
     monthlyPrice: 48,
     productNums: ['01','02','03','04','05','06','07','08','11'],
