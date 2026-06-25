@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../data/products.js';
 import { videoFor } from '../data/productMedia.js';
@@ -35,7 +35,20 @@ const CSS = `
 .pp-desc{font-size:16px;line-height:1.7;font-weight:300;color:var(--mist);}
 .pp-gallery{display:grid;grid-template-columns:1fr;gap:10px;max-width:760px;margin:48px auto;padding:0 24px;}
 @media(min-width:769px){.pp-gallery{grid-template-columns:1fr 1fr;gap:12px;max-width:1000px;padding:0;}}
-.pp-gallery img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;display:block;border:1px solid var(--line);}
+.pp-gallery img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;display:block;border:1px solid var(--line);cursor:zoom-in;transition:opacity .2s;}
+.pp-gallery img:hover{opacity:.9;}
+/* click-to-zoom lightbox */
+.pp-lightbox{position:fixed;inset:0;z-index:9000;background:rgba(8,9,11,0.95);display:flex;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;animation:pp-lb-fade .2s ease;}
+@keyframes pp-lb-fade{from{opacity:0}to{opacity:1}}
+.pp-lb-img{max-width:92vw;max-height:90vh;object-fit:contain;cursor:default;box-shadow:0 24px 70px rgba(0,0,0,0.6);}
+.pp-lb-btn{position:absolute;background:rgba(8,9,11,0.5);border:1px solid var(--lineb);color:var(--bone);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;}
+.pp-lb-btn:hover{background:var(--blue);border-color:var(--blue);}
+.pp-lb-close{top:20px;right:24px;width:44px;height:44px;border-radius:50%;font-size:24px;line-height:1;}
+.pp-lb-prev,.pp-lb-next{top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;font-size:26px;}
+.pp-lb-prev{left:24px;}
+.pp-lb-next{right:24px;}
+.pp-lb-count{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:2px;color:var(--stone);font-weight:600;}
+@media(max-width:768px){.pp-lb-prev,.pp-lb-next{display:none;}.pp-lightbox{padding:16px;}}
 .pp-benefits{list-style:none;padding:0;margin:32px 0;display:flex;flex-direction:column;gap:14px;}
 .pp-benefits li{font-size:15px;line-height:1.6;font-weight:300;color:var(--mist);padding-left:18px;position:relative;}
 .pp-benefits li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--blue);}
@@ -84,6 +97,21 @@ export default function ProductPage() {
     capture('product_page_viewed', { slug });
   }, [p, slug]);
 
+  // Click-to-zoom lightbox for the gallery
+  const gallery = p?.media?.gallery || [];
+  const [zoom, setZoom] = useState(null); // index of the open image, or null
+  useEffect(() => {
+    if (zoom === null) return;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => {
+      if (e.key === 'Escape') setZoom(null);
+      else if (e.key === 'ArrowRight') setZoom((z) => (z + 1) % gallery.length);
+      else if (e.key === 'ArrowLeft') setZoom((z) => (z - 1 + gallery.length) % gallery.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [zoom, gallery.length]);
+
   if (!p) return <NotFoundPage />;
 
   const active = PRODUCTS.filter(x => !x.comingSoon);
@@ -126,10 +154,11 @@ export default function ProductPage() {
           <p className="pp-desc">{p.desc}</p>
         </div>
 
-        {(p.media?.gallery || []).length > 0 && (
+        {gallery.length > 0 && (
           <div className="pp-gallery">
-            {p.media.gallery.map((src, i) => (
-              <img key={src} src={src} alt={`${p.name} in use ${i + 1}`} loading="lazy" />
+            {gallery.map((src, i) => (
+              <img key={src} src={src} alt={`${p.name} in use ${i + 1}`} loading="lazy"
+                onClick={() => setZoom(i)} />
             ))}
           </div>
         )}
@@ -153,6 +182,23 @@ export default function ProductPage() {
           </Link>
         </div>
       </article>
+
+      {zoom !== null && (
+        <div className="pp-lightbox" onClick={() => setZoom(null)} role="dialog" aria-modal="true" aria-label={`${p.name} image viewer`}>
+          <button className="pp-lb-btn pp-lb-close" onClick={() => setZoom(null)} aria-label="Close">×</button>
+          {gallery.length > 1 && (
+            <button className="pp-lb-btn pp-lb-prev" aria-label="Previous image"
+              onClick={(e) => { e.stopPropagation(); setZoom((z) => (z - 1 + gallery.length) % gallery.length); }}>‹</button>
+          )}
+          <img className="pp-lb-img" src={gallery[zoom]} alt={`${p.name} in use ${zoom + 1}`} onClick={(e) => e.stopPropagation()} />
+          {gallery.length > 1 && (
+            <button className="pp-lb-btn pp-lb-next" aria-label="Next image"
+              onClick={(e) => { e.stopPropagation(); setZoom((z) => (z + 1) % gallery.length); }}>›</button>
+          )}
+          {gallery.length > 1 && <div className="pp-lb-count">{zoom + 1} / {gallery.length}</div>}
+        </div>
+      )}
+
       <SolumFooter />
     </>
   );
