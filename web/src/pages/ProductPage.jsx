@@ -21,8 +21,11 @@ const CSS = `
 .pp-hero-media video,.pp-hero-media img{width:100%;height:100%;object-fit:cover;display:block;}
 .pp-hero-info{display:flex;flex-direction:column;justify-content:center;gap:15px;padding:36px 24px 44px;}
 @media(min-width:769px){
-  .pp-hero{grid-template-columns:1fr 1fr;min-height:82vh;align-items:stretch;}
-  .pp-hero-media{aspect-ratio:auto;height:auto;max-height:none;}
+  /* Cap the hero to the viewport (minus the 64px nav + 43px back bar) so the vertical media
+     cover-fills its column and the whole hero — incl. the Shop CTA — fits on one screen. */
+  .pp-hero{grid-template-columns:1fr 1fr;height:calc(100vh - 107px);min-height:540px;max-height:860px;align-items:stretch;}
+  .pp-hero-media{aspect-ratio:auto;height:100%;max-height:none;}
+  .pp-hero-media video,.pp-hero-media img{height:100%;object-fit:cover;}
   .pp-hero-info{padding:48px 6vw;}
 }
 .pp-num{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--blit);}
