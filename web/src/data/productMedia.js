@@ -3,7 +3,18 @@
 import { CDN } from './ritualVideo.js';
 const P = `${CDN}/video/products`;
 
-export const BANNER = {
+// In `npm run dev` we preview the locally-transcoded files (gitignored, never committed)
+// so the hero loop is visible before CDN upload. A production `vite build` uses the CDN
+// path with ready:false (poster only) until the file is uploaded and the flag flipped.
+const DEV = import.meta.env.DEV;
+
+// Hero background: seamless ~16s ambient loop cut from the banner film (no title cards).
+export const BANNER = DEV
+  ? { mp4: '/video/banner-loop.mp4', webm: '/video/banner-loop.webm', poster: '/video/banner-poster.jpg', ready: true }
+  : { mp4: `${CDN}/video/banner/banner-loop.mp4`, webm: `${CDN}/video/banner/banner-loop.webm`, poster: '/video/banner-poster.jpg', ready: false };
+
+// Full 71s banner film — reused by the unboxing section (Task 7), not the hero loop.
+export const BANNER_FULL = {
   mp4:  `${CDN}/video/banner/banner_1080.mp4`,
   webm: `${CDN}/video/banner/banner_1080.webm`,
   poster: '/video/banner-poster.jpg',
