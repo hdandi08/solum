@@ -8,7 +8,6 @@ import KitComparison from '../components/KitComparison.jsx';
 import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import SubscriptionSection from '../components/SubscriptionSection.jsx';
-import LoyaltySection from '../components/LoyaltySection.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
 import FounderSection from '../components/FounderSection.jsx';
 import CredibilityStrip from '../components/CredibilityStrip.jsx';
@@ -98,7 +97,6 @@ export default function FullSite() {
       <TruthSection />
       <CredibilityStrip />
       <SubscriptionSection />
-      <LoyaltySection />
       <ProvenanceSection />
       <SocialProof />
       <FounderSection />

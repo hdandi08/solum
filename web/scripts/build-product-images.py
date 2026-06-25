@@ -21,7 +21,7 @@ MANIFEST = {
   "07": {"still":30, "use-1":31, "use-2":32},
   "08": {"still":39, "use-1":41, "use-2":43, "detail":42},
   "11": {"still":35, "use-1":33, "use-2":36},
-  "kit": {"still":61, "use-1":62, "use-2":66},
+  "kit": {"still":65, "use-1":64, "use-2":61},
 }
 LARGE, MOBILE, Q = 1200, 600, 80
 
