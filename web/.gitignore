@@ -33,3 +33,6 @@ public/video/banner-loop.webm
 # DEV-only product film previews (real files on CDN)
 public/products/*/film.mp4
 public/products/*/film.webm
+# DEV-only full unboxing film preview (real file on CDN)
+public/video/banner-full.mp4
+public/video/banner-full.webm

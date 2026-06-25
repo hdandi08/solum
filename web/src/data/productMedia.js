@@ -13,13 +13,11 @@ export const BANNER = DEV
   ? { mp4: '/video/banner-loop.mp4', webm: '/video/banner-loop.webm', poster: '/video/banner-poster.jpg', ready: true }
   : { mp4: `${CDN}/video/banner/banner-loop.mp4`, webm: `${CDN}/video/banner/banner-loop.webm`, poster: '/video/banner-poster.jpg', ready: false };
 
-// Full 71s banner film — reused by the unboxing section (Task 7), not the hero loop.
-export const BANNER_FULL = {
-  mp4:  `${CDN}/video/banner/banner_1080.mp4`,
-  webm: `${CDN}/video/banner/banner_1080.webm`,
-  poster: '/video/banner-poster.jpg',
-  ready: false,
-};
+// Full 71s banner film — click-to-play in the unboxing section (not the hero loop).
+// DEV serves the gitignored local copy (ready:true) so it's watchable before CDN upload.
+export const BANNER_FULL = DEV
+  ? { mp4: '/video/banner-full.mp4', webm: '/video/banner-full.webm', poster: '/video/banner-poster.jpg', ready: true }
+  : { mp4: `${CDN}/video/banner/banner_1080.mp4`, webm: `${CDN}/video/banner/banner_1080.webm`, poster: '/video/banner-poster.jpg', ready: false };
 
 // keyed by product slug. DEV serves the gitignored local film previews (ready:true) so the
 // product films are visible on `npm run dev` before CDN upload. Prod uses the CDN path with
