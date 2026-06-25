@@ -1,30 +1,31 @@
-// Product films + banner. Transcoded by scripts/build-product-videos.sh, hosted on CDN.
-// Flip `ready` to true per item AFTER uploading the matching .media-build/*.{mp4,webm} to CDN.
+// Product films + banner — hosted on the CDN (CloudFront). Used in both dev and prod.
+// Re-encode locally with scripts/build-product-videos.sh, upload to s3://solum-media-assets,
+// then (if you changed an existing filename's content) invalidate CloudFront.
 import { CDN } from './ritualVideo.js';
 const P = `${CDN}/video/products`;
 
-// In `npm run dev` we preview the locally-transcoded files (gitignored, never committed)
-// so the hero loop is visible before CDN upload. A production `vite build` uses the CDN
-// path with ready:false (poster only) until the file is uploaded and the flag flipped.
-const DEV = import.meta.env.DEV;
-
 // Hero background: seamless ~16s ambient loop cut from the banner film (no title cards).
-export const BANNER = DEV
-  ? { mp4: '/video/banner-loop.mp4', webm: '/video/banner-loop.webm', poster: '/video/banner-poster.jpg', ready: true }
-  : { mp4: `${CDN}/video/banner/banner-loop.mp4`, webm: `${CDN}/video/banner/banner-loop.webm`, poster: '/video/banner-poster.jpg', ready: true };
+export const BANNER = {
+  mp4: `${CDN}/video/banner/banner-loop.mp4`,
+  webm: `${CDN}/video/banner/banner-loop.webm`,
+  poster: '/video/banner-poster.jpg',
+  ready: true,
+};
 
-// Full 71s banner film — click-to-play in the unboxing section (not the hero loop).
-// DEV serves the gitignored local copy (ready:true) so it's watchable before CDN upload.
-export const BANNER_FULL = DEV
-  ? { mp4: '/video/banner-full.mp4', poster: '/video/banner-poster.jpg', ready: true }
-  : { mp4: `${CDN}/video/banner/banner_1080.mp4`, poster: '/video/banner-poster.jpg', ready: true };
+// Full 71s banner film — click-to-play in the unboxing section (mp4 carries the audio).
+export const BANNER_FULL = {
+  mp4: `${CDN}/video/banner/banner_1080.mp4`,
+  poster: '/video/banner-poster.jpg',
+  ready: true,
+};
 
-// keyed by product slug. DEV serves the gitignored local film previews (ready:true) so the
-// product films are visible on `npm run dev` before CDN upload. Prod uses the CDN path with
-// ready:false (poster/still) until each film is uploaded and the flag flipped.
-const film = (nn) => DEV
-  ? { mp4:`/products/${nn}/film.mp4`, webm:`/products/${nn}/film.webm`, poster:`/products/${nn}/poster.jpg`, ready:true }
-  : { mp4:`${P}/${nn}_720.mp4`, webm:`${P}/${nn}_720.webm`, poster:`/products/${nn}/poster.jpg`, ready:true };
+// keyed by product slug. Films exist for 01,02,05,06,07; 03 + 04 have none (poster/still).
+const film = (nn) => ({
+  mp4: `${P}/${nn}_720.mp4`,
+  webm: `${P}/${nn}_720.webm`,
+  poster: `/products/${nn}/poster.jpg`,
+  ready: true,
+});
 
 export const PRODUCT_VIDEO = {
   '01-body-wash':        film('01'),
