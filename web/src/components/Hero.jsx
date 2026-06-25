@@ -15,6 +15,7 @@ const CSS = `
 .hero-glow{position:absolute;top:30%;left:25%;transform:translate(-50%,-50%);width:500px;height:400px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
 .hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:88px 24px 48px;gap:0;}
 .hero-content{width:100%;}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:18px;animation:fadeUp .8s ease .6s both;}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);line-height:.96;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
 /* ── Animated word swap ────────────────────────────── */
@@ -132,24 +133,12 @@ export default function Hero() {
               </>
             ) : (
               <>
+                <div className="hero-eyebrow">The World's First Guided Body Ritual for Men</div>
                 <h1 className="hero-title">
-                  The First Guided<br />
-                  <span className="swap-container">
-                    <span className="word-body">Body</span>
-                    <span className="word-face">
-                      Face
-                      <span className="strike-line" />
-                    </span>
-                  </span>
-                  {' '}Ritual<br />
-                  For Men.
+                  You shower every day.<br />So why don't you feel clean?
                 </h1>
                 <div className="hero-line" />
-                <p className="hero-subline">You shower every day. Your body is still not clean. Dead skin builds up for years. Odour comes from bacteria feeding on dead cells, not sweat. SOLUM fixes all of it. Ten minutes. In the shower you already take. Body care, finally built for men.</p>
-                <div className="hero-scope">
-                  <span className="hero-scope-pill accent">Body Care — Not Face, Not Hair</span>
-                  <span className="hero-scope-pill accent">Built For Men</span>
-                </div>
+                <p className="hero-subline">A shower only wets the surface. It leaves the dead skin and bacteria that dull your skin and cause odour. SOLUM clears it — head to toe, in the 10 minutes you already spend in the shower.</p>
                 <div className="hero-actions">
                   <a
                     href={IS_FIRST_BATCH ? '/buy' : '#kits'}
