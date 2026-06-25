@@ -112,6 +112,9 @@ const CSS = `
   .by-soldout-page{grid-template-columns:1fr;padding-top:64px;}
   .by-soldout-left,.by-soldout-right{padding:36px 24px;}
 }
+/* Kit-contents thumbnail hover-zoom (overrides checkout.css 32x40 defaults) */
+.co-product-list .co-product-thumb,.co-product-list .co-product-thumb-ph{width:40px;height:52px;cursor:zoom-in;}
+.co-product-preview-fixed{position:fixed;width:220px;height:275px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.6);z-index:2000;pointer-events:none;}
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -231,6 +234,22 @@ function BuyCheckoutNav() {
 function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
   const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
+  const [previewSrc, setPreviewSrc] = useState(null);
+  const [previewPos, setPreviewPos] = useState({ top: 0, left: 0 });
+
+  const showPreview = (e, src) => {
+    if (!src) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const previewW = 220;
+    const previewH = 275;
+    // Place the preview above the thumb so it never covers the product name
+    // (which sits to the right of the thumb on the same row).
+    const left = Math.min(window.innerWidth - previewW - 12, Math.max(12, rect.left));
+    const top = Math.max(12, rect.top - previewH - 12);
+    setPreviewPos({ top, left });
+    setPreviewSrc(src);
+  };
+  const hidePreview = () => setPreviewSrc(null);
 
   return (
     <div className="co-right">
@@ -271,7 +290,16 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         {products.map(p => (
           <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
             {p.media?.still
-              ? <img src={p.media.still} alt={p.name} className="co-product-thumb" loading="lazy" />
+              ? (
+                <img
+                  src={p.media.still}
+                  alt={p.name}
+                  className="co-product-thumb"
+                  loading="lazy"
+                  onMouseEnter={(e) => showPreview(e, p.media.still)}
+                  onMouseLeave={hidePreview}
+                />
+              )
               : <div className="co-product-thumb-ph" />
             }
             <span className="co-product-num">{p.num}</span>
@@ -281,6 +309,15 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
       </div>
       {products.some(p => p.comingSoon) && (
         <div className="co-soon-note">* Coming soon — included when available</div>
+      )}
+      {previewSrc && (
+        <img
+          src={previewSrc}
+          alt=""
+          aria-hidden="true"
+          className="co-product-preview-fixed"
+          style={{ top: previewPos.top, left: previewPos.left }}
+        />
       )}
     </div>
   );

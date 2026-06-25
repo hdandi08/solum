@@ -29,8 +29,12 @@ const CSS = `
 .kit-products{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;flex:1;}
 .kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
 .kit-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:20px;}
-.kit-product-thumb{width:32px;height:40px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
-.kit-product-thumb-placeholder{width:32px;height:40px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
+.kit-product-thumb-wrap{position:relative;flex-shrink:0;}
+.kit-product-thumb{width:40px;height:52px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);flex-shrink:0;display:block;}
+.kit-product-thumb-placeholder{width:40px;height:52px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
+.kit-product-preview{position:absolute;bottom:calc(100% + 12px);left:0;width:220px;height:275px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.6);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease;z-index:50;}
+.kit-product-thumb-wrap.flip-left .kit-product-preview{left:auto;right:0;}
+.kit-product-thumb-wrap:hover .kit-product-preview{opacity:1;visibility:visible;}
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
 .kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
@@ -109,7 +113,12 @@ export default function KitComparison() {
                     {products.map(p => (
                       <div key={p.num} className={`kit-product${p.comingSoon ? ' kit-product-coming' : ''}`}>
                         {p.media?.still
-                          ? <img src={p.media.still} alt={p.name} className="kit-product-thumb" loading="lazy" />
+                          ? (
+                            <div className={`kit-product-thumb-wrap${isSovereign ? ' flip-left' : ''}`}>
+                              <img src={p.media.still} alt={p.name} className="kit-product-thumb" loading="lazy" />
+                              <img src={p.media.still} alt="" aria-hidden="true" className="kit-product-preview" loading="lazy" />
+                            </div>
+                          )
                           : <div className="kit-product-thumb-placeholder" />
                         }
                         <span className="kit-product-num">{p.num}</span>
