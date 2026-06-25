@@ -24,3 +24,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local-only transcoded video build output (uploaded to CDN manually)
+.media-build/
