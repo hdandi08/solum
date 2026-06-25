@@ -196,7 +196,7 @@ export const PRODUCTS = [
     ],
     desc: 'The confidence of knowing you smell clean — all day, not just in the shower. Most men use their hands for intimate cleansing. Hands spread bacteria more than they remove it and have no consistent cleansing action. That\'s why intimate odour is so common and so persistent. This cloth is built for this specific job: ultra-soft bamboo and cotton that\'s gentle on intimate areas, and bamboo kun — a natural antimicrobial compound that inhibits bacterial regrowth in the cloth between uses. Wash weekly, replace monthly.',
     slug: '08-cleansing-cloth',
-    media: { still:'/products/08-cleansing-cloth.png', stillMobile:null, gallery:[], poster:null, video:null },
+    media: { still:'/products/08/still.webp', stillMobile:'/products/08/still@600.webp', gallery:['/products/08/use-1.webp','/products/08/use-2.webp','/products/08/detail.webp'], poster:null, video:null },
     replacementCycleDays: 30,
     comingSoon: false,
   },

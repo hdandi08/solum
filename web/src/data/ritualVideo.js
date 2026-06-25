@@ -34,7 +34,7 @@ export const RITUALS = {
       { num: '04', name: 'Scalp Massager',   img: '/products/04/still.webp' },
       { num: '01', name: 'Body Wash',         img: '/products/01/still.webp' },
       { num: '03', name: 'Back Scrub Cloth',  img: '/products/03/still.webp' },
-      { num: '08', name: 'Cleansing Cloth',   img: '/products/08-cleansing-cloth.png' },
+      { num: '08', name: 'Cleansing Cloth',   img: '/products/08/still.webp' },
       { num: '07', name: 'Body Lotion',       img: '/products/07/still.webp' },
     ],
   },

@@ -16,7 +16,7 @@ const PRODUCT_IMAGES = {
   'Atlas Clay Mask': '/products/05/still.webp',
   'Argan Body Oil':  '/products/06/still.webp',
   'Body Lotion':     '/products/07/still.webp',
-  'Cleansing Cloth': '/products/08-cleansing-cloth.png',
+  'Cleansing Cloth': '/products/08/still.webp',
 };
 
 const MONTHLY_ITEMS = ['Body Wash', 'Body Lotion', 'Cleansing Cloth'];
