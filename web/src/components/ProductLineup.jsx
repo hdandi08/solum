@@ -18,6 +18,10 @@ const CSS = `
 /* ── Card ──────────────────────────────────────── */
 .product-card{background:#09090c;display:flex;flex-direction:column;overflow:hidden;position:relative;text-decoration:none;color:inherit;}
 .product-card:hover .prod-img-wrap img{transform:scale(1.04);}
+/* face/model shot leads; hover reveals the product-only studio still over it */
+.prod-img-base{object-position:center top;}
+.prod-img-hover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .45s ease, transform .5s ease;z-index:1;}
+.product-card:hover .prod-img-hover{opacity:1;}
 
 /* Image */
 .prod-img-wrap{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#0d0e12;flex-shrink:0;}
@@ -103,15 +107,18 @@ export default function ProductLineup() {
 
             const imgEl = (
               <div className="prod-img-wrap">
+                {/* face/model shot leads (connection); hover reveals the product-only still */}
                 <img
-                  src={p.media?.still}
-                  srcSet={p.media?.stillMobile ? `${p.media.stillMobile} 600w, ${p.media.still} 1200w` : undefined}
-                  sizes="(max-width:768px) 50vw, 25vw"
+                  className="prod-img-base"
+                  src={p.media?.gallery?.[0] || p.media?.still}
                   alt={p.name}
                   loading="lazy"
                   width="600"
                   height="800"
                 />
+                {p.media?.gallery?.[0] && p.media?.still && (
+                  <img className="prod-img-hover" src={p.media.still} alt="" aria-hidden="true" loading="lazy" width="600" height="800" />
+                )}
                 <span className="prod-badge-num">{p.num}</span>
                 {p.tag?.includes('Daily') && <span className="prod-badge-freq daily">Daily</span>}
                 {p.tag?.includes('Weekly') && <span className="prod-badge-freq weekly">Weekly</span>}
