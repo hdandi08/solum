@@ -3,7 +3,7 @@ import { capture } from '../lib/analytics.js';
 import Nav from '../components/Nav.jsx';
 import Hero from '../components/Hero.jsx';
 import Marquee from '../components/Marquee.jsx';
-import RitualSection from '../components/RitualSection.jsx';
+import RitualInAction from '../components/RitualInAction.jsx';
 import KitComparison from '../components/KitComparison.jsx';
 import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
@@ -92,7 +92,7 @@ export default function FullSite() {
       <TrustBar />
       <Hero />
       <Marquee />
-      <RitualSection />
+      <RitualInAction />
       <ProductLineup />
       <KitComparison />
       <TruthSection />
