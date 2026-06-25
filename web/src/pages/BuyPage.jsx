@@ -591,6 +591,9 @@ export default function BuyPage() {
     } catch {}
   }, []); // eslint-disable-line
 
+  // Always open the buy flow at the top, regardless of the scroll position it was clicked from.
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
     fbViewContent('SOLUM Kit');
