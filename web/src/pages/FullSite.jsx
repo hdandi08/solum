@@ -9,6 +9,7 @@ import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import SubscriptionSection from '../components/SubscriptionSection.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
+import FullBleedBand from '../components/FullBleedBand.jsx';
 import FounderSection from '../components/FounderSection.jsx';
 import CredibilityStrip from '../components/CredibilityStrip.jsx';
 import SocialProof from '../components/SocialProof.jsx';
@@ -95,6 +96,12 @@ export default function FullSite() {
       <ProductLineup />
       <KitComparison />
       <TruthSection />
+      <FullBleedBand
+        image="/products/feature/identity.webp"
+        eyebrow="The Standard"
+        head={<>Your body.<br />Finally done right.</>}
+        sub="One system, head to toe — built for the men who were never given one."
+      />
       <CredibilityStrip />
       <SubscriptionSection />
       <ProvenanceSection />
