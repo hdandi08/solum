@@ -62,11 +62,11 @@ export default function ProductPage() {
       <article className="pp">
         <div className="pp-hero">
           {film
-            ? <video poster={heroPoster} muted autoPlay loop playsInline preload="none">
+            ? <video key={slug} poster={heroPoster} muted autoPlay loop playsInline preload="none">
                 <source src={film.webm} type="video/webm" />
                 <source src={film.mp4} type="video/mp4" />
               </video>
-            : <img src={p.media?.still} alt={`${p.name} — SOLUM`} />}
+            : <img key={slug} src={p.media?.still} alt={`${p.name} — SOLUM`} />}
           <div className="pp-hero-overlay">
             <div className="pp-num">PRODUCT · {p.num}</div>
             <h1 className="pp-name">{p.name}</h1>
