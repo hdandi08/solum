@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../data/products.js';
 import { videoFor } from '../data/productMedia.js';
 import Nav from '../components/Nav.jsx';
@@ -9,6 +9,12 @@ import { capture } from '../lib/analytics.js';
 
 const CSS = `
 .pp{background:var(--black);color:var(--bone);padding-top:64px;}
+/* back bar — one level below the global header (NOT a <nav>, so the global nav{position:fixed} rule can't pin it) */
+.pp-subbar{position:sticky;top:64px;z-index:90;display:flex;align-items:center;background:rgba(8,9,11,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:9px 24px;}
+.pp-back{display:inline-flex;align-items:center;gap:9px;background:none;border:none;color:var(--bone);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:600;cursor:pointer;padding:4px 0;transition:color .2s;}
+.pp-back:hover{color:var(--blit);}
+.pp-back svg{transition:transform .2s;}
+.pp-back:hover svg{transform:translateX(-3px);}
 .pp-hero{position:relative;width:100%;aspect-ratio:9/16;max-height:86vh;background:#000;overflow:hidden;}
 @media(min-width:769px){.pp-hero{aspect-ratio:16/10;max-height:80vh;}}
 .pp-hero video,.pp-hero img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -27,14 +33,32 @@ const CSS = `
 .pp-chip{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;color:var(--bone);border:1px solid var(--line);padding:6px 12px;border-radius:3px;}
 .pp-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--stone);margin:20px 0;}
 .pp-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:var(--bone);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:13px;padding:14px 28px;border-radius:4px;text-decoration:none;margin-top:8px;}
-.pp-nav{display:flex;justify-content:space-between;border-top:1px solid var(--line);max-width:760px;margin:0 auto;padding:24px;font-size:13px;}
-.pp-nav a{color:var(--blit);text-decoration:none;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
+/* bottom product navigator (a div — must not be a <nav>, or the global nav{position:fixed} rule pins it to the header) */
+.pp-nav{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:760px;margin:0 auto;padding:30px 24px 52px;}
+.pp-nav-link{display:flex;flex-direction:column;gap:5px;text-decoration:none;max-width:48%;}
+.pp-nav-link.next{align-items:flex-end;text-align:right;margin-left:auto;}
+.pp-nav-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:600;}
+.pp-nav-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--bone);line-height:1.05;transition:color .2s;}
+.pp-nav-link:hover .pp-nav-name{color:var(--blit);}
 `;
+
+const BACK_ARROW = (
+  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 7H2M6 3 2 7l4 4" />
+  </svg>
+);
 
 export default function ProductPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const idx = PRODUCTS.findIndex(p => p.slug === slug);
   const p = PRODUCTS[idx];
+
+  // Return to wherever they came from; fall back to the homepage products grid on a direct landing.
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/#products');
+  };
 
   useEffect(() => {
     if (!p) return;
@@ -60,6 +84,9 @@ export default function ProductPage() {
       <style>{CSS}</style>
       <Nav />
       <article className="pp">
+        <div className="pp-subbar">
+          <button className="pp-back" onClick={goBack}>{BACK_ARROW} Back</button>
+        </div>
         <div className="pp-hero">
           {film
             ? <video key={slug} poster={heroPoster} muted autoPlay loop playsInline preload="none">
@@ -98,10 +125,16 @@ export default function ProductPage() {
           <div><Link to="/buy" className="pp-cta" onClick={() => capture('product_buy_clicked', { slug })}>Shop the kits</Link></div>
         </div>
 
-        <nav className="pp-nav">
-          <Link to={`/product/${prev.slug}`}>← {prev.name}</Link>
-          <Link to={`/product/${next.slug}`}>{next.name} →</Link>
-        </nav>
+        <div className="pp-nav">
+          <Link className="pp-nav-link prev" to={`/product/${prev.slug}`}>
+            <span className="pp-nav-eyebrow">← Previous</span>
+            <span className="pp-nav-name">{prev.name}</span>
+          </Link>
+          <Link className="pp-nav-link next" to={`/product/${next.slug}`}>
+            <span className="pp-nav-eyebrow">Next →</span>
+            <span className="pp-nav-name">{next.name}</span>
+          </Link>
+        </div>
       </article>
       <SolumFooter />
     </>
