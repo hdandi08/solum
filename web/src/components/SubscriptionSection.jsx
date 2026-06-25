@@ -1,8 +1,27 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { BANNER_FULL } from '../data/productMedia.js';
 
 const CSS = `
 .sub-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
 .sub-inner{max-width:1400px;margin:0 auto;}
+.unbox-band{margin-bottom:80px;}
+.unbox-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;text-align:center;}
+.unbox-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,56px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:36px;}
+.unbox-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+.unbox-main{position:relative;overflow:hidden;background:#000;border:1px solid var(--line);}
+.unbox-main img,.unbox-main video{width:100%;height:100%;object-fit:cover;display:block;}
+.unbox-side{display:flex;flex-direction:column;gap:16px;}
+.unbox-side-shot{overflow:hidden;border:1px solid var(--line);flex:1;}
+.unbox-side-shot img{width:100%;height:100%;object-fit:cover;display:block;}
+.unbox-play{position:absolute;inset:0;width:100%;height:100%;border:none;padding:0;cursor:pointer;background:none;display:block;}
+.unbox-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,9,11,0.55),rgba(8,9,11,0) 45%,rgba(8,9,11,0) 70%,rgba(8,9,11,0.4));}
+.unbox-watch{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;}
+.unbox-play-ring{width:62px;height:62px;border-radius:50%;background:rgba(8,9,11,0.5);border:1.5px solid var(--bone);display:flex;align-items:center;justify-content:center;color:var(--bone);backdrop-filter:blur(3px);transition:transform .2s,background .2s,border-color .2s;}
+.unbox-play:hover .unbox-play-ring{transform:scale(1.08);background:var(--blue);border-color:var(--blue);}
+.unbox-watch-label{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--bone);text-transform:uppercase;text-shadow:0 1px 8px rgba(8,9,11,0.8);}
+.unbox-dur{position:absolute;bottom:12px;right:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;background:rgba(8,9,11,0.5);padding:4px 8px;}
+.unbox-caption{font-size:13px;color:var(--stone);font-weight:300;text-align:center;margin-top:16px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;}
+@media(max-width:768px){.unbox-grid{grid-template-columns:1fr;}.unbox-side{flex-direction:row;}}
 .sub-header{margin-bottom:64px;}
 .sub-header .s-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#c8a96e;font-weight:600;margin-bottom:16px;}
 .sub-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:16px;}
@@ -68,9 +87,24 @@ const PRICES = [
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+const PLAY_ICON = (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 3 }}>
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
 export default function SubscriptionSection() {
   const [email, setEmail] = useState('');
   const [eaState, setEaState] = useState('idle'); // idle | submitting | done | error
+  const [filmPlaying, setFilmPlaying] = useState(false);
+  const filmRef = useRef(null);
+
+  function playFilm() {
+    const v = filmRef.current;
+    if (!v) return;
+    v.play();
+    setFilmPlaying(true);
+  }
 
   async function handleEarlyAccess(e) {
     e.preventDefault();
@@ -94,6 +128,70 @@ export default function SubscriptionSection() {
       <style>{CSS}</style>
       <section className="sub-section" id="subscription">
         <div className="sub-inner">
+          <div className="unbox-band reveal">
+            <div className="unbox-eyebrow">The Unboxing</div>
+            <h2 className="unbox-head">Head to toe.<br />Cared for.</h2>
+            <div className="unbox-grid">
+              <div className="unbox-main">
+                {BANNER_FULL.ready ? (
+                  <>
+                    <video
+                      ref={filmRef}
+                      poster="/products/kit/still.webp"
+                      controls={filmPlaying}
+                      preload="metadata"
+                      muted
+                      playsInline
+                      onEnded={() => setFilmPlaying(false)}
+                    >
+                      <source src={BANNER_FULL.webm} type="video/webm" />
+                      <source src={BANNER_FULL.mp4} type="video/mp4" />
+                    </video>
+                    {!filmPlaying && (
+                      <button className="unbox-play" onClick={playFilm} aria-label="Watch the SOLUM kit film">
+                        <span className="unbox-scrim" />
+                        <span className="unbox-watch">
+                          <span className="unbox-play-ring">{PLAY_ICON}</span>
+                          <span className="unbox-watch-label">Watch the film</span>
+                        </span>
+                        <span className="unbox-dur">71s</span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <img
+                    src="/products/kit/still.webp"
+                    width={1200}
+                    height={1500}
+                    loading="lazy"
+                    alt="SOLUM kit flatlay — body wash, lotion, scalp massager, exfoliating mitt and back scrub cloth arranged on a dark surface"
+                  />
+                )}
+              </div>
+              <div className="unbox-side">
+                <div className="unbox-side-shot">
+                  <img
+                    src="/products/kit/use-1.webp"
+                    width={1200}
+                    height={1500}
+                    loading="lazy"
+                    alt="SOLUM kit products laid out showing the daily ritual tools"
+                  />
+                </div>
+                <div className="unbox-side-shot">
+                  <img
+                    src="/products/kit/use-2.webp"
+                    width={1200}
+                    height={1500}
+                    loading="lazy"
+                    alt="Close-up of SOLUM kit packaging and product detail"
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="unbox-caption">Every kit ships as one system — wash, tools, and lotion together. Nothing to figure out, nothing missing.</p>
+          </div>
+
           <div className="sub-header reveal">
             <div className="s-sec-tag">Coming Soon</div>
             <h2>Subscription.<br />On Autopilot.</h2>
