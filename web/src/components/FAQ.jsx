@@ -24,11 +24,7 @@ const FAQS = [
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',
-    a: 'GROUND has 5 products: body wash, exfoliating mitt, back scrub cloth, scalp massager and body lotion. That covers the complete daily ritual. RITUAL adds two more: Rhassoul Clay Mask and Argan Body Oil, giving you the full weekly deep-clean treatment on top. If you want the complete system, RITUAL is the one.',
-  },
-  {
-    q: 'What about SOVEREIGN?',
-    a: 'SOVEREIGN replaces the Italy Towel Mitt with a hand-woven Turkish Kese Mitt from Istanbul, and adds Beidi Black Soap. It is the artisan tier, listed on site but not yet available to order. We will notify the early access list when it ships.',
+    a: 'GROUND has 7 products: body wash, exfoliating mitt, back scrub cloth, scalp massager, Atlas clay mask, body lotion and cleansing cloth. That is the full daily ritual plus the weekly clay deep-clean. RITUAL adds two more: Argan Body Oil and the Clay Mixing Bowl, for the complete weekly oil ritual on top. If you want the complete system, RITUAL is the one.',
   },
   {
     q: 'Is this for my face or my body?',

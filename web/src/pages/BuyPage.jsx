@@ -405,7 +405,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       </div>
 
       <div className="co-order-pill">
-        <div className="co-order-pill-kit">{activeKit.name} · First Box · One-Time</div>
+        <div className="co-order-pill-kit">{activeKit.name} · One-Time Kit</div>
         <div className="co-order-pill-charge-row">
           <span className="co-order-pill-charge-label">Charged today</span>
           <span className="co-order-pill-charge-amount">£{price}</span>
@@ -755,7 +755,7 @@ export default function BuyPage() {
             </div>
             <div className="by-soldout-title">Oh No.<br />We're Sorry.</div>
             <div className="by-soldout-kit">
-              SOLUM {activeKit?.name} — {activeKit?.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · First Box
+              SOLUM {activeKit?.name} — {activeKit?.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · One-Time Kit
             </div>
             <div className="by-soldout-apology">
               <div className="by-soldout-apology-head">

@@ -78,11 +78,6 @@ const CADENCE = [
   },
 ];
 
-const PRICES = [
-  { name: 'GROUND', amount: '£38/mo', comingSoon: false },
-  { name: 'RITUAL', amount: '£48/mo', comingSoon: false },
-  { name: 'SOVEREIGN', amount: '£58/mo', comingSoon: false },
-];
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -217,15 +212,6 @@ export default function SubscriptionSection() {
             </div>
             <div className="pricing-panel reveal">
               <div className="sub-coming-badge" style={{ marginBottom: '16px' }}>Subscription Coming Soon</div>
-              <div className="pricing-panel-title">Monthly Price</div>
-              <div className="price-rows">
-                {PRICES.map(p => (
-                  <div key={p.name} className="price-row-item">
-                    <div className="price-row-kit">{p.name}</div>
-                    <div className="price-row-amount">{p.amount}</div>
-                  </div>
-                ))}
-              </div>
               <div className="sub-footnote" style={{ marginBottom: '24px' }}>
                 Right now, SOLUM is available as a one-time purchase only. Subscription, where refills arrive automatically before you run out, is coming soon. Join the early access list and we will notify you the moment it launches.
               </div>

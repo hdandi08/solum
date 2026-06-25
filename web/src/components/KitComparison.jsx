@@ -11,7 +11,7 @@ const CSS = `
 .kits-header .k-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:16px;}
 .kits-header p{font-size:17px;color:var(--mist);font-weight:300;line-height:1.7;max-width:560px;}
-.kits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+.kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);max-width:860px;margin:0 auto;}
 .kit-card{background:var(--char);padding:40px 32px;display:flex;flex-direction:column;position:relative;}
 .kit-card.featured{background:var(--mid);border:1px solid var(--blue);outline:1px solid rgba(46,109,164,0.3);margin:-1px;}
 /* kit image — full-bleed header on each kit card (RITUAL has a real photo; others a placeholder) */
@@ -95,7 +95,7 @@ export default function KitComparison() {
             <p>Each kit arrives once. After that, we only send what you've run out of.</p>
           </div>
           <div className="kits-grid reveal">
-            {KITS.map(kit => {
+            {KITS.filter(k => !k.hidden).map(kit => {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
               const isSovereign = kit.id === 'sovereign';
               return (
@@ -110,7 +110,7 @@ export default function KitComparison() {
                   <div className="kit-prices">
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
-                      <span className="kit-price-first-label">first box</span>
+                      <span className="kit-price-first-label">one-time</span>
                     </div>
                   </div>
                   <div className="kit-divider" />

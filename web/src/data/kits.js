@@ -25,6 +25,7 @@ export const KITS = [
   {
     id: 'sovereign',
     name: 'SOVEREIGN',
+    hidden: true, // hidden from the buy decision until it can actually be ordered (keep data for later)
     image: null, // TODO: SOVEREIGN (artisan tier) kit photo — placeholder shown until provided
     firstBoxPrice: 130,
     monthlyPrice: 58,
