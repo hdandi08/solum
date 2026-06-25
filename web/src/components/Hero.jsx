@@ -133,7 +133,7 @@ export default function Hero() {
             ) : (
               <>
                 <h1 className="hero-title">
-                  Showered.<br />Why doesn't your clean last?
+                  You feel clean.<br />Then you don't.
                 </h1>
                 <div className="hero-line" />
                 <p className="hero-subline">A shower only wets the surface, so the dead skin and bacteria are back within hours and the freshness fades. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Clean that actually lasts.</p>
