@@ -18,9 +18,11 @@ test('hero video reloads to the new product when navigating prev/next', async ({
   await page.goto('/product/07-body-lotion');
   const loadedSrc = () =>
     page.locator('.pp-hero video').evaluate((v: HTMLVideoElement) => v.currentSrc);
-  await expect.poll(loadedSrc).toContain('/products/07/film.');
+  // Film URLs are now CDN paths: /video/products/07_720.{webm,mp4}
+  await expect.poll(loadedSrc, { timeout: 10_000 }).toContain('/video/products/07_720');
   await page.getByRole('link', { name: /argan body oil/i }).first().click();
   await expect(page).toHaveURL(/06-argan-oil/);
   // the hero video must now be playing the argan (06) film, not the lotion (07) film
-  await expect.poll(loadedSrc).toContain('/products/06/film.');
+  // key={slug} on the <video> element forces React to remount it with the new sources.
+  await expect.poll(loadedSrc, { timeout: 10_000 }).toContain('/video/products/06_720');
 });
