@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import { BANNER_FULL } from '../data/productMedia.js';
+import { capture } from '../lib/analytics';
+import { markUnboxingProgress } from '../lib/qualifiedVisitTracker';
 
 const CSS = `
 .sub-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
@@ -99,6 +101,20 @@ export default function SubscriptionSection() {
   const [eaState, setEaState] = useState('idle'); // idle | submitting | done | error
   const [filmPlaying, setFilmPlaying] = useState(false);
   const filmRef = useRef(null);
+  const progressFired = useRef(new Set());
+
+  function onTimeUpdate() {
+    const v = filmRef.current;
+    if (!v || !v.duration) return;
+    const pct = (v.currentTime / v.duration) * 100;
+    for (const m of [25, 50, 75, 100]) {
+      if (pct >= m && !progressFired.current.has(m)) {
+        progressFired.current.add(m);
+        capture('unboxing_video_progress', { percent: m, source: 'unboxing' });
+        markUnboxingProgress(m);
+      }
+    }
+  }
 
   function playFilm() {
     const v = filmRef.current;
@@ -143,6 +159,7 @@ export default function SubscriptionSection() {
                       preload="metadata"
                       playsInline
                       onEnded={() => setFilmPlaying(false)}
+                      onTimeUpdate={onTimeUpdate}
                     >
                       {/* click-to-play film — plays with sound (user-initiated). mp4 carries the audio. */}
                       <source src={BANNER_FULL.mp4} type="video/mp4" />

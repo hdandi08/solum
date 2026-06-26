@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateQualified } from './qualifiedVisit';
 
-const base = { productDetailViewed: false, ritualVideoPct: 0, scrollPct: 0, dwellMs: 0 };
+const base = { productDetailViewed: false, ritualVideoPct: 0, unboxingVideoPct: 0, scrollPct: 0, dwellMs: 0 };
 
 describe('evaluateQualified', () => {
   it('returns null for a bouncer', () => {
@@ -21,5 +21,14 @@ describe('evaluateQualified', () => {
   });
   it('strong signal beats accumulated (product_detail wins)', () => {
     expect(evaluateQualified({ productDetailViewed: true, ritualVideoPct: 0, scrollPct: 60, dwellMs: 61000 })).toBe('product_detail');
+  });
+  it('fires unboxing_50 when unboxing video >=50%', () => {
+    expect(evaluateQualified({ ...base, unboxingVideoPct: 55 })).toBe('unboxing_50');
+  });
+  it('does NOT fire unboxing when <50%', () => {
+    expect(evaluateQualified({ ...base, unboxingVideoPct: 40 })).toBe(null);
+  });
+  it('product_detail beats unboxing_50 when both set', () => {
+    expect(evaluateQualified({ ...base, productDetailViewed: true, unboxingVideoPct: 55 })).toBe('product_detail');
   });
 });
