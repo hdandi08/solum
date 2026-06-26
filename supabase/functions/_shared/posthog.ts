@@ -1,6 +1,7 @@
 export function buildPosthogPurchase(opts: {
   apiKey: string; email?: string | null; piId: string;
   kitId?: string | null; amountPence: number; source?: string | null;
+  host?: string | null;
 }) {
   return {
     api_key: opts.apiKey,
@@ -12,7 +13,7 @@ export function buildPosthogPurchase(opts: {
       revenue_pence: opts.amountPence,
       ref: opts.piId,
       $insert_id: opts.piId,
-      $host: 'bysolum.co.uk',
+      $host: opts.host || 'bysolum.co.uk',
       server_side: true,
     },
   };
@@ -20,7 +21,7 @@ export function buildPosthogPurchase(opts: {
 
 export async function sendPosthogPurchase(opts: {
   email?: string | null; piId: string; kitId?: string | null;
-  amountPence: number; source?: string | null;
+  amountPence: number; source?: string | null; host?: string | null;
 }) {
   const apiKey = Deno.env.get('POSTHOG_PROJECT_KEY');
   if (!apiKey) { console.warn('POSTHOG_PROJECT_KEY not set — skipping PostHog event'); return; }

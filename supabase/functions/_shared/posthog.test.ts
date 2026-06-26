@@ -12,3 +12,18 @@ Deno.test('buildPosthogPurchase shapes event with dedup insert_id', () => {
   assertEquals(e.properties.$insert_id, 'pi_123');
   assertEquals(e.properties.server_side, true);
 });
+
+Deno.test('buildPosthogPurchase uses provided host when given', () => {
+  const e = buildPosthogPurchase({ apiKey: 'phc_x', email: 'a@b.com', piId: 'pi_456', kitId: 'ground', amountPence: 6500, source: 'ig', host: 'bysolum.com' });
+  assertEquals(e.properties.$host, 'bysolum.com');
+});
+
+Deno.test('buildPosthogPurchase falls back to bysolum.co.uk when host is omitted', () => {
+  const e = buildPosthogPurchase({ apiKey: 'phc_x', email: 'a@b.com', piId: 'pi_789', kitId: 'ritual', amountPence: 8500, source: 'ig' });
+  assertEquals(e.properties.$host, 'bysolum.co.uk');
+});
+
+Deno.test('buildPosthogPurchase falls back to bysolum.co.uk when host is null', () => {
+  const e = buildPosthogPurchase({ apiKey: 'phc_x', email: 'a@b.com', piId: 'pi_000', kitId: 'ritual', amountPence: 8500, source: 'ig', host: null });
+  assertEquals(e.properties.$host, 'bysolum.co.uk');
+});

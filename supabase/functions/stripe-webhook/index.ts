@@ -328,7 +328,7 @@ async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone, dispatch_date, arrival_date } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -390,7 +390,7 @@ async function handleOneTimeOrderFromPI(
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
-    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id });
+    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
   }
 
   // Store shipping address from pi.shipping
@@ -416,7 +416,7 @@ async function handleOneTimeOrder(
   session: Stripe.Checkout.Session,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source } = session.metadata ?? {};
+  const { kit_id, first_name, last_name, source, site_host } = session.metadata ?? {};
   const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
   const phone = session.customer_details?.phone ?? null;
   const stripe_customer_id = session.customer as string;
@@ -480,7 +480,7 @@ async function handleOneTimeOrder(
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
-    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source, piId: paymentIntentId });
+    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source, piId: paymentIntentId, host: site_host || undefined });
   }
 
   // Store shipping address
