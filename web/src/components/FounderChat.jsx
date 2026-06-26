@@ -182,13 +182,13 @@ export default function FounderChat() {
   const bottomRef          = useRef(null);
   const sessionId          = useRef(genId());
 
-  // Surface launcher + bubble after 45s
+  // Surface launcher + bubble after 1m 20s
   useEffect(() => {
     const bubbleDismissed = !!sessionStorage.getItem(DISMISS_KEY);
     const t = setTimeout(() => {
       setLaunch(true);
       if (!bubbleDismissed) setBubble(true);
-    }, 45000);
+    }, 80000);
     return () => clearTimeout(t);
   }, []);
 
