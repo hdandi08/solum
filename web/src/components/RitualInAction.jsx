@@ -111,11 +111,16 @@ export default function RitualInAction() {
   }, [showVideo, activeIdx]);
 
   function selectStep(i) {
-    if (i === activeIdx) return;
+    if (i === activeIdx && userSelected) return; // already the deliberate selection
     progressFired.current = new Set();
     setActiveIdx(i);
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
+    if (i === activeIdx) {
+      // same tile, no remount — restart so this intentful play tracks from 0
+      const v = videoRef.current;
+      if (v) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
+    }
   }
 
   function onTimeUpdate(e) {
