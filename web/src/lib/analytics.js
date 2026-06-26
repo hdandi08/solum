@@ -33,7 +33,7 @@ export function identify(userId, traits = {}) {
   }
 }
 
-const IS_PROD = window.location.hostname.includes('bysolum');
+const IS_PROD = /^(www\.)?bysolum\.(com|co\.uk)\.?$/.test(window.location.hostname);
 
 function fbq(...args) {
   if (IS_PROD && window.fbq) window.fbq(...args);
@@ -63,6 +63,11 @@ export function fbInitiateCheckout(kitName, value) {
 // Fires on SuccessPage — eventId is the Stripe PaymentIntent ID for deduplication
 export function fbPurchase(kitName, value, eventId) {
   fbq('track', 'Purchase', { content_name: kitName, value, currency: 'GBP' }, { eventID: eventId });
+}
+
+// Custom (non-standard) Meta event — e.g. QualifiedVisit
+export function fbCustom(event, props = {}) {
+  fbq('trackCustom', event, props);
 }
 
 // ─── TikTok Pixel helpers ────────────────────────────────────────────────────
@@ -106,6 +111,11 @@ export function ttqInitiateCheckout(kitId, kitName, value) {
 // Payment confirmed — event_id ties this to the server-side Events API call for deduplication
 export function ttqCompletePayment(kitId, kitName, value, eventId) {
   ttq('track', 'CompletePayment', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
+}
+
+// Custom TikTok event — e.g. QualifiedVisit
+export function ttqTrack(event, props = {}) {
+  ttq('track', event, props);
 }
 
 export { posthog };
