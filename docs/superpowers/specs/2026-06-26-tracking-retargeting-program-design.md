@@ -28,14 +28,19 @@ Live, accurate-as-far-as-they-go:
 - Meta pixel (`fbq`): `Lead` (waitlist — to be deprecated), `ViewContent`/`InitiateCheckout`/`Purchase`.
 - TikTok pixel (`ttq`): full commerce funnel (ViewContent→AddToCart→AddPaymentInfo→InitiateCheckout→PlaceAnOrder→CompletePayment).
 - Axon (AppLovin): page_view + generate_lead — **to be removed entirely**.
+- **Server-side Purchase ALREADY BUILT** (commits `2c60d72`, `ec33a68`, `0f0fb61`): the Stripe webhook
+  (`stripe-webhook/index.ts`) fires Meta CAPI (`sendMetaPurchaseEvent`, pixel `690345887768095`) and
+  TikTok Events API (`sendTikTokPurchaseEvent`, pixel `D8NHU2RC77UCVEHVNJNG`) on payment success, with
+  SHA-256 hashed email+phone and `event_id` = PaymentIntent id — matching the client's dedup key.
 - Two PostHog dashboards built via API (Overview #776102, Deep Funnel #776101), all insights
   filtered to prod hosts `^(www\.)?bysolum\.(com|co\.uk)\.?$`.
 - Baseline (30d, prod): $pageview 606 → buy_page_viewed 55 → checkout_initiated 5 → purchase 3, £345.
 
 ### Gaps found (review)
-1. **`purchase` is client-only and under-counts** — fires only on `SuccessPage` mount
-   (`SuccessPage.jsx:93`); lost if the buyer never lands on `/success` (closed tab, redirect
-   method failure). Affects PostHog *and* pixels.
+1. **`purchase` undercounts in PostHog only.** Client `purchase` fires only on `SuccessPage` mount
+   (`SuccessPage.jsx:93`); lost if the buyer never lands on `/success`. BUT Meta/TikTok already get a
+   reliable server-side Purchase from the webhook, so **only PostHog undercounts** — the webhook does
+   not feed PostHog. Fix: webhook also POSTs to the PostHog capture API (server-side) for parity.
 2. **No mid-checkout events** — nothing between `buy_page_viewed` and `checkout_initiated`
    (which only fires after the payment intent is created). The 55→5 collapse is unexplained.
 3. **`checkout_initiated` inconsistent across express vs standard paths** (`BuyPage.jsx:506` vs `:715`)
@@ -47,7 +52,8 @@ Live, accurate-as-far-as-they-go:
 
 ## 3. Decisions (locked)
 
-- Server-side **Full CAPI** (Meta Conversions API) + **TikTok Events API**, with `event_id` dedup.
+- Server-side Meta CAPI + TikTok Events API for Purchase **already built & dedup'd** — v1 server work is
+  (a) feed PostHog from the webhook for parity, (b) optionally boost EMQ with `_fbp`/`_fbc`/`ttp`/`ttclid`.
 - **`QualifiedVisit` = multi-signal, strong-or-accumulated** (client-side only; no email to match on).
   Fires when EITHER one **strong** signal occurs (viewed a **product detail page**, OR watched a
   **ritual video to ≥50%**), OR **accumulated engagement** is reached (scroll ≥50% **AND** dwell ≥60s).
@@ -68,7 +74,7 @@ Live, accurate-as-far-as-they-go:
 | `checkout_delivery_submitted` (new) | step 2 (address) passes validation | ✅ | — | — | client |
 | `ViewContent` | `/buy` + product pages | ✅ | ✅ | ✅ | client |
 | `InitiateCheckout` / `checkout_initiated` | payment intent created | ✅ | ✅ | ✅ | client |
-| `Purchase` / `purchase` | Stripe `payment_intent.succeeded` (server) + SuccessPage (client) | ✅ (both) | ✅ | ✅ | **client + server, `event_id` = PaymentIntent id** |
+| `Purchase` / `purchase` | Stripe `payment_intent.succeeded` (server) + SuccessPage (client) | ✅ client (existing) **+ NEW server capture for parity** | ✅ client + **server (built)** | ✅ client + **server (built)** | **`event_id` = PaymentIntent id** |
 | `ritual_video_progress` (new) | 25/50/75/100% of ritual video | ✅ | — | — | client |
 | ~~`Lead` (waitlist)~~ | — | deprecated | removed | removed | — |
 | ~~Axon~~ | — | removed | — | — | — |
@@ -86,15 +92,22 @@ as the dedup key. Server-side fires the same id so Meta/TikTok dedup the client 
   'ritual_50' | 'scroll_dwell', dwell_s, scroll_pct })` — so we can tune thresholds later from data.
 - Also send Meta (`fbq('trackCustom','QualifiedVisit')`) and TikTok (`ttq.track('QualifiedVisit')`).
 
-## 5. Server-side tracking (CAPI + Events API)
+## 5. Server-side tracking (current state + v1 work)
 
-- Host in the existing Supabase Stripe webhook function (already receives `payment_intent.succeeded`).
-- On success, POST to:
-  - Meta Conversions API — `Purchase` with hashed email (target EMQ ≥8.0), `event_id` = PI id, `fbp`/`fbc` if available.
-  - TikTok Events API — `CompletePayment` with hashed email, `event_id` = PI id, `ttclid` if available.
-- Secrets: Meta CAPI access token + pixel id; TikTok Events API access token + pixel id — into Supabase secrets.
-- Deploy to **both dev and prod** in the same session (per project rule); never touch prod DB without per-op approval.
-- Optional later: also send `Lead`/`InitiateCheckout` server-side. Out of scope for v1 — Purchase first (highest value).
+**Already built** in `stripe-webhook/index.ts` (do NOT rebuild):
+- `sendMetaPurchaseEvent` → Meta CAPI, hashed email+phone, `event_id` = PI id, fires on payment success.
+- `sendTikTokPurchaseEvent` → TikTok Events API (`CompletePayment`), hashed email+phone, `event_id` = PI id.
+- Client `fbPurchase`/`ttqCompletePayment` use the same PI id, so Meta/TikTok dedup the client+server pair.
+
+**v1 server-side work (small):**
+1. **Verify** secrets (`META_CAPI_ACCESS_TOKEN`, `TIKTOK_EVENTS_ACCESS_TOKEN`) are set and the function is
+   deployed on **both dev and prod**; confirm events arrive (Meta Events Manager / TikTok Events API logs).
+2. **Feed PostHog from the webhook** — add a `sendPosthogPurchase()` that POSTs to the PostHog capture API
+   (`https://eu.i.posthog.com/capture/`) so PostHog `purchase` reconciles with Stripe regardless of `/success`.
+   Use a deterministic `$insert_id` = PI id (PostHog dedup) so it never double-counts with the client event.
+3. **(Optional EMQ boost)** capture `_fbp`/`_fbc` (Meta) and `ttp`/`ttclid` (TikTok) cookies client-side,
+   pass them into the PaymentIntent metadata at creation, and include them in the server events.
+- Deploy edge function to **both dev and prod** in the same session (per project rule); never touch prod DB without per-op approval.
 
 ## 6. Skip-zone instrumentation
 
