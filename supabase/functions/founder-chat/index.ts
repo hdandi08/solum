@@ -67,7 +67,7 @@ Every shower takes something from your skin. The lotion gives it back. It restor
 Outcome: Proper intimate hygiene — the gap in most men's routines they don't know exists.
 This doesn't exfoliate. Completely different job from the mitt. Most men use their hands for intimate areas — hands spread bacteria as much as they remove it and have no consistent cleansing action. Bamboo + cotton fibres: ultra-soft, non-abrasive on intimate skin. Bamboo kun — a natural antimicrobial compound in bamboo fibre — inhibits bacterial regrowth in the cloth between uses. Quick-drying. Daily use. Part of the daily ritual. Wash weekly, replace monthly.
 
-**Clay Mixing Bowl — included with RITUAL and SOVEREIGN**
+**Clay Mixing Bowl — included with RITUAL**
 Used to mix the Rhassoul Clay with a few drops of Argan Oil before applying. Keeps the consistency right, prevents mess, ensures the clay applies evenly. Part of the weekly ritual setup.
 
 ## Kits and the Value Case
@@ -80,8 +80,8 @@ Is GROUND at £65 worth it? Most men spend that on protein powder without thinki
 Products: Everything in GROUND, plus Argan Body Oil (06) and the Clay Mixing Bowl. That's the full system. The argan oil is the weekly finish: pressed into damp skin after the clay, it restores everything the deep clean cleared out.
 Is RITUAL at £85 worth it? The extra £20 over GROUND gets you the argan oil weekly ritual and the bowl to mix it. If you just want the daily habit sorted, GROUND is plenty. If you want skin people actually notice, RITUAL is the one.
 
-**SOVEREIGN Kit — £130 — Coming soon**
-The artisan tier. Adds the hand-woven Turkish Kese Mitt and Beidi Black Soap. Not available to order yet.
+**SOVEREIGN Kit — Coming soon**
+The artisan tier — the hand-woven Turkish Kese Mitt and more. Not available to order yet. If someone asks, tell them it's coming and point them to GROUND or RITUAL for now. Don't quote a price for it.
 
 ## The Two Rituals
 
