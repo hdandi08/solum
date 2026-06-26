@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase.js';
 
 const DISMISS_KEY = 'founder_chat_dismissed';
+const FULL_DISMISS_KEY = 'founder_chat_full_dismissed';
 
 const SUGGESTED = [
   { label: 'Why SOLUM?',          text: 'Why did you build SOLUM and what makes it different?' },
@@ -39,6 +40,18 @@ const CSS = `
   transition:transform .2s;
 }
 .fc-avatar:hover{transform:scale(1.05);}
+.fc-avatar-wrap{position:relative;flex-shrink:0;}
+.fc-launcher-dismiss{
+  position:absolute;top:-6px;right:-6px;
+  width:20px;height:20px;border-radius:50%;
+  background:#181C24;border:1px solid #1e2530;
+  color:rgba(240,236,226,0.6);
+  font-size:11px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;padding:0;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  box-shadow:0 2px 8px rgba(0,0,0,0.5);
+}
+.fc-launcher-dismiss:hover{color:#F0ECE2;border-color:#2E6DA4;}
 
 .fc-bubble{
   position:fixed;bottom:86px;right:24px;z-index:9000;
@@ -51,19 +64,19 @@ const CSS = `
   animation:fc-fade-in .3s ease;
   box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
+.fc-bubble-actions{
+  margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
 .fc-bubble-cta{
-  display:block;margin-top:10px;
   font-size:12px;color:#4A8FC7;
   background:none;border:none;cursor:pointer;padding:0;
   font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-  text-align:left;
 }
 .fc-bubble-cta:hover{color:#F0ECE2;}
 .fc-bubble-dismiss{
   background:none;border:none;cursor:pointer;padding:0;
   font-size:11px;color:rgba(240,236,226,0.35);
   font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-  margin-left:12px;
 }
 .fc-bubble-dismiss:hover{color:rgba(240,236,226,0.7);}
 
@@ -184,6 +197,7 @@ export default function FounderChat() {
 
   // Surface launcher + bubble after 1m 20s
   useEffect(() => {
+    if (sessionStorage.getItem(FULL_DISMISS_KEY)) return; // user fully dismissed — never resurface
     const bubbleDismissed = !!sessionStorage.getItem(DISMISS_KEY);
     const t = setTimeout(() => {
       setLaunch(true);
@@ -200,6 +214,13 @@ export default function FounderChat() {
   function dismiss() {
     sessionStorage.setItem(DISMISS_KEY, '1');
     setBubble(false);
+  }
+
+  function fullyDismiss() {
+    sessionStorage.setItem(FULL_DISMISS_KEY, '1');
+    setBubble(false);
+    setLaunch(false);
+    setOpen(false);
   }
 
   function openChat() {
@@ -250,7 +271,7 @@ export default function FounderChat() {
       {bubble && !open && (
         <div className="fc-bubble">
           Got a question about the kit? I built SOLUM — ask me anything.
-          <div style={{ marginTop: 10, display: 'flex', alignItems: 'center' }}>
+          <div className="fc-bubble-actions">
             <button className="fc-bubble-cta" onClick={openChat}>Ask now →</button>
             <button className="fc-bubble-dismiss" onClick={dismiss}>Dismiss</button>
           </div>
@@ -330,12 +351,24 @@ export default function FounderChat() {
           {!bubble && (
             <span className="fc-launcher-label" onClick={openChat}>Ask Harsha</span>
           )}
-          <img
-            src="/harsha.jpg"
-            alt="Ask Harsha"
-            className="fc-avatar"
-            onClick={openChat}
-          />
+          <div className="fc-avatar-wrap">
+            <img
+              src="/harsha.jpg"
+              alt="Ask Harsha"
+              className="fc-avatar"
+              onClick={openChat}
+            />
+            {!bubble && (
+              <button
+                className="fc-launcher-dismiss"
+                onClick={fullyDismiss}
+                aria-label="Dismiss Harsha for this visit"
+                title="Dismiss"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       )}
     </>
