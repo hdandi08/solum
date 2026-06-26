@@ -1,5 +1,6 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { sendPosthogPurchase } from '../_shared/posthog.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -389,6 +390,7 @@ async function handleOneTimeOrderFromPI(
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id });
   }
 
   // Store shipping address from pi.shipping
@@ -478,6 +480,7 @@ async function handleOneTimeOrder(
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
+    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source, piId: paymentIntentId });
   }
 
   // Store shipping address

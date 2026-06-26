@@ -90,7 +90,7 @@ export default function SuccessPage() {
       try { sessionStorage.removeItem('solum_buyer_email'); } catch {}
     }
 
-    capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef });
+    capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef, $insert_id: rawRef });
 
     if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
     if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
