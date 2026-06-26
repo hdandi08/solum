@@ -672,6 +672,7 @@ export default function BuyPage() {
       return;
     }
 
+    capture('checkout_details_submitted', { kit: selectedKit, source });
     setStep('delivery');
     window.scrollTo(0, 0);
   }
@@ -712,8 +713,9 @@ export default function BuyPage() {
       }
 
       identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
-      capture('checkout_initiated', { kit: selectedKit, source, price });
-      fbInitiateCheckout(activeKit?.name ?? selectedKit, price);
+      capture('checkout_delivery_submitted', { kit: selectedKit, source });
+      capture('checkout_initiated', { kit: selectedKit, source, price, method: 'standard' });
+      fbInitiateCheckout(selectedKit, price);
       ttqIdentify(form.email.trim().toLowerCase());
       ttqInitiateCheckout(selectedKit, activeKit?.name ?? selectedKit, price);
       ttqAddPaymentInfo(selectedKit, activeKit?.name ?? selectedKit, price);
