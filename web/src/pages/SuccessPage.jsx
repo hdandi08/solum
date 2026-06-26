@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
-import { capture, identify, fbPurchase, ttqIdentify, ttqCompletePayment } from '../lib/analytics.js';
+import { identify, fbPurchase, ttqIdentify, ttqCompletePayment } from '../lib/analytics.js';
 
 const CSS = `
 .su-page{min-height:100vh;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;position:relative;overflow:hidden;}
@@ -90,7 +90,7 @@ export default function SuccessPage() {
       try { sessionStorage.removeItem('solum_buyer_email'); } catch {}
     }
 
-    capture('purchase', { kit: kitId, source, revenue_pence: amountPence, ref: rawRef, $insert_id: rawRef });
+    // PostHog 'purchase' is fired server-side from the Stripe webhook (single source — avoids client/server double-count).
 
     if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
     if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
