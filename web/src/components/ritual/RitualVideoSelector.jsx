@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { capture } from '../../lib/analytics.js';
+import { markRitualProgress } from '../../lib/qualifiedVisitTracker.js';
 import { DAILY_VIDEO, DAILY_POSTER, WEEKLY_READY, RITUALS, GOLD } from '../../data/ritualVideo.js';
 
 const CSS = `
@@ -144,6 +145,7 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const videoRef = useRef(null);
+  const progressFired = useRef(new Set());
   const other = active === 'daily' ? 'weekly' : 'daily';
 
   const select = (id) => {
@@ -152,8 +154,22 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
     setPlaying(false);
     setEnded(false);
     setActive(id);
+    progressFired.current.clear();
     capture('ritual_selected', { ritual: id, source: 'ritual_page' });
   };
+
+  function onTimeUpdate(e) {
+    const v = e.currentTarget;
+    if (!v.duration) return;
+    const pct = Math.round((v.currentTime / v.duration) * 100);
+    for (const m of [25, 50, 75, 100]) {
+      if (pct >= m && !progressFired.current.has(m)) {
+        progressFired.current.add(m);
+        capture('ritual_video_progress', { ritual: active, percent: m, source: 'ritual_page' });
+        markRitualProgress(m);
+      }
+    }
+  }
 
   const play = () => {
     const v = videoRef.current;
@@ -205,6 +221,7 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                       controls={playing}
                       preload="metadata"
                       playsInline
+                      onTimeUpdate={onTimeUpdate}
                       onEnded={() => { setPlaying(false); setEnded(true); }}
                     >
                       <source src={DAILY_VIDEO.mobile} media="(max-width:768px)" />
