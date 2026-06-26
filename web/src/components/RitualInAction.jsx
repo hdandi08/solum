@@ -32,9 +32,7 @@ const CSS = `
 .ria-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,64px);letter-spacing:.04em;color:var(--bone);line-height:.95;text-align:center;margin-bottom:12px;}
 .ria-sub{font-size:15px;font-weight:300;color:var(--stone);text-align:center;margin:0 auto 36px;max-width:480px;line-height:1.6;}
 
-/* player: feature + rail */
-.ria-player{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;gap:20px;}
-.ria-stage{position:relative;aspect-ratio:9/16;width:100%;max-width:340px;margin:0 auto;overflow:hidden;background:#000;border:1px solid var(--line);}
+/* shared media bits */
 .ria-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
 .ria-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,9,11,0.85),rgba(8,9,11,0.1) 52%,rgba(8,9,11,0) 72%);pointer-events:none;}
 .ria-stage-overlay{position:absolute;left:0;right:0;bottom:0;padding:16px;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
@@ -46,8 +44,10 @@ const CSS = `
 .ria-stage-name{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:.04em;color:var(--bone);line-height:1.05;}
 .ria-stage-action{font-size:14px;font-weight:300;color:var(--mist);line-height:1.45;}
 
-/* rail */
-.ria-rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+/* ── desktop player: feature + rail ── */
+.ria-player{max-width:1040px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:340px 1fr;gap:40px;align-items:start;}
+.ria-stage{position:relative;aspect-ratio:9/16;width:100%;overflow:hidden;background:#000;border:1px solid var(--line);}
+.ria-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-self:stretch;}
 .ria-thumb{position:relative;display:flex;flex-direction:column;gap:6px;background:var(--char);border:1px solid var(--line);padding:0;cursor:pointer;overflow:hidden;text-align:left;transition:border-color .2s;}
 .ria-thumb:hover{border-color:rgba(240,236,226,0.4);}
 .ria-thumb.active{border-color:var(--blit);}
@@ -55,23 +55,26 @@ const CSS = `
 .ria-thumb-meta{display:flex;flex-direction:column;gap:3px;padding:8px 9px 10px;}
 .ria-thumb-badges{display:flex;align-items:center;gap:5px;}
 .ria-thumb-name{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.03em;color:var(--bone);line-height:1.05;}
+.ria-thumb-cue{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:rgba(8,9,11,0.55);border:1px solid rgba(240,236,226,0.5);display:flex;align-items:center;justify-content:center;color:var(--bone);}
 
-.ria-more{display:flex;justify-content:center;margin-top:8px;}
+/* ── mobile swipe carousel ── */
+.ria-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:0 11vw 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.ria-carousel::-webkit-scrollbar{display:none;}
+.ria-card{flex:0 0 78vw;max-width:360px;scroll-snap-align:center;}
+.ria-card-media{position:relative;width:100%;height:64vh;max-height:600px;overflow:hidden;background:#000;border:1px solid var(--line);}
+.ria-card-cue{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:rgba(46,109,164,0.6);border:1.5px solid var(--bone);display:flex;align-items:center;justify-content:center;color:var(--bone);backdrop-filter:blur(2px);pointer-events:none;}
+.ria-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;padding:0 24px;flex-wrap:wrap;}
+.ria-dot{width:7px;height:7px;border-radius:50%;background:rgba(240,236,226,0.22);border:none;padding:0;cursor:pointer;transition:background .25s,width .25s;}
+.ria-dot.active{background:var(--blit);width:20px;border-radius:4px;}
+
+.ria-more{display:flex;justify-content:center;margin-top:24px;}
 .ria-more a{display:inline-flex;align-items:center;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--bone);text-decoration:none;padding:12px 28px;border:1px solid rgba(240,236,226,0.25);transition:border-color .2s;}
 .ria-more a:hover{border-color:var(--bone);}
 .ria-more svg{transition:transform .2s;}
 .ria-more a:hover svg{transform:translateX(3px);}
 
-@media(min-width:769px){
-  .ria-player{display:grid;grid-template-columns:340px 1fr;gap:40px;align-items:start;}
-  .ria-stage{margin:0;}
-  .ria-rail{grid-template-columns:repeat(2,1fr);align-self:stretch;}
-  .ria-more{grid-column:1 / -1;}
-}
 @media(max-width:768px){
   .ria-section{padding:60px 0;}
-  .ria-rail{display:flex;overflow-x:auto;gap:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
-  .ria-thumb{flex:0 0 132px;}
 }
 `;
 
@@ -81,11 +84,33 @@ const ARROW = (
   </svg>
 );
 
+const PLAY = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+const PLAY_SM = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
 export default function RitualInAction() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width:768px)').matches
+  );
   const [activeIdx, setActiveIdx] = useState(0);
   const [userSelected, setUserSelected] = useState(false);
+
+  // desktop refs
   const stageRef = useRef(null);
   const videoRef = useRef(null);
+  // mobile refs
+  const carouselRef = useRef(null);
+  const cardRefs = useRef([]);
+  const vidRefs = useRef([]);
+  const firstSettle = useRef(true);
+
   const progressFired = useRef(new Set());
 
   const step = STEPS[activeIdx];
@@ -93,45 +118,82 @@ export default function RitualInAction() {
   const poster = (film && film.poster) || posterFor(step.num);
   const showVideo = !!film && !REDUCE_MOTION;
 
-  // Play the single feature only while the section is in view (muted autoplay).
+  // Track viewport so only one structure (desktop player OR mobile carousel) mounts.
   useEffect(() => {
-    if (!showVideo) return;
+    const mq = window.matchMedia('(max-width:768px)');
+    const onChange = () => setIsMobile(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // DESKTOP: play the single feature only while the section is in view.
+  useEffect(() => {
+    if (isMobile || !showVideo) return;
     const el = stageRef.current;
     if (!el) return;
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         const v = videoRef.current;
         if (!v) return;
-        if (e.isIntersecting) { v.play().catch(() => {}); }
-        else { v.pause(); }
+        if (e.isIntersecting) { v.play().catch(() => {}); } else { v.pause(); }
       });
     }, { threshold: 0.4 });
     obs.observe(el);
     return () => obs.disconnect();
-  }, [showVideo, activeIdx]);
+  }, [isMobile, showVideo, activeIdx]);
 
+  // MOBILE: the centred card plays; others pause. The first settle is passive (no intent);
+  // any subsequent swipe / dot-jump counts as a deliberate selection.
+  useEffect(() => {
+    if (!isMobile) return;
+    const root = carouselRef.current;
+    if (!root) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!(e.isIntersecting && e.intersectionRatio >= 0.6)) return;
+        const i = Number(e.target.dataset.idx);
+        setActiveIdx(i);
+        progressFired.current = new Set();
+        vidRefs.current.forEach((v, idx) => {
+          if (!v) return;
+          if (idx === i) { v.play().catch(() => {}); } else { v.pause(); }
+        });
+        if (firstSettle.current) { firstSettle.current = false; return; } // initial card = passive
+        setUserSelected(true);
+        capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
+      });
+    }, { root, threshold: [0.6] });
+    cardRefs.current.forEach((c) => c && obs.observe(c));
+    return () => obs.disconnect();
+  }, [isMobile]);
+
+  function goToCard(i) {
+    cardRefs.current[i]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  // DESKTOP: click a thumbnail to select + play.
   function selectStep(i) {
-    if (i === activeIdx && userSelected) return; // already the deliberate selection
+    if (i === activeIdx && userSelected) return;
     progressFired.current = new Set();
     setActiveIdx(i);
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
     if (i === activeIdx) {
-      // same tile, no remount — restart so this intentful play tracks from 0
       const v = videoRef.current;
       if (v) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
     }
   }
 
-  function onTimeUpdate(e) {
-    if (!userSelected) return; // autoplay-first never counts as intent
+  // Fires for the active, user-selected video only. Autoplay-first never counts as intent.
+  function fireProgress(e, idx, slug) {
+    if (!userSelected || idx !== activeIdx) return;
     const v = e.currentTarget;
     if (!v.duration) return;
     const pct = Math.round((v.currentTime / v.duration) * 100);
     for (const m of [25, 50, 75, 100]) {
       if (pct >= m && !progressFired.current.has(m)) {
         progressFired.current.add(m);
-        capture('ritual_video_progress', { product: step.slug, percent: m, source: 'ritual_in_action' });
+        capture('ritual_video_progress', { product: slug, percent: m, source: 'ritual_in_action' });
         markRitualProgress(m);
       }
     }
@@ -147,65 +209,131 @@ export default function RitualInAction() {
           <p className="ria-sub reveal">Every step, on real skin. Daily keeps you maintained. Weekly resets you.</p>
         </div>
 
-        <div className="ria-player reveal">
-          <div className="ria-stage" ref={stageRef}>
-            {showVideo ? (
-              <video
-                key={activeIdx}
-                ref={videoRef}
-                className="ria-media"
-                poster={poster}
-                muted
-                autoPlay
-                loop
-                playsInline
-                preload="none"
-                onTimeUpdate={onTimeUpdate}
-              >
-                <source src={film.webm} type="video/webm" />
-                <source src={film.mp4} type="video/mp4" />
-              </video>
-            ) : (
-              <img className="ria-media" src={poster} alt={`${step.name} in use`} loading="lazy" />
-            )}
-            <div className="ria-scrim" />
-            <div className="ria-stage-overlay">
-              <div className="ria-badges">
-                <span className="ria-num">{step.num}</span>
-                <span className={`ria-freq ${step.freq}`}>{step.freq}</span>
+        {isMobile ? (
+          <>
+            <div className="ria-carousel" ref={carouselRef} role="tablist" aria-label="Ritual steps">
+              {STEPS.map((s, i) => {
+                const f = videoFor(s.slug);
+                const vid = !!f && !REDUCE_MOTION;
+                const pos = (f && f.poster) || posterFor(s.num);
+                return (
+                  <div
+                    className="ria-card"
+                    key={s.slug}
+                    data-idx={i}
+                    ref={(el) => { cardRefs.current[i] = el; }}
+                  >
+                    <div className="ria-card-media">
+                      {vid ? (
+                        <video
+                          ref={(el) => { vidRefs.current[i] = el; }}
+                          className="ria-media"
+                          poster={pos}
+                          muted
+                          loop
+                          playsInline
+                          preload="none"
+                          onTimeUpdate={(e) => fireProgress(e, i, s.slug)}
+                        >
+                          <source src={f.webm} type="video/webm" />
+                          <source src={f.mp4} type="video/mp4" />
+                        </video>
+                      ) : (
+                        <img className="ria-media" src={pos} alt={`${s.name} in use`} loading="lazy" />
+                      )}
+                      <div className="ria-scrim" />
+                      {vid && i !== activeIdx && <span className="ria-card-cue">{PLAY}</span>}
+                      <div className="ria-stage-overlay">
+                        <div className="ria-badges">
+                          <span className="ria-num">{s.num}</span>
+                          <span className={`ria-freq ${s.freq}`}>{s.freq}</span>
+                        </div>
+                        <span className="ria-stage-name">{s.name}</span>
+                        <span className="ria-stage-action">{s.action}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="ria-dots" role="tablist" aria-label="Ritual steps">
+              {STEPS.map((s, i) => (
+                <button
+                  key={s.slug}
+                  className={`ria-dot${i === activeIdx ? ' active' : ''}`}
+                  aria-label={`Go to ${s.name}`}
+                  aria-selected={i === activeIdx}
+                  onClick={() => goToCard(i)}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="ria-player reveal">
+            <div className="ria-stage" ref={stageRef}>
+              {showVideo ? (
+                <video
+                  key={activeIdx}
+                  ref={videoRef}
+                  className="ria-media"
+                  poster={poster}
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  preload="none"
+                  onTimeUpdate={(e) => fireProgress(e, activeIdx, step.slug)}
+                >
+                  <source src={film.webm} type="video/webm" />
+                  <source src={film.mp4} type="video/mp4" />
+                </video>
+              ) : (
+                <img className="ria-media" src={poster} alt={`${step.name} in use`} loading="lazy" />
+              )}
+              <div className="ria-scrim" />
+              <div className="ria-stage-overlay">
+                <div className="ria-badges">
+                  <span className="ria-num">{step.num}</span>
+                  <span className={`ria-freq ${step.freq}`}>{step.freq}</span>
+                </div>
+                <span className="ria-stage-name">{step.name}</span>
+                <span className="ria-stage-action">{step.action}</span>
               </div>
-              <span className="ria-stage-name">{step.name}</span>
-              <span className="ria-stage-action">{step.action}</span>
+            </div>
+
+            <div className="ria-rail" role="tablist" aria-label="Ritual steps">
+              {STEPS.map((s, i) => {
+                const hasFilm = !!videoFor(s.slug);
+                return (
+                  <button
+                    key={s.slug}
+                    className={`ria-thumb${i === activeIdx ? ' active' : ''}`}
+                    role="tab"
+                    aria-selected={i === activeIdx}
+                    aria-label={`Play ${s.name}`}
+                    onClick={() => selectStep(i)}
+                  >
+                    <img className="ria-thumb-img" src={posterFor(s.num)} alt={`${s.name}`} loading="lazy" />
+                    {hasFilm && <span className="ria-thumb-cue">{PLAY_SM}</span>}
+                    <span className="ria-thumb-meta">
+                      <span className="ria-thumb-badges">
+                        <span className="ria-num">{s.num}</span>
+                        <span className={`ria-freq ${s.freq}`}>{s.freq}</span>
+                      </span>
+                      <span className="ria-thumb-name">{s.name}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
+        )}
 
-          <div className="ria-rail" role="tablist" aria-label="Ritual steps">
-            {STEPS.map((s, i) => (
-              <button
-                key={s.slug}
-                className={`ria-thumb${i === activeIdx ? ' active' : ''}`}
-                role="tab"
-                aria-selected={i === activeIdx}
-                aria-label={`Play ${s.name}`}
-                onClick={() => selectStep(i)}
-              >
-                <img className="ria-thumb-img" src={posterFor(s.num)} alt={`${s.name}`} loading="lazy" />
-                <span className="ria-thumb-meta">
-                  <span className="ria-thumb-badges">
-                    <span className="ria-num">{s.num}</span>
-                    <span className={`ria-freq ${s.freq}`}>{s.freq}</span>
-                  </span>
-                  <span className="ria-thumb-name">{s.name}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="ria-more reveal">
-            <a href="/ritual" onClick={() => capture('ritual_cta_clicked', { source: 'ritual_in_action' })}>
-              See the full ritual {ARROW}
-            </a>
-          </div>
+        <div className="ria-more reveal">
+          <a href="/ritual" onClick={() => capture('ritual_cta_clicked', { source: 'ritual_in_action' })}>
+            See the full ritual {ARROW}
+          </a>
         </div>
       </section>
     </>
