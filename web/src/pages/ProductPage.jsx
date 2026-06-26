@@ -6,6 +6,7 @@ import Nav from '../components/Nav.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import { capture } from '../lib/analytics.js';
+import { markProductDetail } from '../lib/qualifiedVisitTracker';
 
 const CSS = `
 .pp{background:var(--black);color:var(--bone);padding-top:64px;}
@@ -95,6 +96,7 @@ export default function ProductPage() {
     let c = document.querySelector('link[rel="canonical"]');
     if (c) c.setAttribute('href', `https://bysolum.co.uk/product/${slug}`);
     capture('product_page_viewed', { slug });
+    markProductDetail();
   }, [p, slug]);
 
   // Click-to-zoom lightbox for the gallery

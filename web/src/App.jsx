@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
+import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
 import CheckoutPage from './pages/checkout/CheckoutPage';
@@ -40,6 +41,7 @@ function AuthRedirectGuard() {
 const IS_LIVE = import.meta.env.VITE_LAUNCH_MODE === 'live';
 
 export default function App() {
+  useEffect(() => { initQualifiedVisitTracker(); }, []);
   return (
     <BrowserRouter>
       <AuthRedirectGuard />
