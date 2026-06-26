@@ -16,10 +16,13 @@ const CSS = `
 .unbox-side-shot{overflow:hidden;border:1px solid var(--line);flex:1;}
 .unbox-side-shot img{width:100%;height:100%;object-fit:cover;display:block;}
 .unbox-play{position:absolute;inset:0;width:100%;height:100%;border:none;padding:0;cursor:pointer;background:none;display:block;}
-.unbox-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,9,11,0.55),rgba(8,9,11,0) 45%,rgba(8,9,11,0) 70%,rgba(8,9,11,0.4));}
+.unbox-scrim{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(8,9,11,0.6),rgba(8,9,11,0) 42%),linear-gradient(to top,rgba(8,9,11,0.55),rgba(8,9,11,0) 45%,rgba(8,9,11,0) 70%,rgba(8,9,11,0.4));}
 .unbox-watch{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;}
-.unbox-play-ring{width:62px;height:62px;border-radius:50%;background:rgba(8,9,11,0.5);border:1.5px solid var(--bone);display:flex;align-items:center;justify-content:center;color:var(--bone);backdrop-filter:blur(3px);transition:transform .2s,background .2s,border-color .2s;}
-.unbox-play:hover .unbox-play-ring{transform:scale(1.08);background:var(--blue);border-color:var(--blue);}
+.unbox-play-ring{position:relative;width:76px;height:76px;border-radius:50%;background:rgba(46,109,164,0.72);border:2px solid var(--bone);box-shadow:0 4px 24px rgba(8,9,11,0.6),0 0 0 6px rgba(74,143,199,0.18);display:flex;align-items:center;justify-content:center;color:var(--bone);backdrop-filter:blur(3px);transition:transform .2s,background .2s,border-color .2s;}
+.unbox-play-ring::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(74,143,199,0.6);animation:unboxpulse 2s ease-out infinite;}
+@keyframes unboxpulse{0%{transform:scale(1);opacity:.7;}100%{transform:scale(1.5);opacity:0;}}
+@media(prefers-reduced-motion:reduce){.unbox-play-ring::after{animation:none;}}
+.unbox-play:hover .unbox-play-ring{transform:scale(1.08);background:var(--blit);border-color:var(--blit);}
 .unbox-watch-label{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--bone);text-transform:uppercase;text-shadow:0 1px 8px rgba(8,9,11,0.8);}
 .unbox-dur{position:absolute;bottom:12px;right:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;background:rgba(8,9,11,0.5);padding:4px 8px;}
 .unbox-caption{font-size:13px;color:var(--stone);font-weight:300;text-align:center;margin-top:16px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;}
