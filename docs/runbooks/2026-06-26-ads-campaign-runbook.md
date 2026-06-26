@@ -18,6 +18,8 @@ This runbook defines the 3-campaign structure on both Meta and TikTok: Cold/Lead
 | Warm / Retarget | 30–40% |
 | Hot / Convert | 30–40% |
 
+These ranges are guidelines — pick values within each band that sum to 100% (e.g. 25% cold / 35% warm / 40% hot).
+
 ---
 
 ## Events Reference
@@ -33,6 +35,8 @@ These are the events now instrumented. Both platforms receive every event releva
 | `checkout_details_submitted` | Step 1 (name/email) validated | ✅ | — | — | PostHog only |
 | `checkout_delivery_submitted` | Step 2 (address) validated | ✅ | — | — | PostHog only |
 | `ritual_video_progress` | 25/50/75/100% of ritual video | ✅ | — | — | PostHog only |
+| `scroll_depth` | Page scroll ≥25/50/75% | ✅ | — | — | PostHog only |
+| `section_viewed` | Hero / Product / Ritual section entered | ✅ | — | — | PostHog only |
 
 Mid-funnel events (`checkout_details_submitted`, `checkout_delivery_submitted`, `ritual_video_progress`, `scroll_depth`, `section_viewed`) are PostHog-only — they are for internal analysis, not ad platform optimisation.
 
@@ -310,7 +314,7 @@ Complete this checklist before activating any campaigns on either platform. Do n
 | `QualifiedVisit` appears as a custom event | Meta Events Manager → Data Sources → your pixel → Test Events | TikTok Events Manager → your pixel → Test Events — trigger on-site then check |
 | `QualifiedVisit` is selectable as an optimisation event | In campaign setup → Conversions objective → Conversion Event dropdown — must appear under Custom Events | Same path in TikTok campaign setup → Conversion Event |
 | `InitiateCheckout` fires at payment intent creation | Events Manager test tab — go through checkout to payment step | Same |
-| `Purchase` fires on success page | Trigger a test purchase with a Stripe test card — check Events Manager | Same — check for `PlaceAnOrder` + `CompletePayment` |
+| `Purchase` fires on success page | Trigger a test purchase with a Stripe test card — check Events Manager | Same — verify `CompletePayment` (note: `PlaceAnOrder` is a separate TikTok standard event fired at pay-click; it is not the purchase confirmation to verify here) |
 
 **BLOCKER:** If `QualifiedVisit` does not appear as a selectable optimisation event in either Ads Manager, do not launch that platform's Cold campaign. Run on Traffic objective only until the event accumulates ≥50 fires and the platform surfaces it.
 
