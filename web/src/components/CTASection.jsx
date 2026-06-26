@@ -23,7 +23,7 @@ export default function CTASection() {
   return (
     <>
       <style>{CSS}</style>
-      <section className="cta-section">
+      <section className="cta-section" data-track="cta">
         <div className="cta-tag">Your body. Done right.</div>
         <h2 className="cta-title">Your Body.<br />Done Right.</h2>
         <p className="cta-body">

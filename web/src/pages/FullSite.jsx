@@ -55,14 +55,15 @@ export default function FullSite() {
   useEffect(() => {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(e => {
-        if (e.isIntersecting && e.target.id) {
-          capture('section_viewed', { section: e.target.id, page: 'homepage' });
+        const name = e.target.dataset.track || e.target.id;
+        if (e.isIntersecting && name) {
+          capture('section_viewed', { section: name, page: 'homepage' });
           obs.unobserve(e.target);
         }
       });
     }, { threshold: 0.3 });
     const timer = setTimeout(() => {
-      document.querySelectorAll('section[id]').forEach(el => obs.observe(el));
+      document.querySelectorAll('section[id], [data-track]').forEach(el => obs.observe(el));
     }, 500);
     return () => { clearTimeout(timer); obs.disconnect(); };
   }, []);

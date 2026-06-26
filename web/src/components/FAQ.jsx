@@ -54,7 +54,7 @@ export default function FAQ() {
   return (
     <>
       <style>{CSS}</style>
-      <section className="faq-section">
+      <section className="faq-section" data-track="faq">
         <div className="faq-inner">
           <div className="faq-header reveal">
             <div className="fq-sec-tag">Questions</div>

@@ -19,7 +19,7 @@ export default function FullBleedBand({ image, eyebrow, head, sub }) {
   return (
     <>
       <style>{CSS}</style>
-      <section className="fbb">
+      <section className="fbb" data-track="band">
         <img className="fbb-img" src={image} alt="" loading="lazy" />
         <div className="fbb-scrim" />
         <div className="fbb-inner">

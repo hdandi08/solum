@@ -30,7 +30,7 @@ export default function CredibilityStrip() {
   return (
     <>
       <style>{CSS}</style>
-      <div className="cred-strip">
+      <div className="cred-strip" data-track="credibility">
         <div className="cred-strip-inner reveal">
           {ORIGINS.map(o => (
             <div key={o.country} className="cred-item">
