@@ -48,8 +48,11 @@ Live, accurate-as-far-as-they-go:
 ## 3. Decisions (locked)
 
 - Server-side **Full CAPI** (Meta Conversions API) + **TikTok Events API**, with `event_id` dedup.
-- **`QualifiedVisit` = multi-signal**: scrolled ≥50% **AND** (ritual video watched **OR** product
-  viewed **OR** ≥60s dwell). Client-side only (browser engagement; no email to match on).
+- **`QualifiedVisit` = multi-signal, strong-or-accumulated** (client-side only; no email to match on).
+  Fires when EITHER one **strong** signal occurs (viewed a **product detail page**, OR watched a
+  **ritual video to ≥50%**), OR **accumulated engagement** is reached (scroll ≥50% **AND** dwell ≥60s).
+  Rationale: a product-detail browser shows obvious intent on its own; a reader who spends >1 min and
+  gets past half the page is a convertible visitor. A 3-second bouncer never trips it.
 - Both Meta/Instagram and TikTok are live.
 - **Audiences-only + checkout email** — no waitlist, no lead magnet. Email captured at checkout.
 - **Axon removed** entirely. Waitlist `Lead`/`generate_lead` deprecated.
@@ -60,7 +63,7 @@ Live, accurate-as-far-as-they-go:
 
 | Event | Trigger | PostHog | Meta | TikTok | Server-side |
 |---|---|---|---|---|---|
-| `QualifiedVisit` (custom) | scroll ≥50% AND (ritual video watched OR product viewed OR ≥60s dwell) | ✅ | ✅ custom event | ✅ custom event | client only |
+| `QualifiedVisit` (custom) | strong signal (product-detail view OR ritual video ≥50%) OR (scroll ≥50% AND dwell ≥60s) | ✅ | ✅ custom event | ✅ custom event | client only |
 | `checkout_details_submitted` (new) | step 1 (name+email) passes validation | ✅ | — | — | client |
 | `checkout_delivery_submitted` (new) | step 2 (address) passes validation | ✅ | — | — | client |
 | `ViewContent` | `/buy` + product pages | ✅ | ✅ | ✅ | client |
@@ -74,11 +77,14 @@ Live, accurate-as-far-as-they-go:
 as the dedup key. Server-side fires the same id so Meta/TikTok dedup the client + server pair.
 
 ### QualifiedVisit implementation notes
-- Compute client-side from existing signals: a small tracker that watches scroll %, a dwell timer,
-  and whether a ritual video played / product viewed in the session.
-- Fire **once per session** (sessionStorage guard) when the threshold is first crossed.
-- Send to PostHog (`capture('QualifiedVisit', {...trigger reasons})`), Meta (`fbq('trackCustom','QualifiedVisit')`),
-  TikTok (`ttq.track('QualifiedVisit')`).
+- A small client-side tracker watches: scroll %, a dwell timer, ritual-video progress, and
+  product-detail-page views within the session.
+- **Strong signals** fire immediately on occurrence: product-detail view, or ritual video ≥50%.
+- **Accumulated** path fires when scroll ≥50% AND dwell ≥60s are both true.
+- Fire **once per session** (sessionStorage guard) when the first qualifying condition is met.
+- Record the trigger reason on the event: `capture('QualifiedVisit', { reason: 'product_detail' |
+  'ritual_50' | 'scroll_dwell', dwell_s, scroll_pct })` — so we can tune thresholds later from data.
+- Also send Meta (`fbq('trackCustom','QualifiedVisit')`) and TikTok (`ttq.track('QualifiedVisit')`).
 
 ## 5. Server-side tracking (CAPI + Events API)
 
