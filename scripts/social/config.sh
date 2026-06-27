@@ -10,7 +10,9 @@ W916=1080; H916=1920; W45=1080; H45=1350; W11=1080; H11=1080
 # Brand assets
 FONT_BEBAS="$SOCIAL_DIR/fonts/BebasNeue-Regular.ttf"
 FONT_BARLOW="$SOCIAL_DIR/fonts/BarlowCondensed-SemiBold.ttf"
-WORDMARK_WHITE="$REPO/web/public/solum-wordmark-white.png"
+# CANONICAL wordmark — rasterized from web/public/solum-wordmark-clean.svg via make-wordmark.sh.
+# Do NOT use web/public/solum-wordmark-white.png (old/incorrect — wrong weight + tracking).
+WORDMARK_WHITE="$SOCIAL_DIR/assets/solum-wordmark.png"
 
 # Source media (override by exporting before calling)
 SRC_PHOTOS="${SRC_PHOTOS:-$HOME/Downloads/solum-photo-download-1of1/Highlights}"

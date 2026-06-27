@@ -2,16 +2,18 @@
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config.sh"
 IN="$1"; OUT="$2"; CAPS="$3"; shift 3
-CTA=""
-while [ $# -gt 0 ]; do case "$1" in --cta) CTA="$2"; shift 2;; *) echo "unknown arg: $1" >&2; exit 1;; esac; done
+CTA=""; WM=0
+while [ $# -gt 0 ]; do case "$1" in
+  --cta) CTA="$2"; shift 2;;
+  --wordmark) WM=1; shift;;   # opt-in: only for footage that does NOT already show the logo
+  *) echo "unknown arg: $1" >&2; exit 1;; esac; done
 mkdir -p "$(dirname "$OUT")"
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 
-# Inputs: 0=video, 1=wordmark, then a PNG per caption, then optional CTA png.
-INPUTS=(-i "$IN" -i "$WORDMARK_WHITE")
-FILTER="[1:v]scale=300:-1[wm]"
-CHAIN="[0:v]"   # running label feeding the next overlay
-LAST="0:v"; IDX=2; n=0
+INPUTS=(-i "$IN")
+FILTER=""; LAST="0:v"; IDX=1; n=0
+
+# Timed caption overlays (rendered as PNGs; this ffmpeg lacks drawtext).
 while IFS=$'\t' read -r s e t; do
   [ -z "${s:-}" ] && continue
   png="$TMP/cap_$n.png"
@@ -33,9 +35,17 @@ if [ -n "$CTA" ]; then
   LAST="vc"; IDX=$((IDX+1))
 fi
 
-# Finally composite the wordmark on top.
-FILTER="${FILTER};[${LAST}][wm]overlay=(W-w)/2:120[out]"
+if [ "$WM" = 1 ]; then
+  INPUTS+=(-i "$WORDMARK_WHITE")
+  FILTER="${FILTER};[${IDX}:v]scale=300:-1[wm];[${LAST}][wm]overlay=(W-w)/2:120[out]"
+  LAST="out"; IDX=$((IDX+1))
+fi
 
-ffmpeg -y "${INPUTS[@]}" -filter_complex "$FILTER" \
-  -map "[out]" -map 0:a? -c:v libx264 -preset medium -crf 19 -c:a aac -b:a 128k -movflags +faststart "$OUT"
+FILTER="${FILTER#;}"
+if [ -z "$FILTER" ]; then
+  ffmpeg -y -i "$IN" -c:v libx264 -preset medium -crf 19 -c:a aac -b:a 128k -movflags +faststart "$OUT"
+else
+  ffmpeg -y "${INPUTS[@]}" -filter_complex "$FILTER" \
+    -map "[$LAST]" -map 0:a? -c:v libx264 -preset medium -crf 19 -c:a aac -b:a 128k -movflags +faststart "$OUT"
+fi
 echo "wrote $OUT"

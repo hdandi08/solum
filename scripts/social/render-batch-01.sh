@@ -10,9 +10,9 @@ printf "0.5\t4\tYOU ARE WASHING YOUR BODY WRONG\n5\t9\tKOREAN BATHHOUSE TECHNIQU
 # --- Cold: 9s banner hook ---
 "$D/reframe.sh" "$SRC_VIDEOS/SOLUM - BANNER FILM.mp4" "$OUT/b01-cold-banner9_9x16.mp4" --ss 0 --t 9
 
-# --- Cold: "your back" still (both ratios) — pack copy carries the message, wordmark only ---
-"$D/still.sh" "$(photo 60)" "$OUT/b01-cold-back_4x5.jpg" 4x5 --wordmark
-"$D/still.sh" "$(photo 60)" "$OUT/b01-cold-back_9x16.jpg" 9x16 --wordmark
+# --- Cold: "your back" still (both ratios) — pack already shows SOLUM, no overlay ---
+"$D/still.sh" "$(photo 60)" "$OUT/b01-cold-back_4x5.jpg" 4x5
+"$D/still.sh" "$(photo 60)" "$OUT/b01-cold-back_9x16.jpg" 9x16
 
 # --- Warm: clay origin reel ---
 printf "0.5\t4\t1,000 YEARS IN THE ATLAS MOUNTAINS\n5\t9\tPULL OUT WHAT SHOULDN'T BE THERE\n10\t16\tWEEKLY RITUAL. HEAD TO TOE.\n" > "$OUT/_clay.tsv"
@@ -25,7 +25,7 @@ printf 'AFTER YOUR SHOWER\nYOU HAVE 3 MINUTES' > "$OUT/_c1.txt"
 "$D/still.sh" "$(photo 10)" "$OUT/b01-warm-3min_s3_4x5.jpg" 4x5
 SRC07="$(photo 07)"; [ -f "$SRC07" ] || SRC07="$(photo 11)"
 "$D/still.sh" "$SRC07" "$OUT/b01-warm-3min_s4_4x5.jpg" 4x5
-"$D/still.sh" "$(photo 50)" "$OUT/b01-warm-3min_s5_4x5.jpg" 4x5 --wordmark
+"$D/still.sh" "$(photo 50)" "$OUT/b01-warm-3min_s5_4x5.jpg" 4x5
 
 # --- Hot: kit reveal slideshow ---
 { printf '%s\tEVERYTHING YOU WERE MISSING\n' "$(photo 50)"
