@@ -20,8 +20,10 @@ OUT_ROOT="${OUT_ROOT:-$REPO/artefacts/social}"
 photo() { printf '%s/SOCO_SOLUM_SE-%s.jpg' "$SRC_PHOTOS" "$1"; }
 
 verify_dims() {
-  local f="$1" want="$2" got
-  got=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$f")
+  local f="$1" want="$2" w h got
+  w=$(ffprobe -v error -select_streams v:0 -show_entries stream=width  -of csv=p=0 "$f" | tr -dc '0-9')
+  h=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$f" | tr -dc '0-9')
+  got="${w}x${h}"
   if [ "$got" = "$want" ]; then echo "OK dims  $f = $got"; else echo "FAIL dims $f: got $got want $want" >&2; return 1; fi
 }
 verify_dur() {
