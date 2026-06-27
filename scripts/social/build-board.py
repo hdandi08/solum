@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""Generate a self-contained posting board (artefacts/social/board.html) for the
+SOLUM social batches. Opens over file:// — all data is embedded inline (no fetch).
+Features: media preview, IG/TikTok copy-caption, 7-day schedule, posted tracker
+(localStorage), download buttons. Re-run after rendering new batches.
+"""
+import json
+import os
+import re
+
+ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "artefacts", "social")
+ROOT = os.path.abspath(ROOT)
+
+
+def parse_captions(rel_path):
+    """Parse a *.captions.txt with [INSTAGRAM]/[TIKTOK] sections -> dict."""
+    out = {"instagram": "", "tiktok": ""}
+    p = os.path.join(ROOT, rel_path)
+    if not os.path.isfile(p):
+        return out
+    with open(p, encoding="utf-8") as f:
+        txt = f.read()
+    for key, tag in (("instagram", "INSTAGRAM"), ("tiktok", "TIKTOK")):
+        m = re.search(r"\[" + tag + r"\]\s*(.*?)(?=\n\[|\Z)", txt, re.S)
+        if m:
+            out[key] = m.group(1).strip()
+    return out
+
+
+# Post definitions. day = suggested posting day (1=Mon). media paths are relative
+# to artefacts/social/ so the board works in place.
+POSTS = [
+    {"id": "b01-cold-back", "day": 1, "stage": "cold", "type": "Still",
+     "title": "Your back has never been clean",
+     "media": ["batch-01/b01-cold-back_4x5.jpg", "batch-01/b01-cold-back_9x16.jpg"],
+     "captions": "batch-01/b01-cold-back.captions.txt"},
+    {"id": "b01-cold-mitt", "day": 2, "stage": "cold", "type": "Reel",
+     "title": "Mitt technique — you're washing wrong",
+     "media": ["batch-01/b01-cold-mitt_9x16.mp4"],
+     "captions": "batch-01/b01-cold-mitt.captions.txt"},
+    {"id": "b01-warm-3min", "day": 3, "stage": "warm", "type": "Carousel (5)",
+     "title": "The 3-minute window",
+     "media": [f"batch-01/b01-warm-3min_s{i}_4x5.jpg" for i in range(1, 6)],
+     "captions": "batch-01/b01-warm-3min.captions.txt"},
+    {"id": "b01-cold-banner9", "day": 4, "stage": "cold", "type": "Reel",
+     "title": "Banner hook — the system you were never taught",
+     "media": ["batch-01/b01-cold-banner9_9x16.mp4"],
+     "captions": "batch-01/b01-cold-banner9.captions.txt"},
+    {"id": "b01-warm-clay", "day": 5, "stage": "warm", "type": "Reel",
+     "title": "Atlas clay — 1,000 years",
+     "media": ["batch-01/b01-warm-clay_9x16.mp4"],
+     "captions": "batch-01/b01-warm-clay.captions.txt"},
+    {"id": "b01-hot-kit", "day": 6, "stage": "hot", "type": "Slideshow",
+     "title": "Kit reveal — GROUND £65 / RITUAL £85",
+     "media": ["batch-01/b01-hot-kit_9x16.mp4"],
+     "captions": "batch-01/b01-hot-kit.captions.txt"},
+]
+
+# BTS Stories (post any day as a sequence). Captions are the on-image text.
+STORIES = [
+    {"id": "b02-shootday", "title": "SHOOT DAY", "media": ["batch-02-bts/b02-bts-shootday_9x16.jpg"]},
+    {"id": "b02-behind", "title": "BEHIND THE SCENES", "media": ["batch-02-bts/b02-bts-behind_9x16.jpg"]},
+    {"id": "b02-face", "title": "The face of SOLUM", "media": ["batch-02-bts/b02-bts-face_9x16.jpg"]},
+    {"id": "b02-warehouse", "title": "THE FIRST BATCH HAS LANDED", "media": ["batch-02-bts/b02-bts-warehouse_9x16.mp4"]},
+    {"id": "b02-comingsoon", "title": "COMING SOON", "media": ["batch-02-bts/b02-bts-comingsoon_9x16.jpg"]},
+]
+
+for p in POSTS:
+    p["caps"] = parse_captions(p["captions"])
+
+DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+DATA = {"posts": POSTS, "stories": STORIES, "days": DAYS}
+
+HTML = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOLUM — Posting Board</title>
+<style>
+:root{--black:#08090B;--char:#181C24;--blue:#2E6DA4;--sky:#4A8FC7;--bone:#F0ECE2;--line:#1e2530;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--black);color:var(--bone);font:15px/1.5 'Barlow Condensed','Helvetica Neue',Arial,sans-serif;}
+header{padding:22px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--black);z-index:5}
+h1{margin:0;font-size:22px;letter-spacing:.18em;font-weight:700}
+.sub{color:#8a8f99;font-size:13px;margin-top:4px;letter-spacing:.04em}
+.wrap{padding:24px 28px;max-width:1500px;margin:0 auto}
+h2{font-size:13px;letter-spacing:.2em;color:#8a8f99;text-transform:uppercase;margin:30px 0 14px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{background:var(--char);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.card.posted{opacity:.55}
+.media{background:#000;aspect-ratio:9/16;max-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media video,.media img{width:100%;height:100%;object-fit:contain;background:#000}
+.carou{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
+.carou img{flex:0 0 100%;scroll-snap-align:center}
+.body{padding:12px 14px;display:flex;flex-direction:column;gap:9px;flex:1}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:5px;font-weight:600}
+.cold{background:#16344f;color:#9ccbf0}.warm{background:#5a4a1e;color:#e8cf86}.hot{background:#5a1e22;color:#f0a0a0}
+.day{font-size:11px;letter-spacing:.1em;color:#8a8f99;text-transform:uppercase}
+.title{font-size:16px;font-weight:600;line-height:1.25}
+.type{font-size:12px;color:#8a8f99;letter-spacing:.06em}
+.cap{background:#10131a;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;color:#cfd3da;white-space:pre-wrap;max-height:120px;overflow:auto}
+.btns{display:flex;gap:7px;flex-wrap:wrap}
+button,a.btn{font:inherit;font-size:12px;letter-spacing:.06em;border:1px solid var(--line);background:#10131a;color:var(--bone);
+  padding:7px 10px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+button:hover,a.btn:hover{border-color:var(--blue);color:#fff}
+button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.dl{color:var(--sky)}
+.foot{margin-top:auto;display:flex;gap:7px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:9px}
+.tag{font-size:11px;color:#6b7080}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;transition:.2s;pointer-events:none;letter-spacing:.06em}
+.toast.show{opacity:1}
+</style></head><body>
+<header><h1>SOLUM · POSTING BOARD</h1><div class="sub">Batch 01 (feed) + BTS Stories · IG + TikTok · progress saved in this browser</div></header>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+const DATA = __DATA__;
+const LS = 'solum_board_posted_v1';
+const posted = JSON.parse(localStorage.getItem(LS) || '{}');
+function save(){localStorage.setItem(LS, JSON.stringify(posted));}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1200);}
+function copy(txt){navigator.clipboard.writeText(txt).then(()=>toast('Caption copied')).catch(()=>toast('Copy failed — select manually'));}
+function isPosted(id){return posted[id]&&posted[id].ig&&posted[id].tt;}
+function mediaEl(m){
+  if(m.endsWith('.mp4')) return `<video src="./${m}" controls preload="metadata" playsinline></video>`;
+  return `<img src="./${m}" loading="lazy">`;
+}
+function mediaBlock(media){
+  if(media.length>1 && media[0].endsWith('.jpg')) return `<div class="media carou">${media.map(m=>`<img src="./${m}" loading="lazy">`).join('')}</div>`;
+  return `<div class="media">${mediaEl(media[0])}</div>`;
+}
+function dlBtns(media){return media.map((m,i)=>`<a class="btn dl" href="./${m}" download>⤓ ${media.length>1?('file '+(i+1)):'download'}</a>`).join('');}
+function postBtns(id){
+  const st = posted[id]||{};
+  return `<button class="pb ${st.ig?'on':''}" data-id="${id}" data-p="ig">IG ${st.ig?'✓':''}</button>
+          <button class="pb ${st.tt?'on':''}" data-id="${id}" data-p="tt">TikTok ${st.tt?'✓':''}</button>`;
+}
+function card(p){
+  const c = p.caps||{};
+  const cap = (c.instagram||c.tiktok) ? `
+    <div class="row"><span class="tag">Instagram</span></div><div class="cap">${(c.instagram||'').replace(/</g,'&lt;')}</div>
+    <div class="btns"><button onclick='copy(${JSON.stringify(c.instagram||'')})'>📋 Copy IG</button>
+    <button onclick='copy(${JSON.stringify(c.tiktok||'')})'>📋 Copy TikTok</button></div>` : '';
+  return `<div class="card ${isPosted(p.id)?'posted':''}" id="c-${p.id}">
+    ${mediaBlock(p.media)}
+    <div class="body">
+      <div class="row"><span class="badge ${p.stage}">${p.stage}</span><span class="day">${DATA.days[p.day]||''}</span><span class="type">${p.type}</span></div>
+      <div class="title">${p.title}</div>
+      ${cap}
+      <div class="foot">${postBtns(p.id)} ${dlBtns(p.media)}</div>
+    </div></div>`;
+}
+function storyCard(s){
+  return `<div class="card ${isPosted(s.id)?'posted':''}" id="c-${s.id}">
+    ${mediaBlock(s.media)}
+    <div class="body"><div class="title">${s.title}</div>
+    <div class="type">Story · 9:16</div>
+    <div class="foot">${postBtns(s.id)} ${dlBtns(s.media)}</div></div></div>`;
+}
+const app=document.getElementById('app');
+let html='<h2>Batch 01 — 7-day feed schedule</h2><div class="grid">';
+[...DATA.posts].sort((a,b)=>a.day-b.day).forEach(p=>html+=card(p));
+html+='</div><h2>BTS Stories — post as a sequence (any day)</h2><div class="grid">';
+DATA.stories.forEach(s=>html+=storyCard(s));
+html+='</div>';
+app.innerHTML=html;
+document.querySelectorAll('.pb').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.id,pl=b.dataset.p;posted[id]=posted[id]||{};posted[id][pl]=!posted[id][pl];save();
+  b.classList.toggle('on',posted[id][pl]);b.textContent=(pl==='ig'?'IG ':'TikTok ')+(posted[id][pl]?'✓':'');
+  document.getElementById('c-'+id).classList.toggle('posted',isPosted(id));
+}));
+</script></body></html>"""
+
+
+def main():
+    out = HTML.replace("__DATA__", json.dumps(DATA))
+    dest = os.path.join(ROOT, "board.html")
+    with open(dest, "w", encoding="utf-8") as f:
+        f.write(out)
+    print("wrote", dest)
+
+
+if __name__ == "__main__":
+    main()
