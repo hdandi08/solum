@@ -58,6 +58,8 @@ Shame/gross-out hooks are retired. New creative is **premium, proof-led**, mappe
 - **Warm (L3–L4):** the system + origins — ritual films, Morocco/Korea provenance, kit-hero carousels, ritual-step carousels.
 - **Hot (L5):** identity + offer — editorial portrait (90), kit hero (50), "GROUND £65 / RITUAL £85, first batch limited."
 
+**UGC (incoming ~next week):** creator-shot content arriving from UGC creators. Slots into the funnel as: native-feeling **cold hooks** (TikTok-first, talking-head / demo) and authentic **L4 proof** (warm/hot). Treated as a parallel creative source — same pipeline (reframe to 9:16/4:5/1:1, caption, wordmark/CTA, multi-platform export, output convention). The shoot assets and UGC run as champion/challenger against each other. Until UGC lands, the studio shoot carries Phase 0–1.
+
 **Formats:** 9:16 reels (primary) · 4:5 carousels · single stills · slideshow videos. All produced locally via **ffmpeg** (3 crops where relevant: 9:16, 4:5, 1:1; H.264 yuv420p, `+faststart`).
 
 **Output convention:** `artefacts/social/<batch>/<id>_<format>.{mp4,jpg}` + per-post `.txt` caption/hashtags (≤5 hashtags). Both platforms post the same core asset; captions/first-frame tuned per platform.
@@ -89,8 +91,8 @@ Out of scope: rebuilding the homepage, new routes, checkout changes.
 ## 6. Phasing
 
 - **Phase 0 (this week):** produce first creative batch + landing tuning + build ad audiences.
-- **Phase 1 (wk 1–2):** launch cold (QV-optimised) + daily organic; build retargeting pool.
-- **Phase 2 (wk 3–4):** turn on warm + hot; optimise hot on Purchase.
+- **Phase 1 (wk 1–2):** launch cold (QV-optimised) + daily organic; build retargeting pool. **UGC arrives** — process + slot into cold (native hooks) and warm/hot (proof).
+- **Phase 2 (wk 3–4):** turn on warm + hot; optimise hot on Purchase. UGC vs shoot champion/challenger.
 - **Phase 3:** scale winners; refresh creative from the reserve photo library (champion/challenger on cold).
 
 ---
