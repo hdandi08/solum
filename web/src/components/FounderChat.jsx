@@ -26,7 +26,7 @@ const CSS = `
   border-radius:20px;padding:8px 14px;
   font-size:11px;letter-spacing:1px;
   color:rgba(240,236,226,0.6);
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
   white-space:nowrap;cursor:pointer;
 }
 .fc-launcher-label:hover{color:#F0ECE2;border-color:#2E6DA4;}
@@ -48,7 +48,7 @@ const CSS = `
   color:rgba(240,236,226,0.6);
   font-size:11px;line-height:1;cursor:pointer;
   display:flex;align-items:center;justify-content:center;padding:0;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
   box-shadow:0 2px 8px rgba(0,0,0,0.5);
 }
 .fc-launcher-dismiss:hover{color:#F0ECE2;border-color:#2E6DA4;}
@@ -60,7 +60,7 @@ const CSS = `
   border-radius:12px 12px 0 12px;
   padding:14px 16px;
   font-size:13px;color:#F0ECE2;line-height:1.5;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
   animation:fc-fade-in .3s ease;
   box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
@@ -70,13 +70,13 @@ const CSS = `
 .fc-bubble-cta{
   font-size:12px;color:#4A8FC7;
   background:none;border:none;cursor:pointer;padding:0;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
 }
 .fc-bubble-cta:hover{color:#F0ECE2;}
 .fc-bubble-dismiss{
   background:none;border:none;cursor:pointer;padding:0;
   font-size:11px;color:rgba(240,236,226,0.35);
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
 }
 .fc-bubble-dismiss:hover{color:rgba(240,236,226,0.7);}
 
@@ -88,7 +88,7 @@ const CSS = `
   box-shadow:0 8px 40px rgba(0,0,0,0.7);
   display:flex;flex-direction:column;
   animation:fc-fade-in .2s ease;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
 }
 @keyframes fc-fade-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
@@ -141,7 +141,7 @@ const CSS = `
   background:#181C24;border:1px solid #1e2530;border-radius:20px;
   padding:5px 10px;font-size:11px;color:rgba(240,236,226,0.65);
   cursor:pointer;transition:border-color .2s,color .2s;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
 }
 .fc-chip:hover{border-color:#2E6DA4;color:#F0ECE2;}
 .fc-chip-email{color:#4A8FC7;border-color:#1A4A78;}
@@ -154,7 +154,7 @@ const CSS = `
 .fc-input{
   flex:1;background:none;border:none;outline:none;
   font-size:13px;color:#F0ECE2;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Barlow Condensed',sans-serif;
 }
 .fc-input::placeholder{color:rgba(240,236,226,0.3);}
 .fc-send{
