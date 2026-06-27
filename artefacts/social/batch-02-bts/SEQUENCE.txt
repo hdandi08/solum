@@ -1,0 +1,14 @@
+SOLUM — BTS / Founder Stories (IG + TikTok Stories, 9:16)
+Post as a sequence, in this order. Casual/authentic. Add IG poll/question stickers where noted.
+
+1. b02-bts-shootday_9x16.jpg     "SHOOT DAY"        — opener, sets the scene.
+2. b02-bts-behind_9x16.jpg       "BEHIND THE SCENES"— the work / direction.
+3. b02-bts-face_9x16.jpg         (no text)          — the face of SOLUM. Add sticker: "Guess what we're shooting 👀"
+4. b02-bts-warehouse_9x16.mp4    "THE FIRST BATCH HAS LANDED" — founder unboxing stock. Add sticker: countdown to launch.
+5. b02-bts-comingsoon_9x16.jpg   "COMING SOON"      — closer. Add link sticker → bysolum.co.uk
+
+Notes:
+- All carry the CORRECT canonical wordmark (rasterized from solum-wordmark-clean.svg).
+- BTS footage is un-branded, so wordmark overlay is intentional here (unlike product films).
+- Warehouse clip upscaled 576x1024 -> 1080x1920 (slightly soft; fine for Stories).
+- Re-render anytime: scripts/social/render-batch-02-bts.sh
