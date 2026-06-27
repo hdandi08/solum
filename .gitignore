@@ -1,2 +1,7 @@
 supabase/.temp/
 .env.supabase
+
+# SOLUM creative pipeline — rendered outputs (keep scripts + captions, not media)
+artefacts/social/**/*.mp4
+artefacts/social/**/*.jpg
+artefacts/social/**/*.png
