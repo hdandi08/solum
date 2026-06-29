@@ -30,13 +30,13 @@ def parse_captions(rel_path):
 # Post definitions. day = suggested posting day (1=Mon). media paths are relative
 # to artefacts/social/ so the board works in place.
 POSTS = [
-    {"id": "b01-cold-back", "day": 1, "stage": "cold", "type": "Still",
+    {"id": "b01-cold-back", "day": 2, "stage": "cold", "type": "Still",
      "title": "Your back has never been clean",
      "media": ["batch-01/b01-cold-back_4x5.jpg", "batch-01/b01-cold-back_9x16.jpg"],
      "captions": "batch-01/b01-cold-back.captions.txt"},
-    {"id": "b01-cold-mitt", "day": 2, "stage": "cold", "type": "Reel",
-     "title": "Mitt technique — you're washing wrong",
-     "media": ["batch-01/b01-cold-mitt_9x16.mp4"],
+    {"id": "b01-cold-mitt", "day": 1, "stage": "cold", "type": "Reel",
+     "title": "Face-first: why your skin never feels clean",
+     "media": ["batch-01/b01-cold-mitt-facefirst_9x16.mp4"],
      "captions": "batch-01/b01-cold-mitt.captions.txt"},
     {"id": "b01-warm-3min", "day": 3, "stage": "warm", "type": "Carousel (5)",
      "title": "The 3-minute window",
@@ -54,6 +54,10 @@ POSTS = [
      "title": "Kit reveal — GROUND £65 / RITUAL £85",
      "media": ["batch-01/b01-hot-kit_9x16.mp4"],
      "captions": "batch-01/b01-hot-kit.captions.txt"},
+    {"id": "b03-back-misses", "day": 1, "stage": "cold", "type": "Reel (montage)",
+     "title": "Montage: the part your shower misses",
+     "media": ["batch-03-montage/b03-back-misses_9x16.mp4"],
+     "captions": "batch-03-montage/b03-back-misses.captions.txt"},
 ]
 
 # BTS Stories (post any day as a sequence). Captions are the on-image text.
@@ -119,7 +123,18 @@ const LS = 'solum_board_posted_v1';
 const posted = JSON.parse(localStorage.getItem(LS) || '{}');
 function save(){localStorage.setItem(LS, JSON.stringify(posted));}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1200);}
-function copy(txt){navigator.clipboard.writeText(txt).then(()=>toast('Caption copied')).catch(()=>toast('Copy failed — select manually'));}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');ta.value=txt;
+  ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);
+  ta.focus();ta.select();
+  let ok=false;try{ok=document.execCommand('copy');}catch(e){ok=false;}
+  document.body.removeChild(ta);toast(ok?'Caption copied':'Copy failed, select manually');
+}
+function copy(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>toast('Caption copied')).catch(()=>fallbackCopy(txt));
+  }else{fallbackCopy(txt);}
+}
 function isPosted(id){return posted[id]&&posted[id].ig&&posted[id].tt;}
 function mediaEl(m){
   if(m.endsWith('.mp4')) return `<video src="./${m}" controls preload="metadata" playsinline></video>`;
@@ -139,8 +154,8 @@ function card(p){
   const c = p.caps||{};
   const cap = (c.instagram||c.tiktok) ? `
     <div class="row"><span class="tag">Instagram</span></div><div class="cap">${(c.instagram||'').replace(/</g,'&lt;')}</div>
-    <div class="btns"><button onclick='copy(${JSON.stringify(c.instagram||'')})'>📋 Copy IG</button>
-    <button onclick='copy(${JSON.stringify(c.tiktok||'')})'>📋 Copy TikTok</button></div>` : '';
+    <div class="btns"><button class="copy-btn" data-id="${p.id}" data-cap="instagram">📋 Copy IG</button>
+    <button class="copy-btn" data-id="${p.id}" data-cap="tiktok">📋 Copy TikTok</button></div>` : '';
   return `<div class="card ${isPosted(p.id)?'posted':''}" id="c-${p.id}">
     ${mediaBlock(p.media)}
     <div class="body">
@@ -164,6 +179,11 @@ html+='</div><h2>BTS Stories — post as a sequence (any day)</h2><div class="gr
 DATA.stories.forEach(s=>html+=storyCard(s));
 html+='</div>';
 app.innerHTML=html;
+const postById={};DATA.posts.forEach(p=>postById[p.id]=p);
+document.querySelectorAll('.copy-btn').forEach(b=>b.addEventListener('click',()=>{
+  const p=postById[b.dataset.id];if(!p||!p.caps)return;
+  copy(p.caps[b.dataset.cap]||'');
+}));
 document.querySelectorAll('.pb').forEach(b=>b.addEventListener('click',()=>{
   const id=b.dataset.id,pl=b.dataset.p;posted[id]=posted[id]||{};posted[id][pl]=!posted[id][pl];save();
   b.classList.toggle('on',posted[id][pl]);b.textContent=(pl==='ig'?'IG ':'TikTok ')+(posted[id][pl]?'✓':'');
