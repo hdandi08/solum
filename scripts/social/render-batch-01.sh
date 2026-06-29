@@ -7,6 +7,10 @@ OUT="$OUT_ROOT/batch-01"; mkdir -p "$OUT"
 printf "0.5\t4\tYOU ARE WASHING YOUR BODY WRONG\n5\t9\tKOREAN BATHHOUSE TECHNIQUE\n10\t13\tCLEANS. DOESN'T STRIP.\n" > "$OUT/_mitt.tsv"
 "$D/caption_video.sh" "$SRC_VIDEOS/SOLUM - ITALY TOWEL MITT.mp4" "$OUT/b01-cold-mitt_9x16.mp4" "$OUT/_mitt.tsv" --cta "bysolum.co.uk"
 
+# --- Cold: FACE-FIRST mitt (face hook -> captioned mitt film) ---
+printf "You shower every day.\nSo why doesn't your\nskin feel clean?" > "$OUT/_qmitt.txt"
+"$D/face_hook.sh" "$(photo 90)" "$OUT/_qmitt.txt" "$OUT/b01-cold-mitt_9x16.mp4" "$OUT/b01-cold-mitt-facefirst_9x16.mp4"
+
 # --- Cold: 9s banner hook ---
 "$D/reframe.sh" "$SRC_VIDEOS/SOLUM - BANNER FILM.mp4" "$OUT/b01-cold-banner9_9x16.mp4" --ss 0 --t 9
 
