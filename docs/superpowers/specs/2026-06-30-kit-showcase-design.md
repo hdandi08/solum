@@ -7,9 +7,9 @@
 
 Kit photos were a single cropped (`object-fit: cover`, 5:3) header on the homepage pricing cards — the portrait box photos were badly cut and products weren't clearly visible. Decision: remove the image from the pricing cards (done) and instead show the full kit clearly in a dedicated, browsable showcase using the real shoot photos.
 
-## Solution
+## Solution (revised)
 
-A new homepage section `KitShowcase`, placed in `FullSite` directly **above** `KitComparison` (pricing). One section, both kits.
+The image goes back **inside each kit card** in `KitComparison`, as a full-bleed header above the kit name — but uncropped and browsable. (An earlier iteration used a separate `KitShowcase` section; that felt disconnected from the kit it described, so it was removed and the gallery moved into the card.)
 
 ### Layout
 - Section heading (e.g. "Inside the kit").

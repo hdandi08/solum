@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
@@ -16,6 +16,17 @@ const CSS = `
 .kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);max-width:860px;margin:0 auto;}
 .kit-card{background:var(--char);padding:40px 32px;display:flex;flex-direction:column;position:relative;}
 .kit-card.featured{background:var(--mid);border:1px solid var(--blue);outline:1px solid rgba(46,109,164,0.3);margin:-1px;}
+/* kit gallery — full-bleed header per card; images shown uncropped (contain) on black */
+.kit-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:calc(100% + 64px);margin:-40px -32px 0;background:var(--black);border-bottom:1px solid var(--line);}
+.kit-gallery::-webkit-scrollbar{display:none;}
+.kit-slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--black);}
+.kit-slide img{width:100%;height:100%;object-fit:contain;display:block;}
+.kit-dots{display:flex;justify-content:center;gap:7px;margin:12px 0 22px;}
+.kit-dot{width:7px;height:7px;border-radius:50%;border:none;padding:0;background:var(--line);cursor:pointer;transition:background .2s,transform .2s;}
+.kit-dot.on{background:var(--blue);transform:scale(1.25);}
+@media(max-width:768px){
+  .kit-gallery{width:calc(100% + 48px);margin:-28px -24px 0;}
+}
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
 .kit-badge.popular{background:var(--blue);color:var(--bone);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
@@ -76,6 +87,43 @@ const CSS = `
 }
 `;
 
+function KitGallery({ name, images }) {
+  const ref = useRef(null);
+  const [active, setActive] = useState(0);
+  const onScroll = () => {
+    const el = ref.current;
+    if (el) setActive(Math.round(el.scrollLeft / el.clientWidth));
+  };
+  const goTo = (i) => {
+    const el = ref.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' });
+  };
+  return (
+    <>
+      <div className="kit-gallery" ref={ref} onScroll={onScroll}>
+        {images.map((src, i) => (
+          <div className="kit-slide" key={src}>
+            <img src={src} alt={`${name} kit — view ${i + 1}`} loading="lazy" />
+          </div>
+        ))}
+      </div>
+      {images.length > 1 && (
+        <div className="kit-dots">
+          {images.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              className={`kit-dot${i === active ? ' on' : ''}`}
+              aria-label={`View ${name} photo ${i + 1}`}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function KitComparison() {
   const navigate = useNavigate();
   const [openKits, setOpenKits] = useState(new Set());
@@ -101,6 +149,9 @@ export default function KitComparison() {
               const isSovereign = kit.id === 'sovereign';
               return (
                 <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}${openKits.has(kit.id) ? ' products-open' : ''}`}>
+                  {(kit.gallery?.length || kit.image) && (
+                    <KitGallery name={kit.name} images={kit.gallery?.length ? kit.gallery : [kit.image]} />
+                  )}
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name">{kit.name}</div>
