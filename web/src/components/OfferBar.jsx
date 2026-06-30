@@ -75,7 +75,7 @@ export default function OfferBar() {
     <div className="offerbar" role="region" aria-label="Delivery offer">
       <style>{CSS}</style>
       <span className="offerbar-text">
-        Free UK Delivery <span className="sep">·</span> <span className="save">Save {DELIVERY_OFFER.value}</span> <span className="sep">·</span> Launch offer ends 11 Aug
+        Free UK Delivery <span className="sep">·</span> <span className="save">Save {DELIVERY_OFFER.value}</span> <span className="sep">·</span> Limited time
       </span>
       <button className="offerbar-dismiss" onClick={dismiss} aria-label="Dismiss offer">×</button>
     </div>
