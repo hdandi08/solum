@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
+import OfferBar from './components/OfferBar.jsx';
 import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
 import CheckoutPage from './pages/checkout/CheckoutPage';
@@ -44,6 +45,7 @@ export default function App() {
   useEffect(() => { initQualifiedVisitTracker(); }, []);
   return (
     <BrowserRouter>
+      <OfferBar />
       <AuthRedirectGuard />
       <Routes>
         <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
