@@ -724,7 +724,7 @@ Deno.serve(async (req) => {
         // Deduct first-box inventory
         if (kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
-          await deductKitInventory(supabase, sub.id, kit_id);
+          if (firstBoxOrderId) await deductKitInventory(supabase, firstBoxOrderId, kit_id);
         }
 
         // Mark lead as completed
@@ -875,8 +875,9 @@ Deno.serve(async (req) => {
           .eq('order_type', 'first_box')
           .maybeSingle();
 
+        let subFirstBoxOrderId: string | null = existingOrder?.id ?? null;
         if (!existingOrder) {
-          await supabase.from('orders').insert({
+          const { data: newSubOrder } = await supabase.from('orders').insert({
             customer_id: customer.id,
             subscription_id: sub?.id,
             stripe_payment_id: pi.id,
@@ -885,13 +886,14 @@ Deno.serve(async (req) => {
             box_number: null,
             amount_pence: pi.amount,
             status: 'paid',
-          });
+          }).select('id').single();
+          subFirstBoxOrderId = newSubOrder?.id ?? null;
         }
 
         // Deduct inventory
         if (kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
-          await deductKitInventory(supabase, sub.id, kit_id);
+          if (subFirstBoxOrderId) await deductKitInventory(supabase, subFirstBoxOrderId, kit_id);
         }
 
         // Mark lead completed
