@@ -45,9 +45,10 @@ export function fbLead(eventId, email) {
   fbq('track', 'Lead', userData, { eventID: eventId });
 }
 
-// Fires when someone lands on the /buy page and views kit options
-export function fbViewContent(kitName) {
-  fbq('track', 'ViewContent', { content_name: kitName, content_type: 'product' });
+// Fires when someone lands on the /buy page and views kit options.
+// content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
+export function fbViewContent(kitId) {
+  fbq('track', 'ViewContent', { content_ids: [kitId], content_type: 'product', content_name: kitId });
 }
 
 // Fires when a user clicks a kit Buy Now / select button (checkout begins)
@@ -55,19 +56,23 @@ export function fbAddToCart(kitId, kitName, value) {
   fbq('track', 'AddToCart', { content_name: kitName, content_ids: [kitId], content_type: 'product', value, currency: 'GBP' });
 }
 
-// Fires when user submits details and reaches the payment step
-export function fbInitiateCheckout(kitName, value) {
+// Fires when user submits details and reaches the payment step.
+// content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
+export function fbInitiateCheckout(kitId, value) {
   fbq('track', 'InitiateCheckout', {
-    content_name: kitName,
+    content_ids: [kitId],
+    content_type: 'product',
+    content_name: kitId,
     value,
     currency: 'GBP',
     num_items: 1,
   });
 }
 
-// Fires on SuccessPage — eventId is the Stripe PaymentIntent ID for deduplication
-export function fbPurchase(kitName, value, eventId) {
-  fbq('track', 'Purchase', { content_name: kitName, value, currency: 'GBP' }, { eventID: eventId });
+// Fires on SuccessPage — eventId is the Stripe PaymentIntent ID for deduplication.
+// content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
+export function fbPurchase(kitId, value, eventId) {
+  fbq('track', 'Purchase', { content_ids: [kitId], content_type: 'product', content_name: kitId, value, currency: 'GBP' }, { eventID: eventId });
 }
 
 // Custom (non-standard) Meta event — e.g. QualifiedVisit

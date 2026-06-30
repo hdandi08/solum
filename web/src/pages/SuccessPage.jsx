@@ -92,7 +92,7 @@ export default function SuccessPage() {
 
     // PostHog 'purchase' is fired server-side from the Stripe webhook (single source — avoids client/server double-count).
 
-    if (amountGbp) fbPurchase(kitName, amountGbp, rawRef);
+    if (amountGbp) fbPurchase(kitId ?? 'unknown', amountGbp, rawRef);
     if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
   }, []); // eslint-disable-line
 

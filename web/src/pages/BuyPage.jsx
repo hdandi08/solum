@@ -597,7 +597,7 @@ export default function BuyPage() {
 
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
-    fbViewContent('SOLUM Kit');
+    fbViewContent(preselect ?? 'ground');
     ttqViewContent(preselect ?? 'ground', 'SOLUM Kit', 65);
   }, []); // eslint-disable-line
 
