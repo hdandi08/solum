@@ -58,6 +58,63 @@ async function deductInventory(
   }
 }
 
+// Decrement the kit-level available_count for a paid FIRST-BOX order.
+// Idempotent + race-safe: the conditional UPDATE is the gate — only the first
+// caller to flip inventory_kit_deducted wins, and only it adjusts the count.
+// Never throws past here — inventory must not block order processing.
+async function deductKitInventory(
+  db: ReturnType<typeof createClient>,
+  orderId: string,
+  kitId: string,
+) {
+  try {
+    const { data: gated } = await db
+      .from('orders')
+      .update({ inventory_kit_deducted: true })
+      .eq('id', orderId)
+      .eq('inventory_kit_deducted', false)
+      .select('kit_id')
+      .maybeSingle();
+    if (!gated) return; // already deducted (retry / duplicate handler) — no-op
+    const { data: newCount, error } = await db.rpc('adjust_kit_inventory', {
+      p_kit_id: kitId,
+      p_delta: -1,
+    });
+    if (error) console.error('kit_inventory_deduct_error', error.message, { orderId, kitId });
+    else console.log('KIT_INVENTORY_DEDUCT', JSON.stringify({ orderId, kitId, newCount }));
+  } catch (err) {
+    console.error('kit_inventory_deduct_error', err, { orderId, kitId });
+  }
+}
+
+// Increment the kit-level available_count when we fully refund a first-box order.
+// Gate requires the order was actually deducted and not already restocked.
+async function restockKitInventory(
+  db: ReturnType<typeof createClient>,
+  orderId: string,
+  kitId: string,
+) {
+  try {
+    const { data: gated } = await db
+      .from('orders')
+      .update({ inventory_kit_restocked: true })
+      .eq('id', orderId)
+      .eq('inventory_kit_deducted', true)
+      .eq('inventory_kit_restocked', false)
+      .select('kit_id')
+      .maybeSingle();
+    if (!gated) return; // never deducted, or already restocked — no-op
+    const { data: newCount, error } = await db.rpc('adjust_kit_inventory', {
+      p_kit_id: kitId,
+      p_delta: 1,
+    });
+    if (error) console.error('kit_inventory_restock_error', error.message, { orderId, kitId });
+    else console.log('KIT_INVENTORY_RESTOCK', JSON.stringify({ orderId, kitId, newCount }));
+  } catch (err) {
+    console.error('kit_inventory_restock_error', err, { orderId, kitId });
+  }
+}
+
 async function sendConfirmationEmail(
   email: string,
   firstName: string,
@@ -376,6 +433,7 @@ async function handleOneTimeOrderFromPI(
   // Deduct inventory
   if (kit_id && order?.id) {
     await deductInventory(supabase, kit_id, 'first_box', order.id);
+    await deductKitInventory(supabase, order.id, kit_id);
   }
 
   // Mark lead completed
@@ -466,6 +524,7 @@ async function handleOneTimeOrder(
   // Deduct inventory
   if (kit_id && order?.id) {
     await deductInventory(supabase, kit_id, 'first_box', order.id);
+    await deductKitInventory(supabase, order.id, kit_id);
   }
 
   // Mark lead completed
@@ -665,6 +724,7 @@ Deno.serve(async (req) => {
         // Deduct first-box inventory
         if (kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
+          await deductKitInventory(supabase, sub.id, kit_id);
         }
 
         // Mark lead as completed
@@ -831,6 +891,7 @@ Deno.serve(async (req) => {
         // Deduct inventory
         if (kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
+          await deductKitInventory(supabase, sub.id, kit_id);
         }
 
         // Mark lead completed
@@ -1162,12 +1223,25 @@ Deno.serve(async (req) => {
 
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
-        await supabase
+        const { data: refundedOrder } = await supabase
           .from('orders')
           .update({ status: 'refunded' })
-          .eq('stripe_payment_id', charge.payment_intent as string);
+          .eq('stripe_payment_id', charge.payment_intent as string)
+          .select('id, kit_id, order_type')
+          .maybeSingle();
+
+        // Restock the kit count only on a FULL refund of a first-box order.
+        const isFullRefund = charge.amount_refunded === charge.amount;
+        if (isFullRefund && refundedOrder?.order_type === 'first_box' && refundedOrder.kit_id) {
+          await restockKitInventory(supabase, refundedOrder.id, refundedOrder.kit_id);
+        }
+
         await logEvent(supabase, event.id, event.type, null, {
-          amount_refunded_pence: charge.amount_refunded, reason: charge.refunds?.data[0]?.reason,
+          amount_refunded_pence: charge.amount_refunded,
+          amount_pence: charge.amount,
+          full_refund: isFullRefund,
+          order_id: refundedOrder?.id ?? null,
+          reason: charge.refunds?.data[0]?.reason,
         });
         break;
       }
