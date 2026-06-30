@@ -39,11 +39,17 @@ Homepage GROUND/RITUAL buy buttons currently fire **PostHog goals only** (`kit_c
 
 Fire a standard `AddToCart` on **both** Meta and TikTok at the **Buy Now / homepage GROUND/RITUAL click** (the action that commits to a kit and enters the checkout flow). Include `content_id` = kit id, `content_name`, `value`, `currency: 'GBP'`, `content_type: 'product'`.
 
+**Firing rule (locked):** `AddToCart` fires **only on an explicit kit button click** — never on `/buy` page load. This is the click-vs-page-load distinction:
+
+- ✅ Fires: homepage GROUND/RITUAL buy buttons (`KitComparison`, `Hero` kit-specific, `CTASection`) and the `/buy` kit-card select click (`BuyPage.jsx:876`).
+- ❌ Does NOT fire: landing on `/buy` (page load), **including when `?kit=…` preselects a kit** — the preselect is passive arrival, not a click. The auto-preselect path must be guarded so it does not emit `AddToCart`.
+- ❌ Does NOT fire: the generic Hero "/buy" button with no kit chosen (it's a "go to checkout page" action, not a kit commitment) — `ViewContent` covers that arrival.
+
+This resolves the TikTok `BuyPage.jsx:876` event: a kit-card *click* is a valid `AddToCart` trigger and stays — it was only "mistimed" relative to the doc's narrow Buy-Now mapping, not relative to this broader click rule. **Dedup:** to avoid double-firing one intent (homepage click → navigate → kit-card present on `/buy`), fire at most once per kit-selection per session; an explicit re-click that changes the selected kit may fire again. Implementation plan finalizes the dedup guard; the invariant is: **a click fires, a page load never does.**
+
 **Why here and not InitiateCheckout:** `InitiateCheckout` means "reached the payment step" (`analytics.js:54`). The homepage/Buy-Now click only navigates to `/buy` with nothing entered; most such clicks bounce. Firing IC there would (1) destroy the event's intent meaning, (2) poison any IC-based optimization toward clickers not buyers, (3) double-count against the real IC at the payment step and break funnel drop-off math, (4) violate the standard definition (a Buy-Now/product click is `AddToCart`). The standard event for that click is `AddToCart`.
 
 **Why fire it even though we don't optimize on it at £35/day:** it (a) builds a high-intent retargeting pool from day 1, and (b) becomes the optimization target the moment weekly volume can sustain it.
-
-TikTok's existing kit-card-select `AddToCart` (`BuyPage.jsx:876`) is mistimed relative to this mapping; resolve during implementation (move to the Buy Now click, or keep as a softer secondary — implementation plan to decide, default: fire ATC on Buy Now for both pixels and drop/retain the reselect one without double-firing per session).
 
 ## 4-week sequenced plan (~£35/day)
 
