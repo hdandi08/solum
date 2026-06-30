@@ -173,7 +173,6 @@ export default function KitComparison() {
               );
             })}
           </div>
-          <p className="kits-footnote">Subscription coming soon.</p>
         </div>
       </section>
     </>

@@ -105,10 +105,10 @@ export default function FullSite() {
         sub="One system, head to toe. Built for the men who were never given one."
       />
       <CredibilityStrip />
-      <SubscriptionSection />
-      <ProvenanceSection />
       <FounderSection />
       <FAQ />
+      <ProvenanceSection />
+      <SubscriptionSection />
       <CTASection />
       <SolumFooter />
       <ABDevPanel />

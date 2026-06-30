@@ -173,7 +173,6 @@ export default function Hero() {
                     Free UK delivery · worth £5.95
                   </div>
                 )}
-                <p className="hero-sub-note">Subscription coming soon</p>
               </>
             )}
           </div>
