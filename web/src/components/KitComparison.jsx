@@ -16,13 +16,6 @@ const CSS = `
 .kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);max-width:860px;margin:0 auto;}
 .kit-card{background:var(--char);padding:40px 32px;display:flex;flex-direction:column;position:relative;}
 .kit-card.featured{background:var(--mid);border:1px solid var(--blue);outline:1px solid rgba(46,109,164,0.3);margin:-1px;}
-/* kit image — full-bleed header on each kit card (RITUAL has a real photo; others a placeholder) */
-.kit-image,.kit-image-ph{display:block;width:calc(100% + 64px);margin:-40px -32px 26px;aspect-ratio:5/3;object-fit:cover;border-bottom:1px solid var(--line);}
-.kit-image-ph{display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#0c0d11,#0c0d11 12px,#101218 12px,#101218 24px);color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;text-align:center;padding:0 16px;}
-.kit-card.featured .kit-image,.kit-card.featured .kit-image-ph{width:calc(100% + 64px);margin-left:-32px;margin-right:-32px;margin-top:-40px;}
-@media(max-width:768px){
-  .kit-image,.kit-image-ph{width:calc(100% + 48px);margin:-28px -24px 22px;}
-}
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
 .kit-badge.popular{background:var(--blue);color:var(--bone);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
@@ -108,9 +101,6 @@ export default function KitComparison() {
               const isSovereign = kit.id === 'sovereign';
               return (
                 <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}${openKits.has(kit.id) ? ' products-open' : ''}`}>
-                  {kit.image
-                    ? <img className="kit-image" src={kit.image} alt={`${kit.name} kit`} loading="lazy" />
-                    : <div className="kit-image-ph">{kit.name} kit photo<br />coming soon</div>}
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name">{kit.name}</div>
@@ -118,7 +108,6 @@ export default function KitComparison() {
                   <div className="kit-prices">
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
-                      <span className="kit-price-first-label">one-time</span>
                     </div>
                     {offerActive() && !kit.comingSoon && (
                       <div className="kit-price-delivery">

@@ -4,6 +4,7 @@ import Nav from '../components/Nav.jsx';
 import Hero from '../components/Hero.jsx';
 import Marquee from '../components/Marquee.jsx';
 import RitualInAction from '../components/RitualInAction.jsx';
+import KitShowcase from '../components/KitShowcase.jsx';
 import KitComparison from '../components/KitComparison.jsx';
 import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
@@ -96,6 +97,7 @@ export default function FullSite() {
       <WhatSolumIs />
       <RitualInAction />
       <ProductLineup />
+      <KitShowcase />
       <KitComparison />
       <TruthSection />
       <FullBleedBand
