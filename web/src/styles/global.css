@@ -9,11 +9,18 @@
   --line:rgba(240,236,226,0.055);
   --lineb:rgba(46,109,164,0.18);
   --glit:#3aaa68;
+  --offerbar-h:0px;
 }
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
-section[id]{scroll-margin-top:64px;}
+section[id]{scroll-margin-top:calc(64px + var(--offerbar-h));}
+
+/* Free-delivery offer bar: reserve space + drop the fixed nav below it,
+   only while the bar is mounted (body.has-offerbar set by OfferBar). */
+body.has-offerbar{ --offerbar-h:56px; padding-top:var(--offerbar-h); }
+body.has-offerbar nav{ top:var(--offerbar-h); }
+@media (max-width:600px){ body.has-offerbar{ --offerbar-h:48px; } }
 .reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 .reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}

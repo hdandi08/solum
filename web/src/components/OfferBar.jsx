@@ -1,8 +1,15 @@
+import { useEffect } from 'react';
 import { offerActive, daysLeft, DELIVERY_OFFER } from '../lib/offer.js';
 
 const CSS = `
 .offerbar {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: var(--offerbar-h);
+  box-sizing: border-box;
   background: #2E6DA4;
   color: #F0ECE2;
   display: flex;
@@ -10,7 +17,7 @@ const CSS = `
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 11px 24px;
+  padding: 0 24px;
   text-align: center;
   font-family: 'Barlow Condensed', sans-serif;
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.18);
@@ -32,14 +39,24 @@ const CSS = `
 }
 .offerbar-sub .days { color: #08090B; font-weight: 700; }
 @media (max-width: 600px) {
-  .offerbar { padding: 9px 16px; }
+  .offerbar { padding: 0 14px; }
   .offerbar-main { font-size: 13px; letter-spacing: 1.5px; }
   .offerbar-sub { font-size: 11px; letter-spacing: 1px; }
 }
 `;
 
 export default function OfferBar() {
-  if (!offerActive()) return null;
+  const active = offerActive();
+
+  // Reserve space for the fixed bar (shifts nav + page content down) only while
+  // the offer is live, so there's no blank gap once it ends.
+  useEffect(() => {
+    if (!active) return;
+    document.body.classList.add('has-offerbar');
+    return () => document.body.classList.remove('has-offerbar');
+  }, [active]);
+
+  if (!active) return null;
 
   const dleft = daysLeft();
 
