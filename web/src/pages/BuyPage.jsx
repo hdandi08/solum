@@ -4,6 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
+import { offerActive } from '../lib/offer.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
@@ -259,7 +260,14 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <span className="co-price-label">one-time</span>
       </div>
       <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</div>
-      <div className="co-price-sub" style={{ marginTop: 3 }}>Royal Mail Tracked 48 · Free · UK only</div>
+      {offerActive() ? (
+        <div className="co-price-sub" style={{ marginTop: 3 }}>
+          Royal Mail Tracked 48 · <s style={{ color: 'var(--stone)' }}>£5.95</s>{' '}
+          <span style={{ color: '#2E6DA4', fontWeight: 600 }}>FREE</span> · UK only
+        </div>
+      ) : (
+        <div className="co-price-sub" style={{ marginTop: 3 }}>Royal Mail Tracked 48 · Free · UK only</div>
+      )}
 
       <div className="co-divider" />
 

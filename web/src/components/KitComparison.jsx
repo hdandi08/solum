@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
+import { offerActive } from '../lib/offer.js';
 
 const CSS = `
 .kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
@@ -32,6 +33,9 @@ const CSS = `
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .kit-price-sub{font-size:15px;color:var(--mist);font-weight:300;}
 .kit-price-sub span{color:var(--blit);font-weight:500;}
+.kit-price-delivery{font-size:13px;color:var(--mist);font-weight:300;margin-top:6px;}
+.kit-price-delivery s{color:var(--stone);}
+.kit-price-delivery .free{color:#2E6DA4;font-weight:600;letter-spacing:1px;}
 .kit-divider{width:100%;height:1px;background:var(--line);margin-bottom:24px;}
 .kit-products{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;flex:1;}
 .kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
@@ -115,6 +119,11 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                       <span className="kit-price-first-label">one-time</span>
                     </div>
+                    {offerActive() && !kit.comingSoon && (
+                      <div className="kit-price-delivery">
+                        Delivery <s>£5.95</s> <span className="free">FREE</span> · launch offer
+                      </div>
+                    )}
                   </div>
                   <div className="kit-divider" />
                   <button className="kit-products-toggle" onClick={() => toggle(kit.id)}>

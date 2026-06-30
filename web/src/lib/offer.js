@@ -1,7 +1,7 @@
 // Single source of truth for the free-delivery launch offer.
 // Honest, time-bound, no auto-charge: delivery is genuinely free during launch;
 // £5.95 is the realistic tracked-delivery price we would charge post-launch.
-// Turn the offer off by setting enabled:false or letting endDate pass — one place.
+// Turn the offer off by setting enabled:false or letting endDate pass (one place).
 export const DELIVERY_OFFER = {
   enabled: true,
   value: '£5.95',        // anchored worth of UK tracked delivery (display)

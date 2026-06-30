@@ -1,5 +1,6 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
 import { BANNER } from '../data/productMedia.js';
+import { offerActive } from '../lib/offer.js';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const IS_FATHERS_DAY = new URLSearchParams(window.location.search).get('occasion') === 'fathers-day';
@@ -149,6 +150,11 @@ export default function Hero() {
                   </a>
                   <a href="#kits" className="btn-ghost">See The Kits</a>
                 </div>
+                {offerActive() && (
+                  <p className="hero-sub-note" style={{ color: 'rgba(240,236,226,0.7)' }}>
+                    <span style={{ color: '#2E6DA4' }}>✓</span> Free UK delivery this batch · worth £5.95
+                  </p>
+                )}
                 <p className="hero-sub-note">Subscription coming soon</p>
               </>
             )}
