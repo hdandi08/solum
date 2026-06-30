@@ -1225,6 +1225,9 @@ Deno.serve(async (req) => {
 
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
+        // Guard against a null payment_intent: matching orders by IS NULL could
+        // mass-update unrelated NULL-keyed rows and mis-restock kit inventory.
+        if (!charge.payment_intent) break;
         const { data: refundedOrder } = await supabase
           .from('orders')
           .update({ status: 'refunded' })
