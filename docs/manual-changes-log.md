@@ -10,6 +10,7 @@ Format: date · what changed · where · done?
 
 | Date | Change | Where | Synced to prod? |
 |------|--------|-------|----------------|
+| 2026-06-30 | Deployed `stripe-webhook` (PostHog purchase parity at subscription sites 742/912) | Supabase functions — dev (rodvvmfzkyjsqbufkjbc) + prod (gvfptmjluxpngfjendbi) | Yes — both deployed + verified. POSTHOG_PROJECT_KEY already set on both. |
 | 2026-06-30 | Kit inventory deduction: applied migrations 20260630000001 (orders flags + adjust_kit_inventory RPC) + 20260630000002 (revoke RPC from anon/authenticated) to dev; deployed stripe-webhook to dev (rodvvmfzkyjsqbufkjbc) | Supabase CLI (dev) | No — prod pending |
 | 2026-04-06 | Dev site URL confirmed: https://dev.d3pa095gzazg3c.amplifyapp.com/ — no custom domain mapped yet | Amplify | N/A |
 
