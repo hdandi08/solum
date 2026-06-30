@@ -3,7 +3,7 @@ export const KITS = [
   {
     id: 'ground',
     name: 'GROUND',
-    image: null, // TODO: GROUND kit photo not shot yet — placeholder shown until provided
+    image: '/products/kit/ground.webp', // GROUND kit flatlay (no argan oil / mixing bowl — those are the RITUAL upgrade)
     firstBoxPrice: 65,
     monthlyPrice: 38,
     productNums: ['01','02','03','04','05','07','08'],
