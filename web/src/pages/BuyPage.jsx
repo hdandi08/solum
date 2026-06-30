@@ -5,7 +5,8 @@ import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElement
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddToCart, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import TrustBar from '../components/TrustBar.jsx';
@@ -873,7 +874,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => { setSelectedKit(id); ttqAddToCart(id, kit?.name ?? id, KIT_PRICES[id] ?? 65); }}
+                        onClick={() => { setSelectedKit(id); trackAddToCart(id); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         <div className="by-kit-name">{kit?.name}</div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
+import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { offerActive } from '../lib/offer.js';
 
 const CSS = `
@@ -163,6 +164,7 @@ export default function KitComparison() {
                       className="kit-cta active"
                       onClick={() => {
                         capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
+                        trackAddToCart(kit.id);
                         navigate(`/buy?kit=${kit.id}`);
                       }}
                     >

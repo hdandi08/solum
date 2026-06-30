@@ -1,4 +1,5 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
+import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { BANNER } from '../data/productMedia.js';
 import { offerActive } from '../lib/offer.js';
 
@@ -123,11 +124,11 @@ export default function Hero() {
                   <a
                     href="/buy?kit=ritual&source=fathers-day"
                     className="btn-primary"
-                    onClick={() => trackGoal('hero_cta_clicked', { variant: 'fathers-day-ritual' })}
+                    onClick={() => { trackGoal('hero_cta_clicked', { variant: 'fathers-day-ritual' }); trackAddToCart('ritual'); }}
                   >
                     Gift the RITUAL Kit
                   </a>
-                  <a href="/buy?kit=ground&source=fathers-day" className="btn-ghost">Gift the GROUND Kit</a>
+                  <a href="/buy?kit=ground&source=fathers-day" className="btn-ghost" onClick={() => trackAddToCart('ground')}>Gift the GROUND Kit</a>
                 </div>
                 <p className="hero-fd-deadline">
                   Order by <strong>June 19</strong> for Father's Day delivery · Royal Mail Tracked
