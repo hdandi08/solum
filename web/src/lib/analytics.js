@@ -50,6 +50,11 @@ export function fbViewContent(kitName) {
   fbq('track', 'ViewContent', { content_name: kitName, content_type: 'product' });
 }
 
+// Fires when a user clicks a kit Buy Now / select button (checkout begins)
+export function fbAddToCart(kitId, kitName, value) {
+  fbq('track', 'AddToCart', { content_name: kitName, content_ids: [kitId], content_type: 'product', value, currency: 'GBP' });
+}
+
 // Fires when user submits details and reaches the payment step
 export function fbInitiateCheckout(kitName, value) {
   fbq('track', 'InitiateCheckout', {
