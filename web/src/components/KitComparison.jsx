@@ -33,9 +33,9 @@ const CSS = `
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
 .kit-price-sub{font-size:15px;color:var(--mist);font-weight:300;}
 .kit-price-sub span{color:var(--blit);font-weight:500;}
-.kit-price-delivery{font-size:13px;color:var(--mist);font-weight:300;margin-top:6px;}
-.kit-price-delivery s{color:var(--stone);}
-.kit-price-delivery .free{color:#2E6DA4;font-weight:600;letter-spacing:1px;}
+.kit-price-delivery{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:6px 11px;border:1px solid rgba(46,109,164,0.55);background:rgba(46,109,164,0.12);border-radius:2px;font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--bone);}
+.kit-price-delivery s{color:var(--stone);font-weight:400;}
+.kit-price-delivery .free{color:#4A8FC7;font-weight:700;letter-spacing:1px;}
 .kit-divider{width:100%;height:1px;background:var(--line);margin-bottom:24px;}
 .kit-products{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;flex:1;}
 .kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
@@ -121,7 +121,7 @@ export default function KitComparison() {
                     </div>
                     {offerActive() && !kit.comingSoon && (
                       <div className="kit-price-delivery">
-                        Delivery <s>£5.95</s> <span className="free">FREE</span> · launch offer
+                        Delivery <s>£5.95</s> <span className="free">FREE</span>
                       </div>
                     )}
                   </div>

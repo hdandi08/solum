@@ -151,9 +151,27 @@ export default function Hero() {
                   <a href="#kits" className="btn-ghost">See The Kits</a>
                 </div>
                 {offerActive() && (
-                  <p className="hero-sub-note" style={{ color: 'rgba(240,236,226,0.7)' }}>
-                    <span style={{ color: '#2E6DA4' }}>✓</span> Free UK delivery this batch · worth £5.95
-                  </p>
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      marginTop: 18,
+                      padding: '8px 16px',
+                      border: '1.5px solid #2E6DA4',
+                      borderRadius: 2,
+                      background: 'rgba(46,109,164,0.12)',
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '1.5px',
+                      textTransform: 'uppercase',
+                      color: '#F0ECE2',
+                    }}
+                  >
+                    <span style={{ color: '#4A8FC7', fontSize: 16 }}>✓</span>
+                    Free UK delivery · worth £5.95
+                  </div>
                 )}
                 <p className="hero-sub-note">Subscription coming soon</p>
               </>
