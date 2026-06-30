@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { offerActive, daysLeft, DELIVERY_OFFER } from '../lib/offer.js';
+import { useEffect, useState } from 'react';
+import { offerActive, DELIVERY_OFFER } from '../lib/offer.js';
 
 const CSS = `
 .offerbar {
@@ -10,65 +10,74 @@ const CSS = `
   z-index: 200;
   height: var(--offerbar-h);
   box-sizing: border-box;
-  background: #2E6DA4;
-  color: #F0ECE2;
+  background: #08090b;
+  border-bottom: 1px solid rgba(240,236,226,0.07);
+  color: rgba(240,236,226,0.72);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 0 24px;
-  text-align: center;
+  padding: 0 44px;
   font-family: 'Barlow Condensed', sans-serif;
-  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.18);
 }
-.offerbar-main {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  line-height: 1.1;
-}
-.offerbar-main .save { color: #08090B; }
-.offerbar-sub {
+.offerbar-text {
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(240,236,226,0.92);
 }
-.offerbar-sub .days { color: #08090B; font-weight: 700; }
+.offerbar-text .save { color: #4a8fc7; font-weight: 600; }
+.offerbar-text .sep { color: rgba(240,236,226,0.22); margin: 0 7px; }
+.offerbar-dismiss {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(240,236,226,0.35);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+.offerbar-dismiss:hover { color: rgba(240,236,226,0.85); }
 @media (max-width: 600px) {
-  .offerbar { padding: 0 14px; }
-  .offerbar-main { font-size: 13px; letter-spacing: 1.5px; }
-  .offerbar-sub { font-size: 11px; letter-spacing: 1px; }
+  .offerbar { padding: 0 34px; }
+  .offerbar-text { font-size: 11px; letter-spacing: 0.8px; }
 }
 `;
 
-export default function OfferBar() {
-  const active = offerActive();
+const DISMISS_KEY = 'offerbar_dismissed';
 
-  // Reserve space for the fixed bar (shifts nav + page content down) only while
-  // the offer is live, so there's no blank gap once it ends.
+export default function OfferBar() {
+  const [dismissed, setDismissed] = useState(
+    () => typeof sessionStorage !== 'undefined' && sessionStorage.getItem(DISMISS_KEY) === '1'
+  );
+
+  const show = offerActive() && !dismissed;
+
+  // Reserve space for the fixed bar (shifts nav + content down) only while it
+  // is actually shown, so dismissing it collapses the space and leaves no gap.
   useEffect(() => {
-    if (!active) return;
+    if (!show) return;
     document.body.classList.add('has-offerbar');
     return () => document.body.classList.remove('has-offerbar');
-  }, [active]);
+  }, [show]);
 
-  if (!active) return null;
+  if (!show) return null;
 
-  const dleft = daysLeft();
+  const dismiss = () => {
+    try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch { /* ignore */ }
+    setDismissed(true);
+  };
 
   return (
     <div className="offerbar" role="region" aria-label="Delivery offer">
       <style>{CSS}</style>
-      <div className="offerbar-main">
-        Free UK Delivery · <span className="save">Save {DELIVERY_OFFER.value}</span>
-      </div>
-      <div className="offerbar-sub">
-        Launch offer · ends 11 Aug{dleft > 0 ? <> · <span className="days">{dleft} days left</span></> : ''}
-      </div>
+      <span className="offerbar-text">
+        Free UK Delivery <span className="sep">·</span> <span className="save">Save {DELIVERY_OFFER.value}</span> <span className="sep">·</span> Launch offer ends 11 Aug
+      </span>
+      <button className="offerbar-dismiss" onClick={dismiss} aria-label="Dismiss offer">×</button>
     </div>
   );
 }
