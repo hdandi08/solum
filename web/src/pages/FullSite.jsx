@@ -13,7 +13,6 @@ import FullBleedBand from '../components/FullBleedBand.jsx';
 import WhatSolumIs from '../components/WhatSolumIs.jsx';
 import FounderSection from '../components/FounderSection.jsx';
 import CredibilityStrip from '../components/CredibilityStrip.jsx';
-import SocialProof from '../components/SocialProof.jsx';
 import FAQ from '../components/FAQ.jsx';
 import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
@@ -108,7 +107,6 @@ export default function FullSite() {
       <CredibilityStrip />
       <SubscriptionSection />
       <ProvenanceSection />
-      <SocialProof />
       <FounderSection />
       <FAQ />
       <CTASection />
