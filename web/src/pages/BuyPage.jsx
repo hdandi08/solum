@@ -203,7 +203,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
             ))}
           </div>
           <div className="co-mobile-trust">
-            <div className="co-mobile-trust-line">◆ One-time purchase — no recurring charge</div>
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · Free · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
           </div>
@@ -273,10 +272,6 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
 
       <div className="co-promise">
         <div className="co-promise-title">Before You Buy</div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>One-time purchase — no subscription, no recurring charge</span>
-        </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
           <span>Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</span>
@@ -955,10 +950,6 @@ export default function BuyPage() {
                     <div className="co-inline-trust-item">
                       <span>🔒</span>
                       <span>Your information is encrypted and never sold</span>
-                    </div>
-                    <div className="co-inline-trust-item">
-                      <span>◆</span>
-                      <span>One-time purchase — no subscription, no recurring charges</span>
                     </div>
                   </div>
                 </form>
