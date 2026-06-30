@@ -739,6 +739,7 @@ Deno.serve(async (req) => {
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
           await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
           await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
+          await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source: 'subscription', piId: session.payment_intent as string ?? session.id });
         }
 
         // Store shipping address (null guard + idempotency via stripe_session_id unique index)
@@ -908,6 +909,7 @@ Deno.serve(async (req) => {
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
           await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
           await sendMetaPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+          await sendPosthogPurchase({ email: email?.trim().toLowerCase(), kitId: kit_id, amountPence: pi.amount, source: 'subscription', piId: pi.id });
         }
 
         // Store address from pi.shipping
