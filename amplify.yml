@@ -24,6 +24,6 @@ frontend:
     - source: '/.well-known/<*>'
       target: '/.well-known/<*>'
       status: '200'
-    - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>'
+    - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|mp4|webm|csv)$)([^.]+$)/>'
       target: /index.html
       status: '200'
