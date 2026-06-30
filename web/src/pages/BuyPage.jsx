@@ -191,9 +191,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
           <div className="co-mobile-dispatch">
             Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
           </div>
-          <div className="co-mobile-dispatch">
-            No subscription — this is your only charge
-          </div>
           <div className="co-mobile-products">
             {products.map(p => (
               <div key={p.num} className="co-mobile-product">
@@ -203,7 +200,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
             ))}
           </div>
           <div className="co-mobile-trust">
-            <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · Free · UK only</div>
+            <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
           </div>
         </div>
@@ -416,7 +413,6 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         <div className="co-order-pill-detail">
           Ships {payInfo.dispatch_date} · Arrives {payInfo.arrival_date}
         </div>
-        <div className="co-order-pill-cancel">◆ No subscription — this is your only charge</div>
       </div>
 
       <div className="co-payment-element-wrap">
