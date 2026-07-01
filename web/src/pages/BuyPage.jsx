@@ -5,7 +5,7 @@ import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElement
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
@@ -493,6 +493,7 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
           phone:      billing.phone || null,
           source,
           site_host:  window.location.hostname,
+          ...getTikTokIds(),
           line1:      addr.line1 || '',
           line2:      addr.line2 || null,
           city:       addr.city || '',
@@ -701,6 +702,7 @@ export default function BuyPage() {
           phone:      form.phone.trim() || null,
           source,
           site_host:  window.location.hostname,
+          ...getTikTokIds(),
           line1:      form.line1.trim(),
           line2:      form.line2.trim() || null,
           city:       form.city.trim(),

@@ -291,6 +291,8 @@ async function sha256hex(value: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+const TIKTOK_PIXEL_ID = 'D8NHU2RC77UCVEHVNJNG';
+
 async function sendTikTokPurchaseEvent(opts: {
   email?: string | null;
   phone?: string | null;
@@ -298,33 +300,45 @@ async function sendTikTokPurchaseEvent(opts: {
   kitName: string;
   amountPence: number;
   eventId: string;
+  ttclid?: string | null;
+  ttp?: string | null;
 }) {
   const accessToken = Deno.env.get('TIKTOK_EVENTS_ACCESS_TOKEN');
   if (!accessToken) { console.warn('TIKTOK_EVENTS_ACCESS_TOKEN not set — skipping TikTok event'); return; }
 
+  // Hashed PII + raw click identifiers. ttclid/ttp are NOT hashed.
   const user: Record<string, string> = {};
-  if (opts.email) user['email'] = await sha256hex(opts.email);
-  if (opts.phone) user['phone_number'] = await sha256hex(opts.phone.replace(/\D/g, ''));
+  if (opts.email)  user['email']  = await sha256hex(opts.email);
+  if (opts.phone)  user['phone']  = await sha256hex(opts.phone.replace(/\D/g, ''));
+  if (opts.ttclid) user['ttclid'] = opts.ttclid;
+  if (opts.ttp)    user['ttp']    = opts.ttp;
+
+  const testEventCode = Deno.env.get('TIKTOK_TEST_EVENT_CODE');
 
   try {
+    // Events API v1.3: event wrapped in data[], event_source_id = pixel code.
     const res = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
       method: 'POST',
       headers: { 'Access-Token': accessToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        pixel_id: 'D8NHU2RC77UCVEHVNJNG',
-        event: 'CompletePayment',
-        event_time: Math.floor(Date.now() / 1000),
-        event_id: opts.eventId,
         event_source: 'web',
-        event_source_id: 'https://bysolum.co.uk',
-        user,
-        properties: {
-          value: (opts.amountPence / 100).toFixed(2),
-          currency: 'GBP',
-          content_name: opts.kitName,
-          content_type: 'product',
-          content_id: opts.kitId ?? 'unknown',
-        },
+        event_source_id: TIKTOK_PIXEL_ID,
+        ...(testEventCode ? { test_event_code: testEventCode } : {}),
+        data: [{
+          event: 'CompletePayment',
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: opts.eventId,
+          user,
+          properties: {
+            currency: 'GBP',
+            value: Number((opts.amountPence / 100).toFixed(2)),
+            contents: [{
+              content_id: opts.kitId ?? 'unknown',
+              content_type: 'product',
+              content_name: opts.kitName,
+            }],
+          },
+        }],
       }),
     });
     const result = await res.json();
@@ -385,7 +399,7 @@ async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -446,7 +460,7 @@ async function handleOneTimeOrderFromPI(
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
-    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
   }

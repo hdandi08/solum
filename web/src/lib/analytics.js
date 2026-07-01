@@ -128,4 +128,24 @@ export function ttqTrack(event, props = {}) {
   ttq('track', event, props);
 }
 
+function readCookie(name) {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+// TikTok match signals for server-side Events API (CAPI):
+//  - ttclid: click id from the ad URL (?ttclid=). Persisted so it survives the
+//    navigation from landing page to checkout.
+//  - ttp: first-party cookie set by the TikTok pixel.
+// Returns undefined for absent values so they drop cleanly from JSON payloads.
+export function getTikTokIds() {
+  let ttclid;
+  try {
+    const fromUrl = new URL(window.location.href).searchParams.get('ttclid');
+    if (fromUrl) localStorage.setItem('ttclid', fromUrl);
+    ttclid = fromUrl || localStorage.getItem('ttclid') || undefined;
+  } catch { /* ignore */ }
+  return { ttclid, ttp: readCookie('_ttp') || undefined };
+}
+
 export { posthog };
