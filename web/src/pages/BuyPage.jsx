@@ -66,6 +66,9 @@ const CSS = `
 .by-express-wrap{margin-bottom:8px;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
+.by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
+.by-express-consent a{color:var(--blit);text-decoration:none;}
+.by-express-consent a:hover{text-decoration:underline;}
 .by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:32px;}
 @media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
 .by-kit{background:var(--black);padding:24px 20px;cursor:pointer;transition:background .15s;}
@@ -185,13 +188,18 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
           <span className="co-mobile-kit-name">{kit.name}</span>
           {kit.outcome && <span className="co-mobile-outcome">{kit.outcome}</span>}
           <span className="co-mobile-see-more">
-            {open ? '▴ Hide summary' : '▾ Order summary'}
+            {open ? 'Tap to hide summary' : "Tap to see what's inside"}
           </span>
         </div>
         <div className="co-mobile-price-block">
           <span className="co-mobile-price">£{price}</span>
           <span className="co-mobile-price-note">one-time</span>
         </div>
+        <span className={`co-mobile-chevron${open ? ' open' : ''}`} aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 9l4-4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </button>
 
       {open && (
@@ -894,7 +902,11 @@ export default function BuyPage() {
           </a>
 
           <>
-              <ProgressBar step={step} />
+              {/* Progress bar sits at top only for the delivery step (which has
+                  no express option). On the details step it moves below the wallet
+                  buttons — see further down — so Apple Pay / Link users aren't
+                  shown an irrelevant 1-2-3 journey they never take. */}
+              {step === 'delivery' && <ProgressBar step="delivery" />}
 
               {/* Cold-traffic orientation — step 1 only */}
               {step === 'details' && (
@@ -945,10 +957,21 @@ export default function BuyPage() {
                     />
                   </Elements>
                   {expressAvailable && (
-                    <div className="by-express-or"><span>or pay by card</span></div>
+                    <>
+                      <div className="by-express-consent">
+                        By continuing with Apple Pay or Link, you agree to our{' '}
+                        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+                        {' '}and{' '}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                      </div>
+                      <div className="by-express-or"><span>or pay by card</span></div>
+                    </>
                   )}
                 </div>
               )}
+
+              {/* Progress bar — card path only; express payers skip these steps */}
+              {step === 'details' && <ProgressBar step="details" />}
 
               {/* Step 1: Details */}
               {step === 'details' && (
