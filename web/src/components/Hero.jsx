@@ -1,5 +1,6 @@
 import { useVariant, trackGoal } from '../hooks/useVariant';
-import { trackAddToCart } from '../lib/addToCartTracker.js';
+import { useNavigate } from 'react-router-dom';
+import { buyClick } from '../lib/addToCartTracker.js';
 import { BANNER } from '../data/productMedia.js';
 import { offerActive } from '../lib/offer.js';
 
@@ -93,6 +94,7 @@ const CSS = `
 `;
 
 export default function Hero() {
+  const navigate = useNavigate();
   const ctaVariant = useVariant('hero-cta-copy');
 
   return (
@@ -124,11 +126,11 @@ export default function Hero() {
                   <a
                     href="/buy?kit=ritual&source=fathers-day"
                     className="btn-primary"
-                    onClick={() => { trackGoal('hero_cta_clicked', { variant: 'fathers-day-ritual' }); trackAddToCart('ritual'); }}
+                    onClick={(e) => { trackGoal('hero_cta_clicked', { variant: 'fathers-day-ritual' }); buyClick(e, navigate, '/buy?kit=ritual&source=fathers-day', 'ritual'); }}
                   >
                     Gift the RITUAL Kit
                   </a>
-                  <a href="/buy?kit=ground&source=fathers-day" className="btn-ghost" onClick={() => trackAddToCart('ground')}>Gift the GROUND Kit</a>
+                  <a href="/buy?kit=ground&source=fathers-day" className="btn-ghost" onClick={(e) => buyClick(e, navigate, '/buy?kit=ground&source=fathers-day', 'ground')}>Gift the GROUND Kit</a>
                 </div>
                 <p className="hero-fd-deadline">
                   Order by <strong>June 19</strong> for Father's Day delivery · Royal Mail Tracked

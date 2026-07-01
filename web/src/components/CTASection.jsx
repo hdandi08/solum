@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { useVariant, trackGoal } from '../hooks/useVariant';
-import { trackAddToCart } from '../lib/addToCartTracker.js';
+import { buyClick } from '../lib/addToCartTracker.js';
 
 
 const CTA_COPY = { control: 'Choose Your Kit', ritual: 'Build Your Ritual' };
@@ -18,6 +19,7 @@ const CSS = `
 `;
 
 export default function CTASection() {
+  const navigate = useNavigate();
   const ctaVariant = useVariant('hero-cta-copy');
   const ctaLabel = CTA_COPY[ctaVariant] ?? CTA_COPY.control;
 
@@ -35,7 +37,7 @@ export default function CTASection() {
           <a
             href="/buy?kit=ritual"
             className="cta-btn-primary"
-            onClick={() => { trackGoal('bottom_cta_clicked', { variant: 'ritual' }); trackAddToCart('ritual'); }}
+            onClick={(e) => { trackGoal('bottom_cta_clicked', { variant: 'ritual' }); buyClick(e, navigate, '/buy?kit=ritual', 'ritual'); }}
           >
             Begin with Ritual · £85
           </a>
@@ -43,7 +45,7 @@ export default function CTASection() {
             href="/buy?kit=ground"
             className="cta-btn-primary"
             style={{ background: 'transparent', color: 'var(--bone)', border: '1px solid rgba(240,236,226,0.25)' }}
-            onClick={() => { trackGoal('bottom_cta_clicked', { variant: 'ground' }); trackAddToCart('ground'); }}
+            onClick={(e) => { trackGoal('bottom_cta_clicked', { variant: 'ground' }); buyClick(e, navigate, '/buy?kit=ground', 'ground'); }}
           >
             Begin with Ground · £65
           </a>

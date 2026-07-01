@@ -14,3 +14,15 @@ export function trackAddToCart(kitId) {
   ttqAddToCart(payload.kitId, payload.kitName, payload.value);
   return true;
 }
+
+// Buy-CTA click that guarantees the AddToCart pixel event actually gets sent.
+// A plain <a href> triggers a full-page reload which cancels TikTok's batched
+// network send (Meta survives via image beacon). Doing a client-side (SPA) nav
+// instead lets the pixel flush first. Modified clicks (cmd/ctrl/shift/middle)
+// fall through to the browser's native open-in-new-tab.
+export function buyClick(e, navigate, href, kitId) {
+  trackAddToCart(kitId);
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+  e.preventDefault();
+  navigate(href);
+}
