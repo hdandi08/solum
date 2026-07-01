@@ -59,6 +59,10 @@ function isValidUKPhone(raw) {
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
 const CSS = `
+.by-intro{margin-bottom:28px;}
+.by-intro-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:700;display:block;margin-bottom:10px;}
+.by-intro-head{font-size:21px;font-weight:400;color:var(--bone);line-height:1.35;margin:0;max-width:540px;}
+@media(max-width:768px){.by-intro-head{font-size:19px;}}
 .by-express-wrap{margin-bottom:8px;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
@@ -164,6 +168,7 @@ function ProgressBar({ step }) {
 
 function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
   const [open, setOpen] = useState(false);
+  const [zoomSrc, setZoomSrc] = useState(null);
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
@@ -175,8 +180,10 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
         aria-expanded={open}
         type="button"
       >
+        {kit.image && <img src={kit.image} alt="" className="co-mobile-hero-thumb" />}
         <div className="co-mobile-header-left">
           <span className="co-mobile-kit-name">{kit.name}</span>
+          {kit.outcome && <span className="co-mobile-outcome">{kit.outcome}</span>}
           <span className="co-mobile-see-more">
             {open ? '▴ Hide summary' : '▾ Order summary'}
           </span>
@@ -194,16 +201,33 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
           </div>
           <div className="co-mobile-products">
             {products.map(p => (
-              <div key={p.num} className="co-mobile-product">
+              <button
+                key={p.num}
+                type="button"
+                className="co-mobile-product"
+                onClick={() => p.media?.still && setZoomSrc(p.media.still)}
+              >
+                {p.media?.still
+                  ? <img src={p.media.still} alt="" className="co-mobile-product-thumb" loading="lazy" />
+                  : <span className="co-mobile-product-thumb ph" />}
                 <span className="co-mobile-product-num">{p.num}</span>
-                <span>{p.name}</span>
-              </div>
+                <span className="co-mobile-product-name">{p.name}</span>
+                {p.media?.still && <span className="co-mobile-product-zoom" aria-hidden="true">⤢</span>}
+              </button>
             ))}
           </div>
           <div className="co-mobile-trust">
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
+            <div className="co-mobile-trust-line">✓ 14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></div>
           </div>
+        </div>
+      )}
+
+      {zoomSrc && (
+        <div className="co-mobile-zoom-overlay" onClick={() => setZoomSrc(null)} role="dialog" aria-modal="true">
+          <img src={zoomSrc} alt="" className="co-mobile-zoom-img" />
+          <span className="co-mobile-zoom-hint">Tap to close</span>
         </div>
       )}
     </div>
@@ -251,7 +275,9 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
 
   return (
     <div className="co-right">
+      {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
       <div className="co-kit-name">{kit.name}</div>
+      {kit.outcome && <div className="co-outcome">{kit.outcome}</div>}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
         <span className="co-price-main">£{price}</span>
         <span className="co-price-label">one-time</span>
@@ -281,6 +307,10 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
           <span>Secured by Stripe — your card details never touch our servers</span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></span>
         </div>
       </div>
 
@@ -865,6 +895,14 @@ export default function BuyPage() {
 
           <>
               <ProgressBar step={step} />
+
+              {/* Cold-traffic orientation — step 1 only */}
+              {step === 'details' && (
+                <div className="by-intro">
+                  <span className="by-intro-eyebrow">Men's Body Care</span>
+                  <h1 className="by-intro-head">Everything your body needs, head to toe. A simple daily routine, plus a deeper weekly one. We show you exactly how.</h1>
+                </div>
+              )}
 
               {/* Kit selector — shown on step 1 only */}
               {step === 'details' && (
