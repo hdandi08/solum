@@ -175,6 +175,33 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
+  // Swipe-down-to-dismiss for the expanded panel (a bottom sheet that opens
+  // upward). Only engage when the panel is scrolled to the top, so a normal
+  // upward scroll through the product list is never hijacked into a close.
+  const bodyRef = useRef(null);
+  const dragStartY = useRef(null);
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
+  const onTouchStart = (e) => {
+    if ((bodyRef.current?.scrollTop ?? 0) <= 0) {
+      dragStartY.current = e.touches[0].clientY;
+      setDragging(true);
+    }
+  };
+  const onTouchMove = (e) => {
+    if (dragStartY.current == null) return;
+    const dy = e.touches[0].clientY - dragStartY.current;
+    if (dy > 0) setDragY(dy); // downward only
+  };
+  const onTouchEnd = () => {
+    if (dragY > 80) setOpen(false);
+    dragStartY.current = null;
+    setDragging(false);
+    setDragY(0);
+  };
+  const closeSummary = () => { setOpen(false); setDragY(0); setDragging(false); dragStartY.current = null; };
+
   return (
     <div className="co-mobile-header">
       <button
@@ -203,7 +230,30 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
       </button>
 
       {open && (
-        <div className="co-mobile-header-body">
+        <div
+          className="co-mobile-header-body"
+          ref={bodyRef}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          style={{
+            transform: dragY ? `translateY(${dragY}px)` : undefined,
+            transition: dragging ? 'none' : 'transform 0.22s ease',
+          }}
+        >
+          <div className="co-mobile-sheet-head">
+            <span className="co-mobile-sheet-grab" aria-hidden="true" />
+            <button
+              type="button"
+              className="co-mobile-sheet-close"
+              onClick={closeSummary}
+              aria-label="Close summary"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
           <div className="co-mobile-dispatch">
             Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
           </div>

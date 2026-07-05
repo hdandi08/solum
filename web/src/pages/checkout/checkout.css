@@ -136,6 +136,38 @@
   gap: 14px;
 }
 
+/* Bottom-sheet dismiss affordances: grab handle (swipe down) + X (tap) */
+.co-mobile-sheet-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  margin: -4px 0 2px;
+}
+.co-mobile-sheet-grab {
+  width: 38px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(240, 236, 226, 0.28);
+}
+.co-mobile-sheet-close {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--stone);
+  cursor: pointer;
+}
+.co-mobile-sheet-close:active { color: var(--bone); }
+
 .co-mobile-dispatch {
   font-size: 14px;
   color: var(--mist);
