@@ -73,3 +73,29 @@ describe('buildBreakoutUrl', () => {
     expect(buildBreakoutUrl(undefined, base)).not.toContain('distinct_id=');
   });
 });
+
+import { buildAndroidIntentUrl } from './inAppBrowser';
+
+describe('buildAndroidIntentUrl', () => {
+  const url = 'https://bysolum.co.uk/buy?source=first_batch&distinct_id=ph_1';
+
+  it('produces a scheme=https intent that ends with ;end', () => {
+    const out = buildAndroidIntentUrl(url);
+    expect(out.startsWith('intent://bysolum.co.uk/buy?source=first_batch&distinct_id=ph_1')).toBe(true);
+    expect(out).toContain('#Intent;scheme=https;');
+    expect(out.endsWith(';end')).toBe(true);
+  });
+  it('does NOT hardcode a browser package', () => {
+    expect(buildAndroidIntentUrl(url)).not.toContain('package=');
+  });
+  it('includes a URL-encoded browser_fallback_url', () => {
+    const out = buildAndroidIntentUrl(url);
+    expect(out).toContain('S.browser_fallback_url=' + encodeURIComponent(url));
+  });
+  it('strips a fragment so the intent delimiter cannot collide', () => {
+    const out = buildAndroidIntentUrl(url + '#section');
+    // exactly one "#Intent" delimiter, no stray "#section" before it
+    expect(out.match(/#/g)).toHaveLength(1);
+    expect(out).not.toContain('#section');
+  });
+});

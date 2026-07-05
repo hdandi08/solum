@@ -65,3 +65,18 @@ export function buildBreakoutUrl(distinctId, href) {
   }
   return url.toString();
 }
+
+/**
+ * Wrap an https URL in an Android intent:// URL that opens the user's default
+ * browser (no hardcoded package). The original URL is the browser_fallback_url.
+ * Any fragment on the input is dropped so it can't collide with the #Intent
+ * delimiter.
+ * @param {string} httpsUrl
+ * @returns {string}
+ */
+export function buildAndroidIntentUrl(httpsUrl) {
+  const u = new URL(httpsUrl);
+  const fallback = u.origin + u.pathname + u.search; // no hash
+  const withoutScheme = u.host + u.pathname + u.search; // host + path + query
+  return `intent://${withoutScheme}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
+}
