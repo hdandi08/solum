@@ -1,0 +1,64 @@
+.iab-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #1A4A78; /* Deep Blue */
+  color: #F0ECE2;      /* Bone */
+  border: none;
+  border-bottom: 1px solid rgba(240, 236, 226, 0.15);
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.3;
+}
+.iab-banner-text { flex: 1; font-weight: 600; letter-spacing: 0.2px; }
+.iab-banner-arrow { flex-shrink: 0; color: #4A8FC7; font-weight: 700; }
+.iab-banner-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(240, 236, 226, 0.7);
+  cursor: pointer;
+}
+.iab-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 9, 11, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.iab-overlay-card {
+  background: #181C24; /* Charcoal */
+  border: 1px solid rgba(240, 236, 226, 0.15);
+  border-radius: 12px;
+  padding: 22px 20px;
+  max-width: 340px;
+  color: #F0ECE2;
+}
+.iab-overlay-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.iab-overlay-steps { font-size: 13px; line-height: 1.55; margin: 0 0 18px 18px; }
+.iab-overlay-btn {
+  width: 100%;
+  padding: 11px;
+  background: #2E6DA4; /* Steel Blue */
+  color: #F0ECE2;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
