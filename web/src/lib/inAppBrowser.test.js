@@ -48,3 +48,28 @@ describe('detectPlatform', () => {
   it('returns other for empty UA', () =>
     expect(detectPlatform('')).toBe('other'));
 });
+
+import { buildBreakoutUrl } from './inAppBrowser';
+
+describe('buildBreakoutUrl', () => {
+  const base = 'https://bysolum.co.uk/buy?source=first_batch&kit=ritual&fbclid=abc';
+
+  it('preserves all existing query params', () => {
+    const out = buildBreakoutUrl('ph_123', base);
+    expect(out).toContain('source=first_batch');
+    expect(out).toContain('kit=ritual');
+    expect(out).toContain('fbclid=abc');
+  });
+  it('appends distinct_id', () => {
+    expect(buildBreakoutUrl('ph_123', base)).toContain('distinct_id=ph_123');
+  });
+  it('does not duplicate distinct_id if already present', () => {
+    const withId = base + '&distinct_id=old';
+    const out = buildBreakoutUrl('ph_new', withId);
+    expect(out.match(/distinct_id=/g)).toHaveLength(1);
+    expect(out).toContain('distinct_id=old');
+  });
+  it('omits distinct_id when none provided', () => {
+    expect(buildBreakoutUrl(undefined, base)).not.toContain('distinct_id=');
+  });
+});

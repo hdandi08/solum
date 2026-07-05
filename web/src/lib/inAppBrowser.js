@@ -49,3 +49,19 @@ export function detectPlatform(ua) {
   if (/Android/i.test(s)) return 'android';
   return 'other';
 }
+
+/**
+ * Absolute https URL to reopen in the system browser, with distinct_id forwarded
+ * for PostHog person continuity. All existing query params are preserved.
+ * @param {string} [distinctId] PostHog distinct id to forward
+ * @param {string} [href] source URL; defaults to window.location.href
+ * @returns {string}
+ */
+export function buildBreakoutUrl(distinctId, href) {
+  const src = href ?? (typeof window !== 'undefined' ? window.location.href : '');
+  const url = new URL(src);
+  if (distinctId && !url.searchParams.has('distinct_id')) {
+    url.searchParams.set('distinct_id', distinctId);
+  }
+  return url.toString();
+}
