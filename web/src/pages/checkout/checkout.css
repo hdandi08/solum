@@ -15,6 +15,12 @@
   z-index: 200;
 }
 
+/* When the in-app-browser banner is present, it pins above the nav; push the
+   nav and page content down by its measured height (--iab-h, set in JS). */
+:root.iab-on .co-checkout-nav { top: var(--iab-h, 0px); }
+:root.iab-on .co-page { padding-top: calc(64px + var(--iab-h, 0px)); }
+:root.iab-on .co-soldout-page { padding-top: calc(64px + var(--iab-h, 0px)); }
+
 
 .co-checkout-nav-lock {
   font-size: 11px;

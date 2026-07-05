@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import posthog from 'posthog-js';
 import { isInAppBrowser, detectPlatform, buildBreakoutUrl, buildAndroidIntentUrl } from '../lib/inAppBrowser.js';
 import { capture } from '../lib/analytics.js';
@@ -17,6 +17,28 @@ export default function InAppBrowserBanner() {
 
   const [hidden, setHidden] = useState(() => wasDismissed());
   const [showOverlay, setShowOverlay] = useState(false);
+  const barRef = useRef(null);
+
+  // The banner is a fixed bar pinned above the fixed checkout nav. Publish its
+  // measured height as --iab-h and flag <html> with .iab-on so checkout.css can
+  // push the nav and page content down by exactly the banner height (the copy
+  // wraps to two lines on narrow screens, so the height must be measured).
+  useLayoutEffect(() => {
+    if (!active || hidden) return undefined;
+    const el = barRef.current;
+    const root = document.documentElement;
+    if (!el) return undefined;
+    const apply = () => root.style.setProperty('--iab-h', `${el.offsetHeight}px`);
+    apply();
+    root.classList.add('iab-on');
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      root.classList.remove('iab-on');
+      root.style.removeProperty('--iab-h');
+    };
+  }, [active, hidden, platform]);
 
   // Fire the "shown" event once per session when the banner is actually visible.
   useEffect(() => {
@@ -53,7 +75,7 @@ export default function InAppBrowserBanner() {
 
   return (
     <>
-      <div className="iab-banner">
+      <div className="iab-banner" ref={barRef}>
         <button type="button" className="iab-banner-open" onClick={onOpen}>
           <span className="iab-banner-text">
             Faster checkout. Open in your browser for 1 tap {wallet}
