@@ -32,3 +32,18 @@ describe('evaluateQualified', () => {
     expect(evaluateQualified({ ...base, productDetailViewed: true, unboxingVideoPct: 55 })).toBe('product_detail');
   });
 });
+
+describe('ritual_multi', () => {
+  it('qualifies when 2 distinct ritual videos are engaged', () => {
+    expect(evaluateQualified({ ritualVideosEngaged: 2 })).toBe('ritual_multi');
+  });
+  it('does not qualify on a single engaged video (via multi)', () => {
+    expect(evaluateQualified({ ritualVideosEngaged: 1 })).toBeNull();
+  });
+  it('defaults ritualVideosEngaged to 0 when absent', () => {
+    expect(evaluateQualified({})).toBeNull();
+  });
+  it('still prefers the immediate product_detail reason', () => {
+    expect(evaluateQualified({ productDetailViewed: true, ritualVideosEngaged: 5 })).toBe('product_detail');
+  });
+});
