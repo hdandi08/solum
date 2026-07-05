@@ -10,6 +10,8 @@ Format: date · what changed · where · done?
 
 | Date | Change | Where | Synced to prod? |
 |------|--------|-------|----------------|
+| 2026-07-01 | Updated `TIKTOK_EVENTS_ACCESS_TOKEN` to the correct token (user-provided) on dev + prod. Set `TIKTOK_TEST_EVENT_CODE=TEST87432` on **dev only** (routes dev events to TikTok Test Events; prod intentionally has none). | Supabase secrets (dev rodvvmfzkyjsqbufkjbc + prod gvfptmjluxpngfjendbi) | Token: both. Test code: dev only (by design). |
+| 2026-07-01 | Deployed `stripe-webhook` + `create-first-box-payment-intent` (TikTok Events API v1.3 payload fix + ttclid/ttp) | Supabase functions — dev + prod | Yes — both deployed. Dev CompletePayment verified in TikTok Test Events. |
 | 2026-06-30 | Deployed `stripe-webhook` (PostHog purchase parity at subscription sites 742/912) | Supabase functions — dev (rodvvmfzkyjsqbufkjbc) + prod (gvfptmjluxpngfjendbi) | Yes — both deployed + verified. POSTHOG_PROJECT_KEY already set on both. |
 | 2026-06-30 | Kit inventory deduction: applied migrations 20260630000001 (orders flags + adjust_kit_inventory RPC) + 20260630000002 (revoke RPC from anon/authenticated) to dev; deployed stripe-webhook to dev (rodvvmfzkyjsqbufkjbc) | Supabase CLI (dev) | No — prod pending |
 | 2026-04-06 | Dev site URL confirmed: https://dev.d3pa095gzazg3c.amplifyapp.com/ — no custom domain mapped yet | Amplify | N/A |
@@ -34,3 +36,16 @@ Format: date · what changed · where · done?
   lookahead. Applies app-wide (dev + master), at the edge, no rebuild. Verified .webp now
   returns 200 image/webp on the dev deploy.
 - NOTE: this is Amplify app config (not in repo). If the app is recreated, re-apply.
+
+## 2026-07-05 — Ritual section: unified center-active gallery + QualifiedVisit `ritual_multi`
+- Rebuilt `web/src/components/RitualInAction.jsx` from the desktop player/rail + separate
+  mobile carousel into ONE responsive center-active gallery (coverflow) for both desktop and
+  mobile. Fixes the desktop click-disconnect (action now co-located with the playing video);
+  fits one viewport; daily→weekly order; arrows/drag/click-to-centre on desktop, swipe on mobile.
+- QualifiedVisit recalibration: new `ritual_multi` trigger fires when a visitor deliberately
+  centres 2 distinct ritual steps (`qualifiedVisit.js` + `qualifiedVisitTracker.js:markRitualEngaged`).
+  First auto-centred card is passive; selection is settle-debounced so flicking past cards does
+  NOT over-fire `ritual_selected`/`ritual_multi`. In-view play gate restored (no below-fold autoplay).
+- Commits on dev: edb2d40, 3ab5e95, e13f93f, 05fea10, 70de8a0. Reviewed clean; verified live on
+  localhost (desktop coverflow, mobile swipe, `ritual_multi` fired once). Spec/plan in docs/superpowers.
+- PENDING: user sign-off before merging dev → master.
