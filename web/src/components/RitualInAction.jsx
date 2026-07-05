@@ -33,8 +33,10 @@ const CSS = `
 
 .ria-gallery{position:relative;}
 .ria-carousel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:6px 11vw 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  padding:6px 11vw 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab;}
 .ria-carousel::-webkit-scrollbar{display:none;}
+.ria-carousel.dragging{cursor:grabbing;scroll-snap-type:none;user-select:none;}
+.ria-carousel img,.ria-carousel video{-webkit-user-drag:none;}
 .ria-card{flex:0 0 78vw;max-width:340px;scroll-snap-align:center;cursor:pointer;
   background:none;border:none;padding:0;text-align:left;color:inherit;}
 .ria-card:focus-visible{outline:2px solid var(--blit);outline-offset:3px;}
@@ -74,10 +76,10 @@ const CSS = `
     transition:border-color .3s,transform .35s ease,opacity .35s ease;transform:scale(.82);opacity:.5;}
   .ria-card.active .ria-card-media{transform:scale(1);opacity:1;}
   .ria-arrow{display:flex;align-items:center;justify-content:center;position:absolute;top:calc(50% - 8px);
-    transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(18,21,28,0.92);
-    border:1px solid rgba(240,236,226,0.3);color:var(--bone);cursor:pointer;z-index:2;box-shadow:0 4px 18px rgba(0,0,0,0.45);transition:background .2s,border-color .2s;}
-  .ria-arrow:hover{background:var(--char);border-color:var(--blit);}
-  .ria-arrow.prev{left:calc(50% - 220px);} .ria-arrow.next{right:calc(50% - 220px);}
+    transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:var(--blue);
+    border:1px solid var(--blit);color:var(--bone);cursor:pointer;z-index:2;box-shadow:0 6px 20px rgba(46,109,164,0.45);transition:background .2s,transform .2s;}
+  .ria-arrow:hover{background:var(--blit);transform:translateY(-50%) scale(1.06);}
+  .ria-arrow.prev{left:16px;} .ria-arrow.next{right:16px;}
 }
 @media(max-width:768px){ .ria-section{padding:60px 0;} }
 `;
@@ -108,6 +110,7 @@ export default function RitualInAction() {
   const activeIdxRef = useRef(0);
   const inView = useRef(false);
   const settleTimer = useRef(0);
+  const draggedRef = useRef(false);
 
   // Play the SETTLED card (only while the section is on screen); pause the rest.
   // The first settle on load is passive (no intent); later settles are deliberate.
@@ -169,6 +172,39 @@ export default function RitualInAction() {
     return () => io.disconnect();
   }, []);
 
+  // Desktop: click-and-drag to scroll the gallery (mirrors mobile swipe). Arrows still work.
+  useEffect(() => {
+    const car = carouselRef.current;
+    if (!car) return;
+    let down = false, startX = 0, startScroll = 0;
+    const onDown = (e) => {
+      if (e.button !== 0) return;
+      down = true; draggedRef.current = false;
+      startX = e.pageX; startScroll = car.scrollLeft;
+      car.classList.add('dragging');
+    };
+    const onMove = (e) => {
+      if (!down) return;
+      e.preventDefault();
+      const dx = e.pageX - startX;
+      if (Math.abs(dx) > 4) draggedRef.current = true;
+      car.scrollLeft = startScroll - dx;
+    };
+    const onUp = () => {
+      if (!down) return;
+      down = false;
+      car.classList.remove('dragging');
+    };
+    car.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      car.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, []);
+
   const goTo = (i) => {
     const idx = Math.max(0, Math.min(STEPS.length - 1, i));
     cardRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -188,6 +224,7 @@ export default function RitualInAction() {
   }, []);
 
   const onCardActivate = (i) => {
+    if (draggedRef.current) { draggedRef.current = false; return; }
     if (i === activeIdx) { promote(i); } else { goTo(i); }
   };
 
