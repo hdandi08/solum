@@ -37,6 +37,7 @@ const CSS = `
 .ria-carousel::-webkit-scrollbar{display:none;}
 .ria-card{flex:0 0 78vw;max-width:340px;scroll-snap-align:center;cursor:pointer;
   background:none;border:none;padding:0;text-align:left;color:inherit;}
+.ria-card:focus-visible{outline:2px solid var(--blit);outline-offset:3px;}
 .ria-card-media{position:relative;width:100%;height:62vh;max-height:560px;overflow:hidden;background:#000;
   border:1px solid var(--line);transition:border-color .3s;}
 .ria-card.active .ria-card-media{border-color:rgba(46,109,164,0.5);}
@@ -103,15 +104,19 @@ export default function RitualInAction() {
   const firstSettle = useRef(true);
   const progressFired = useRef(new Set());
   const rafId = useRef(0);
+  const sectionRef = useRef(null);
+  const activeIdxRef = useRef(0);
+  const inView = useRef(false);
+  const settleTimer = useRef(0);
 
-  // Activate a card: play its video, pause the rest. First settle is passive (no intent);
-  // any later centring counts as a deliberate selection.
-  const applyActive = useCallback((i) => {
-    setActiveIdx(i);
+  // Play the SETTLED card (only while the section is on screen); pause the rest.
+  // The first settle on load is passive (no intent); later settles are deliberate.
+  const settle = useCallback((i) => {
+    activeIdxRef.current = i;
     progressFired.current = new Set();
     vidRefs.current.forEach((v, idx) => {
       if (!v) return;
-      if (idx === i && !REDUCE_MOTION) { v.play().catch(() => {}); } else { v.pause(); }
+      if (idx === i && !REDUCE_MOTION && inView.current) { v.play().catch(() => {}); } else { v.pause(); }
     });
     if (firstSettle.current) { firstSettle.current = false; return; }
     setUserSelected(true);
@@ -119,11 +124,12 @@ export default function RitualInAction() {
     markRitualEngaged(STEPS[i].slug);
   }, []);
 
-  // The card whose centre is nearest the carousel centre is active.
+  // Nearest-centre card is active (visual, live). Playback + selection fire only
+  // once scroll SETTLES, so flicking past cards never emits intent for each one.
   useEffect(() => {
     const car = carouselRef.current;
     if (!car) return;
-    let current = -1;
+    const SETTLE_MS = 140;
     const measure = () => {
       const cx = car.scrollLeft + car.clientWidth / 2;
       let best = 0, bd = Infinity;
@@ -133,13 +139,35 @@ export default function RitualInAction() {
         const d = Math.abs(c - cx);
         if (d < bd) { bd = d; best = idx; }
       });
-      if (best !== current) { current = best; applyActive(best); }
+      if (best !== activeIdxRef.current) { activeIdxRef.current = best; setActiveIdx(best); }
+      clearTimeout(settleTimer.current);
+      settleTimer.current = setTimeout(() => settle(best), SETTLE_MS);
     };
     const onScroll = () => { cancelAnimationFrame(rafId.current); rafId.current = requestAnimationFrame(measure); };
-    measure(); // initial, passive
+    measure(); // schedules the first (passive) settle on card 0
     car.addEventListener('scroll', onScroll, { passive: true });
-    return () => { car.removeEventListener('scroll', onScroll); cancelAnimationFrame(rafId.current); };
-  }, [applyActive]);
+    return () => {
+      car.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(rafId.current);
+      clearTimeout(settleTimer.current);
+    };
+  }, [settle]);
+
+  // Only play while the gallery is on screen (restores the previous in-view gate).
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        inView.current = e.isIntersecting;
+        const v = vidRefs.current[activeIdxRef.current];
+        if (!v) return;
+        if (e.isIntersecting && !REDUCE_MOTION) { v.play().catch(() => {}); } else { v.pause(); }
+      });
+    }, { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const goTo = (i) => {
     const idx = Math.max(0, Math.min(STEPS.length - 1, i));
@@ -149,8 +177,10 @@ export default function RitualInAction() {
   // Clicking an already-centred card fires no scroll event, so the scroll-based
   // detector never re-runs. Register the deliberate selection directly in that case.
   const promote = useCallback((i) => {
+    activeIdxRef.current = i;
+    progressFired.current = new Set();
     const v = vidRefs.current[i];
-    if (v && !REDUCE_MOTION) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
+    if (v && !REDUCE_MOTION && inView.current) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
     firstSettle.current = false;
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
@@ -179,7 +209,7 @@ export default function RitualInAction() {
   return (
     <>
       <style>{CSS}</style>
-      <section className="ria-section" id="ritual">
+      <section className="ria-section" id="ritual" ref={sectionRef}>
         <div className="ria-head-wrap">
           <div className="ria-eyebrow reveal">The Ritual</div>
           <h2 className="ria-head reveal">Ritual in Action.</h2>
@@ -189,7 +219,7 @@ export default function RitualInAction() {
         <div className="ria-gallery reveal">
           <button className="ria-arrow prev" aria-label="Previous step" onClick={() => goTo(activeIdx - 1)}>{chevron('prev')}</button>
 
-          <div className="ria-carousel" ref={carouselRef} role="listbox" aria-label="Ritual steps">
+          <div className="ria-carousel" ref={carouselRef} role="group" aria-label="Ritual steps">
             {STEPS.map((s, i) => {
               const f = videoFor(s.slug);
               const vid = !!f && !REDUCE_MOTION;
@@ -199,10 +229,12 @@ export default function RitualInAction() {
                   className={`ria-card${i === activeIdx ? ' active' : ''}`}
                   key={s.slug}
                   data-idx={i}
-                  role="option"
-                  aria-selected={i === activeIdx}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Play ${s.name}`}
                   ref={(el) => { cardRefs.current[i] = el; }}
                   onClick={() => onCardActivate(i)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCardActivate(i); } }}
                 >
                   <div className="ria-card-media">
                     {vid ? (
