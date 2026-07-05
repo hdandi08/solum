@@ -6,6 +6,16 @@ const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
 export function initAnalytics() {
   if (!KEY) return;
+
+  // Session continuity across an in-app-browser break-out: if we were reopened
+  // in the system browser with a forwarded distinct_id, bootstrap PostHog with
+  // it so this visit is the same person, not a new one.
+  let bootstrap;
+  try {
+    const forwarded = new URLSearchParams(window.location.search).get('distinct_id');
+    if (forwarded) bootstrap = { distinctID: forwarded };
+  } catch { /* no-op */ }
+
   posthog.init(KEY, {
     api_host: HOST,
     ui_host: 'https://eu.posthog.com',
@@ -18,7 +28,17 @@ export function initAnalytics() {
       maskInputOptions: { password: true, creditCard: true },
     },
     persistence: 'localStorage',
+    ...(bootstrap ? { bootstrap } : {}),
   });
+
+  // Remove distinct_id from the address bar so it does not linger or get re-forwarded.
+  try {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('distinct_id')) {
+      url.searchParams.delete('distinct_id');
+      window.history.replaceState({}, '', url.toString());
+    }
+  } catch { /* no-op */ }
 
   // Tag every event with the in-app browser (Instagram/TikTok/etc.) so we can
   // segment sessions that can't show Apple Pay / Google Pay wallet buttons.
