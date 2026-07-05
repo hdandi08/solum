@@ -146,6 +146,21 @@ export default function RitualInAction() {
     cardRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   };
 
+  // Clicking an already-centred card fires no scroll event, so the scroll-based
+  // detector never re-runs. Register the deliberate selection directly in that case.
+  const promote = useCallback((i) => {
+    const v = vidRefs.current[i];
+    if (v && !REDUCE_MOTION) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
+    firstSettle.current = false;
+    setUserSelected(true);
+    capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
+    markRitualEngaged(STEPS[i].slug);
+  }, []);
+
+  const onCardActivate = (i) => {
+    if (i === activeIdx) { promote(i); } else { goTo(i); }
+  };
+
   // Fires for the active, user-selected video only. Autoplay-first never counts as intent.
   function fireProgress(e, idx, slug) {
     if (!userSelected || idx !== activeIdx) return;
@@ -187,7 +202,7 @@ export default function RitualInAction() {
                   role="option"
                   aria-selected={i === activeIdx}
                   ref={(el) => { cardRefs.current[i] = el; }}
-                  onClick={() => goTo(i)}
+                  onClick={() => onCardActivate(i)}
                 >
                   <div className="ria-card-media">
                     {vid ? (
