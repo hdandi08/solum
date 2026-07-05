@@ -30,7 +30,10 @@ export function initAnalytics() {
     api_host: HOST,
     ui_host: 'https://eu.posthog.com',
     autocapture: true,
-    capture_pageview: true,
+    // 'history_change' captures the initial load AND SPA route changes. Plain
+    // `true` only fires $pageview on hard loads, so client-side navigations to
+    // /buy, /product/* etc. were never counted (Web Analytics undercounted them).
+    capture_pageview: 'history_change',
     capture_pageleave: true,
     person_profiles: 'identified_only',
     session_recording: {
