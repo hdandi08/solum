@@ -67,17 +67,17 @@ const CSS = `
 /* Desktop: coverflow — cap the media height so video + dots fit one screen,
    dim/shrink off-centre cards, show arrows. */
 @media(min-width:769px){
-  .ria-section{padding:72px 0;}
+  .ria-section{padding:48px 0;}
   .ria-carousel{gap:22px;padding:6px calc(50% - 150px) 10px;}
   .ria-card{flex-basis:auto;max-width:none;}
-  .ria-card-media{height:clamp(320px,50vh,460px);width:auto;aspect-ratio:9/16;
+  .ria-card-media{height:clamp(360px,56vh,520px);width:auto;aspect-ratio:9/16;
     transition:border-color .3s,transform .35s ease,opacity .35s ease;transform:scale(.82);opacity:.5;}
   .ria-card.active .ria-card-media{transform:scale(1);opacity:1;}
   .ria-arrow{display:flex;align-items:center;justify-content:center;position:absolute;top:calc(50% - 8px);
-    transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(18,21,28,0.85);
-    border:1px solid var(--line);color:var(--bone);cursor:pointer;z-index:2;transition:background .2s;}
-  .ria-arrow:hover{background:var(--char);}
-  .ria-arrow.prev{left:16px;} .ria-arrow.next{right:16px;}
+    transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(18,21,28,0.92);
+    border:1px solid rgba(240,236,226,0.3);color:var(--bone);cursor:pointer;z-index:2;box-shadow:0 4px 18px rgba(0,0,0,0.45);transition:background .2s,border-color .2s;}
+  .ria-arrow:hover{background:var(--char);border-color:var(--blit);}
+  .ria-arrow.prev{left:calc(50% - 220px);} .ria-arrow.next{right:calc(50% - 220px);}
 }
 @media(max-width:768px){ .ria-section{padding:60px 0;} }
 `;
