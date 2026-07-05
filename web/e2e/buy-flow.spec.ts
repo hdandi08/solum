@@ -206,8 +206,9 @@ test.describe('Checkout flow', () => {
     // and mounts the Stripe PaymentElement. We wait for the wrapper to appear.
     await expect(page.locator('.co-payment-element-wrap')).toBeVisible({ timeout: 15_000 });
 
-    // Confirm the "No subscription" order pill copy is shown — reassures the buyer
-    await expect(page.locator('.co-order-pill-cancel')).toContainText(/no subscription/i);
+    // Confirm the order pill shows this is a one-time kit, reassuring the buyer
+    // it is not a subscription (subscription is not launched yet)
+    await expect(page.locator('.co-order-pill-kit')).toContainText(/one.?time kit/i);
   });
 
   // REQUIRES: Stripe Link disabled on the test account.
@@ -322,8 +323,8 @@ test.describe('Page copy — /buy', () => {
     await page.goto('/buy');
     // Step 1 heading (checkout flow, not a marketing landing page)
     await expect(page.getByText(/your details/i).first()).toBeVisible();
-    // Inline trust copy on the form
-    await expect(page.getByText(/one-time purchase — no subscription/i).first()).toBeVisible();
+    // Trust copy block on the desktop right panel
+    await expect(page.getByText(/before you buy/i).first()).toBeVisible();
     // Right panel trust items (desktop)
     await expect(page.getByText(/qr code/i).first()).toBeVisible();
     await expect(page.getByText(/secured by stripe/i).first()).toBeVisible();
