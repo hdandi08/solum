@@ -10,6 +10,7 @@ import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import TrustBar from '../components/TrustBar.jsx';
+import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -840,6 +841,7 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
+        <InAppBrowserBanner />
         <div className="by-soldout-page">
           {/* Left — apology */}
           <div className="by-soldout-left">
@@ -914,6 +916,7 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
+        <InAppBrowserBanner />
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
           <div className="co-page">
             <div className="co-left">
@@ -943,6 +946,7 @@ export default function BuyPage() {
     <>
       <style>{CSS}</style>
       <BuyCheckoutNav />
+      <InAppBrowserBanner />
       <TrustBar />
       <div className="co-page">
         <div className="co-left">
