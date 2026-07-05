@@ -575,8 +575,8 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
       options={{
         buttonHeight: 48,
         paymentMethods: {
-          applePay: 'auto', googlePay: 'auto', link: 'auto',
-          amazonPay: 'never', klarna: 'never', paypal: 'never',
+          applePay: 'auto', googlePay: 'auto', link: 'auto', paypal: 'auto',
+          amazonPay: 'never', klarna: 'never',
         },
       }}
       onReady={({ availablePaymentMethods }) => onAvailability(!!availablePaymentMethods)}
@@ -959,7 +959,7 @@ export default function BuyPage() {
                   {expressAvailable && (
                     <>
                       <div className="by-express-consent">
-                        By continuing with Apple Pay or Link, you agree to our{' '}
+                        By continuing with Apple Pay, PayPal or Link, you agree to our{' '}
                         <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
                         {' '}and{' '}
                         <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.

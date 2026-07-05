@@ -1,4 +1,5 @@
 import posthog from 'posthog-js';
+import { detectInAppBrowser } from './inAppBrowser';
 
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
@@ -18,6 +19,12 @@ export function initAnalytics() {
     },
     persistence: 'localStorage',
   });
+
+  // Tag every event with the in-app browser (Instagram/TikTok/etc.) so we can
+  // segment sessions that can't show Apple Pay / Google Pay wallet buttons.
+  // $browser can't distinguish these — the webview reports itself as Safari/Chrome.
+  const iab = detectInAppBrowser();
+  posthog.register({ in_app_browser: iab, is_in_app_browser: iab !== 'none' });
 }
 
 export function capture(event, props = {}) {
