@@ -30,6 +30,11 @@ browser jump.
 
 Non-goals (v1): auto-redirect, site-wide banners, server changes, A/B wiring.
 
+Deferred (revisit later): also targeting the **Google Search app** in-app
+browser (UA token `GSA/`) and other non-social webviews. The detector is
+structured so adding signatures later is a one-line change; explicitly out of
+scope for v1, which focuses on the social-ad IABs (Instagram/Facebook/TikTok).
+
 ## Decisions (locked with stakeholder)
 
 - **Aggressiveness:** dismissible nudge banner, never an auto-redirect. Nobody
@@ -116,6 +121,19 @@ Already contains `detectInAppBrowser(ua)` and `isInAppBrowser(ua)`. Add:
    (continuous person), then strips the param. Meta/TikTok pixels re-fire using
    `fbclid`/`ttclid` from the URL → attribution preserved.
 5. Express Checkout now offers Apple Pay / Google Pay.
+
+### PostHog: same person, new session (important)
+
+Forwarding `distinct_id` makes both visits the **same PostHog person**. It does
+**not** preserve the PostHog **session** — `$session_id` lives in the origin
+browser's storage and `bootstrap` cannot adopt an existing session id, so the
+destination starts a **new session** (a second session recording under the same
+person). This is expected and not fixable across a browser boundary.
+
+Implication: measure the break-out cohort at the **person level** (funnels/paths
+set to *unique users*, the person timeline), which stitches IAB visit → browser
+visit → purchase across the jump. Session-level views will show two sessions for
+one user.
 
 ## Instrumentation
 
