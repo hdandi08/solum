@@ -9,7 +9,6 @@ import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, t
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
-import TrustBar from '../components/TrustBar.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import './checkout/checkout.css';
 
@@ -296,6 +295,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
             <div className="co-mobile-trust-line">✓ 14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></div>
+            <div className="co-mobile-trust-line">🏢 Bysolum Limited · Company No. 17117056</div>
           </div>
         </div>
       )}
@@ -387,6 +387,10 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
           <span>14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>Bysolum Limited · Company No. 17117056</span>
         </div>
       </div>
 
@@ -965,7 +969,6 @@ export default function BuyPage() {
       <style>{CSS}</style>
       <BuyCheckoutNav />
       <InAppBrowserBanner />
-      <TrustBar />
       <div className="co-page">
         <div className="co-left">
           <BuyMobileHeader {...headerProps} />
