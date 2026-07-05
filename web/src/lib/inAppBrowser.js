@@ -37,3 +37,15 @@ export function detectInAppBrowser(ua) {
 export function isInAppBrowser(ua) {
   return detectInAppBrowser(ua) !== 'none';
 }
+
+/**
+ * @param {string} [ua] user-agent string; defaults to navigator.userAgent
+ * @returns {'ios'|'android'|'other'}
+ */
+export function detectPlatform(ua) {
+  const s = ua ?? (typeof navigator !== 'undefined' ? navigator.userAgent : '');
+  if (!s) return 'other';
+  if (/iPhone|iPad|iPod/i.test(s)) return 'ios';
+  if (/Android/i.test(s)) return 'android';
+  return 'other';
+}

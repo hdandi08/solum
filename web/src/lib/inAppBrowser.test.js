@@ -33,3 +33,18 @@ describe('detectInAppBrowser', () => {
     expect(detectInAppBrowser(tiktokAndroid)).toBe('tiktok');
   });
 });
+
+import { detectPlatform } from './inAppBrowser';
+
+describe('detectPlatform', () => {
+  it('detects iOS from iPhone UA', () =>
+    expect(detectPlatform(UA.instagram)).toBe('ios'));
+  it('detects iOS from iPad UA', () =>
+    expect(detectPlatform('Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148')).toBe('ios'));
+  it('detects Android', () =>
+    expect(detectPlatform(UA.androidWv)).toBe('android'));
+  it('returns other for desktop', () =>
+    expect(detectPlatform('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15')).toBe('other'));
+  it('returns other for empty UA', () =>
+    expect(detectPlatform('')).toBe('other'));
+});
