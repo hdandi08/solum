@@ -16,6 +16,16 @@ export function initAnalytics() {
     if (forwarded) bootstrap = { distinctID: forwarded };
   } catch { /* no-op */ }
 
+  // Remove distinct_id from the address bar before posthog.init so the initial
+  // $pageview does not record it in $current_url.
+  try {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('distinct_id')) {
+      url.searchParams.delete('distinct_id');
+      window.history.replaceState({}, '', url.toString());
+    }
+  } catch { /* no-op */ }
+
   posthog.init(KEY, {
     api_host: HOST,
     ui_host: 'https://eu.posthog.com',
@@ -30,15 +40,6 @@ export function initAnalytics() {
     persistence: 'localStorage',
     ...(bootstrap ? { bootstrap } : {}),
   });
-
-  // Remove distinct_id from the address bar so it does not linger or get re-forwarded.
-  try {
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('distinct_id')) {
-      url.searchParams.delete('distinct_id');
-      window.history.replaceState({}, '', url.toString());
-    }
-  } catch { /* no-op */ }
 
   // Tag every event with the in-app browser (Instagram/TikTok/etc.) so we can
   // segment sessions that can't show Apple Pay / Google Pay wallet buttons.

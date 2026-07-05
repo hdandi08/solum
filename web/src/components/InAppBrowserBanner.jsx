@@ -5,6 +5,7 @@ import { capture } from '../lib/analytics.js';
 import './InAppBrowserBanner.css';
 
 const DISMISS_KEY = 'solum_iab_banner_dismissed';
+const SHOWN_KEY = 'solum_iab_banner_shown';
 
 function wasDismissed() {
   try { return sessionStorage.getItem(DISMISS_KEY) === '1'; } catch { return false; }
@@ -17,9 +18,14 @@ export default function InAppBrowserBanner() {
   const [hidden, setHidden] = useState(() => wasDismissed());
   const [showOverlay, setShowOverlay] = useState(false);
 
-  // Fire the "shown" event once on mount when the banner is actually visible.
+  // Fire the "shown" event once per session when the banner is actually visible.
   useEffect(() => {
-    if (active && !hidden) capture('iab_banner_shown', { platform });
+    if (!active || hidden) return;
+    try {
+      if (sessionStorage.getItem(SHOWN_KEY) === '1') return;
+      sessionStorage.setItem(SHOWN_KEY, '1');
+    } catch { /* no-op */ }
+    capture('iab_banner_shown', { platform });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -33,6 +39,7 @@ export default function InAppBrowserBanner() {
     if (platform === 'android') {
       window.location.href = buildAndroidIntentUrl(buildBreakoutUrl(distinctId));
     } else {
+      if (distinctId) window.history.replaceState({}, '', buildBreakoutUrl(distinctId));
       setShowOverlay(true);
     }
   }
@@ -46,22 +53,19 @@ export default function InAppBrowserBanner() {
 
   return (
     <>
-      <button type="button" className="iab-banner" onClick={onOpen}>
-        <span className="iab-banner-text">
-          Faster checkout. Open in your browser for 1 tap {wallet}
-        </span>
-        <span className="iab-banner-arrow" aria-hidden="true">&#8599;</span>
-        <span
-          className="iab-banner-close"
-          role="button"
-          aria-label="Dismiss"
-          onClick={onDismiss}
-        >
+      <div className="iab-banner">
+        <button type="button" className="iab-banner-open" onClick={onOpen}>
+          <span className="iab-banner-text">
+            Faster checkout. Open in your browser for 1 tap {wallet}
+          </span>
+          <span className="iab-banner-arrow" aria-hidden="true">&#8599;</span>
+        </button>
+        <button type="button" className="iab-banner-close" aria-label="Dismiss" onClick={onDismiss}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
           </svg>
-        </span>
-      </button>
+        </button>
+      </div>
 
       {showOverlay && (
         <div className="iab-overlay" role="dialog" aria-modal="true" onClick={() => setShowOverlay(false)}>
