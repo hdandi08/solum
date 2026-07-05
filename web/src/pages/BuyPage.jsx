@@ -594,7 +594,8 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
       if (!res.ok) { onError(data.message ?? data.error ?? 'Something went wrong. Please try again.'); return; }
 
       identify(email, { first_name: first_name || '', kit: kitId, source });
-      capture('checkout_initiated', { kit: kitId, source, price, method: 'express' });
+      // expressPaymentType distinguishes the wallet used: 'apple_pay' | 'google_pay' | 'link' | 'paypal'
+      capture('checkout_initiated', { kit: kitId, source, price, method: 'express', wallet: event.expressPaymentType });
       fbInitiateCheckout(kitId, price);
       try { sessionStorage.setItem('solum_buyer_email', email); } catch {}
 
