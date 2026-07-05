@@ -190,11 +190,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
       setDragging(true);
     }
   };
-  const onTouchMove = (e) => {
-    if (dragStartY.current == null) return;
-    const dy = e.touches[0].clientY - dragStartY.current;
-    if (dy > 0) setDragY(dy); // downward only
-  };
   const onTouchEnd = () => {
     if (dragY > 80) setOpen(false);
     dragStartY.current = null;
@@ -202,6 +197,29 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
     setDragY(0);
   };
   const closeSummary = () => { setOpen(false); setDragY(0); setDragging(false); dragStartY.current = null; };
+
+  // Lock the page behind the sheet so the expanded summary can't scroll /buy.
+  useEffect(() => {
+    if (!open) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  // Track the downward drag with a NON-passive listener so we can preventDefault
+  // and stop the gesture from scroll-chaining into the page. React's onTouchMove
+  // is passive, so preventDefault there is a no-op.
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!open || !el) return undefined;
+    const move = (e) => {
+      if (dragStartY.current == null) return;
+      const dy = e.touches[0].clientY - dragStartY.current;
+      if (dy > 0) { e.preventDefault(); setDragY(dy); } // downward only
+    };
+    el.addEventListener('touchmove', move, { passive: false });
+    return () => el.removeEventListener('touchmove', move);
+  }, [open]);
 
   return (
     <div className="co-mobile-header">
@@ -235,7 +253,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
           className="co-mobile-header-body"
           ref={bodyRef}
           onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           style={{
             transform: dragY ? `translateY(${dragY}px)` : undefined,

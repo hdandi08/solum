@@ -1339,6 +1339,7 @@ select.co-input option {
     border-bottom: none;
     max-height: 65vh;
     overflow-y: auto;
+    overscroll-behavior: contain; /* don't scroll-chain the drag into the page */
     padding: 20px 16px 24px;
   }
 
