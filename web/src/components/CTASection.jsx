@@ -39,7 +39,7 @@ export default function CTASection() {
             className="cta-btn-primary"
             onClick={(e) => { trackGoal('bottom_cta_clicked', { variant: 'ritual' }); buyClick(e, navigate, '/buy?kit=ritual', 'ritual'); }}
           >
-            Build My Ritual · £85
+            Fix My Shower Routine · £85
           </a>
           <a
             href="/buy?kit=ground"
