@@ -38,7 +38,7 @@ export default function MobileHeader({ kit, dispatch, arrival, firstCharge }) {
       {open && (
         <div className="co-mobile-header-body">
           <div className="co-mobile-dispatch">
-            Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
+            Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
           </div>
           <div className="co-mobile-dispatch">
             Then £{kit.monthlyPrice}/mo from {fmtDate(firstCharge)} — cancel any time

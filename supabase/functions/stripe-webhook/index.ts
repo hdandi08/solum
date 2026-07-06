@@ -196,7 +196,7 @@ async function sendConfirmationEmail(
             <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             ${step3}

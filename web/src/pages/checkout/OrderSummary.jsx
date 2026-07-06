@@ -43,7 +43,7 @@ export default function OrderSummary({
         <span className="co-price-label">first box</span>
       </div>
       <div className="co-price-sub">
-        Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
+        Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
       </div>
       <div className="co-price-refill" style={{ marginTop: 6 }}>
         Then £{activeKit.monthlyPrice}/mo from {fmtDate(firstCharge)} — cancel any time

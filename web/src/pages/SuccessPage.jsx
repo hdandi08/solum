@@ -158,7 +158,7 @@ export default function SuccessPage() {
               <span className="su-step-num">2</span>
               <div className="su-step-body">
                 <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched.{arrivalDate ? ` Arrives by ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
+                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched.{arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
             {isOneTime ? (

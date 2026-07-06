@@ -5,6 +5,7 @@ import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElement
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
+import { getDispatchDate, estDeliveryDate } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
@@ -132,18 +133,6 @@ function fmtDay(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-function getDispatchDate() {
-  const now = new Date();
-  const day = now.getDay();
-  const isBeforeNoon = now.getHours() < 12;
-  const d = new Date(now); d.setHours(0, 0, 0, 0);
-  const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 };
-  if (day in daysToAdd) d.setDate(d.getDate() + daysToAdd[day]);
-  else if (day === 3) d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5));
-  else d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4));
-  return d;
-}
-function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
 
@@ -272,7 +261,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
             </button>
           </div>
           <div className="co-mobile-dispatch">
-            Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
+            Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
           </div>
           <div className="co-mobile-products">
             {products.map(p => (
@@ -358,7 +347,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <span className="co-price-main">£{price}</span>
         <span className="co-price-label">one-time</span>
       </div>
-      <div className="co-price-sub">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</div>
+      <div className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</div>
       {offerActive() ? (
         <div className="co-price-sub" style={{ marginTop: 3 }}>
           Royal Mail Tracked 48 · <s style={{ color: 'var(--stone)' }}>£5.95</s>{' '}
@@ -374,7 +363,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <div className="co-promise-title">Before You Buy</div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
-          <span>Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</span>
+          <span>Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</span>
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
@@ -522,7 +511,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
           <span className="co-order-pill-charge-amount">£{price}</span>
         </div>
         <div className="co-order-pill-detail">
-          Ships {payInfo.dispatch_date} · Arrives {payInfo.arrival_date}
+          Ships {payInfo.dispatch_date} · Est. delivery {payInfo.arrival_date}
         </div>
       </div>
 
@@ -721,7 +710,7 @@ export default function BuyPage() {
   }, []); // eslint-disable-line
 
   const dispatch = getDispatchDate();
-  const arrival  = addDays(dispatch, 2);
+  const arrival  = estDeliveryDate(dispatch);
 
   const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
   const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
@@ -1122,7 +1111,7 @@ export default function BuyPage() {
                   <div className="co-ship-strip">
                     <span className="co-ship-strip-icon">📦</span>
                     <div className="co-ship-strip-text">
-                      <span className="co-ship-strip-main">Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}</span>
+                      <span className="co-ship-strip-main">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</span>
                       <span className="co-ship-strip-sub">Royal Mail Tracked 48 · Free</span>
                     </div>
                   </div>

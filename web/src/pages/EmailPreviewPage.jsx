@@ -71,7 +71,7 @@ function buildEmailHtml(kitId, firstName, orderRef, isOneTime) {
             <tr><td style="padding:16px 20px;border-bottom:1px solid #e0ddd6;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Kit ships Thursday or Monday</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit — tools and consumables. Dispatched on the next available slot and arrives within 2 days. You'll get a tracking email when it's on its way.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#08090B;">Ships within one working day</p><p style="margin:0;font-size:13px;color:#777;line-height:1.5;">Your full ${kitName} Kit, tools and consumables. Order before noon and it ships the next working day, Royal Mail Tracked 48. You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             ${step3}

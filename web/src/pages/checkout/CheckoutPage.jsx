@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { KITS } from '../../data/kits.js';
+import { getDispatchDate, estDeliveryDate } from '../../lib/dispatch.js';
 import tshirtImg from '../../assets/solum-tshirt.jpeg';
 import MobileHeader from './MobileHeader.jsx';
 import OrderSummary from './OrderSummary.jsx';
@@ -66,17 +67,6 @@ function isValidUKPhone(raw) {
   return false;
 }
 
-function getDispatchDate() {
-  const now = new Date();
-  const day = now.getDay();
-  const isBeforeNoon = now.getHours() < 12;
-  const d = new Date(now); d.setHours(0, 0, 0, 0);
-  const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 };
-  if (day in daysToAdd) d.setDate(d.getDate() + daysToAdd[day]);
-  else if (day === 3) d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5));
-  else d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4));
-  return d;
-}
 function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 function getFirstChargeDate() { const r = new Date(); r.setDate(r.getDate() + 30); r.setHours(0, 0, 0, 0); return r; }
 
@@ -162,7 +152,7 @@ export default function CheckoutPage() {
   const ritualKit  = KITS.find(k => k.id === 'ritual');
 
   const dispatch    = getDispatchDate();
-  const arrival     = addDays(dispatch, 2);
+  const arrival     = estDeliveryDate(dispatch);
   const firstCharge = getFirstChargeDate();
   const refillShip  = addDays(firstCharge, 2);
   const refillArrive = addDays(firstCharge, 4);
