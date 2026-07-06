@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { offerActive, DELIVERY_OFFER } from '../lib/offer.js';
 
 const CSS = `
@@ -50,9 +51,12 @@ const CSS = `
 const DISMISS_KEY = 'offerbar_dismissed';
 
 export default function OfferBar() {
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState(
     () => typeof sessionStorage !== 'undefined' && sessionStorage.getItem(DISMISS_KEY) === '1'
   );
+
+  if (pathname === '/creators') return null;
 
   const show = offerActive() && !dismissed;
 

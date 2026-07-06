@@ -209,7 +209,7 @@ export default function CreatorsApplyPage() {
           </div>
           <div className="cr-field">
             <label>Niche</label>
-            <select value={form.niche} onChange={e => set('niche', e.target.value)}>
+            <select value={form.niche} onChange={e => set('niche', e.target.value)} style={{ textTransform: 'capitalize' }}>
               <option value="">Select</option>
               {NICHE_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
             </select>
