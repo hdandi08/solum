@@ -1,0 +1,45 @@
+SOLUM — Free Delivery Re-engagement Blast — Send Commands
+=========================================================
+Campaign: free_delivery  |  Function: send-freedelivery-blast  |  Prod project: gvfptmjluxpngfjendbi
+
+Recipients = all leads, deduped by email, MINUS anyone in the customers table (real buyers).
+Every link carries utm_source=email&utm_medium=email&utm_campaign=free_delivery.
+
+PREREQUISITES (must be done first, need your go-ahead):
+  A. promo-man.jpg live on the CDN  -> check: curl -sI https://bysolum.co.uk/email/promo-man.jpg  (want 200)
+  B. function deployed to prod       -> supabase functions deploy send-freedelivery-blast --project-ref gvfptmjluxpngfjendbi
+
+URL: https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast
+KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo
+
+------------------------------------------------------------------
+STEP 0 — DRY RUN (sends nothing; confirms exclusion + batch math)
+------------------------------------------------------------------
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"dry_run":true}'
+# Expect: excluded_buyers ~2, a sensible total_recipients, and batches count.
+
+------------------------------------------------------------------
+STEP 1 — TEST SEND (one email to you; approve the creative)
+------------------------------------------------------------------
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"test_email":"harsha@bysolum.com","first_name":"Harsha"}'
+
+------------------------------------------------------------------
+STEP 2 — BATCHES (run one, wait 2-3 mins, check "sent"/"failed"/"remaining", then next)
+Each batch is 30 emails at ~4s spacing (~2 mins). Stop when "remaining":0.
+------------------------------------------------------------------
+-- BATCH 1 (offset 0) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":0,"limit":30}'
+
+-- BATCH 2 (offset 30) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":30,"limit":30}'
+
+-- BATCH 3 (offset 60) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":60,"limit":30}'
+
+-- BATCH 4 (offset 90) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":90,"limit":30}'
+
+-- BATCH 5 (offset 120) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":120,"limit":30}'
+
+# Add more batches at offset 150, 180, ... only if the dry run / "remaining" says there are more.
