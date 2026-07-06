@@ -148,9 +148,11 @@ New `CreatorsPage.jsx` + `/creators` route and nav entry, following existing pag
 
 ### Deliverability (guardrail)
 
-- Outreach sends from a **dedicated identity** on a separate subdomain, e.g.
-  `SOLUM Creators <hello@outreach.bysolum.co.uk>`, `reply_to: harsha@bysolum.com`. This
-  isolates cold-outreach reputation from the transactional `orders.bysolum.co.uk` sender.
+- Outreach sends from a **dedicated identity** on the separate domain
+  `creators.bysolum.com`, e.g. `SOLUM Creators <hello@creators.bysolum.com>`,
+  `reply_to: contact@bysolum.com`. This isolates cold-outreach reputation from the
+  transactional `orders.bysolum.co.uk` sender, and replies land in the shared
+  contact@ inbox rather than a personal one.
 - Every email includes `List-Unsubscribe` (one-click) + a visible unsubscribe link to
   `creator-unsubscribe`.
 - Cron sends with the same ~4s spacing pattern used by the blast; daily volume is tiny.
@@ -174,8 +176,8 @@ New `CreatorsPage.jsx` + `/creators` route and nav entry, following existing pag
 
 ## Setup prerequisites (one-time, flagged for the plan; some need user action)
 
-1. Verify `outreach.bysolum.co.uk` (or chosen subdomain) as a Resend sending domain (DNS
-   records) — **needs Harsha / DNS access**.
+1. Verify `creators.bysolum.com` as a Resend sending domain (SPF/DKIM/DMARC DNS records)
+   — **Harsha is creating this domain**; sender `hello@creators.bysolum.com`.
 2. Create the Resend webhook endpoint + `RESEND_WEBHOOK_SECRET` (dev + prod secrets).
 3. Enable pg_cron + pg_net and schedule `creator-outreach-cron` daily (dev + prod).
 
