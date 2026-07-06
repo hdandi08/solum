@@ -50,8 +50,9 @@ export default function CreatorsPage() {
       const response = await fetch(`${config.url}/functions/v1/creator-outreach-run`, {
         method: 'POST', headers: { 'apikey': config.anonKey, 'Content-Type': 'application/json' }, body: '{}',
       })
-      if (!response.ok) setError('Creator added. Intro email will send on the next scheduled run.')
+      const introFailed = !response.ok
       setForm(EMPTY); await load()
+      if (introFailed) setError('Creator added. Intro email will send on the next scheduled run.')
     } catch (e) { setError(e.message) } finally { setSaving(false) }
   }
 
