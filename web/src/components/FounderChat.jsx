@@ -195,15 +195,11 @@ export default function FounderChat() {
   const bottomRef          = useRef(null);
   const sessionId          = useRef(genId());
 
-  // Surface launcher + bubble after 1m 20s
+  // On-demand only — opened by the "Ask Harsha" button in the FAQ (no auto-popup).
   useEffect(() => {
-    if (sessionStorage.getItem(FULL_DISMISS_KEY)) return; // user fully dismissed — never resurface
-    const bubbleDismissed = !!sessionStorage.getItem(DISMISS_KEY);
-    const t = setTimeout(() => {
-      setLaunch(true);
-      if (!bubbleDismissed) setBubble(true);
-    }, 80000);
-    return () => clearTimeout(t);
+    function onOpen() { setBubble(false); setOpen(true); }
+    window.addEventListener('solum:open-chat', onOpen);
+    return () => window.removeEventListener('solum:open-chat', onOpen);
   }, []);
 
   // Scroll to bottom when messages update

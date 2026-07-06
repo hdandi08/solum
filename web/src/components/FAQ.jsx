@@ -13,34 +13,50 @@ const CSS = `
 .faq-toggle{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--blue);flex-shrink:0;margin-left:20px;transition:transform .25s;}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;font-size:15px;color:var(--mist);font-weight:300;line-height:1.75;padding:0;}
 .faq-item.open .faq-toggle{transform:rotate(45deg);}
-.faq-item.open .faq-a{max-height:300px;padding-bottom:24px;}
-@media(max-width:768px){.faq-section{padding:60px 24px;}}
+.faq-item.open .faq-a{max-height:340px;padding-bottom:24px;}
+.faq-ask{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:44px;padding-top:40px;border-top:1px solid var(--line);}
+.faq-ask-text{font-size:16px;color:var(--mist);font-weight:300;}
+.faq-ask-btn{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;background:none;color:var(--bone);border:1px solid rgba(240,236,226,0.25);padding:12px 30px;cursor:pointer;transition:border-color .2s,color .2s;}
+.faq-ask-btn:hover{border-color:var(--blue);color:var(--blit);}
+@media(max-width:768px){.faq-section{padding:60px 24px;}.faq-ask{flex-direction:column;gap:14px;}}
 `;
 
 const FAQS = [
   {
-    q: 'Am I paying the full kit price every month?',
-    a: 'No. The first box price (£65 for GROUND, £85 for RITUAL) is a one-time payment. It includes all the physical tools: the mitt, the back cloth and the scalp massager. These last 6–12 months. Right now, SOLUM is a one-off purchase. Subscription, where consumables arrive automatically before you run out, is coming soon.',
+    q: "Isn't my normal body wash already doing the job?",
+    a: 'No. A body wash lifts surface dirt, but it does not remove the dead skin that bacteria feed on, and it never properly reaches your back or scalp. That is why you stop feeling clean within hours. SOLUM is built to actually clear it, head to toe.',
   },
   {
-    q: 'What is the difference between GROUND and RITUAL?',
-    a: 'GROUND has 7 products: body wash, exfoliating mitt, back scrub cloth, scalp massager, Atlas clay mask, body lotion and cleansing cloth. That is the full daily ritual plus the weekly clay deep-clean. RITUAL adds two more: Argan Body Oil and the Clay Mixing Bowl, for the complete weekly oil ritual on top. If you want the complete system, RITUAL is the one.',
+    q: 'Will it actually work, and how fast?',
+    a: 'Most men notice less odour and smoother skin within 2 to 3 weeks. In the first week, dead skin you did not know was there starts to roll off. It is a simple system you use daily, not a miracle in a bottle.',
   },
   {
     q: 'Is this for my face or my body?',
-    a: 'Your body. Entirely. SOLUM is the first serious body care system for men. It does not replace your face routine, shampoo or deodorant. It addresses everything from your neck down: exfoliation, back care, scalp health and daily moisturisation.',
+    a: 'Your body, neck down. It does not replace your face routine, shampoo or deodorant. It handles the 90% of your skin that every other brand ignores: exfoliation, back care, scalp health and daily moisturisation.',
   },
   {
-    q: 'Why does it matter that I use the lotion within 3 minutes?',
-    a: "Right after a shower, your skin is warm and still open. Moisture absorption is up to 70% higher in this window. Wait 15 minutes and you've largely missed it. The lotion sits on top rather than absorbing. The 3-minute rule is dermatology, not marketing.",
+    q: 'What is the difference between GROUND and RITUAL?',
+    a: 'GROUND is the full daily clean: body wash, exfoliating mitt, back cloth, scalp massager, clay mask, lotion and cleansing cloth. RITUAL adds the weekly finish, Argan Body Oil and the clay mixing bowl. If you want the complete system, choose RITUAL.',
   },
   {
-    q: 'Can I cancel or pause my subscription?',
-    a: 'Subscription is not yet live, so there is nothing to cancel. When it launches, the answer will be yes. One click, no penalty, no phone calls, no retention flows designed to confuse you. We will not make it difficult.',
+    q: 'I have sensitive skin. Is it harsh?',
+    a: 'No. The body wash is sulphate free and pH balanced, made to clean without stripping your skin. If you have known sensitivities, patch test first.',
   },
   {
-    q: 'Does it work as a gift?',
-    a: 'Yes. The RITUAL kit is ideal for gifting. Rigid matte black box, steel blue foil strip, ribbon pull, ritual card face-up. It arrives as a complete, self-contained kit. No subscription required. The recipient can choose to join the subscription waitlist when it launches.',
+    q: 'Is it complicated to use?',
+    a: 'Not at all. The daily routine takes about 10 minutes in the shower you already take, and every kit comes with a step by step ritual card. There is a full walkthrough on the site too.',
+  },
+  {
+    q: 'How much is delivery, and how fast will it arrive?',
+    a: 'Free UK delivery, sent Royal Mail Tracked 48. Order before noon on a working day and it is dispatched the next working day. Afternoon and weekend orders go the second working day. You will get tracking by email.',
+  },
+  {
+    q: 'What if it is not for me?',
+    a: 'You are covered by 14 day returns under UK consumer rights. Email us within 14 days of delivery and send it back for a refund.',
+  },
+  {
+    q: 'What happens to my data?',
+    a: 'We only use your details to process and deliver your order. Payments run through Stripe secure checkout, so we never see or store your card details, and we never sell your data. Full detail is in our privacy policy.',
   },
 ];
 
@@ -69,6 +85,18 @@ export default function FAQ() {
               <div className="faq-a">{f.a}</div>
             </div>
           ))}
+          <div className="faq-ask reveal">
+            <span className="faq-ask-text">More questions?</span>
+            <button
+              className="faq-ask-btn"
+              onClick={() => {
+                capture('faq_ask_clicked');
+                window.dispatchEvent(new CustomEvent('solum:open-chat'));
+              }}
+            >
+              Ask Harsha
+            </button>
+          </div>
         </div>
       </section>
     </>
