@@ -9,6 +9,7 @@ import Reviews from '../components/Reviews.jsx';
 import FrictionStrip from '../components/FrictionStrip.jsx';
 import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
+import UnboxingFilm from '../components/UnboxingFilm.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
 import FullBleedBand from '../components/FullBleedBand.jsx';
 import WhatSolumIs from '../components/WhatSolumIs.jsx';
@@ -102,6 +103,7 @@ export default function FullSite() {
       <FrictionStrip />
       <RitualInAction />
       <ProductLineup />
+      <UnboxingFilm />
       <TruthSection />
       <FounderSection />
       <FullBleedBand
