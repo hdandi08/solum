@@ -2,7 +2,7 @@ import { capture, fbCustom, ttqTrack } from './analytics';
 import { evaluateQualified } from './qualifiedVisit';
 
 const SESSION_KEY = 'solum_qualified_fired';
-const state = { productDetailViewed: false, ritualVideoPct: 0, unboxingVideoPct: 0, scrollPct: 0, ritualSlugs: new Set(), startTs: Date.now() };
+const state = { productDetailViewed: false, offerReached: false, ritualVideoPct: 0, unboxingVideoPct: 0, scrollPct: 0, ritualSlugs: new Set(), startTs: Date.now() };
 let fired = false;
 let interval = null;
 let started = false; // M1: guards against duplicate init (React StrictMode double-invoke)
@@ -38,6 +38,7 @@ export function markProductDetail() { state.productDetailViewed = true; evaluate
 export function markRitualProgress(pct) { if (pct > state.ritualVideoPct) state.ritualVideoPct = pct; evaluate(); }
 export function markUnboxingProgress(pct) { if (pct > state.unboxingVideoPct) state.unboxingVideoPct = pct; evaluate(); }
 export function markRitualEngaged(slug) { state.ritualSlugs.add(slug); evaluate(); }
+export function markOfferReached() { state.offerReached = true; evaluate(); }
 
 export function initQualifiedVisitTracker() {
   if (started) return; // M1: idempotent — skip duplicate calls from React StrictMode

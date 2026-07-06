@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { offerActive } from '../lib/offer.js';
+import { markOfferReached } from '../lib/qualifiedVisitTracker.js';
 
 const CSS = `
 .kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
@@ -132,6 +133,17 @@ export default function KitComparison() {
     next.has(id) ? next.delete(id) : next.add(id);
     return next;
   });
+
+  // Reaching the offer is an intent-anchored QualifiedVisit signal.
+  useEffect(() => {
+    const el = document.getElementById('kits');
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { markOfferReached(); obs.disconnect(); }
+    }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <>
