@@ -18,11 +18,15 @@ const CSS = `
 .review-avatar-mono{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.04em;color:var(--bone);background:linear-gradient(135deg,#1A4A78,#2E6DA4);}
 .review-author-name{font-size:14px;font-weight:600;color:var(--bone);letter-spacing:.3px;}
 .review-author-desc{font-size:13px;font-weight:300;color:var(--stone);}
+.reviews-hint{display:none;text-align:center;margin-top:20px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:500;}
 @media(max-width:900px){.reviews-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){
-  .reviews-section{padding:56px 20px;}
-  .reviews-grid{grid-template-columns:1fr;}
-  .review-card{padding:26px 22px;}
+  .reviews-section{padding:56px 16px;}
+  /* Mobile: horizontal swipe carousel so you don't scroll past all six */
+  .reviews-grid{display:flex;gap:12px;background:none;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:2px 16px;}
+  .reviews-grid::-webkit-scrollbar{display:none;}
+  .review-card{flex:0 0 82%;scroll-snap-align:center;padding:26px 22px;border:1px solid var(--line);}
+  .reviews-hint{display:block;}
 }
 `;
 
@@ -78,6 +82,7 @@ export default function Reviews() {
               </article>
             ))}
           </div>
+          <div className="reviews-hint" aria-hidden="true">Swipe for more →</div>
         </div>
       </section>
     </>
