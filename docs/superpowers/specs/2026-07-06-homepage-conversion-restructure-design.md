@@ -76,20 +76,30 @@ Hero → Marquee → WhatSolumIs → RitualInAction → ProductLineup → KitCom
 → FullBleedBand → CredibilityStrip → FounderSection → FAQ → ProvenanceSection →
 SubscriptionSection → CTASection.
 
-Target order:
+Target order (**tight funnel** — decision surface high, education below it; founder-approved):
 
-1. **Hero** — problem/urgency led, one CTA.
-2. **Problem** — why a normal shower fails (reuse/retune `TruthSection` copy: "dead skin
-   builds up for years; odour is bacteria feeding on dead cells").
-3. **Solution / ritual (condensed)** — the 10-minute system as *one* thing (`WhatSolumIs` +
-   a condensed `RitualInAction`), not seven separate products to evaluate.
+1. **Hero** — names concrete symptoms, one CTA. Symptom line kept visible on mobile (see §8a).
+2. **Problem** — a dedicated `ProblemSection` of 5–6 symptom cards the visitor self-selects
+   from (odour back by midday, rough/bumpy skin, a back you can't reach, itchy/flaky scalp,
+   never clean after the gym), then the mechanism (dead skin + bacteria) and the 10-minute
+   fix. This is the audit's #1 lever — the visitor must feel "that's exactly my problem"
+   before anything else.
+3. **What it is** — a single orienting block (`WhatSolumIs`): the 10-minute system as *one*
+   thing, so a first-timer isn't shown a price cold. Not the full product tour.
 4. **Reviews** — new social-proof section (see §6). Also reused on `/buy`.
 5. **Offer / kits** (`KitComparison`) + **friction strip** immediately adjacent (see §7).
-6. **Founder** (`FounderSection`) — moved up (people buy from people).
+   Reached fast — only steps 2–4 precede it.
+6. **Education tail (below the decision, for considerers):** `RitualInAction` (ritual detail),
+   `ProductLineup` (framed as one system, links to `/product/:slug`), `TruthSection`
+   (Week 1 → Month 2 results — the transformation proof), then **Founder** (`FounderSection`,
+   people buy from people).
 7. **FAQ**.
-8. **Demoted tail** — provenance, subscription, full product lineup collapse to short teasers
-   that link out to `/ritual` and `/product/:slug`. `CredibilityStrip` retained as a compact
-   trust row.
+8. **Demoted tail** — `CredibilityStrip` (compact trust row), `ProvenanceSection`,
+   `SubscriptionSection`, closing `CTASection`.
+
+Note: this satisfies both audit levers — the visitor reaches the price after only Problem +
+one orienting block + Reviews (not "too much before deciding"), and proof (Reviews) sits
+immediately before the kits (not "kits before trust").
 
 ## 6. Reviews section
 
@@ -183,19 +193,37 @@ Keep it **attainable but intent-anchored** (low traffic needs ~50 QV/week to exi
 
 ## 9. Phasing (each independently shippable)
 
-**Phase 1 — Trust + offer clarity (highest leverage, self-contained)**
+Consolidated into **two** phases in the implementation plan
+(`docs/superpowers/plans/2026-07-06-homepage-conversion-restructure.md`).
+
+**Phase 1 — Trust + offer clarity + QV safety net (highest leverage, self-contained)**
 - Reviews section (`reviews.js` + component) on homepage and `/buy`.
 - Friction strip adjacent to kits.
-- Outcome-led CTA copy; collapse to one dominant primary CTA.
-- **QV: add `markOfferReached()`** (make the signal safe before restructure).
+- Outcome-led CTA copy; collapse to one dominant primary CTA per section.
+- **QV: add `offer_reached` trigger + `markOfferReached()`** (make the signal safe before restructure).
 
-**Phase 2 — Hero rewrite**
-- Problem/urgency-led headline + single CTA, replacing "The First Guided Body Ritual…".
+**Phase 2 — Problem clarity + reorder + compress + retire stale QV**
+- **Problem clarity (core):** sharpen the hero to concrete symptoms (kept visible on mobile —
+  see §8a); add a dedicated `ProblemSection` (symptom cards + mechanism + fix). The hero is
+  NOT already done: the committed copy is too abstract, and appears not even live on prod.
+- Reorder to the §5 tight-funnel order; frame product lineup as one system linking to
+  `/product/:slug`; demote provenance/subscription to the tail.
+- **Retire `scroll_dwell`** now that `offer_reached` is the down-page intent signal; update tests.
 
-**Phase 3 — Reorder + compress + demote tail**
-- Reorder to §5 target; move founder up; condense product lineup to one "system" summary
-  linking to `/product/:slug`; demote provenance/subscription/timeline to teasers.
-- **Re-wire QV markers**; retire `scroll_dwell`; update tests.
+### 8a. Mobile-first constraint (applies to every task)
+
+Design and verify at mobile (~390px) FIRST, then desktop; both must be correct. Specific
+gotcha: `Hero.jsx` hides `.hero-subline` on mobile today, so the symptom copy must be made
+visible on mobile (a concise symptom line stays; the fuller sentence is desktop-only). The
+audit was run on desktop, but mobile is the priority. New sections (`ProblemSection`,
+`Reviews`, `FrictionStrip`) stack to a single column on mobile.
+
+### Production deploy finding
+
+The committed hero on `master` ("You feel clean. Then you don't.") does not appear to be live
+on production (founder's audit today still shows the older "First Guided Body Ritual" hero).
+This suggests a **stale production deploy** — the improved hero may never have shipped. Worth
+investigating separately (Amplify build/branch); it does not block this plan.
 
 ## 10. Compliance / trust note
 
@@ -209,11 +237,14 @@ Keep it **attainable but intent-anchored** (low traffic needs ~50 QV/week to exi
 
 ## 11. Files touched (indicative)
 
-- New: `web/src/data/reviews.js`, `web/src/components/Reviews.jsx`, `web/public/reviews/`.
+- New: `web/src/data/reviews.js`, `web/src/components/Reviews.jsx`,
+  `web/src/components/FrictionStrip.jsx`, `web/src/components/ProblemSection.jsx`,
+  `web/public/reviews/`.
 - Edit: `web/src/pages/FullSite.jsx` (order), `web/src/pages/BuyPage.jsx` (reuse Reviews),
-  `web/src/components/Hero.jsx`, `web/src/components/KitComparison.jsx` (+ friction strip),
-  `web/src/components/CTASection.jsx` + CTA labels, `FounderSection` placement,
-  demoted-tail components.
+  `web/src/components/Hero.jsx` (concrete-symptom copy + mobile visibility),
+  `web/src/components/KitComparison.jsx` (+ `markOfferReached`),
+  `web/src/components/CTASection.jsx` (CTA labels), `web/src/components/ProductLineup.jsx`
+  (system framing).
 - QV: `web/src/lib/qualifiedVisit.js`, `qualifiedVisitTracker.js`, `qualifiedVisit.test.js`;
   add `markOfferReached` call in the kits component.
 
