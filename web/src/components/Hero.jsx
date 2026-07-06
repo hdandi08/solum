@@ -75,7 +75,9 @@ const CSS = `
   .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:88svh;padding:108px 24px 36px;
     background:linear-gradient(to top,rgba(8,9,11,0.94) 0%,rgba(8,9,11,0.8) 30%,rgba(8,9,11,0.4) 58%,rgba(8,9,11,0.08) 86%,rgba(8,9,11,0.5) 100%);}
   /* keep the film readable — drop the long paragraph, pills and decorative layers on mobile. the peeking marquee replaces the scroll cue. */
-  .hero-subline,.hero-scope,.hero-ghost,.hero-glow,.scroll-cue{display:none;}
+  .hero-scope,.hero-ghost,.hero-glow,.scroll-cue{display:none;}
+  .hero-sub-more{display:none;}
+  .hero-subline{font-size:15px;line-height:1.5;margin-bottom:22px;}
 }
 
 /* ── Desktop ───────────────────────────────────────── */
@@ -139,10 +141,10 @@ export default function Hero() {
             ) : (
               <>
                 <h1 className="hero-title">
-                  You feel clean.<br />Then you don't.
+                  You shower every day.<br />So why don't you feel clean?
                 </h1>
                 <div className="hero-line" />
-                <p className="hero-subline">A shower only wets the surface, so the dead skin and bacteria are back within hours and the freshness fades. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Clean that actually lasts.</p>
+                <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Bacne you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
                 <div className="hero-actions">
                   <a
                     href={IS_FIRST_BATCH ? '/buy' : '#kits'}
