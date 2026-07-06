@@ -41,6 +41,7 @@ export default function SolumFooter() {
               <li><a href="#truth">Why SOLUM</a></li>
               <li><a href="#origins">Where It's From</a></li>
               <li><a href="/guide">The Guide</a></li>
+              <li><a href="/creators">Create With Us</a></li>
             </ul>
           </div>
           <div>
