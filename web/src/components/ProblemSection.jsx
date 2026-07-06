@@ -1,5 +1,3 @@
-import { Wind, Layers, Shirt, Snowflake, Dumbbell, Droplet } from 'lucide-react';
-
 const CSS = `
 .problem-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
 .problem-inner{max-width:1200px;margin:0 auto;}
@@ -9,7 +7,7 @@ const CSS = `
 .problem-head p{font-size:17px;font-weight:300;color:var(--mist);line-height:1.7;}
 .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
 .problem-card{background:var(--char);padding:30px 26px;}
-.problem-card-ic{color:var(--blit);display:block;margin-bottom:16px;}
+.problem-card-ic{width:48px;height:48px;display:block;margin-bottom:14px;}
 .problem-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--bone);line-height:1.2;margin-bottom:10px;}
 .problem-card p{font-size:15px;font-weight:300;color:var(--mist);line-height:1.6;}
 .problem-fix{background:var(--mid);border:1px solid var(--blue);padding:32px;margin-top:24px;}
@@ -24,15 +22,13 @@ const CSS = `
 }
 `;
 
-const IC = { size: 30, strokeWidth: 1.6, className: 'problem-card-ic', 'aria-hidden': true };
-
 const SYMPTOMS = [
-  [<Wind {...IC} />, 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
-  [<Layers {...IC} />, 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
-  [<Shirt {...IC} />, 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
-  [<Snowflake {...IC} />, 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
-  [<Dumbbell {...IC} />, 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
-  [<Droplet {...IC} />, 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
+  ['/icons/problem-odour.png', 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
+  ['/icons/problem-rough.png', 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
+  ['/icons/problem-back.png', 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
+  ['/icons/problem-scalp.png', 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
+  ['/icons/problem-gym.png', 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
+  ['/icons/problem-drop.png', 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
 ];
 
 export default function ProblemSection() {
@@ -47,9 +43,9 @@ export default function ProblemSection() {
             <p>If any of these sound familiar, it isn't you. It's the routine nobody ever fixed.</p>
           </div>
           <div className="problem-grid reveal">
-            {SYMPTOMS.map(([icon, title, body]) => (
+            {SYMPTOMS.map(([src, title, body]) => (
               <div key={title} className="problem-card">
-                {icon}
+                <img src={src} className="problem-card-ic" alt="" aria-hidden="true" loading="lazy" />
                 <h3>{title}</h3>
                 <p>{body}</p>
               </div>
