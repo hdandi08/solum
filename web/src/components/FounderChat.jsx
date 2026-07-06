@@ -243,9 +243,7 @@ export default function FounderChat() {
       });
       if (error) throw error;
       const reply = data.reply ?? '';
-      // Hold the reply back — delay based on response length (simulates typing) + random jitter
-      const typingMs = Math.min(1500 + reply.length * 14 + Math.random() * 900, 5500);
-      await new Promise(r => setTimeout(r, typingMs));
+      // Show the reply as soon as it's ready — it's an assistant, no fake typing delay.
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch {
       setMessages(prev => [...prev, {

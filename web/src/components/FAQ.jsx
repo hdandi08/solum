@@ -86,7 +86,7 @@ export default function FAQ() {
             </div>
           ))}
           <div className="faq-ask reveal">
-            <span className="faq-ask-text">More questions?</span>
+            <span className="faq-ask-text">Have more questions?</span>
             <button
               className="faq-ask-btn"
               onClick={() => {
@@ -94,7 +94,7 @@ export default function FAQ() {
                 window.dispatchEvent(new CustomEvent('solum:open-chat'));
               }}
             >
-              Ask Harsha
+              Ask here
             </button>
           </div>
         </div>
