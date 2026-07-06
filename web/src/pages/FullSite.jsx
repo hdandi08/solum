@@ -13,6 +13,7 @@ import SubscriptionSection from '../components/SubscriptionSection.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
 import FullBleedBand from '../components/FullBleedBand.jsx';
 import WhatSolumIs from '../components/WhatSolumIs.jsx';
+import ProblemSection from '../components/ProblemSection.jsx';
 import FounderSection from '../components/FounderSection.jsx';
 import CredibilityStrip from '../components/CredibilityStrip.jsx';
 import FAQ from '../components/FAQ.jsx';
@@ -95,22 +96,23 @@ export default function FullSite() {
       <TrustBar />
       <Hero />
       <Marquee />
+      <ProblemSection />
       <WhatSolumIs />
-      <RitualInAction />
-      <ProductLineup />
       <Reviews />
       <KitComparison />
       <FrictionStrip />
+      <RitualInAction />
+      <ProductLineup />
       <TruthSection />
+      <FounderSection />
       <FullBleedBand
         image="/products/feature/identity.webp"
         eyebrow="The Standard"
         head={<>Your body.<br />Finally done right.</>}
         sub="One system, head to toe. Built for the men who were never given one."
       />
-      <CredibilityStrip />
-      <FounderSection />
       <FAQ />
+      <CredibilityStrip />
       <ProvenanceSection />
       <SubscriptionSection />
       <CTASection />
