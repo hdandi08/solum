@@ -1,3 +1,5 @@
+import { Wind, Layers, Shirt, Snowflake, Dumbbell, Droplet } from 'lucide-react';
+
 const CSS = `
 .problem-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
 .problem-inner{max-width:1200px;margin:0 auto;}
@@ -22,41 +24,15 @@ const CSS = `
 }
 `;
 
-const S = { width: 30, height: 30, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'problem-card-ic', 'aria-hidden': true };
-const dot = (cx, cy) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="0.8" fill="currentColor" stroke="none" />;
-
-// Odour — rising scent waves
-const IconOdour = () => (
-  <svg {...S}><path d="M8 21c-1.4-1.6 1.4-3.2 0-4.8s1.4-3.2 0-4.8" /><path d="M12 21c-1.4-1.6 1.4-3.2 0-4.8s1.4-3.2 0-4.8" /><path d="M16 21c-1.4-1.6 1.4-3.2 0-4.8s1.4-3.2 0-4.8" /></svg>
-);
-// Rough, bumpy skin — bumpy surface + texture
-const IconRough = () => (
-  <svg {...S}><path d="M3 16.5c1.4 0 1.4-3 2.8-3s1.4 3 2.8 3 1.4-3 2.8-3 1.4 3 2.8 3 1.4-3 2.8-3 1.4 3 2.8 3" />{dot(7, 8)}{dot(12, 6.5)}{dot(16.5, 8)}</svg>
-);
-// A back you can't reach — figure from behind
-const IconBack = () => (
-  <svg {...S}><circle cx="12" cy="7" r="3.2" /><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" /></svg>
-);
-// Itchy, flaky scalp — head dome + flakes
-const IconScalp = () => (
-  <svg {...S}><path d="M6 15a6 6 0 0 1 12 0" /><path d="M5 15h14" />{dot(9, 6.5)}{dot(13, 5.5)}{dot(16, 7.5)}</svg>
-);
-// Never clean after the gym — dumbbell
-const IconGym = () => (
-  <svg {...S}><path d="M6.5 7v10M17.5 7v10" /><path d="M4 9.5v5M20 9.5v5" /><path d="M6.5 12h11" /></svg>
-);
-// Tight then greasy — droplet
-const IconDrop = () => (
-  <svg {...S}><path d="M12 3.5c3 4.2 5 7 5 9.8a5 5 0 0 1-10 0c0-2.8 2-5.6 5-9.8z" /><path d="M9.6 14a2.4 2.4 0 0 0 1.7 2.3" /></svg>
-);
+const IC = { size: 30, strokeWidth: 1.6, className: 'problem-card-ic', 'aria-hidden': true };
 
 const SYMPTOMS = [
-  [<IconOdour />, 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
-  [<IconRough />, 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
-  [<IconBack />, 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
-  [<IconScalp />, 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
-  [<IconGym />, 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
-  [<IconDrop />, 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
+  [<Wind {...IC} />, 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
+  [<Layers {...IC} />, 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
+  [<Shirt {...IC} />, 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
+  [<Snowflake {...IC} />, 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
+  [<Dumbbell {...IC} />, 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
+  [<Droplet {...IC} />, 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
 ];
 
 export default function ProblemSection() {

@@ -1,5 +1,7 @@
 // "What SOLUM is" — short, scannable 3-pillar explainer between the hero and the ritual.
 // Answers the hero's hook and plants the USP (body / guided / 10 min) before the deeper sections.
+import { PersonStanding, Compass, Timer } from 'lucide-react';
+
 const CSS = `
 .wsi-section{background:var(--char);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;}
 .wsi-inner{max-width:1200px;margin:0 auto;}
@@ -30,18 +32,12 @@ const CSS = `
 }
 `;
 
-const IC = { width: 30, height: 30, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'wsi-ic', 'aria-hidden': true };
-// The body — standing figure
-const IconBody = () => (<svg {...IC}><circle cx="12" cy="5" r="2.5" /><path d="M12 7.5v7" /><path d="M8 11h8" /><path d="M12 14.5l-3 6.5M12 14.5l3 6.5" /></svg>);
-// Guided — compass
-const IconGuide = () => (<svg {...IC}><circle cx="12" cy="12" r="9" /><path d="M15.6 8.4l-2 5.2-5.2 2 2-5.2z" /></svg>);
-// Ten minutes — clock
-const IconClock = () => (<svg {...IC}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>);
+const IC = { size: 30, strokeWidth: 1.6, className: 'wsi-ic', 'aria-hidden': true };
 
 const PILLARS = [
-  { n: '01', ic: <IconBody />, title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
-  { n: '02', ic: <IconGuide />, title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
-  { n: '03', ic: <IconClock />, title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
+  { n: '01', ic: <PersonStanding {...IC} />, title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
+  { n: '02', ic: <Compass {...IC} />, title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
+  { n: '03', ic: <Timer {...IC} />, title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
 ];
 
 export default function WhatSolumIs() {
