@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { offerActive, DELIVERY_OFFER } from '../lib/offer.js';
 
 const CSS = `
@@ -50,11 +51,15 @@ const CSS = `
 const DISMISS_KEY = 'offerbar_dismissed';
 
 export default function OfferBar() {
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState(
     () => typeof sessionStorage !== 'undefined' && sessionStorage.getItem(DISMISS_KEY) === '1'
   );
 
-  const show = offerActive() && !dismissed;
+  // Not on /creators (customer promo is off-context on the creator page), and
+  // only while the offer is active + not dismissed. Kept as one condition so no
+  // hook below is skipped (Rules of Hooks: OfferBar is a persistent instance).
+  const show = pathname !== '/creators' && offerActive() && !dismissed;
 
   // Reserve space for the fixed bar (shifts nav + content down) only while it
   // is actually shown, so dismissing it collapses the space and leaves no gap.

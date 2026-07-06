@@ -17,6 +17,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import Founding100Page from './pages/Founding100Page';
 import AthletePage from './pages/AthletePage';
 import AthleteComingSoon from './pages/AthleteComingSoon';
+import CreatorsApplyPage from './pages/CreatorsApplyPage';
 import BuyPage from './pages/BuyPage';
 import EmailPreviewPage from './pages/EmailPreviewPage';
 import ProductPage from './pages/ProductPage.jsx';
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="/founding-100" element={<Founding100Page />} />
         <Route path="/athletes" element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
         <Route path="/sports"   element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
+        <Route path="/creators" element={<CreatorsApplyPage />} />
         <Route path="/email-preview" element={<EmailPreviewPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
         <Route path="*" element={<NotFoundPage />} />

@@ -46,13 +46,14 @@ export default function CreatorsPage() {
       }
       const { error } = await config.client.from('creators').insert(payload)
       if (error) throw error
-      // Fire the Day-0 email immediately (same function the daily cron uses).
-      const response = await fetch(`${config.url}/functions/v1/creator-outreach-run`, {
+      // Fire the Day-0 email in the BACKGROUND. creator-outreach-run sleeps ~4s
+      // per send (batch rate-limiting), so awaiting it made every add hang for
+      // seconds. Fire-and-forget keeps the add instant; the daily cron is the
+      // safety net if this background call ever fails.
+      fetch(`${config.url}/functions/v1/creator-outreach-run`, {
         method: 'POST', headers: { 'apikey': config.anonKey, 'Content-Type': 'application/json' }, body: '{}',
-      })
-      const introFailed = !response.ok
+      }).catch(() => {})
       setForm(EMPTY); await load()
-      if (introFailed) setError('Creator added. Intro email will send on the next scheduled run.')
     } catch (e) { setError(e.message) } finally { setSaving(false) }
   }
 
