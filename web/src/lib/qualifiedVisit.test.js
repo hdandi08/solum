@@ -52,16 +52,19 @@ describe('ritual_multi', () => {
 });
 
 describe('offer_reached', () => {
-  it('fires offer_reached when the offer/kits section is reached', () => {
-    expect(evaluateQualified({ ...base, offerReached: true })).toBe('offer_reached');
+  it('fires offer_reached when the offer is reached AND dwell >= 20s', () => {
+    expect(evaluateQualified({ ...base, offerReached: true, dwellMs: 20000 })).toBe('offer_reached');
+  });
+  it('does NOT fire offer_reached on a fast scroll to the offer (dwell < 20s)', () => {
+    expect(evaluateQualified({ ...base, offerReached: true, dwellMs: 5000 })).toBe(null);
   });
   it('does not fire offer_reached when the offer was not reached', () => {
-    expect(evaluateQualified({ ...base, offerReached: false })).toBe(null);
+    expect(evaluateQualified({ ...base, offerReached: false, dwellMs: 30000 })).toBe(null);
   });
-  it('product_detail beats offer_reached when both set', () => {
-    expect(evaluateQualified({ ...base, productDetailViewed: true, offerReached: true })).toBe('product_detail');
+  it('product_detail beats offer_reached (fires immediately, no dwell gate)', () => {
+    expect(evaluateQualified({ ...base, productDetailViewed: true, offerReached: true, dwellMs: 1000 })).toBe('product_detail');
   });
   it('ritual_50 beats offer_reached when both set', () => {
-    expect(evaluateQualified({ ...base, ritualVideoPct: 55, offerReached: true })).toBe('ritual_50');
+    expect(evaluateQualified({ ...base, ritualVideoPct: 55, offerReached: true, dwellMs: 30000 })).toBe('ritual_50');
   });
 });

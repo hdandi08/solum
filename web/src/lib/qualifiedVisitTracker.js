@@ -50,6 +50,7 @@ export function initQualifiedVisitTracker() {
     evaluate();
   };
   window.addEventListener('scroll', onScroll, { passive: true });
-  // dwell check — re-evaluate every 5s so the scroll+dwell combo can trip without a scroll event
+  // re-evaluate every 5s so offer_reached can fire once its 20s dwell gate passes
+  // for a visitor who reached the kits but has since stopped scrolling
   interval = setInterval(evaluate, 5000);
 }
