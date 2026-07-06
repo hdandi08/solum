@@ -44,7 +44,6 @@ Deno.serve(async (req) => {
       deal_types: Array.isArray(b.deal_types) ? b.deal_types : [],
       notes: clean(b.notes),
       stage: 'applied',
-      source: 'inbound',
       sequence_status: 'stopped',
       updated_at: new Date().toISOString(),
     }
@@ -58,7 +57,7 @@ Deno.serve(async (req) => {
       unsubToken = existing[0].unsubscribe_token
     } else {
       const { data: ins, error } = await db.from('creators')
-        .insert({ email, sequence_step: 0, next_email_at: null, ...fields })
+        .insert({ email, sequence_step: 0, next_email_at: null, source: 'inbound', ...fields })
         .select('unsubscribe_token').single()
       if (error) throw error
       unsubToken = ins?.unsubscribe_token ?? null
