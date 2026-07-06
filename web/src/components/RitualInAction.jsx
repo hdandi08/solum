@@ -87,9 +87,6 @@ const CSS = `
 const PLAY = (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
 );
-const ARROW = (
-  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 7h10M8 3l4 4-4 4" /></svg>
-);
 const chevron = (dir) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d={dir === 'prev' ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'} />
@@ -328,12 +325,6 @@ export default function RitualInAction() {
               onClick={() => goTo(i)}
             />
           ))}
-        </div>
-
-        <div className="ria-more reveal">
-          <a href="/ritual" onClick={() => capture('ritual_cta_clicked', { source: 'ritual_in_action' })}>
-            See the full ritual {ARROW}
-          </a>
         </div>
       </section>
     </>

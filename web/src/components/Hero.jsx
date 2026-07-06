@@ -144,7 +144,7 @@ export default function Hero() {
                   You shower every day.<br />So why don't you feel clean?
                 </h1>
                 <div className="hero-line" />
-                <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Bacne you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
+                <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
                 <div className="hero-actions">
                   <a
                     href={IS_FIRST_BATCH ? '/buy' : '#kits'}
@@ -153,7 +153,6 @@ export default function Hero() {
                   >
                     Fix My Shower Routine
                   </a>
-                  <a href="#kits" className="btn-ghost">See The Kits</a>
                 </div>
                 {offerActive() && (
                   <div
