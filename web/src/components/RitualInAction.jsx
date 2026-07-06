@@ -105,6 +105,9 @@ export default function RitualInAction() {
   const vidRefs = useRef([]);
   const firstSettle = useRef(true);
   const progressFired = useRef(new Set());
+  // Slugs whose video has actually played >=3s this visit (real watch, not a flick).
+  // Never reset — it's a per-visit dedupe feeding the ritual_multi qualified-visit signal.
+  const engagedFired = useRef(new Set());
   const rafId = useRef(0);
   const sectionRef = useRef(null);
   const activeIdxRef = useRef(0);
@@ -124,7 +127,6 @@ export default function RitualInAction() {
     if (firstSettle.current) { firstSettle.current = false; return; }
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
-    markRitualEngaged(STEPS[i].slug);
   }, []);
 
   // Nearest-centre card is active (visual, live). Playback + selection fire only
@@ -220,7 +222,6 @@ export default function RitualInAction() {
     firstSettle.current = false;
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
-    markRitualEngaged(STEPS[i].slug);
   }, []);
 
   const onCardActivate = (i) => {
@@ -233,6 +234,13 @@ export default function RitualInAction() {
     if (!userSelected || idx !== activeIdx) return;
     const v = e.currentTarget;
     if (!v.duration) return;
+    // Count this card as genuinely engaged only once its video has actually played
+    // >=3s (a momentum-scroll sweep keeps each card active <1s, so it never accrues).
+    // Feeds the ritual_multi qualified-visit signal — 3 distinct engaged cards.
+    if (v.currentTime >= 3 && !engagedFired.current.has(slug)) {
+      engagedFired.current.add(slug);
+      markRitualEngaged(slug);
+    }
     const pct = Math.round((v.currentTime / v.duration) * 100);
     for (const m of [25, 50, 75, 100]) {
       if (pct >= m && !progressFired.current.has(m)) {

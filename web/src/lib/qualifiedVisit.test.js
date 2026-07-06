@@ -34,8 +34,11 @@ describe('evaluateQualified', () => {
 });
 
 describe('ritual_multi', () => {
-  it('qualifies when 2 distinct ritual videos are engaged', () => {
-    expect(evaluateQualified({ ritualVideosEngaged: 2 })).toBe('ritual_multi');
+  it('qualifies when 3 distinct ritual videos are engaged', () => {
+    expect(evaluateQualified({ ritualVideosEngaged: 3 })).toBe('ritual_multi');
+  });
+  it('does not qualify on 2 engaged videos (below the bar)', () => {
+    expect(evaluateQualified({ ritualVideosEngaged: 2 })).toBeNull();
   });
   it('does not qualify on a single engaged video (via multi)', () => {
     expect(evaluateQualified({ ritualVideosEngaged: 1 })).toBeNull();
