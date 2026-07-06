@@ -42,4 +42,7 @@ curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-free
 -- BATCH 5 (offset 120) --
 curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":120,"limit":30}'
 
-# Add more batches at offset 150, 180, ... only if the dry run / "remaining" says there are more.
+-- BATCH 6 (offset 150) — final; dry run on 2026-07-06 showed 169 recipients --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-freedelivery-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":150,"limit":30}'
+
+# 169 recipients as of 2026-07-06 = 6 batches. Re-run STEP 0 (dry_run) before sending to refresh the total if leads have grown.

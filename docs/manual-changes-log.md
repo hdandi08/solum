@@ -10,6 +10,7 @@ Format: date · what changed · where · done?
 
 | Date | Change | Where | Synced to prod? |
 |------|--------|-------|----------------|
+| 2026-07-06 | Deployed `send-freedelivery-blast` (free-delivery re-engagement email; leads deduped, buyers excluded, dry_run/test_email/batch modes) to **prod** gvfptmjluxpngfjendbi. Pushed `promo-man.jpg` hero to **master** (Amplify prod CDN, now live). Sent test email to harsha@bysolum.com. Live batch send NOT yet run (awaiting user go). | Supabase functions (prod) + master branch (Amplify) | Function: prod done, dev pending. Image: prod live. |
 | 2026-07-01 | Updated `TIKTOK_EVENTS_ACCESS_TOKEN` to the correct token (user-provided) on dev + prod. Set `TIKTOK_TEST_EVENT_CODE=TEST87432` on **dev only** (routes dev events to TikTok Test Events; prod intentionally has none). | Supabase secrets (dev rodvvmfzkyjsqbufkjbc + prod gvfptmjluxpngfjendbi) | Token: both. Test code: dev only (by design). |
 | 2026-07-01 | Deployed `stripe-webhook` + `create-first-box-payment-intent` (TikTok Events API v1.3 payload fix + ttclid/ttp) | Supabase functions — dev + prod | Yes — both deployed. Dev CompletePayment verified in TikTok Test Events. |
 | 2026-06-30 | Deployed `stripe-webhook` (PostHog purchase parity at subscription sites 742/912) | Supabase functions — dev (rodvvmfzkyjsqbufkjbc) + prod (gvfptmjluxpngfjendbi) | Yes — both deployed + verified. POSTHOG_PROJECT_KEY already set on both. |
