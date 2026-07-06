@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { REVIEWS } from '../data/reviews.js';
 
 const CSS = `
@@ -30,10 +31,29 @@ function Stars({ n }) {
 }
 
 export default function Reviews() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    section.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <>
       <style>{CSS}</style>
-      <section className="reviews-section" id="reviews" data-track="reviews">
+      <section className="reviews-section" id="reviews" data-track="reviews" ref={sectionRef}>
         <div className="reviews-inner">
           <div className="reviews-header reveal">
             <div className="reviews-stars-lead" aria-hidden="true">{'★★★★★'}</div>
