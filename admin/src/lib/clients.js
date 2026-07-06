@@ -32,12 +32,14 @@ export const ENV_CONFIGS = {
   prod: {
     label: 'PROD',
     url: import.meta.env.VITE_SUPABASE_URL_PROD,
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY_PROD,
     client: prodClient,
     authClient: authProdClient,
   },
   dev: {
     label: 'DEV',
     url: import.meta.env.VITE_SUPABASE_URL_DEV,
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY_DEV,
     client: devClient,
     authClient: authDevClient,
   },
