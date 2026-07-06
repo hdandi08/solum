@@ -11,7 +11,7 @@ const COPY: Record<Key, { subject: string; heading: string; body: string[] }> = 
     subject: 'SOLUM · creator collab',
     heading: 'We think you would be a great fit for SOLUM.',
     body: [
-      'SOLUM is a men's body care ritual, head to toe, built for guys who want to be done right. Your content is exactly the tone we are building around, premium, real, no fluff.',
+      'SOLUM is a men’s body care ritual, head to toe, built for guys who want to be done right. Your content is exactly the tone we are building around, premium, real, no fluff.',
       'We are bringing on a small group of creators for paid UGC, affiliate, and partnership collabs. Reply to this email if you want in and we will send the details.',
     ],
   },
