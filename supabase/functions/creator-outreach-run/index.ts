@@ -13,7 +13,7 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   const resendKey = Deno.env.get('RESEND_API_KEY')
-  if (!resendKey) return new Response(JSON.stringify({ error: 'RESEND_API_KEY not set' }), { status: 500 })
+  if (!resendKey) return new Response(JSON.stringify({ error: 'RESEND_API_KEY not set' }), { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } })
 
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const now = new Date()
@@ -46,18 +46,23 @@ Deno.serve(async (req) => {
           },
         }),
       })
-      if (!r.ok) { res.failed++; res.errors.push(`${c.email}: ${await r.text()}`); continue }
-      const body = await r.json().catch(() => ({}))
-      // Log the send, then advance the creator (only after a successful send).
-      await supabase.from('creator_emails').insert({
-        creator_id: c.id, step: due.step, template_key: due.key, subject,
-        resend_id: body.id ?? null, sent_at: now.toISOString(),
-      })
-      const after = computeAfterSend(due.step, c.created_at)
-      await supabase.from('creators').update({
-        sequence_step: due.step, ...after, updated_at: now.toISOString(),
-      }).eq('id', c.id)
-      res.sent++
+      if (!r.ok) {
+        res.failed++; res.errors.push(`${c.email}: ${await r.text()}`)
+      } else {
+        const body = await r.json().catch(() => ({}))
+        // Log the send, then advance the creator (only after a successful send).
+        const { error: logErr } = await supabase.from('creator_emails').insert({
+          creator_id: c.id, step: due.step, template_key: due.key, subject,
+          resend_id: body.id ?? null, sent_at: now.toISOString(),
+        })
+        const after = computeAfterSend(due.step, c.created_at)
+        const { error: updErr } = await supabase.from('creators').update({
+          sequence_step: due.step, ...after, updated_at: now.toISOString(),
+        }).eq('id', c.id)
+        if (logErr) res.errors.push(`${c.email}: advance-failed: ${logErr.message}`)
+        if (updErr) res.errors.push(`${c.email}: advance-failed: ${updErr.message}`)
+        res.sent++
+      }
     } catch (e) {
       res.failed++; res.errors.push(`${c.email}: ${e}`)
     }
