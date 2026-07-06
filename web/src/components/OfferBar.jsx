@@ -56,9 +56,10 @@ export default function OfferBar() {
     () => typeof sessionStorage !== 'undefined' && sessionStorage.getItem(DISMISS_KEY) === '1'
   );
 
-  if (pathname === '/creators') return null;
-
-  const show = offerActive() && !dismissed;
+  // Not on /creators (customer promo is off-context on the creator page), and
+  // only while the offer is active + not dismissed. Kept as one condition so no
+  // hook below is skipped (Rules of Hooks: OfferBar is a persistent instance).
+  const show = pathname !== '/creators' && offerActive() && !dismissed;
 
   // Reserve space for the fixed bar (shifts nav + content down) only while it
   // is actually shown, so dismissing it collapses the space and leaves no gap.
