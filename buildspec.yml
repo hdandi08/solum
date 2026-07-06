@@ -17,6 +17,13 @@ phases:
 
   build:
     commands:
+      # Fast unit tests first (fail-fast before the slower e2e run).
+      - cd $CODEBUILD_SRC_DIR/web
+      - npm run test:unit
+      # Pure-logic server tests (node:test, no extra deps).
+      - cd $CODEBUILD_SRC_DIR
+      - node --test supabase/functions/_shared/*.test.mjs
+      # End-to-end tests.
       - cd $CODEBUILD_SRC_DIR/web
       - npx playwright test --reporter=list,html
 
@@ -31,18 +38,18 @@ phases:
         REPORT_URL="https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/$REPORT_KEY"
         echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
-          MSG=$(printf 'SOLUM E2E tests FAILED on dev (%s).\n\nOpen the report:\n%s\n\nBuild ID: %s' \
+          MSG=$(printf 'SOLUM tests FAILED on dev (%s) — unit and/or e2e.\n\nOpen the e2e report:\n%s\n\nBuild ID: %s' \
             "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
-            --subject "SOLUM E2E Tests FAILED — $REPORT_DATE" \
+            --subject "SOLUM Tests FAILED — $REPORT_DATE" \
             --message "$MSG"
         else
-          MSG=$(printf 'SOLUM E2E tests passed on dev (%s).\n\nFull report:\n%s\n\nBuild ID: %s' \
+          MSG=$(printf 'SOLUM tests passed on dev (%s) — unit + e2e.\n\nFull e2e report:\n%s\n\nBuild ID: %s' \
             "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
-            --subject "SOLUM E2E Tests passed — $REPORT_DATE" \
+            --subject "SOLUM Tests passed — $REPORT_DATE" \
             --message "$MSG"
         fi
 
