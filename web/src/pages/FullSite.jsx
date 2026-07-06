@@ -5,6 +5,8 @@ import Hero from '../components/Hero.jsx';
 import Marquee from '../components/Marquee.jsx';
 import RitualInAction from '../components/RitualInAction.jsx';
 import KitComparison from '../components/KitComparison.jsx';
+import Reviews from '../components/Reviews.jsx';
+import FrictionStrip from '../components/FrictionStrip.jsx';
 import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import SubscriptionSection from '../components/SubscriptionSection.jsx';
@@ -96,7 +98,9 @@ export default function FullSite() {
       <WhatSolumIs />
       <RitualInAction />
       <ProductLineup />
+      <Reviews />
       <KitComparison />
+      <FrictionStrip />
       <TruthSection />
       <FullBleedBand
         image="/products/feature/identity.webp"

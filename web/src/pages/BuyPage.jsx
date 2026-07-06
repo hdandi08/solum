@@ -11,6 +11,7 @@ import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
+import Reviews from '../components/Reviews.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -1132,6 +1133,7 @@ export default function BuyPage() {
 
         <BuyOrderSummary {...headerProps} />
       </div>
+      <Reviews />
       <FounderChat />
     </>
   );
