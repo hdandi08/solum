@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Fragment } from 'react'
 import { useEnv } from '../context/EnvContext'
 
 const STAGES = ['candidate', 'applied', 'vetting', 'contacted', 'in_talks', 'active', 'declined', 'archived']
@@ -47,9 +47,10 @@ export default function CreatorsPage() {
       const { error } = await config.client.from('creators').insert(payload)
       if (error) throw error
       // Fire the Day-0 email immediately (same function the daily cron uses).
-      await fetch(`${config.url}/functions/v1/creator-outreach-run`, {
+      const response = await fetch(`${config.url}/functions/v1/creator-outreach-run`, {
         method: 'POST', headers: { 'apikey': config.anonKey, 'Content-Type': 'application/json' }, body: '{}',
       })
+      if (!response.ok) setError('Creator added. Intro email will send on the next scheduled run.')
       setForm(EMPTY); await load()
     } catch (e) { setError(e.message) } finally { setSaving(false) }
   }
@@ -89,8 +90,8 @@ export default function CreatorsPage() {
               const em = emails[c.id] || []
               const last = em[em.length - 1]
               return (
-                <>
-                  <tr key={c.id} style={{ borderTop: '1px solid #222', cursor: 'pointer' }} onClick={() => setOpenId(openId === c.id ? null : c.id)}>
+                <Fragment key={c.id}>
+                  <tr style={{ borderTop: '1px solid #222', cursor: 'pointer' }} onClick={() => setOpenId(openId === c.id ? null : c.id)}>
                     <td>{c.email}{c.unsubscribed && <span style={{ color: '#e57373' }}> · unsub</span>}</td>
                     <td>{c.instagram_handle || ''} {c.tiktok_handle || ''}</td>
                     <td onClick={e => e.stopPropagation()}>
@@ -111,7 +112,7 @@ export default function CreatorsPage() {
                       </div>
                     </td></tr>
                   )}
-                </>
+                </Fragment>
               )
             })}
           </tbody>
