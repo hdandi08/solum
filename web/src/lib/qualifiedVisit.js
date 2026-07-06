@@ -6,6 +6,5 @@ export function evaluateQualified({ productDetailViewed = false, offerReached = 
   if (unboxingVideoPct >= 50) return 'unboxing_50';
   if (ritualVideosEngaged >= 3) return 'ritual_multi';
   if (offerReached) return 'offer_reached';                 // reached the kits/offer — genuine consideration
-  if (scrollPct >= 50 && dwellMs >= 60000) return 'scroll_dwell';
   return null;
 }

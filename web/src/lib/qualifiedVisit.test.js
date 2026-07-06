@@ -13,11 +13,11 @@ describe('evaluateQualified', () => {
   it('fires ritual_50 when ritual video >=50%', () => {
     expect(evaluateQualified({ ...base, ritualVideoPct: 55 })).toBe('ritual_50');
   });
-  it('fires scroll_dwell when scroll>=50 AND dwell>=60s', () => {
-    expect(evaluateQualified({ ...base, scrollPct: 60, dwellMs: 61000 })).toBe('scroll_dwell');
-  });
   it('does NOT fire scroll>=50 but dwell<60s', () => {
     expect(evaluateQualified({ ...base, scrollPct: 60, dwellMs: 10000 })).toBe(null);
+  });
+  it('no longer qualifies on scroll+dwell alone (scroll_dwell retired)', () => {
+    expect(evaluateQualified({ ...base, scrollPct: 80, dwellMs: 120000 })).toBe(null);
   });
   it('strong signal beats accumulated (product_detail wins)', () => {
     expect(evaluateQualified({ productDetailViewed: true, ritualVideoPct: 0, scrollPct: 60, dwellMs: 61000 })).toBe('product_detail');
