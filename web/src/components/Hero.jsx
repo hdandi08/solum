@@ -159,21 +159,21 @@ export default function Hero() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 8,
-                      marginTop: 18,
-                      padding: '8px 16px',
-                      border: '1.5px solid #2E6DA4',
+                      gap: 7,
+                      marginTop: 14,
+                      padding: '6px 12px',
+                      border: '1px solid #2E6DA4',
                       borderRadius: 2,
                       background: 'rgba(46,109,164,0.12)',
                       fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: 700,
-                      letterSpacing: '1.5px',
+                      letterSpacing: '1.2px',
                       textTransform: 'uppercase',
                       color: '#F0ECE2',
                     }}
                   >
-                    <span style={{ color: '#4A8FC7', fontSize: 16 }}>✓</span>
+                    <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
                     Free UK delivery · worth £5.95
                   </div>
                 )}
