@@ -21,6 +21,7 @@ const CSS = `
 @media(max-width:768px){.wsi-sub{font-size:16px;line-height:1.65;max-width:none;}}
 .wsi-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
 .wsi-pillar{background:var(--char);padding:36px 30px;display:flex;flex-direction:column;gap:12px;}
+.wsi-ic{color:var(--blit);display:block;margin-bottom:2px;}
 .wsi-num{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--blit);line-height:1;}
 .wsi-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.03em;color:var(--bone);line-height:1.02;}
 .wsi-body{font-size:15px;font-weight:300;color:var(--mist);line-height:1.6;}
@@ -29,10 +30,18 @@ const CSS = `
 }
 `;
 
+const IC = { width: 30, height: 30, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'wsi-ic', 'aria-hidden': true };
+// The body — standing figure
+const IconBody = () => (<svg {...IC}><circle cx="12" cy="5" r="2.5" /><path d="M12 7.5v7" /><path d="M8 11h8" /><path d="M12 14.5l-3 6.5M12 14.5l3 6.5" /></svg>);
+// Guided — compass
+const IconGuide = () => (<svg {...IC}><circle cx="12" cy="12" r="9" /><path d="M15.6 8.4l-2 5.2-5.2 2 2-5.2z" /></svg>);
+// Ten minutes — clock
+const IconClock = () => (<svg {...IC}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>);
+
 const PILLARS = [
-  { n: '01', title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
-  { n: '02', title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
-  { n: '03', title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
+  { n: '01', ic: <IconBody />, title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
+  { n: '02', ic: <IconGuide />, title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
+  { n: '03', ic: <IconClock />, title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
 ];
 
 export default function WhatSolumIs() {
@@ -56,6 +65,7 @@ export default function WhatSolumIs() {
           <div className="wsi-grid reveal">
             {PILLARS.map((p) => (
               <div className="wsi-pillar" key={p.n}>
+                {p.ic}
                 <span className="wsi-num">{p.n}</span>
                 <h3 className="wsi-title">{p.title}</h3>
                 <p className="wsi-body">{p.body}</p>
