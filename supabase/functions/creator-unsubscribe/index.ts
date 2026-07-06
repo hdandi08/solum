@@ -5,7 +5,7 @@ Deno.serve(async (req) => {
   const token = url.searchParams.get('token')
   const page = (msg: string) =>
     new Response(`<!doctype html><meta charset="utf-8"><body style="background:#08090B;color:#F0ECE2;font-family:Helvetica,Arial,sans-serif;text-align:center;padding:60px 24px;"><p style="font-size:16px;">${msg}</p><p style="font-size:12px;color:#4A8FC7;letter-spacing:2px;">SOLUM</p></body>`,
-      { headers: { 'Content-Type': 'text/html' } })
+      { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 
   if (!token) return page('Invalid unsubscribe link.')
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
