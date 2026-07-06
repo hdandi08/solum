@@ -92,7 +92,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
           <span className="co-order-pill-charge-amount">£{totalPrice}</span>
         </div>
         <div className="co-order-pill-detail">
-          Ships {payInfo.dispatch_date} · Arrives {payInfo.arrival_date}
+          Ships {payInfo.dispatch_date} · Est. delivery {payInfo.arrival_date}
         </div>
 
         <div className="co-order-pill-divider" />

@@ -79,7 +79,7 @@ export default function StepDelivery({ form, onChange, onBack, onNext, loading, 
         <span className="co-ship-strip-icon">📦</span>
         <div className="co-ship-strip-text">
           <span className="co-ship-strip-main">
-            Ships {fmtDay(dispatch)} · Arrives {fmtDay(arrival)}
+            Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
           </span>
           <span className="co-ship-strip-sub">Royal Mail Tracked 48 · Free</span>
         </div>

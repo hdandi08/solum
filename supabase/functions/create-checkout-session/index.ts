@@ -1,5 +1,6 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -33,40 +34,6 @@ const corsHeaders = {
 //
 // Royal Mail Tracked 48 = +2 calendar days (Sat counts as working day).
 // First recurring charge = 30 days from purchase, then every 30 days.
-
-function getDispatchDate(): Date {
-  const now = new Date();
-  const day = now.getDay(); // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
-  const isBeforeNoon = now.getHours() < 12;
-
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
-
-  const daysToAdd: Record<number, number> = {
-    1: 3, // Mon → Thu
-    2: 2, // Tue → Thu
-    4: 4, // Thu (dispatch done) → Mon
-    5: 3, // Fri → Mon
-    6: 2, // Sat → Mon
-  };
-
-  if (day in daysToAdd) {
-    d.setDate(d.getDate() + (daysToAdd as Record<number, number>)[day]);
-  } else if (day === 3) {
-    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5)); // Wed: Thu or Mon
-  } else {
-    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4)); // Sun: Mon or Thu
-  }
-
-  return d;
-}
-
-/** Royal Mail Tracked 48: arrives 2 calendar days after dispatch. */
-function getArrivalDate(dispatch: Date): Date {
-  const d = new Date(dispatch);
-  d.setDate(d.getDate() + 2);
-  return d;
-}
 
 /** First recurring charge = 30 days from now. */
 function getFirstChargeDate(): Date {
@@ -139,7 +106,7 @@ Deno.serve(async (req) => {
 
     // Shipping & billing schedule
     const dispatch     = getDispatchDate();
-    const arrival      = getArrivalDate(dispatch);
+    const arrival      = estDeliveryDate(dispatch);
     const firstCharge  = getFirstChargeDate();
     const refillShip   = getRefillShipDate(firstCharge);
     const refillArrive = getRefillArrivalDate(firstCharge);

@@ -1,5 +1,6 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
+import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -15,27 +16,6 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-function getDispatchDate(): Date {
-  const now = new Date();
-  const day = now.getDay();
-  const isBeforeNoon = now.getHours() < 12;
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
-  const daysToAdd: Record<number, number> = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 };
-  if (day in daysToAdd) {
-    d.setDate(d.getDate() + daysToAdd[day]);
-  } else if (day === 3) {
-    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 5));
-  } else {
-    d.setDate(d.getDate() + (isBeforeNoon ? 1 : 4));
-  }
-  return d;
-}
-
-function getArrivalDate(dispatch: Date): Date {
-  const d = new Date(dispatch); d.setDate(d.getDate() + 2); return d;
-}
 
 function fmtDay(date: Date): string {
   return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -77,7 +57,7 @@ Deno.serve(async (req) => {
     const kitName = KIT_NAMES[kit_id!];
 
     const dispatch = getDispatchDate();
-    const arrival  = getArrivalDate(dispatch);
+    const arrival  = estDeliveryDate(dispatch);
 
     // Create or retrieve Stripe customer
     const existing = await stripe.customers.list({ email, limit: 1 });
