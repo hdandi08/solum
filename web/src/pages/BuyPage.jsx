@@ -11,7 +11,7 @@ import { trackAddToCart } from '../lib/addToCartTracker.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
-import Reviews from '../components/Reviews.jsx';
+import ReviewsBadge from '../components/ReviewsBadge.jsx';
 import './checkout/checkout.css';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -978,6 +978,7 @@ export default function BuyPage() {
                 <div className="by-intro">
                   <span className="by-intro-eyebrow">Men's Body Care</span>
                   <h1 className="by-intro-head">Everything your body needs, head to toe. A simple daily routine, plus a deeper weekly one. We show you exactly how.</h1>
+                  <ReviewsBadge />
                 </div>
               )}
 
@@ -1133,7 +1134,6 @@ export default function BuyPage() {
 
         <BuyOrderSummary {...headerProps} />
       </div>
-      <Reviews />
       <FounderChat />
     </>
   );
