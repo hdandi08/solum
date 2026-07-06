@@ -50,3 +50,18 @@ describe('ritual_multi', () => {
     expect(evaluateQualified({ productDetailViewed: true, ritualVideosEngaged: 5 })).toBe('product_detail');
   });
 });
+
+describe('offer_reached', () => {
+  it('fires offer_reached when the offer/kits section is reached', () => {
+    expect(evaluateQualified({ ...base, offerReached: true })).toBe('offer_reached');
+  });
+  it('does not fire offer_reached when the offer was not reached', () => {
+    expect(evaluateQualified({ ...base, offerReached: false })).toBe(null);
+  });
+  it('product_detail beats offer_reached when both set', () => {
+    expect(evaluateQualified({ ...base, productDetailViewed: true, offerReached: true })).toBe('product_detail');
+  });
+  it('ritual_50 beats offer_reached when both set', () => {
+    expect(evaluateQualified({ ...base, ritualVideoPct: 55, offerReached: true })).toBe('ritual_50');
+  });
+});
