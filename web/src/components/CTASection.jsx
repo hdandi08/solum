@@ -39,7 +39,7 @@ export default function CTASection() {
             className="cta-btn-primary"
             onClick={(e) => { trackGoal('bottom_cta_clicked', { variant: 'ritual' }); buyClick(e, navigate, '/buy?kit=ritual', 'ritual'); }}
           >
-            Begin with Ritual · £85
+            Build My Ritual · £85
           </a>
           <a
             href="/buy?kit=ground"
@@ -47,7 +47,7 @@ export default function CTASection() {
             style={{ background: 'transparent', color: 'var(--bone)', border: '1px solid rgba(240,236,226,0.25)' }}
             onClick={(e) => { trackGoal('bottom_cta_clicked', { variant: 'ground' }); buyClick(e, navigate, '/buy?kit=ground', 'ground'); }}
           >
-            Begin with Ground · £65
+            Or start with Ground · £65
           </a>
         </div>
       </section>
