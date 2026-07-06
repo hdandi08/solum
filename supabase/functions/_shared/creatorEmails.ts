@@ -2,33 +2,41 @@
 // dashes; · or commas only. Unsubscribe link required. Logo via hosted PNG.
 const LOGO = 'https://bysolum.co.uk/email/solum-logo.png'
 const UNSUB_BASE = `${(typeof Deno !== 'undefined' && Deno.env.get('SUPABASE_URL')) || 'https://gvfptmjluxpngfjendbi.supabase.co'}/functions/v1/creator-unsubscribe`
-const APPLY_URL = 'https://bysolum.co.uk/?utm_source=email&utm_medium=email&utm_campaign=creator_outreach'
+const APPLY_URL = 'https://bysolum.co.uk/creators?utm_source=email&utm_medium=email&utm_campaign=creator_outreach'
 
-type Key = 'intro' | 'follow_up' | 'final'
+type Key = 'intro' | 'follow_up' | 'final' | 'application_received'
 
 const COPY: Record<Key, { subject: string; heading: string; body: string[] }> = {
   intro: {
     subject: 'SOLUM · creator collab',
     heading: 'We think you would be a great fit for SOLUM.',
     body: [
-      'SOLUM is a men’s body care ritual, head to toe, built for guys who want to be done right. Your content is exactly the tone we are building around, premium, real, no fluff.',
-      'We are bringing on a small group of creators for paid UGC, affiliate, and partnership collabs. Reply to this email if you want in and we will send the details.',
+      'SOLUM is a guided body care system for men, head to toe. Most guys own a random bottle or two and still neglect their back, their skin, their scalp. SOLUM is the guided routine that tells you what to use, where, and when. That is the whole point.',
+      'Your content is the tone we are building around, premium, real, no fluff. We run paid collaborations, affiliate, and partnerships with a small group of creators. If you are interested, apply below and we will take it from there.',
     ],
   },
   follow_up: {
     subject: 'SOLUM · quick follow up',
     heading: 'Still keen to work with you.',
     body: [
-      'Circling back on the SOLUM creator collab. We shoot dark, premium, cinematic, and your style matches it. Kits are going out to our first creators now.',
-      'If it is a fit, just reply and we will sort the details, gifting, UGC rates, or affiliate, whatever suits you.',
+      'Circling back on the SOLUM creator collab. SOLUM is a guided body care system for men, head to toe, and we shoot it dark, premium, cinematic, which matches your style.',
+      'If it is a fit, apply below and we will sort the details, the kit, and how the collab works.',
     ],
   },
   final: {
     subject: 'SOLUM · last note',
     heading: 'Last one from us.',
     body: [
-      'We will leave it here so we are not filling your inbox. The SOLUM creator collab is open if you want it, paid UGC, affiliate, or partnership.',
-      'If now is not the time, no worries at all. Reply any time and we will pick it back up.',
+      'We will leave it here so we are not filling your inbox. The SOLUM creator collab is open, a guided body care system for men, and your content is exactly the fit we want.',
+      'If now is the time, apply below. If not, no worries at all, the door stays open.',
+    ],
+  },
+  application_received: {
+    subject: 'SOLUM · application received',
+    heading: 'Thanks, we’ve got your application.',
+    body: [
+      'Thanks for applying to create with SOLUM. We review every application by hand and look closely at your content, so give us a few days.',
+      'If it is a fit, we will be in touch with the next steps, the kit, and how the collab works. Either way, we appreciate you putting yourself forward.',
     ],
   },
 }
@@ -52,7 +60,7 @@ export function buildCreatorEmail(key: Key, creator: { name?: string | null; uns
     <p style="margin:0 0 18px;font-size:22px;font-weight:700;color:#F0ECE2;line-height:1.3;">${greeting} ${c.heading}</p>
     ${c.body.map(p => `<p style="margin:0 0 16px;font-size:15px;color:rgba(240,236,226,0.75);line-height:1.75;">${p}</p>`).join('')}
     <table cellpadding="0" cellspacing="0" style="margin:14px 0 6px;"><tr><td bgcolor="#F0ECE2" style="background:#F0ECE2;">
-      <a href="${APPLY_URL}" style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:16px 40px;text-decoration:none;">See SOLUM &rarr;</a>
+      <a href="${APPLY_URL}" style="display:inline-block;background:#F0ECE2;color:#08090B;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:700;padding:16px 40px;text-decoration:none;">Apply to create &rarr;</a>
     </td></tr></table>
   </td></tr>
   <tr><td style="padding:22px 36px 30px;">
