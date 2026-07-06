@@ -97,11 +97,11 @@ export default function ProductLineup() {
       <section className="products-section" id="products">
         <div className="products-header reveal">
           <div className="p-sec-left">
-            <div className="p-sec-tag">{shown.length} products. One system.</div>
-            <h2 className="p-sec-title">The<br />Products.</h2>
+            <div className="p-sec-tag">One system. {shown.length} products inside.</div>
+            <h2 className="p-sec-title">The<br />System.</h2>
           </div>
           <p className="p-sec-sub">
-            Each product is numbered and used in sequence. Sourced from the country that does that tradition best.
+            Built as a sequence, not a shelf of separate purchases. Tap any piece below for the full detail.
           </p>
         </div>
 
