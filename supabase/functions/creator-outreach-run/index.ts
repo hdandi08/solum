@@ -8,6 +8,7 @@ const cors = {
 }
 const FROM = 'SOLUM Creators <hello@creators.bysolum.com>'
 const REPLY_TO = 'contact@bysolum.com'
+const UNSUB_BASE = `${Deno.env.get('SUPABASE_URL') ?? 'https://gvfptmjluxpngfjendbi.supabase.co'}/functions/v1/creator-unsubscribe`
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
 Deno.serve(async (req) => {
@@ -41,7 +42,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: FROM, reply_to: REPLY_TO, to: [c.email], subject, html,
           headers: {
-            'List-Unsubscribe': `<https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/creator-unsubscribe?token=${c.unsubscribe_token}>`,
+            'List-Unsubscribe': `<${UNSUB_BASE}?token=${c.unsubscribe_token}>`,
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
         }),

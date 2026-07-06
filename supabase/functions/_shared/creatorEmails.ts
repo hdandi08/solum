@@ -1,7 +1,7 @@
 // Dark-theme outreach templates for the creator sequence. Copy rules: no em/en
 // dashes; · or commas only. Unsubscribe link required. Logo via hosted PNG.
 const LOGO = 'https://bysolum.co.uk/email/solum-logo.png'
-const UNSUB_BASE = 'https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/creator-unsubscribe'
+const UNSUB_BASE = `${(typeof Deno !== 'undefined' && Deno.env.get('SUPABASE_URL')) || 'https://gvfptmjluxpngfjendbi.supabase.co'}/functions/v1/creator-unsubscribe`
 const APPLY_URL = 'https://bysolum.co.uk/?utm_source=email&utm_medium=email&utm_campaign=creator_outreach'
 
 type Key = 'intro' | 'follow_up' | 'final'
