@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap');
+/* Fonts are self-hosted — @font-face rules live inline in index.html */
 
 :root {
   --black:#08090b; --char:#0c0e12; --dark:#10131a;
