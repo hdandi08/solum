@@ -61,10 +61,11 @@ function isValidUKPhone(raw) {
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
 const CSS = `
-.by-intro{margin-bottom:28px;}
-.by-intro-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:700;display:block;margin-bottom:10px;}
-.by-intro-head{font-size:21px;font-weight:400;color:var(--bone);line-height:1.35;margin:0;max-width:540px;}
-@media(max-width:768px){.by-intro-head{font-size:19px;}}
+.by-intro{margin-bottom:24px;}
+.by-intro-eyebrow{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:700;display:block;margin-bottom:10px;}
+.by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
+@media(max-width:768px){.by-intro-head{font-size:22px;}}
+.by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
 .by-express-wrap{margin-bottom:8px;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
@@ -79,7 +80,12 @@ const CSS = `
 .by-kit.soldout{opacity:.45;cursor:default;}
 .by-kit-badge{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:8px;display:block;}
 .by-kit-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;line-height:1;margin-bottom:4px;color:var(--bone);}
-.by-kit-tagline{font-size:12px;font-weight:300;color:var(--stone);line-height:1.4;margin-bottom:12px;}
+.by-kit-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;margin-bottom:14px;background:var(--dark);}
+.by-kit-outcome{font-size:16px;font-weight:500;color:var(--mist);line-height:1.35;margin-bottom:4px;}
+.by-kit-contents{font-size:13px;font-weight:300;color:var(--stone);letter-spacing:.3px;margin-bottom:14px;}
+.by-kit-buyrow{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.by-kit-cta{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;background:var(--blue);color:#fff;border:none;padding:13px 22px;cursor:pointer;transition:background .15s;}
+.by-kit-cta:hover{background:var(--blit);}
 .by-kit-price{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:-1px;line-height:1;color:var(--bone);}
 .by-kit-price-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:2px;}
 .by-kit-soldout-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-top:6px;}
@@ -665,6 +671,15 @@ export default function BuyPage() {
   const preselect = params.get('kit');
   const isFirstBatch = source === 'first_batch';
 
+  // React Router's history writes an idx into history.state; 0 means /buy is
+  // the first entry in this tab (ad click / direct landing) — a "Back to kits"
+  // link would point at a page the visitor has never seen.
+  const isDirectLanding = (window.history.state?.idx ?? 0) === 0;
+
+  // Kit CTAs and the sticky bar scroll here (express wallets + form).
+  const formStartRef = useRef(null);
+  const scrollToForm = () => formStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   const [inventory, setInventory]       = useState(null);
   const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
   const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
@@ -933,9 +948,11 @@ export default function BuyPage() {
           <div className="co-page">
             <div className="co-left">
               <BuyMobileHeader {...headerProps} />
-              <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
-                ← Back to kits
-              </a>
+              {!isDirectLanding && (
+                <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
+                  ← Back to kits
+                </a>
+              )}
               <ProgressBar step="payment" />
               <StepPayment
                 activeKit={activeKit}
@@ -961,10 +978,12 @@ export default function BuyPage() {
       <InAppBrowserBanner />
       <div className="co-page">
         <div className="co-left">
-          <BuyMobileHeader {...headerProps} />
-          <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
-            ← Back to kits
-          </a>
+          <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} />
+          {!isDirectLanding && (
+            <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
+              ← Back to kits
+            </a>
+          )}
 
           <>
               {/* Progress bar sits at top only for the delivery step (which has
@@ -977,7 +996,8 @@ export default function BuyPage() {
               {step === 'details' && (
                 <div className="by-intro">
                   <span className="by-intro-eyebrow">Men's Body Care</span>
-                  <h1 className="by-intro-head">Everything your body needs, head to toe. A simple daily routine, plus a deeper weekly one. We show you exactly how.</h1>
+                  <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
+                  <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
                   <ReviewsBadge />
                 </div>
               )}
@@ -985,8 +1005,9 @@ export default function BuyPage() {
               {/* Kit selector — shown on step 1 only */}
               {step === 'details' && (
                 <div className="by-kits" data-testid="kit-selector">
-                  {(['ground', 'ritual']).map(id => {
+                  {(preselect === 'ground' ? ['ground', 'ritual'] : ['ritual', 'ground']).map((id, i) => {
                     const kit = KITS.find(k => k.id === id);
+                    const contentsCount = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon).length;
                     return (
                       <div
                         key={id}
@@ -995,10 +1016,31 @@ export default function BuyPage() {
                         onClick={() => { setSelectedKit(id); trackAddToCart(id); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
+                        {kit?.image && (
+                          <img
+                            src={kit.image.replace('.webp', '@600.webp')}
+                            alt={`${kit.name} kit contents`}
+                            className="by-kit-img"
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                            fetchpriority={i === 0 ? 'high' : undefined}
+                          />
+                        )}
                         <div className="by-kit-name">{kit?.name}</div>
-                        <div className="by-kit-tagline">{kit?.tagline}</div>
-                        <div className="by-kit-price">£{KIT_PRICES[id]}</div>
-                        <div className="by-kit-price-label">one-time</div>
+                        <div className="by-kit-outcome">{kit?.outcome}</div>
+                        <div className="by-kit-contents">{contentsCount} products in the box · {id === 'ritual' ? 'daily + weekly ritual' : 'the daily system'}</div>
+                        <div className="by-kit-buyrow">
+                          <div>
+                            <div className="by-kit-price">£{KIT_PRICES[id]}</div>
+                            <div className="by-kit-price-label">one-time</div>
+                          </div>
+                          <button
+                            type="button"
+                            className="by-kit-cta"
+                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
+                          >
+                            Buy {kit?.name} →
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -1007,7 +1049,7 @@ export default function BuyPage() {
 
               {/* Express checkout — one-tap wallets, above the manual form */}
               {step === 'details' && (
-                <div className="by-express-wrap">
+                <div className="by-express-wrap" ref={formStartRef}>
                   <Elements
                     key={selectedKit}
                     stripe={stripePromise}
