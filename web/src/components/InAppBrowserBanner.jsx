@@ -38,7 +38,7 @@ export default function InAppBrowserBanner({ variant = 'fixed' }) {
       root.classList.remove('iab-on');
       root.style.removeProperty('--iab-h');
     };
-  }, [active, hidden, platform]);
+  }, [active, hidden, platform, variant]);
 
   // Fire the "shown" event once per session when the banner is actually visible.
   useEffect(() => {

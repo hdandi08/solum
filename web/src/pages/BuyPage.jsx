@@ -165,9 +165,20 @@ function ProgressBar({ step }) {
 
 // ── Mobile header (one-time, no subscription language) ────────────────────────
 
-function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta }) {
+function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hideUntilScroll }) {
   const [open, setOpen] = useState(false);
   const [zoomSrc, setZoomSrc] = useState(null);
+
+  // Details step: the kit cards above the fold already show photo, price and a
+  // buy button — the bar would only cover them. Reveal it once they scroll away.
+  const [scrolledPast, setScrolledPast] = useState(false);
+  useEffect(() => {
+    if (!hideUntilScroll) return undefined;
+    const onScroll = () => setScrolledPast(window.scrollY > 340);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hideUntilScroll]);
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
@@ -215,6 +226,8 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta }) {
     el.addEventListener('touchmove', move, { passive: false });
     return () => el.removeEventListener('touchmove', move);
   }, [open]);
+
+  if (hideUntilScroll && !scrolledPast) return null;
 
   return (
     <div className="co-mobile-header">
@@ -979,7 +992,7 @@ export default function BuyPage() {
       {step !== 'details' && <InAppBrowserBanner />}
       <div className="co-page">
         <div className="co-left">
-          <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} />
+          <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} hideUntilScroll={step === 'details'} />
           {!isDirectLanding && (
             <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
               ← Back to kits
