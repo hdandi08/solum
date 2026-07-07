@@ -31,9 +31,9 @@ const CSS = `
 `;
 
 const PILLARS = [
-  { n: '01', ic: '/icons/pillar-body.png', title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
-  { n: '02', ic: '/icons/pillar-guided.png', title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
-  { n: '03', ic: '/icons/pillar-time.png', title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
+  { n: '01', ic: '/icons/pillar-body.webp', title: 'The body, finally.', body: 'Face and hair got routines decades ago. Your body, 90% of your skin, never did.' },
+  { n: '02', ic: '/icons/pillar-guided.webp', title: 'Guided, not guessed.', body: 'A daily ritual to maintain and a weekly reset to go deeper. We tell you what to use, in what order, and how, for the best your skin can do.' },
+  { n: '03', ic: '/icons/pillar-time.webp', title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
 ];
 
 export default function WhatSolumIs() {

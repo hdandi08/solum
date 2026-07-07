@@ -23,12 +23,12 @@ const CSS = `
 `;
 
 const SYMPTOMS = [
-  ['/icons/problem-odour.png', 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
-  ['/icons/problem-rough.png', 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
-  ['/icons/problem-back.png', 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
-  ['/icons/problem-scalp.png', 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
-  ['/icons/problem-gym.png', 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
-  ['/icons/problem-drop.png', 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
+  ['/icons/problem-odour.webp', 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
+  ['/icons/problem-rough.webp', 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
+  ['/icons/problem-back.webp', 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
+  ['/icons/problem-scalp.webp', 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
+  ['/icons/problem-gym.webp', 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
+  ['/icons/problem-drop.webp', 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
 ];
 
 export default function ProblemSection() {

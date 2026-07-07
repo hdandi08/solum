@@ -1451,7 +1451,7 @@ export default function ComingSoon() {
             <div className="cs-privacy">No spam. One email when we launch.</div>
             <div style={{ marginTop: 20, padding: '14px 20px', borderTop: '1px solid rgba(240,236,226,0.10)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}>
-                <img src="/harsha.jpg" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
+                <img src="/harsha.webp" alt="Harsha, Founder" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 15%', flexShrink: 0, filter: 'grayscale(30%) contrast(1.05)', border: '1.5px solid rgba(74,143,199,0.4)' }} />
                 <div style={{ fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, color: '#4a8fc7' }}>Harsha, Founder · London</div>
               </div>
               <div style={{ fontSize: 'clamp(16px, 2vw, 18px)', fontWeight: 300, color: 'rgba(240,236,226,0.78)', lineHeight: 1.7, fontStyle: 'italic' }}>"I spent years thinking body care was just body wash and shampoo. Still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning. Especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming. It doesn't."</div>

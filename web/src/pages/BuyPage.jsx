@@ -888,7 +888,7 @@ export default function BuyPage() {
           <div className="by-soldout-right">
             <div className="by-founder-tag">From the Founder</div>
             <div className="by-founder-photo-wrap">
-              <img src="/harsha.jpg" alt="Harsha, Founder of SOLUM" className="by-founder-photo" />
+              <img src="/harsha.webp" alt="Harsha, Founder of SOLUM" className="by-founder-photo" />
               <span className="by-founder-status" />
             </div>
             <div className="by-founder-name">Harsha</div>

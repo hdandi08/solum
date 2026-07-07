@@ -276,7 +276,7 @@ export default function FounderChat() {
       {open && (
         <div className="fc-panel">
           <div className="fc-header">
-            <img src="/harsha.jpg" alt="Harsha" className="fc-header-avatar" />
+            <img src="/harsha.webp" alt="Harsha" className="fc-header-avatar" />
             <div>
               <div className="fc-header-name">Harsha</div>
               <div className="fc-header-title">Founder · SOLUM</div>
@@ -347,7 +347,7 @@ export default function FounderChat() {
           )}
           <div className="fc-avatar-wrap">
             <img
-              src="/harsha.jpg"
+              src="/harsha.webp"
               alt="Ask Harsha"
               className="fc-avatar"
               onClick={openChat}
