@@ -66,7 +66,7 @@ const CSS = `
 .by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
 @media(max-width:768px){.by-intro-head{font-size:22px;}}
 .by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
-.by-express-wrap{margin-bottom:8px;}
+.by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
