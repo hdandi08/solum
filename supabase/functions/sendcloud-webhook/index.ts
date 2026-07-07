@@ -11,29 +11,34 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Sendcloud status ID → our dispatch_status
+// Sendcloud status ID → our dispatch_status.
+// IDs and meanings verified against Sendcloud's canonical parcel-status list
+// (2026-07-07). The previous map had invented meanings — 91 "Parcel en route"
+// was mapped to 'delivered', so customers got the "Delivered." email the moment
+// Royal Mail took the parcel; 8 "Delivery attempt failed" also sent "Delivered.";
+// 5 "Sorted" and 22 "Picked up by driver" sent failed-delivery emails.
+// 'delivered' and 'failed' trigger customer emails — map conservatively:
+// anything in normal transit is 'dispatched'; unknown IDs are left unmapped (no change).
 const STATUS_MAP: Record<number, string> = {
-  1:    'dispatched', // Announced
-  2:    'dispatched', // En route to sorting centre
-  3:    'dispatched', // Delivery delayed
-  4:    'dispatched', // Arrived at sorting centre
-  5:    'failed',     // Not delivered
-  6:    'dispatched', // Sorted
-  7:    'dispatched', // En route to collect point
-  8:    'delivered',  // Delivered
-  11:   'delivered',  // Delivered (alt)
-  12:   'dispatched', // Awaiting customer pickup
-  13:   'failed',     // Announcement failed
-  14:   'failed',     // Lost in transport
-  22:   'failed',     // Returned to sender
-  36:   'dispatched', // Being sorted
-  80:   'dispatched', // Parcel announced
-  91:   'delivered',  // Delivered (alt)
-  92:   'dispatched', // Awaiting customer pickup
-  93:   'dispatched', // Being sorted
-  94:   'dispatched', // En route to collect point
-  1000: 'dispatched',
-  1002: 'dispatched',
+  1:     'dispatched', // Announced
+  3:     'dispatched', // En route to sorting center
+  4:     'dispatched', // Delivery delayed
+  5:     'dispatched', // Sorted
+  6:     'dispatched', // Not sorted
+  7:     'dispatched', // Being sorted
+  8:     'failed',     // Delivery attempt failed
+  11:    'delivered',  // Delivered
+  12:    'dispatched', // Awaiting customer pickup
+  13:    'dispatched', // Announced: not collected
+  22:    'dispatched', // Shipment picked up by driver
+  80:    'failed',     // Unable to deliver
+  91:    'dispatched', // Parcel en route
+  92:    'dispatched', // Driver en route
+  93:    'delivered',  // Shipment collected by customer
+  1000:  'dispatched', // Ready to send
+  1001:  'dispatched', // Being announced
+  62990: 'dispatched', // At sorting centre
+  62992: 'failed',     // Returned to sender
 };
 
 async function verifySignature(body: string, signatureHeader: string | null): Promise<boolean> {
