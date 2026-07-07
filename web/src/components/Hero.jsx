@@ -167,7 +167,10 @@ export default function Hero() {
                   <a
                     href={IS_FIRST_BATCH ? '/buy' : '#kits'}
                     className="btn-primary"
-                    onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
+                    onClick={(e) => {
+                      trackGoal('hero_cta_clicked', { variant: ctaVariant });
+                      if (IS_FIRST_BATCH) buyClick(e, navigate, '/buy', null);
+                    }}
                   >
                     Fix My Shower Routine
                   </a>

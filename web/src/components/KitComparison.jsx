@@ -214,6 +214,7 @@ export default function KitComparison() {
                   ) : (
                     <button
                       className="kit-cta active"
+                      data-buy-cta={`/buy?kit=${kit.id}`}
                       onClick={() => {
                         capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
                         trackAddToCart(kit.id);

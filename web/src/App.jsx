@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
+import { capture } from './lib/analytics';
 import OfferBar from './components/OfferBar.jsx';
 import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
@@ -55,6 +56,30 @@ const IS_LIVE = import.meta.env.VITE_LAUNCH_MODE === 'live';
 
 export default function App() {
   useEffect(() => { initQualifiedVisitTracker(); }, []);
+
+  // Canonical buy-intent event: record EVERY click that sends the visitor to
+  // /buy, site-wide, via delegation — covers <a href="/buy..."> links and any
+  // element marked data-buy-cta (buttons that navigate() programmatically).
+  // New CTAs are tracked automatically; nothing needs per-component wiring.
+  useEffect(() => {
+    const onClick = (e) => {
+      const el = e.target.closest?.('a[href^="/buy"], [data-buy-cta]');
+      if (!el) return;
+      const href = el.getAttribute('href') || el.dataset.buyCta || '/buy';
+      let kit = null;
+      try { kit = new URLSearchParams(href.split('?')[1] || '').get('kit'); } catch { /* no-op */ }
+      const section = el.closest('section[id], [data-track]');
+      capture('buy_cta_clicked', {
+        placement: section?.dataset?.track || section?.id || 'page',
+        page: window.location.pathname,
+        kit,
+        href,
+        cta_text: (el.innerText || '').trim().slice(0, 60),
+      });
+    };
+    document.addEventListener('click', onClick, { capture: true });
+    return () => document.removeEventListener('click', onClick, { capture: true });
+  }, []);
   return (
     <BrowserRouter>
       <OfferBar />

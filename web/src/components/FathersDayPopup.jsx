@@ -146,7 +146,7 @@ export default function FathersDayPopup() {
               Order by <strong>midday Wed 18 June</strong> for guaranteed delivery.
             </div>
 
-            <button className="fd-popup-cta" onClick={() => go('ritual')}>
+            <button className="fd-popup-cta" data-buy-cta="/buy?kit=ritual&source=fd_gift" onClick={() => go('ritual')}>
               Gift RITUAL Kit — £85
             </button>
           </div>
