@@ -27,6 +27,16 @@ const ProductPage = lazy(() => import('./pages/ProductPage.jsx'));
 // Auth pages that handle their own session callbacks — do not redirect these.
 const AUTH_DESTINATIONS = ['/account'];
 
+// Shown while a lazy route chunk downloads. Direct ad landings on /buy used
+// to sit on a blank screen here (fallback was null) — now they see the brand.
+function RouteFallback() {
+  return (
+    <div style={{ minHeight: '100vh', background: '#08090b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <img src="/solum-wordmark-clean.svg" alt="SOLUM" style={{ height: 22, opacity: 0.65 }} />
+    </div>
+  );
+}
+
 // If Supabase drops auth tokens on the wrong page, forward to /account.
 // AUTH_DESTINATIONS handle their own session callbacks and are excluded.
 function AuthRedirectGuard() {
@@ -49,7 +59,7 @@ export default function App() {
     <BrowserRouter>
       <OfferBar />
       <AuthRedirectGuard />
-      <Suspense fallback={null}>
+      <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
           <Route path="/full" element={<FullSite />} />
