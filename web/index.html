@@ -2,6 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Invisible-bounce beacon: fires before ANY other resource so we can count
+         visitors who abandon before the app bundle boots (early_hit vs $pageview).
+         Deliberately person-agnostic: random id, no cookies. Spec 2026-07-07. -->
+    <script>
+      if(location.hostname.includes('bysolum')){
+        try{
+          var q=new URLSearchParams(location.search);
+          var payload=JSON.stringify({
+            api_key:'phc_BjezQwNmSiTGyXYzg3nJNsRbGHBLi9qnCYN8YbHo8oEc',
+            event:'early_hit',
+            distinct_id:'early-'+Math.random().toString(36).slice(2),
+            properties:{
+              path:location.pathname,
+              utm_source:q.get('utm_source')||'',
+              utm_campaign:q.get('utm_campaign')||'',
+              referrer:document.referrer||'',
+              screen_width:screen.width,
+              $process_person_profile:false
+            },
+            timestamp:new Date().toISOString()
+          });
+          if(!(navigator.sendBeacon&&navigator.sendBeacon('https://eu.i.posthog.com/i/v0/e/',payload))){
+            fetch('https://eu.i.posthog.com/i/v0/e/',{method:'POST',body:payload,keepalive:true,headers:{'Content-Type':'application/json'}});
+          }
+        }catch(e){}
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SOLUM | Men's Body Care System. Sulphate-Free · UK</title>
