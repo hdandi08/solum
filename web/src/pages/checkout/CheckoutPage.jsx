@@ -12,6 +12,7 @@ import StepDelivery from './StepDelivery.jsx';
 import StepPayment from './StepPayment.jsx';
 import SolumWordmark from '../../components/SolumWordmark.jsx';
 import './checkout.css';
+import { jumpTop } from '../../lib/scroll.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -100,7 +101,7 @@ export default function CheckoutPage() {
   const kitId    = params.get('kit');
   const kit      = KITS.find(k => k.id === kitId);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { jumpTop(); }, []);
 
   // Restore state after a failed redirect-based payment (Revolut Pay etc.)
   useEffect(() => {
@@ -179,7 +180,7 @@ export default function CheckoutPage() {
       return;
     }
     setStep('delivery');
-    window.scrollTo(0, 0);
+    jumpTop();
   }
 
   async function handleDeliveryNext() {
@@ -256,7 +257,7 @@ export default function CheckoutPage() {
       setPayInfo(data);
       setActiveKitId(kId);
       setStep('payment');
-      window.scrollTo(0, 0);
+      jumpTop();
       try {
         sessionStorage.setItem('solum_payment_retry', JSON.stringify({
           clientSecret: data.client_secret, payInfo: data, form, kit: kId,
@@ -434,8 +435,8 @@ export default function CheckoutPage() {
                 activeKit={activeKit}
                 payInfo={payInfo}
                 form={form}
-                onBack={() => { setStep('delivery'); window.scrollTo(0, 0); }}
-                onEditDetails={() => { setStep('details'); window.scrollTo(0, 0); }}
+                onBack={() => { setStep('delivery'); jumpTop(); }}
+                onEditDetails={() => { setStep('details'); jumpTop(); }}
               />
             </div>
             <OrderSummary {...summaryProps} />
@@ -538,7 +539,7 @@ export default function CheckoutPage() {
                   <StepDelivery
                     form={form}
                     onChange={onChange}
-                    onBack={() => { setError(''); setStep('details'); window.scrollTo(0, 0); }}
+                    onBack={() => { setError(''); setStep('details'); jumpTop(); }}
                     onNext={handleDeliveryNext}
                     loading={loading}
                     error={error}

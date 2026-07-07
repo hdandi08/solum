@@ -7,6 +7,7 @@ import SolumFooter from '../components/SolumFooter.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import { capture } from '../lib/analytics.js';
 import { markProductDetail } from '../lib/qualifiedVisitTracker';
+import { jumpTop } from '../lib/scroll.js';
 
 const CSS = `
 .pp{background:var(--black);color:var(--bone);padding-top:64px;}
@@ -80,7 +81,7 @@ export default function ProductPage() {
 
   // Land at the top of the page on navigation (incl. prev/next between products), not at the
   // retained scroll position of wherever the click came from.
-  useEffect(() => { window.scrollTo({ top: 0, left: 0 }); }, [slug]);
+  useEffect(() => { jumpTop(); }, [slug]);
 
   // Return to wherever they came from; fall back to the homepage products grid on a direct landing.
   const goBack = () => {

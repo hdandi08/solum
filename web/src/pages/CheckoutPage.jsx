@@ -5,6 +5,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import tshirtImg from '../assets/solum-tshirt.jpeg';
+import { jumpTop } from '../lib/scroll.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -339,7 +340,7 @@ export default function CheckoutPage() {
   const kitId      = params.get('kit');
   const kit        = KITS.find(k => k.id === kitId);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { jumpTop(); }, []);
 
   // Form state
   const [form, setForm] = useState({
@@ -450,7 +451,7 @@ export default function CheckoutPage() {
       setPayInfo(data);
       setActiveKitId(kId);
       setCheckoutStage('payment');
-      window.scrollTo(0, 0);
+      jumpTop();
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
@@ -600,7 +601,7 @@ export default function CheckoutPage() {
               <PaymentStep
                 activeKit={activeKit}
                 payInfo={payInfo}
-                onBack={() => { setCheckoutStage('form'); window.scrollTo(0, 0); }}
+                onBack={() => { setCheckoutStage('form'); jumpTop(); }}
               />
             </div>
             <KitSummary />

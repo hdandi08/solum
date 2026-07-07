@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { validateApplication, NICHE_OPTIONS, DEAL_OPTIONS } from '../lib/creatorApplication.js';
+import { jumpTop } from '../lib/scroll.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -125,7 +126,7 @@ export default function CreatorsApplyPage() {
       if (!res.ok || !data.ok) { setServerError(data.error || 'Something went wrong. Please try again.'); return; }
       try { window.posthog?.capture?.('creator_application_submitted', { niche: form.niche }); } catch { /* ignore */ }
       setDone(true);
-      window.scrollTo(0, 0);
+      jumpTop();
     } catch { setServerError('Something went wrong. Please try again.'); }
     finally { setSubmitting(false); }
   }

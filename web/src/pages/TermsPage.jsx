@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
+import { jumpTop } from '../lib/scroll.js';
 
 const LAST_UPDATED = '30 April 2026';
 
@@ -181,7 +182,7 @@ export default function TermsPage() {
     document.title = 'Terms & Conditions | SOLUM';
     let meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', 'Terms and conditions for SOLUM — men\'s body care subscription. Your statutory rights, subscription terms, cosmetic product safety, returns, and governing law.');
-    window.scrollTo(0, 0);
+    jumpTop();
   }, []);
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
+import { jumpTop } from '../lib/scroll.js';
 
 const LAST_UPDATED = '11 April 2026';
 
@@ -165,7 +166,7 @@ export default function PrivacyPage() {
     document.title = 'Privacy Policy | SOLUM';
     let meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', "SOLUM's privacy policy — how we collect, use, and protect your personal data under UK GDPR and the Data Protection Act 2018.");
-    window.scrollTo(0, 0);
+    jumpTop();
   }, []);
 
   return (

@@ -4,6 +4,7 @@ import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
 import { getArticle, ARTICLES, CATEGORY_COLOURS } from '../data/guide';
 import NotFoundPage from './NotFoundPage';
+import { jumpTop } from '../lib/scroll.js';
 
 const CSS = `
 .article-page { background: var(--black); min-height: 100vh; padding-top: 64px; }
@@ -181,7 +182,7 @@ export default function GuideArticle() {
     // Canonical
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', `https://bysolum.co.uk/guide/${article.slug}`);
-    window.scrollTo(0, 0);
+    jumpTop();
   }, [article]);
 
   if (!article) return <NotFoundPage />;

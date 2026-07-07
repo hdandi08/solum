@@ -13,6 +13,7 @@ import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import ReviewsBadge from '../components/ReviewsBadge.jsx';
 import './checkout/checkout.css';
+import { jumpTop } from '../lib/scroll.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -718,13 +719,13 @@ export default function BuyPage() {
       setClientSecret(saved.clientSecret);
       if (saved.kit) setSelectedKit(saved.kit);
       setStep('payment');
-      window.scrollTo(0, 0);
+      jumpTop();
       sessionStorage.removeItem('solum_payment_retry');
     } catch {}
   }, []); // eslint-disable-line
 
   // Always open the buy flow at the top, regardless of the scroll position it was clicked from.
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { jumpTop(); }, []);
 
   useEffect(() => {
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
@@ -799,14 +800,14 @@ export default function BuyPage() {
       }
       capture('soldout_detected', { kit: selectedKit, source });
       setStep('soldout');
-      window.scrollTo(0, 0);
+      jumpTop();
       setLoading(false);
       return;
     }
 
     capture('checkout_details_submitted', { kit: selectedKit, source });
     setStep('delivery');
-    window.scrollTo(0, 0);
+    jumpTop();
   }
 
   // ── Step 2: delivery → create payment intent ──────────────────────────────
@@ -858,7 +859,7 @@ export default function BuyPage() {
       setClientSecret(data.client_secret);
       setPayInfo(data);
       setStep('payment');
-      window.scrollTo(0, 0);
+      jumpTop();
       try {
         sessionStorage.setItem('solum_payment_retry', JSON.stringify({
           clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, source,
@@ -974,8 +975,8 @@ export default function BuyPage() {
                 payInfo={payInfo}
                 form={form}
                 source={source}
-                onBack={() => { setStep('delivery'); window.scrollTo(0, 0); }}
-                onEditDetails={() => { setStep('details'); window.scrollTo(0, 0); }}
+                onBack={() => { setStep('delivery'); jumpTop(); }}
+                onEditDetails={() => { setStep('details'); jumpTop(); }}
               />
             </div>
             <BuyOrderSummary {...headerProps} />
@@ -1184,7 +1185,7 @@ export default function BuyPage() {
                     {loading ? 'Preparing payment…' : 'Continue to Payment →'}
                   </button>
 
-                  <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); window.scrollTo(0, 0); }}>
+                  <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); jumpTop(); }}>
                     ← Back to your details
                   </button>
                 </form>
