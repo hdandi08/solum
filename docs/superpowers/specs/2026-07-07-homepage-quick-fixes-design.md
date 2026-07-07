@@ -19,26 +19,28 @@ to toe."):
 - Style: hero primary button style (bone background, Bebas)
 - Analytics: capture `problem_cta_clicked` on click
 
-## 2. Body/Face headline collision in WhatSolumIs
+## 2. Body/Face headline double-exposure in WhatSolumIs (diagnosis revised)
 
-At 390px the animated Body/Face swap (`.wsi-swap`, inline-grid with two stacked
-words) collides with "GUIDED" in the h2. Diagnose locally at 390px:
+Reproduced locally: layout is fine — the ugly frame is the crossfade window
+(keyframes 38–46%) where both stacked words sit at partial opacity, reading as a
+smudge over the headline. Fix: stagger the `wsiBody`/`wsiFace` keyframes so the
+outgoing word is fully transparent before the incoming word starts fading in.
+No layout or markup changes.
 
-- Preferred fix: make the swap word wrap cleanly as part of the headline.
-- Fallback if the animation can't wrap reliably: below 768px render a static
-  "Body" (animation desktop-only). Desktop unchanged.
+## 3. Dead space (diagnosis revised): reveal animations, not padding
 
-## 3. Dead-space cuts, mobile only
+Measured with reveals forced visible: cards are 180–204px and section gaps are
+56–87px — padding is fine. The blank runs in the capture (and for real users who
+flick-scroll) are `.reveal` elements still at opacity 0: the observer
+(`FullSite.jsx`) requires elements 50px inside the viewport
+(`rootMargin: '0px 0px -50px 0px'`) before starting a 0.7s fade.
 
-Surgical padding reductions at three verified spots (no copy changes, no desktop
-changes):
+Fix:
+- rootMargin bottom −50px → +200px (reveal starts before the element enters).
+- global.css: `.reveal`/`.reveal-left` transition 0.7s → 0.45s, translate
+  32px/28px → 20px/18px.
 
-- Reviews section: empty run after the "SWIPE FOR MORE →" hint to section end.
-- Kits section: gap between the "CHOOSE YOUR KIT." intro and the first kit card.
-- ProblemSection symptom cards: oversized internal padding (4 cards currently
-  spread over 1,681px).
-
-Target: remove roughly 1–1.5 viewport-heights of empty space on mobile total.
+No padding changes needed.
 
 ## Rollout
 

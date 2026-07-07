@@ -1,3 +1,5 @@
+import { capture } from '../lib/analytics.js';
+
 const CSS = `
 .problem-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
 .problem-inner{max-width:1200px;margin:0 auto;}
@@ -13,6 +15,8 @@ const CSS = `
 .problem-fix{background:var(--mid);border:1px solid var(--blue);padding:32px;margin-top:24px;}
 .problem-fix p{font-size:17px;font-weight:300;color:var(--bone);line-height:1.7;}
 .problem-fix strong{font-weight:600;}
+.problem-cta-row{margin-top:20px;display:flex;}
+@media(max-width:600px){.problem-cta-row .btn-primary{width:100%;text-align:center;}}
 @media(max-width:900px){.problem-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){
   .problem-section{padding:56px 20px;}
@@ -53,6 +57,11 @@ export default function ProblemSection() {
           </div>
           <div className="problem-fix reveal">
             <p>None of this is poor hygiene. A shower only wets the surface. Dead skin builds up for years and bacteria feed on it. <strong>SOLUM is the 10-minute system that clears it, head to toe.</strong></p>
+          </div>
+          <div className="problem-cta-row reveal">
+            <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>
+              See the Kits →
+            </a>
           </div>
         </div>
       </section>

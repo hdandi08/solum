@@ -10,8 +10,10 @@ const CSS = `
 .wsi-word-body{color:var(--bone);animation:wsiBody 5s ease-in-out 1.2s infinite both;}
 .wsi-word-face{color:var(--stone);position:relative;animation:wsiFace 5s ease-in-out 1.2s infinite both;}
 .wsi-strike{position:absolute;left:0;right:0;top:48%;height:3px;background:var(--blue);transform:scaleX(0);transform-origin:left;animation:wsiStrike 5s ease-in-out 1.2s infinite both;}
-@keyframes wsiBody{0%,38%{opacity:1;transform:translateY(0);}46%,76%{opacity:0;transform:translateY(-8px);}84%,100%{opacity:1;transform:translateY(0);}}
-@keyframes wsiFace{0%,38%{opacity:0;transform:translateY(8px);}46%,76%{opacity:1;transform:translateY(0);}84%,100%{opacity:0;transform:translateY(8px);}}
+/* Staggered so the words never overlap mid-fade (both semi-opaque reads as a
+   double-exposure smudge over the headline — caught on prod 2026-07-07). */
+@keyframes wsiBody{0%,36%{opacity:1;transform:translateY(0);}42%,80%{opacity:0;transform:translateY(-8px);}86%,100%{opacity:1;transform:translateY(0);}}
+@keyframes wsiFace{0%,42%{opacity:0;transform:translateY(8px);}48%,74%{opacity:1;transform:translateY(0);}80%,100%{opacity:0;transform:translateY(8px);}}
 @keyframes wsiStrike{0%,44%{transform:scaleX(0);}56%,100%{transform:scaleX(1);}}
 .wsi-sub{font-size:14px;font-weight:300;color:var(--stone);text-align:center;max-width:520px;margin:0 auto 52px;line-height:1.6;}
 /* full hero paragraph shows on mobile (where the hero hides it); short intro on desktop */

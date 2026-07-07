@@ -77,7 +77,7 @@ export default function FullSite() {
           setTimeout(() => e.target.classList.add('visible'), i * 80);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px 200px 0px' });
 
     const timer = setTimeout(() => {
       document.querySelectorAll('.reveal,.reveal-left').forEach(el => obs.observe(el));
