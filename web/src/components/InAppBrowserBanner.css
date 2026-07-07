@@ -46,6 +46,31 @@
   color: rgba(240, 236, 226, 0.7);
   cursor: pointer;
 }
+/* Inline variant: in-flow card on /buy (details step) — sits above the form
+   instead of pinned over the fold, so the first paint never invites an exit. */
+.iab-inline {
+  margin: 0 0 18px;
+  border: 1px solid rgba(46, 109, 164, 0.35);
+  background: rgba(46, 109, 164, 0.08);
+}
+.iab-inline-open {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  color: #F0ECE2;
+  font: inherit;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
 .iab-overlay {
   position: fixed;
   inset: 0;

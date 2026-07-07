@@ -976,7 +976,7 @@ export default function BuyPage() {
     <>
       <style>{CSS}</style>
       <BuyCheckoutNav />
-      <InAppBrowserBanner />
+      {step !== 'details' && <InAppBrowserBanner />}
       <div className="co-page">
         <div className="co-left">
           <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} />
@@ -1047,6 +1047,10 @@ export default function BuyPage() {
                   })}
                 </div>
               )}
+
+              {/* In-app browsers can't show Apple Pay — offer the breakout here,
+                  at the payment decision, instead of as the first thing on screen */}
+              {step === 'details' && <InAppBrowserBanner variant="inline" />}
 
               {/* Express checkout — one-tap wallets, above the manual form */}
               {step === 'details' && (
