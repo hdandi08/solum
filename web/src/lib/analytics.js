@@ -36,6 +36,12 @@ export function initAnalytics() {
     capture_pageview: 'history_change',
     capture_pageleave: true,
     person_profiles: 'identified_only',
+    // Surveys: none configured — skip the surveys.js fetch entirely.
+    disable_surveys: true,
+    // Recorder (52KB) stays off the first-paint path; started below at
+    // window load or 4s, whichever comes first. Sessions shorter than that
+    // get no replay (accepted trade-off, spec 2026-07-07).
+    disable_session_recording: true,
     session_recording: {
       maskAllInputs: false,
       maskInputOptions: { password: true, creditCard: true },
@@ -49,6 +55,18 @@ export function initAnalytics() {
   // $browser can't distinguish these — the webview reports itself as Safari/Chrome.
   const iab = detectInAppBrowser();
   posthog.register({ in_app_browser: iab, is_in_app_browser: iab !== 'none' });
+
+  // Start the session recorder off the critical path: window load or 4s,
+  // whichever comes first (load can fire late on slow phones — it waits on
+  // every image — and we still want a replay for any session worth watching).
+  let recorderStarted = false;
+  const startRecorder = () => {
+    if (recorderStarted) return;
+    recorderStarted = true;
+    posthog.startSessionRecording();
+  };
+  window.addEventListener('load', startRecorder, { once: true });
+  setTimeout(startRecorder, 4000);
 }
 
 export function capture(event, props = {}) {
