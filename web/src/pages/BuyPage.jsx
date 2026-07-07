@@ -165,7 +165,7 @@ function ProgressBar({ step }) {
 
 // ── Mobile header (one-time, no subscription language) ────────────────────────
 
-function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
+function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta }) {
   const [open, setOpen] = useState(false);
   const [zoomSrc, setZoomSrc] = useState(null);
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
@@ -218,30 +218,31 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory }) {
 
   return (
     <div className="co-mobile-header">
-      <button
-        className="co-mobile-header-bar"
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        type="button"
-      >
-        {kit.image && <img src={kit.image} alt="" className="co-mobile-hero-thumb" />}
-        <div className="co-mobile-header-left">
-          <span className="co-mobile-kit-name">{kit.name}</span>
-          {kit.outcome && <span className="co-mobile-outcome">{kit.outcome}</span>}
-          <span className="co-mobile-see-more">
-            {open ? 'Tap to hide summary' : "Tap to see what's inside"}
-          </span>
-        </div>
-        <div className="co-mobile-price-block">
-          <span className="co-mobile-price">£{price}</span>
-          <span className="co-mobile-price-note">one-time</span>
-        </div>
-        <span className={`co-mobile-chevron${open ? ' open' : ''}`} aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M3 9l4-4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </span>
-      </button>
+      <div className="co-mobile-header-bar">
+        <button
+          className="co-mobile-header-info"
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          type="button"
+        >
+          {kit.image && <img src={kit.image} alt="" className="co-mobile-hero-thumb" />}
+          <div className="co-mobile-header-left">
+            <span className="co-mobile-kit-name">{kit.name}</span>
+            <span className="co-mobile-see-more">
+              {open ? 'Hide summary' : "What's inside ›"}
+            </span>
+          </div>
+          <div className="co-mobile-price-block">
+            <span className="co-mobile-price">£{price}</span>
+            <span className="co-mobile-price-note">one-time</span>
+          </div>
+        </button>
+        {onCta && (
+          <button type="button" className="co-mobile-cta" onClick={onCta}>
+            Buy →
+          </button>
+        )}
+      </div>
 
       {open && (
         <div

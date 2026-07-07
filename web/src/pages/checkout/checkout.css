@@ -57,15 +57,43 @@
   border-bottom: 1px solid var(--lineb);
 }
 
+/* Used as a <button> by checkout's MobileHeader and as a <div> wrapper on /buy
+   (where the toggle + CTA are sibling buttons inside) — keep button resets. */
 .co-mobile-header-bar {
   display: flex;
-  align-items: center;
-  padding: 14px 16px;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  text-align: left;
   cursor: pointer;
+}
+
+.co-mobile-header-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
   gap: 12px;
   background: none;
   border: none;
   text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Details-step only: the bar's right edge is the buy CTA (scrolls to the form) */
+.co-mobile-cta {
+  flex-shrink: 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 0 20px;
+  cursor: pointer;
 }
 
 /* Left column: kit name + expandable hint */
@@ -1307,7 +1335,7 @@ select.co-input option {
 
   /* co-left: standard padding; extra bottom padding for the sticky order bar */
   .co-left {
-    padding: 24px 16px 96px;
+    padding: 24px 16px 112px;
     border-right: none;
   }
 
