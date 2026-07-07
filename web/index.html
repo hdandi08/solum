@@ -62,32 +62,40 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
-    <!-- Meta Pixel — production only (bysolum.co.uk) -->
+    <!-- Meta + TikTok pixels — production only (bysolum.co.uk).
+         Queue stubs install immediately so app events are never dropped; the
+         heavy external scripts load after the window load event so they never
+         compete with first paint (server-side CAPI covers Purchase anyway). -->
     <script>
       if(location.hostname.includes('bysolum')){
-        !function(f,b,e,v,n,t,s){
-          if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
-        }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        // Meta stub + queued init/PageView
+        !function(f){
+          if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+        }(window);
         fbq('init','690345887768095');
         fbq('track','PageView');
-      }
-    </script>
-    <!-- Analytics: PostHog (initialised in src/lib/analytics.js via VITE_POSTHOG_KEY) -->
-    <!-- TikTok Pixel — production only (bysolum.co.uk) -->
-    <script>
-      if(location.hostname.includes('bysolum')){
+        // TikTok stub (queues method calls until events.js flushes them)
         !function (w, d, t) {
           w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
           var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
           ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-          ttq.load('D8NHU2RC77UCVEHVNJNG');
-          ttq.page();
         }(window, document, 'ttq');
+        // Fetch the external pixel scripts only after the page has loaded
+        var loadPixels=function(){
+          setTimeout(function(){
+            var s=document.createElement('script');s.async=!0;
+            s.src='https://connect.facebook.net/en_US/fbevents.js';
+            document.head.appendChild(s);
+            window.ttq.load('D8NHU2RC77UCVEHVNJNG');
+            window.ttq.page();
+          },0);
+        };
+        if(document.readyState==='complete'){loadPixels();}
+        else{window.addEventListener('load',loadPixels,{once:true});}
       }
     </script>
+    <!-- Analytics: PostHog (initialised in src/lib/analytics.js via VITE_POSTHOG_KEY) -->
   </head>
   <body>
     <div id="root"></div>

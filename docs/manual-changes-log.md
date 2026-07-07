@@ -54,3 +54,9 @@ Format: date · what changed · where · done?
 - Commits on dev: edb2d40, 3ab5e95, e13f93f, 05fea10, 70de8a0. Reviewed clean; verified live on
   localhost (desktop coverflow, mobile swipe, `ritual_multi` fired once). Spec/plan in docs/superpowers.
 - PENDING: user sign-off before merging dev → master.
+
+## 2026-07-07 — Mobile perf: hero video mobile renditions on CDN
+- Uploaded `video/banner/banner-loop-mobile.webm` (665KB) + `banner-loop-mobile.mp4` (869KB)
+  to s3://solum-media-assets (960×540 re-encodes of banner-loop, made with ffmpeg from
+  web/.media-build/banner-loop.mp4). New filenames — no CloudFront invalidation needed.
+  Verified 200 via d2ni3owln6t6zz.cloudfront.net.

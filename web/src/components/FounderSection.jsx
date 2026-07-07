@@ -18,7 +18,7 @@ export default function FounderSection() {
       <section className="founder-note" data-track="founder">
         <div className="founder-note-inner reveal">
           <div className="founder-note-id">
-            <img src="/harsha.jpg" alt="Harsha, Founder" className="founder-note-photo" />
+            <img src="/harsha.jpg" alt="Harsha, Founder" className="founder-note-photo" loading="lazy" />
             <div className="founder-note-name">Harsha, Founder · London</div>
           </div>
           <p className="founder-note-quote">

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useVariant, trackGoal } from '../hooks/useVariant';
 import { useNavigate } from 'react-router-dom';
 import { buyClick } from '../lib/addToCartTracker.js';
@@ -7,6 +8,22 @@ import { offerActive } from '../lib/offer.js';
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 const IS_FATHERS_DAY = new URLSearchParams(window.location.search).get('occasion') === 'fathers-day';
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SMALL_SCREEN = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
+// Keep the hero video off the critical path: the poster paints immediately and
+// the <video> only mounts once the page has finished loading, so the loop never
+// competes with the app bundle for bandwidth. Phones get the 540p rendition.
+function useHeroVideoReady() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (!BANNER.ready || REDUCE_MOTION) return;
+    const start = () => setReady(true);
+    if (document.readyState === 'complete') { start(); return; }
+    window.addEventListener('load', start, { once: true });
+    return () => window.removeEventListener('load', start);
+  }, []);
+  return ready;
+}
 
 const CSS = `
 /* ── Mobile first ─────────────────────────────────── */
@@ -97,6 +114,7 @@ const CSS = `
 
 export default function Hero() {
   const navigate = useNavigate();
+  const videoReady = useHeroVideoReady();
   const ctaVariant = useVariant('hero-cta-copy');
 
   return (
@@ -182,7 +200,7 @@ export default function Hero() {
           </div>
         </div>
         <div className="hero-visual">
-          {BANNER.ready && !REDUCE_MOTION ? (
+          {videoReady ? (
             <video
               className="hero-box-img"
               poster={BANNER.poster}
@@ -190,11 +208,11 @@ export default function Hero() {
               autoPlay
               loop
               playsInline
-              preload="none"
+              preload="auto"
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
             >
-              <source src={BANNER.webm} type="video/webm" />
-              <source src={BANNER.mp4} type="video/mp4" />
+              <source src={SMALL_SCREEN ? BANNER.mobileWebm : BANNER.webm} type="video/webm" />
+              <source src={SMALL_SCREEN ? BANNER.mobileMp4 : BANNER.mp4} type="video/mp4" />
             </video>
           ) : (
             <img

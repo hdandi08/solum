@@ -1,30 +1,31 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import OfferBar from './components/OfferBar.jsx';
 import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
-import CheckoutPage from './pages/checkout/CheckoutPage';
-import SuccessPage from './pages/SuccessPage';
-import AccountPage from './pages/AccountPage';
-import NotFoundPage from './pages/NotFoundPage';
-import ConfirmPage from './pages/ConfirmPage';
-import RitualPage from './pages/RitualPage';
-import GuidePage from './pages/GuidePage';
-import GuideArticle from './pages/GuideArticle';
-import TermsPage from './pages/TermsPage';
-import PrivacyPage from './pages/PrivacyPage';
-import Founding100Page from './pages/Founding100Page';
-import AthletePage from './pages/AthletePage';
-import AthleteComingSoon from './pages/AthleteComingSoon';
-import CreatorsApplyPage from './pages/CreatorsApplyPage';
-import BuyPage from './pages/BuyPage';
-import EmailPreviewPage from './pages/EmailPreviewPage';
-import ProductPage from './pages/ProductPage.jsx';
 import './styles/global.css';
 
+// Ad traffic lands on / — keep FullSite/ComingSoon eager so the homepage paints
+// from the main bundle. Everything else (incl. Stripe via BuyPage/CheckoutPage)
+// loads only when its route is visited.
+const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
+const SuccessPage = lazy(() => import('./pages/SuccessPage'));
+const AccountPage = lazy(() => import('./pages/AccountPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ConfirmPage = lazy(() => import('./pages/ConfirmPage'));
+const RitualPage = lazy(() => import('./pages/RitualPage'));
+const GuidePage = lazy(() => import('./pages/GuidePage'));
+const GuideArticle = lazy(() => import('./pages/GuideArticle'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const CreatorsApplyPage = lazy(() => import('./pages/CreatorsApplyPage'));
+const BuyPage = lazy(() => import('./pages/BuyPage'));
+const EmailPreviewPage = lazy(() => import('./pages/EmailPreviewPage'));
+const ProductPage = lazy(() => import('./pages/ProductPage.jsx'));
+
 // Auth pages that handle their own session callbacks — do not redirect these.
-const AUTH_DESTINATIONS = ['/account', '/founding-100'];
+const AUTH_DESTINATIONS = ['/account'];
 
 // If Supabase drops auth tokens on the wrong page, forward to /account.
 // AUTH_DESTINATIONS handle their own session callbacks and are excluded.
@@ -48,27 +49,26 @@ export default function App() {
     <BrowserRouter>
       <OfferBar />
       <AuthRedirectGuard />
-      <Routes>
-        <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
-        <Route path="/full" element={<FullSite />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/buy" element={<BuyPage />} />
-        <Route path="/success" element={<SuccessPage />} />
-        <Route path="/account" element={<AccountPage />} />
-        <Route path="/ritual" element={<RitualPage />} />
-        <Route path="/guide" element={<GuidePage />} />
-        <Route path="/guide/:slug" element={<GuideArticle />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/confirm" element={<ConfirmPage />} />
-        <Route path="/founding-100" element={<Founding100Page />} />
-        <Route path="/athletes" element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
-        <Route path="/sports"   element={IS_LIVE ? <AthletePage /> : <AthleteComingSoon />} />
-        <Route path="/creators" element={<CreatorsApplyPage />} />
-        <Route path="/email-preview" element={<EmailPreviewPage />} />
-        <Route path="/product/:slug" element={<ProductPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
+          <Route path="/full" element={<FullSite />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/buy" element={<BuyPage />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/ritual" element={<RitualPage />} />
+          <Route path="/guide" element={<GuidePage />} />
+          <Route path="/guide/:slug" element={<GuideArticle />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/confirm" element={<ConfirmPage />} />
+          <Route path="/creators" element={<CreatorsApplyPage />} />
+          <Route path="/email-preview" element={<EmailPreviewPage />} />
+          <Route path="/product/:slug" element={<ProductPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

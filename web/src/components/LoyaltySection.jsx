@@ -69,6 +69,7 @@ export default function LoyaltySection() {
               src={tshirtImg}
               alt="SOLUM 180 t-shirt — Beyond Clean. Form an Orderly Queue."
               className="loyalty-img"
+              loading="lazy"
             />
             <div className="loyalty-img-label">THE SOLUM 180 TEE. EARNED, NOT BOUGHT.</div>
           </div>

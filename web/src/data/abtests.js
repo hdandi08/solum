@@ -75,7 +75,7 @@ export const AB_TESTS = {
 
   'athlete-segment': {
     name: 'Athlete Segment Landing Page',
-    status: 'active',
+    status: 'retired', // /athletes + /sports pages removed 2026-07-07 — segment dropped
     variants: ['control', 'athlete'],
     traffic: 1.0,
     startDate: '2026-04-26',
