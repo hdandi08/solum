@@ -7,7 +7,6 @@ import RitualInAction from '../components/RitualInAction.jsx';
 import KitComparison from '../components/KitComparison.jsx';
 import Reviews from '../components/Reviews.jsx';
 import FrictionStrip from '../components/FrictionStrip.jsx';
-import TruthSection from '../components/TruthSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import UnboxingFilm from '../components/UnboxingFilm.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
@@ -20,7 +19,6 @@ import FAQ from '../components/FAQ.jsx';
 import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import ABDevPanel from '../components/ABDevPanel.jsx';
-import FathersDayPopup from '../components/FathersDayPopup.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import TrustBar from '../components/TrustBar.jsx';
 
@@ -91,20 +89,19 @@ export default function FullSite() {
 
   return (
     <>
-      <FathersDayPopup />
       <Nav />
       <TrustBar />
       <Hero />
       <Marquee />
       <ProblemSection />
-      <WhatSolumIs />
-      <Reviews />
       <KitComparison />
+      <Reviews />
       <FrictionStrip />
       <RitualInAction />
       <ProductLineup />
       <UnboxingFilm />
-      <TruthSection />
+      <WhatSolumIs />
+      <FAQ />
       <FounderSection />
       <FullBleedBand
         image="/products/feature/identity.webp"
@@ -112,7 +109,6 @@ export default function FullSite() {
         head={<>Your body.<br />Finally done right.</>}
         sub="One system, head to toe. Built for the men who were never given one."
       />
-      <FAQ />
       <CredibilityStrip />
       <ProvenanceSection />
       <CTASection />

@@ -3,7 +3,7 @@
 const CSS = `
 .wsi-section{background:var(--char);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;}
 .wsi-inner{max-width:1200px;margin:0 auto;}
-.wsi-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,4.5vw,52px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:8px;}
+.wsi-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,4.5vw,52px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:44px;}
 /* animated Body/Face swap — strikes "Face", lands on "Body" */
 .wsi-swap{display:inline-grid;position:relative;}
 .wsi-word-body,.wsi-word-face{grid-area:1/1;white-space:nowrap;}
@@ -15,12 +15,6 @@ const CSS = `
 @keyframes wsiBody{0%,36%{opacity:1;transform:translateY(0);}42%,80%{opacity:0;transform:translateY(-8px);}86%,100%{opacity:1;transform:translateY(0);}}
 @keyframes wsiFace{0%,42%{opacity:0;transform:translateY(8px);}48%,74%{opacity:1;transform:translateY(0);}80%,100%{opacity:0;transform:translateY(8px);}}
 @keyframes wsiStrike{0%,44%{transform:scaleX(0);}56%,100%{transform:scaleX(1);}}
-.wsi-sub{font-size:14px;font-weight:300;color:var(--stone);text-align:center;max-width:520px;margin:0 auto 52px;line-height:1.6;}
-/* full hero paragraph shows on mobile (where the hero hides it); short intro on desktop */
-.wsi-sub-d{display:none;}
-.wsi-sub-m{display:inline;}
-@media(min-width:769px){.wsi-sub-d{display:inline;}.wsi-sub-m{display:none;}}
-@media(max-width:768px){.wsi-sub{font-size:16px;line-height:1.65;max-width:none;}}
 .wsi-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
 .wsi-pillar{background:var(--char);padding:36px 30px;display:flex;flex-direction:column;gap:12px;}
 .wsi-ic{width:48px;height:48px;display:block;margin-bottom:2px;}
@@ -52,10 +46,8 @@ export default function WhatSolumIs() {
             </span>{' '}
             Ritual for Men
           </h2>
-          <p className="wsi-sub reveal">
-            <span className="wsi-sub-d">A shower only wets the surface. SOLUM clears what it leaves behind. Head to toe, in the shower you already take.</span>
-            <span className="wsi-sub-m">A shower only wets the surface, so the dead skin and bacteria are back within hours and the freshness fades. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Clean that actually lasts.</span>
-          </p>
+          {/* Sub-intro cut 2026-07-08: it was the 2nd repeat of the "shower only wets the
+              surface" message — that line now lives once, in the problem payoff box. */}
           <div className="wsi-grid reveal">
             {PILLARS.map((p) => (
               <div className="wsi-pillar" key={p.n}>

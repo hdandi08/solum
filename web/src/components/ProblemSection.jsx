@@ -1,14 +1,14 @@
 import { capture } from '../lib/analytics.js';
 
 const CSS = `
-.problem-section{background:var(--black);border-top:1px solid var(--line);padding:100px 48px;}
+.problem-section{background:var(--black);border-top:1px solid var(--line);padding:64px 48px;}
 .problem-inner{max-width:1200px;margin:0 auto;}
-.problem-head{max-width:660px;margin-bottom:52px;}
+.problem-head{max-width:660px;margin-bottom:36px;}
 .problem-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .problem-head h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,4vw,60px);letter-spacing:.06em;color:var(--bone);line-height:1.04;margin-bottom:16px;}
 .problem-head p{font-size:17px;font-weight:300;color:var(--mist);line-height:1.7;}
 .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
-.problem-card{background:var(--char);padding:30px 26px;}
+.problem-card{background:var(--char);padding:24px 22px;}
 .problem-card-ic{width:48px;height:48px;display:block;margin-bottom:14px;}
 .problem-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--bone);line-height:1.2;margin-bottom:10px;}
 .problem-card p{font-size:15px;font-weight:300;color:var(--mist);line-height:1.6;}
@@ -19,8 +19,9 @@ const CSS = `
 @media(max-width:600px){.problem-cta-row .btn-primary{width:100%;text-align:center;}}
 @media(max-width:900px){.problem-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){
-  .problem-section{padding:56px 20px;}
+  .problem-section{padding:48px 20px;}
   .problem-grid{grid-template-columns:1fr;}
+  .problem-card{padding:20px;}
   .problem-fix{padding:24px 20px;}
   .problem-fix p{font-size:15px;}
 }

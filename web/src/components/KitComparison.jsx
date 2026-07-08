@@ -31,9 +31,13 @@ const CSS = `
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
 .kit-badge.popular{background:var(--blue);color:var(--bone);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
-.kit-name{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:8px;}
-.kit-tagline{font-size:15px;color:var(--stone);font-weight:300;line-height:1.5;margin-bottom:32px;}
-.kit-prices{margin-bottom:32px;}
+.kit-name{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:10px;}
+/* Outcome-led chooser copy: bold declaration of what the kit gets you, then one line
+   saying who it's for / what the difference is (replaces the long taglines). */
+.kit-outcome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:1px;text-transform:uppercase;color:var(--blit);line-height:1.25;margin-bottom:8px;}
+.kit-chooser{font-size:15px;color:var(--mist);font-weight:300;line-height:1.55;margin-bottom:24px;}
+.kit-prices{margin-bottom:24px;}
+.kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
 .kit-price-first{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
 .kit-price-first-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--bone);letter-spacing:-1px;line-height:1;}
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
@@ -42,8 +46,8 @@ const CSS = `
 .kit-price-delivery{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:6px 11px;border:1px solid rgba(46,109,164,0.55);background:rgba(46,109,164,0.12);border-radius:2px;font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--bone);}
 .kit-price-delivery s{color:var(--stone);font-weight:400;}
 .kit-price-delivery .free{color:#4A8FC7;font-weight:700;letter-spacing:1px;}
-.kit-divider{width:100%;height:1px;background:var(--line);margin-bottom:24px;}
-.kit-products{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;flex:1;}
+.kit-products{display:none;flex-direction:column;gap:8px;margin-bottom:24px;}
+.kit-card.products-open .kit-products{display:flex;}
 .kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
 .kit-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:20px;}
 .kit-product-thumb-wrap{position:relative;flex-shrink:0;}
@@ -57,13 +61,14 @@ const CSS = `
 .kit-product-thumb-wrap:hover .kit-zoom-dot{opacity:0;}
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
-.kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
+.kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:20px;border:none;cursor:pointer;width:100%;}
 .kit-cta.active{background:var(--bone);color:var(--black);}
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
-/* Toggle button — base styles (desktop: hidden) */
-.kit-products-toggle{display:none;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:0;}
+/* Contents live behind the toggle at ALL widths — the value line + count carry the
+   system story; the full list is one tap away (was desktop-always-open pre 2026-07-08). */
+.kit-products-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:0;}
 .kit-products-toggle:hover{border-color:var(--blue);color:var(--bone);}
 .kit-products-toggle-arrow{font-size:16px;transition:transform .25s;display:inline-block;}
 .kit-card.products-open .kit-products-toggle-arrow{transform:rotate(180deg);}
@@ -80,11 +85,6 @@ const CSS = `
   .kit-card:nth-child(3){display:none;}
   .kit-card.featured{margin:0;}
   .kit-card{padding:28px 24px;}
-  .kit-products-toggle{display:flex;}
-  .kit-products{display:none;}
-  .kit-card.products-open .kit-products{display:flex;}
-  .kit-divider{display:none;}
-  .kit-cta{margin-top:20px;}
 }
 `;
 
@@ -167,18 +167,19 @@ export default function KitComparison() {
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name">{kit.name}</div>
-                  <div className="kit-tagline">{kit.tagline}</div>
+                  <div className="kit-outcome">{kit.outcome}</div>
+                  <div className="kit-chooser">{kit.chooser}</div>
                   <div className="kit-prices">
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                     </div>
+                    <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece system · tools last 6–12 months</div>
                     {offerActive() && !kit.comingSoon && (
                       <div className="kit-price-delivery">
                         Delivery <s>£5.95</s> <span className="free">FREE</span>
                       </div>
                     )}
                   </div>
-                  <div className="kit-divider" />
                   <button className="kit-products-toggle" onClick={() => toggle(kit.id)}>
                     {openKits.has(kit.id) ? 'Hide products' : `${products.filter(p => !p.comingSoon).length} products included`}
                     <span className="kit-products-toggle-arrow">↓</span>

@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useVariant, trackGoal } from '../hooks/useVariant';
-import { useNavigate } from 'react-router-dom';
-import { buyClick } from '../lib/addToCartTracker.js';
 import { BANNER } from '../data/productMedia.js';
 import { offerActive } from '../lib/offer.js';
 
-const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
-const IS_FATHERS_DAY = new URLSearchParams(window.location.search).get('occasion') === 'fathers-day';
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SMALL_SCREEN = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 
@@ -67,11 +63,6 @@ const CSS = `
 .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--blue),transparent);animation:scrollPulse 2s ease-in-out 2s infinite;}
 @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-/* ── Father's Day variant ──────────────────────── */
-.hero-fd-badge{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c8a96e;border:1px solid rgba(200,169,110,0.35);padding:6px 12px;margin-bottom:24px;animation:fadeUp .8s ease .5s both;}
-.hero-fd-dot{width:5px;height:5px;border-radius:50%;background:#c8a96e;flex-shrink:0;}
-.hero-fd-deadline{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.3px;margin-top:14px;line-height:1.5;border-top:1px solid var(--lineb);padding-top:12px;}
-.hero-fd-deadline strong{color:#c8a96e;font-weight:600;}
 
 /* ── Tablet ────────────────────────────────────────── */
 @media(max-width:639px){
@@ -113,7 +104,6 @@ const CSS = `
 `;
 
 export default function Hero() {
-  const navigate = useNavigate();
   const videoReady = useHeroVideoReady();
   const ctaVariant = useVariant('hero-cta-copy');
 
@@ -125,80 +115,43 @@ export default function Hero() {
         <div className="hero-glow" />
         <div className="hero-cols">
           <div className="hero-content">
-            {IS_FATHERS_DAY ? (
-              <>
-                <div className="hero-fd-badge">
-                  <span className="hero-fd-dot" />
-                  Father's Day · June 21
-                </div>
-                <h1 className="hero-title">
-                  Give Him<br />
-                  The Ritual<br />
-                  He Never Had.
-                </h1>
-                <div className="hero-line" />
-                <p className="hero-subline">He showers every day. This changes what that means.</p>
-                <div className="hero-scope">
-                  <span className="hero-scope-pill accent">Head to Toe</span>
-                  <span className="hero-scope-pill accent">Ten Products</span>
-                </div>
-                <div className="hero-actions">
-                  <a
-                    href="/buy?kit=ritual&source=fathers-day"
-                    className="btn-primary"
-                    onClick={(e) => { trackGoal('hero_cta_clicked', { variant: 'fathers-day-ritual' }); buyClick(e, navigate, '/buy?kit=ritual&source=fathers-day', 'ritual'); }}
-                  >
-                    Gift the RITUAL Kit
-                  </a>
-                  <a href="/buy?kit=ground&source=fathers-day" className="btn-ghost" onClick={(e) => buyClick(e, navigate, '/buy?kit=ground&source=fathers-day', 'ground')}>Gift the GROUND Kit</a>
-                </div>
-                <p className="hero-fd-deadline">
-                  Order by <strong>June 19</strong> for Father's Day delivery · Royal Mail Tracked
-                </p>
-              </>
-            ) : (
-              <>
-                <h1 className="hero-title">
-                  You shower every day.<br />So why don't you feel clean?
-                </h1>
-                <div className="hero-line" />
-                <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
-                <div className="hero-actions">
-                  <a
-                    href={IS_FIRST_BATCH ? '/buy' : '#kits'}
-                    className="btn-primary"
-                    onClick={(e) => {
-                      trackGoal('hero_cta_clicked', { variant: ctaVariant });
-                      if (IS_FIRST_BATCH) buyClick(e, navigate, '/buy', null);
-                    }}
-                  >
-                    Fix My Shower Routine
-                  </a>
-                </div>
-                {offerActive() && (
-                  <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 7,
-                      marginTop: 14,
-                      padding: '6px 12px',
-                      border: '1px solid #2E6DA4',
-                      borderRadius: 2,
-                      background: 'rgba(46,109,164,0.12)',
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: '1.2px',
-                      textTransform: 'uppercase',
-                      color: '#F0ECE2',
-                    }}
-                  >
-                    <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
-                    Free UK delivery · worth £5.95
-                  </div>
-                )}
-              </>
+            <h1 className="hero-title">
+              You shower every day.<br />So why don't you feel clean?
+            </h1>
+            <div className="hero-line" />
+            <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
+            <div className="hero-actions">
+              {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
+              <a
+                href="#kits"
+                className="btn-primary"
+                onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
+              >
+                Fix My Shower Routine
+              </a>
+            </div>
+            {offerActive() && (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  marginTop: 14,
+                  padding: '6px 12px',
+                  border: '1px solid #2E6DA4',
+                  borderRadius: 2,
+                  background: 'rgba(46,109,164,0.12)',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '1.2px',
+                  textTransform: 'uppercase',
+                  color: '#F0ECE2',
+                }}
+              >
+                <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
+                Free UK delivery · worth £5.95
+              </div>
             )}
           </div>
         </div>
