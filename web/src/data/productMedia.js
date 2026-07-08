@@ -4,14 +4,15 @@
 import { CDN } from './ritualVideo.js';
 const P = `${CDN}/video/products`;
 
-// Hero background: seamless ~16s ambient loop cut from the banner film (no title cards).
-// mobile* = 960×540 renditions (~0.7–0.9MB vs 2.2–4MB) for phone-width viewports.
+// Hero background: ~23s loop from BANNER FILM 02 (model + kit), cut 2.6–25.3s —
+// opens straight on the model, black fade-in/out trimmed off.
+// mobile* = 960×540 renditions for phone-width viewports.
 export const BANNER = {
-  mp4: `${CDN}/video/banner/banner-loop.mp4`,
-  webm: `${CDN}/video/banner/banner-loop.webm`,
-  mobileMp4: `${CDN}/video/banner/banner-loop-mobile.mp4`,
-  mobileWebm: `${CDN}/video/banner/banner-loop-mobile.webm`,
-  poster: '/video/banner-poster.jpg',
+  mp4: `${CDN}/video/banner/banner-loop-02.mp4`,
+  webm: `${CDN}/video/banner/banner-loop-02.webm`,
+  mobileMp4: `${CDN}/video/banner/banner-loop-02-mobile.mp4`,
+  mobileWebm: `${CDN}/video/banner/banner-loop-02-mobile.webm`,
+  poster: '/video/banner-poster-02.jpg',
   ready: true,
 };
 

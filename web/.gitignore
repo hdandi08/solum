@@ -30,6 +30,10 @@ dist-ssr
 # DEV-only hero loop preview (served locally; the real files live on the CDN)
 public/video/banner-loop.mp4
 public/video/banner-loop.webm
+public/video/banner-loop-02.mp4
+public/video/banner-loop-02.webm
+public/video/banner-loop-02-mobile.mp4
+public/video/banner-loop-02-mobile.webm
 # DEV-only product film previews (real files on CDN)
 public/products/*/film.mp4
 public/products/*/film.webm
