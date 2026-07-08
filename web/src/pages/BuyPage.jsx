@@ -306,6 +306,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
             <div className="co-mobile-trust-line">✓ 14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></div>
+            <div className="co-mobile-trust-line">📞 Questions? <a href="tel:03330502313" className="co-returns-link" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a> · Mon–Fri 9–5</div>
             <div className="co-mobile-trust-line">🏢 Bysolum Limited · Company No. 17117056</div>
           </div>
         </div>
@@ -398,6 +399,10 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
           <span>14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></span>
+        </div>
+        <div className="co-promise-item">
+          <span className="co-promise-check">◆</span>
+          <span>Questions? Call <a href="tel:03330502313" className="co-returns-link" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a> · Mon–Fri 9–5</span>
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
