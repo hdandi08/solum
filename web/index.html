@@ -89,8 +89,12 @@
     <!-- Fonts self-hosted (latin subset) — no render-blocking third-party CSS -->
     <link rel="preload" href="/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/barlow-condensed-300.woff2" as="font" type="font/woff2" crossorigin>
-    <!-- Hero poster is the LCP image — start fetching with the HTML, not after React renders -->
-    <link rel="preload" href="/video/banner-poster.jpg" as="image" fetchpriority="high">
+    <!-- Hero poster is the LCP image — start fetching with the HTML, not after React
+         renders. Responsive: phones fetch the 11KB 960w webp, desktop the 28KB 1920w. -->
+    <link rel="preload" as="image" fetchpriority="high"
+          href="/video/banner-poster-02.webp"
+          imagesrcset="/video/banner-poster-02-mobile.webp 960w, /video/banner-poster-02.webp 1920w"
+          imagesizes="(max-width: 959px) 100vw, 52vw">
     <style>
       @font-face{font-family:'Bebas Neue';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/bebas-neue-400.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
       @font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:300;font-display:swap;src:url(/fonts/barlow-condensed-300.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
@@ -119,7 +123,9 @@
           var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
           ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
         }(window, document, 'ttq');
-        // Fetch the external pixel scripts only after the page has loaded
+        // Fetch the external pixel scripts 2.5s after load — ~450KB of third-party
+        // JS stays out of the startup window entirely. Stubs queue every event in
+        // the meantime so nothing is dropped, and CAPI mirrors the key events.
         var loadPixels=function(){
           setTimeout(function(){
             var s=document.createElement('script');s.async=!0;
@@ -127,7 +133,7 @@
             document.head.appendChild(s);
             window.ttq.load('D8NHU2RC77UCVEHVNJNG');
             window.ttq.page();
-          },0);
+          },2500);
         };
         if(document.readyState==='complete'){loadPixels();}
         else{window.addEventListener('load',loadPixels,{once:true});}

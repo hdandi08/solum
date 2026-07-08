@@ -159,7 +159,7 @@ export default function Hero() {
           {videoReady ? (
             <video
               className="hero-box-img"
-              poster={BANNER.poster}
+              poster={SMALL_SCREEN ? BANNER.mobilePoster : BANNER.poster}
               muted
               autoPlay
               loop
@@ -171,8 +171,13 @@ export default function Hero() {
               <source src={SMALL_SCREEN ? BANNER.mobileMp4 : BANNER.mp4} type="video/mp4" />
             </video>
           ) : (
+            // LCP element on mobile — srcset matches the preload in index.html so the
+            // browser reuses the already-fetched rendition instead of a second download.
             <img
               src={BANNER.poster}
+              srcSet={`${BANNER.mobilePoster} 960w, ${BANNER.poster} 1920w`}
+              sizes="(max-width: 959px) 100vw, 52vw"
+              fetchPriority="high"
               alt=""
               aria-hidden="true"
               className="hero-box-img"

@@ -12,7 +12,8 @@ export const BANNER = {
   webm: `${CDN}/video/banner/banner-loop-02.webm`,
   mobileMp4: `${CDN}/video/banner/banner-loop-02-mobile.mp4`,
   mobileWebm: `${CDN}/video/banner/banner-loop-02-mobile.webm`,
-  poster: '/video/banner-poster-02.jpg',
+  poster: '/video/banner-poster-02.webp',
+  mobilePoster: '/video/banner-poster-02-mobile.webp',
   ready: true,
 };
 
