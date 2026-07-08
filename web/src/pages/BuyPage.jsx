@@ -628,7 +628,7 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
       identify(email, { first_name: first_name || '', kit: kitId, source });
       // expressPaymentType distinguishes the wallet used: 'apple_pay' | 'google_pay' | 'link' | 'paypal'
       capture('checkout_initiated', { kit: kitId, source, price, method: 'express', wallet: event.expressPaymentType });
-      fbInitiateCheckout(kitId, price);
+      fbInitiateCheckout(kitId, price, { email });
       try { sessionStorage.setItem('solum_buyer_email', email); } catch {}
 
       const successParams = new URLSearchParams({
@@ -850,7 +850,7 @@ export default function BuyPage() {
       identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
       capture('checkout_delivery_submitted', { kit: selectedKit, source });
       capture('checkout_initiated', { kit: selectedKit, source, price, method: 'standard' });
-      fbInitiateCheckout(selectedKit, price);
+      fbInitiateCheckout(selectedKit, price, { email: form.email.trim().toLowerCase(), phone: form.phone.trim() });
       ttqIdentify(form.email.trim().toLowerCase());
       ttqInitiateCheckout(selectedKit, activeKit?.name ?? selectedKit, price);
       ttqAddPaymentInfo(selectedKit, activeKit?.name ?? selectedKit, price);

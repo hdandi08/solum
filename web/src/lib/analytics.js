@@ -1,5 +1,6 @@
 import posthog from 'posthog-js';
 import { detectInAppBrowser } from './inAppBrowser';
+import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
 
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
@@ -88,6 +89,34 @@ function fbq(...args) {
   if (IS_PROD && window.fbq) window.fbq(...args);
 }
 
+// ─── Meta CAPI relay ─────────────────────────────────────────────────────────
+// Mirrors AddToCart / InitiateCheckout / ViewContent server-side so Meta still
+// receives them when iOS/ad-blockers kill the pixel. Pixel + relay share an
+// eventID so Meta dedupes to the union. Purchase is relayed by stripe-webhook.
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+function sendMetaCapi(eventName, eventId, payload = {}) {
+  if (!IS_PROD || !SUPABASE_URL) return;
+  let fbclid = null;
+  try { fbclid = new URLSearchParams(window.location.search).get('fbclid'); } catch { /* no-op */ }
+  try {
+    fetch(`${SUPABASE_URL}/functions/v1/meta-capi-relay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: eventId,
+        source_url: window.location.href,
+        fbp: readCookie('_fbp') ?? undefined,
+        fbc: deriveFbc(readCookie('_fbc'), fbclid) ?? undefined,
+        ...payload,
+      }),
+      keepalive: true, // survives the SPA nav right after a kit CTA click
+    }).catch(() => {});
+  } catch { /* fire-and-forget — never break the UI for tracking */ }
+}
+
 // eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added
 export function fbLead(eventId, email) {
   const userData = email ? { em: email.trim().toLowerCase() } : {};
@@ -97,17 +126,23 @@ export function fbLead(eventId, email) {
 // Fires when someone lands on the /buy page and views kit options.
 // content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
 export function fbViewContent(kitId) {
-  fbq('track', 'ViewContent', { content_ids: [kitId], content_type: 'product', content_name: kitId });
+  const eventId = newEventId();
+  fbq('track', 'ViewContent', { content_ids: [kitId], content_type: 'product', content_name: kitId }, { eventID: eventId });
+  sendMetaCapi('ViewContent', eventId, { kit_id: kitId });
 }
 
 // Fires when a user clicks a kit Buy Now / select button (checkout begins)
 export function fbAddToCart(kitId, kitName, value) {
-  fbq('track', 'AddToCart', { content_name: kitName, content_ids: [kitId], content_type: 'product', value, currency: 'GBP' });
+  const eventId = newEventId();
+  fbq('track', 'AddToCart', { content_name: kitName, content_ids: [kitId], content_type: 'product', value, currency: 'GBP' }, { eventID: eventId });
+  sendMetaCapi('AddToCart', eventId, { kit_id: kitId, kit_name: kitName, value });
 }
 
 // Fires when user submits details and reaches the payment step.
 // content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
-export function fbInitiateCheckout(kitId, value) {
+// contact (email/phone, when the form has them) lifts CAPI match quality.
+export function fbInitiateCheckout(kitId, value, contact = {}) {
+  const eventId = newEventId();
   fbq('track', 'InitiateCheckout', {
     content_ids: [kitId],
     content_type: 'product',
@@ -115,6 +150,12 @@ export function fbInitiateCheckout(kitId, value) {
     value,
     currency: 'GBP',
     num_items: 1,
+  }, { eventID: eventId });
+  sendMetaCapi('InitiateCheckout', eventId, {
+    kit_id: kitId,
+    value,
+    email: contact.email || undefined,
+    phone: contact.phone || undefined,
   });
 }
 
@@ -175,11 +216,6 @@ export function ttqCompletePayment(kitId, kitName, value, eventId) {
 // Custom TikTok event — e.g. QualifiedVisit
 export function ttqTrack(event, props = {}) {
   ttq('track', event, props);
-}
-
-function readCookie(name) {
-  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-  return m ? decodeURIComponent(m[1]) : null;
 }
 
 // TikTok match signals for server-side Events API (CAPI):
