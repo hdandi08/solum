@@ -341,8 +341,16 @@ test.describe('Page copy — /buy', () => {
     await expect(page.getByText(/250 kits/i)).not.toBeVisible();
   });
 
-  test('back link goes to /#kits', async ({ page }) => {
+  test('back link is hidden on a direct landing (ad click)', async ({ page }) => {
     await page.goto('/buy');
+    await expect(page.getByTestId('kit-selector')).toBeVisible();
+    await expect(page.getByText(/← back to kits/i)).not.toBeVisible();
+  });
+
+  test('back link shows after in-site navigation and goes to /#kits', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('[data-buy-cta]').first().click();
+    await expect(page).toHaveURL(/\/buy/);
     const backLink = page.getByText(/← back to kits/i);
     await expect(backLink).toBeVisible();
     await expect(backLink).toHaveAttribute('href', '/#kits');
