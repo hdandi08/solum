@@ -61,14 +61,16 @@ const CSS = `
 .kit-product-thumb-wrap:hover .kit-zoom-dot{opacity:0;}
 .kit-product-coming{opacity:0.55;}
 .kit-product-replacement{font-size:12px;color:var(--stone);font-style:italic;margin-top:4px;padding-left:32px;}
-.kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:20px;border:none;cursor:pointer;width:100%;}
+/* margin-top:auto bottom-aligns the CTAs across cards of unequal content height
+   (GROUND has no badge/dots); the toggle's margin-bottom guarantees a minimum gap. */
+.kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
 .kit-cta.active{background:var(--bone);color:var(--black);}
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
 /* Contents live behind the toggle at ALL widths — the value line + count carry the
    system story; the full list is one tap away (was desktop-always-open pre 2026-07-08). */
-.kit-products-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:0;}
+.kit-products-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:20px;}
 .kit-products-toggle:hover{border-color:var(--blue);color:var(--bone);}
 .kit-products-toggle-arrow{font-size:16px;transition:transform .25s;display:inline-block;}
 .kit-card.products-open .kit-products-toggle-arrow{transform:rotate(180deg);}
