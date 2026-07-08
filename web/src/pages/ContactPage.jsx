@@ -4,9 +4,7 @@ import SolumFooter from '../components/SolumFooter';
 import { jumpTop } from '../lib/scroll.js';
 import { capture } from '../lib/analytics.js';
 
-// Set once the VoIP number is live (e.g. '0330 043 1234') — the phone block
-// renders only when this is non-empty.
-const PHONE = '';
+const PHONE = '0333 050 2313';
 const EMAIL = 'contact@bysolum.com';
 
 const CSS = `
@@ -111,8 +109,8 @@ export default function ContactPage() {
           <div className="contact-meta-block">
             <div className="contact-meta-title">Company</div>
             <p className="contact-meta-text">
-              Bysolum Limited · Company No. 17117056 · Registered in England and
-              Wales · bysolum.co.uk
+              Bysolum Limited · Company No. 17117056 · Registered in England and Wales<br />
+              Gerrards Cross, Buckinghamshire, SL9 7HW · bysolum.co.uk
             </p>
           </div>
         </div>
