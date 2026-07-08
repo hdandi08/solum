@@ -68,11 +68,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 `;
 
 const NAV_LINKS = [
-  ['#truth',        'Why SOLUM'],
+  ['#what',         'Why SOLUM'],
   ['#kits',         'Kits'],
   ['#products',     'Products'],
   ['/ritual',       'The Ritual'],
   ['/guide',        'Guide'],
+  ['/contact',      'Contact'],
 ];
 
 export default function Nav() {

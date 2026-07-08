@@ -19,6 +19,7 @@ const RitualPage = lazy(() => import('./pages/RitualPage'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideArticle = lazy(() => import('./pages/GuideArticle'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const CreatorsApplyPage = lazy(() => import('./pages/CreatorsApplyPage'));
 const BuyPage = lazy(() => import('./pages/BuyPage'));
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/guide/:slug" element={<GuideArticle />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/confirm" element={<ConfirmPage />} />
           <Route path="/creators" element={<CreatorsApplyPage />} />
           <Route path="/email-preview" element={<EmailPreviewPage />} />

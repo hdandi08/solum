@@ -38,7 +38,7 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">The Brand</div>
             <ul className="footer-links">
-              <li><a href="#truth">Why SOLUM</a></li>
+              <li><a href="#what">Why SOLUM</a></li>
               <li><a href="#origins">Where It's From</a></li>
               <li><a href="/guide">The Guide</a></li>
               <li><a href="/creators">Create With Us</a></li>
@@ -47,6 +47,7 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">Contact</div>
             <ul className="footer-links">
+              <li><a href="/contact">Contact Us</a></li>
               <li><a href="mailto:contact@bysolum.com">contact@bysolum.com</a></li>
               <li><a href="https://bysolum.co.uk">bysolum.co.uk</a></li>
               <li>

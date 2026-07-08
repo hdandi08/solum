@@ -660,7 +660,7 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
         buttonHeight: 48,
         paymentMethods: {
           applePay: 'auto', googlePay: 'auto', link: 'auto',
-          amazonPay: 'never', klarna: 'never', paypal: 'never', // paypal: flip to 'auto' once Stripe approves it (2-4 business days)
+          amazonPay: 'never', klarna: 'never', paypal: 'auto', // paypal approved by Stripe 2026-07-08
         },
       }}
       onReady={({ availablePaymentMethods }) => onAvailability(!!availablePaymentMethods)}
