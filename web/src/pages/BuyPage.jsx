@@ -8,6 +8,7 @@ import { offerActive } from '../lib/offer.js';
 import { getDispatchDate, estDeliveryDate } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
+import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
@@ -668,7 +669,21 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
           amazonPay: 'never', klarna: 'never', paypal: 'auto', // paypal approved by Stripe 2026-07-08
         },
       }}
-      onReady={({ availablePaymentMethods }) => onAvailability(!!availablePaymentMethods)}
+      onReady={({ availablePaymentMethods }) => {
+        // Which wallets Stripe actually rendered — measurable per browser in
+        // PostHog (Meta in-app browser has no Apple/Google Pay; recordings
+        // can't see into the Stripe iframe, so this event is the only signal).
+        const w = availablePaymentMethods ?? {};
+        capture('express_availability', {
+          available:  !!availablePaymentMethods,
+          apple_pay:  !!w.applePay,
+          google_pay: !!w.googlePay,
+          link:       !!w.link,
+          paypal:     !!w.paypal,
+          kit: kitId, source,
+        });
+        onAvailability(!!availablePaymentMethods);
+      }}
       onClick={({ resolve }) => resolve({
         emailRequired: true,
         shippingAddressRequired: true,
@@ -769,19 +784,16 @@ export default function BuyPage() {
     }
 
     // MX record check — catches typos like gmail.con, hotmal.com etc.
+    // Blocks only on a definitive NXDOMAIN / no-MX answer; timeouts and
+    // resolver errors always let the buyer through (see lib/emailMx.js).
     setLoading(true);
-    try {
-      const domain = emailVal.split('@')[1];
-      const dnsRes = await fetch(
-        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=MX`,
-        { headers: { Accept: 'application/dns-json' } },
-      );
-      const dns = await dnsRes.json();
-      if (dns.Status === 3 || !dns.Answer?.length) {
-        setError(`We couldn't find a mail server for ${domain}. Please double-check your email.`);
-        setLoading(false); return;
-      }
-    } catch { /* allow through if DNS lookup fails */ }
+    const domain = emailVal.split('@')[1];
+    const mxVerdict = await checkEmailDomain(domain);
+    if (mxVerdict === 'invalid') {
+      capture('email_mx_blocked', { domain, kit: selectedKit, source });
+      setError(`We couldn't find a mail server for ${domain}. Please double-check your email.`);
+      setLoading(false); return;
+    }
     setLoading(false);
 
     const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
