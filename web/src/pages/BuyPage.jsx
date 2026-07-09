@@ -76,7 +76,10 @@ const CSS = `
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
 .by-kit-confirm-change{background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
 .by-kit-confirm-change:hover{color:var(--bone);border-color:var(--stone);}
-.co-form-trust{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--stone);margin:0 0 16px;}
+.co-form-trust{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--stone);border:1px solid var(--line);padding:12px 16px;margin:0 0 14px;}
+.co-form-trust-line{color:var(--bone);}
+.co-form-trust-row{display:flex;flex-wrap:wrap;gap:4px 18px;}
+.co-form-trust-row span{white-space:nowrap;}
 .co-form-trust a{color:inherit;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
@@ -1131,6 +1134,21 @@ export default function BuyPage() {
                 </div>
               )}
 
+              {/* Trust strip just before the payment decision — Baymard: surprise
+                  costs are the #1 abandonment cause, so "free · no hidden costs"
+                  is the last thing read before choosing how to pay. The top
+                  OfferBar already covers the very top of the page. */}
+              {step === 'details' && (
+                <div className="co-form-trust">
+                  <div className="co-form-trust-line">📦 Ships {fmtDay(dispatch)} · free UK delivery · no hidden costs</div>
+                  <div className="co-form-trust-row">
+                    <span>✓ 14-day returns</span>
+                    <span>🔒 Secured by Stripe</span>
+                    <span>📞 <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></span>
+                  </div>
+                </div>
+              )}
+
               {/* In-app browsers can't show Apple Pay — offer the breakout here,
                   at the payment decision, instead of as the first thing on screen */}
               {step === 'details' && <InAppBrowserBanner variant="inline" />}
@@ -1169,18 +1187,6 @@ export default function BuyPage() {
 
               {/* Progress bar — card path only; express payers skip these steps */}
               {step === 'details' && <ProgressBar step="details" />}
-
-              {/* Trust row at the commit moment — Baymard: surprise costs are
-                  the #1 abandonment cause, so "free, no surprises" lives here,
-                  not buried below the fold */}
-              {step === 'details' && (
-                <div className="co-form-trust">
-                  <span>📦 Ships {fmtDay(dispatch)} · free UK delivery, no surprise costs</span>
-                  <span>✓ 14-day returns</span>
-                  <span>🔒 Secured by Stripe</span>
-                  <span>📞 Questions? <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></span>
-                </div>
-              )}
 
               {/* Step 1: Details */}
               {step === 'details' && (
