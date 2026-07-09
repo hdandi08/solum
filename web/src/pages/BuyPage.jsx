@@ -69,6 +69,15 @@ const CSS = `
 @media(max-width:768px){.by-intro-head{font-size:22px;}}
 .by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
 .by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
+.by-express-skel{height:48px;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
+@keyframes byShimmer{to{background-position:-200% 0;}}
+.by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
+.by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
+.by-kit-confirm-meta{font-size:13px;color:var(--stone);}
+.by-kit-confirm-change{background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
+.by-kit-confirm-change:hover{color:var(--bone);border-color:var(--stone);}
+.co-form-trust{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--stone);margin:0 0 16px;}
+.co-form-trust a{color:inherit;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
@@ -711,6 +720,11 @@ export default function BuyPage() {
   // link would point at a page the visitor has never seen.
   const isDirectLanding = (window.history.state?.idx ?? 0) === 0;
 
+  // Warm arrival: navigated here in-site with a kit already chosen (homepage
+  // kit CTA passes ?kit=). The page's job shrinks to confirm + pay — the full
+  // kit re-decision UI stays collapsed behind "Change kit".
+  const isWarmArrival = !isDirectLanding && !!preselect;
+
   // Kit CTAs and the sticky bar scroll here (express wallets + form).
   const formStartRef = useRef(null);
   const scrollToForm = () => formStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -725,8 +739,18 @@ export default function BuyPage() {
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
   const [expressAvailable, setExpressAvailable] = useState(false);
+  const [expressReady, setExpressReady]         = useState(false);
+  const [kitPickerOpen, setKitPickerOpen]       = useState(!isWarmArrival);
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
+
+  // Stripe's wallet iframe takes 1.5–4s to render (measured via
+  // express_availability); a skeleton fills the gap. Failsafe: stop showing
+  // it after 6s even if onReady never fires (blocked scripts).
+  useEffect(() => {
+    const t = setTimeout(() => setExpressReady(true), 6000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Restore state after a failed redirect-based payment (Revolut Pay etc.)
   useEffect(() => {
@@ -1024,20 +1048,46 @@ export default function BuyPage() {
                   shown an irrelevant 1-2-3 journey they never take. */}
               {step === 'delivery' && <ProgressBar step="delivery" />}
 
-              {/* Cold-traffic orientation — step 1 only */}
+              {/* Step-1 intro. Cold landings get the orientation pitch; warm
+                  arrivals already read the homepage, so just confirm and move. */}
               {step === 'details' && (
                 <div className="by-intro">
                   <span className="by-intro-eyebrow">Men's Body Care</span>
-                  <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
-                  <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
+                  {isWarmArrival ? (
+                    <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
+                  ) : (
+                    <>
+                      <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
+                      <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
+                    </>
+                  )}
                   <ReviewsBadge />
+                </div>
+              )}
+
+              {/* Warm arrivals: chosen kit as a one-line confirmation instead
+                  of re-opening the whole decision */}
+              {step === 'details' && !kitPickerOpen && (
+                <div className="by-kit-confirm" data-testid="kit-confirm">
+                  <div>
+                    <span className="by-kit-confirm-name">{activeKit?.name}</span>
+                    <span className="by-kit-confirm-meta">£{price} one-time · free UK delivery</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="by-kit-confirm-change"
+                    data-testid="change-kit"
+                    onClick={() => { setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); }}
+                  >
+                    Change kit
+                  </button>
                 </div>
               )}
 
               {/* Kit selector — shown on step 1 only. AddToCart is gated on
                   in-site arrival: cold ad clicks landing straight on /buy must
                   not feed Meta's AddToCart optimisation. */}
-              {step === 'details' && (
+              {step === 'details' && kitPickerOpen && (
                 <div className="by-kits" data-testid="kit-selector">
                   {(preselect === 'ground' ? ['ground', 'ritual'] : ['ritual', 'ground']).map((id, i) => {
                     const kit = KITS.find(k => k.id === id);
@@ -1088,6 +1138,7 @@ export default function BuyPage() {
               {/* Express checkout — one-tap wallets, above the manual form */}
               {step === 'details' && (
                 <div className="by-express-wrap" ref={formStartRef}>
+                  {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
                   <Elements
                     key={selectedKit}
                     stripe={stripePromise}
@@ -1099,7 +1150,7 @@ export default function BuyPage() {
                       source={source}
                       authHeaders={authHeaders}
                       onError={setError}
-                      onAvailability={setExpressAvailable}
+                      onAvailability={(a) => { setExpressAvailable(a); setExpressReady(true); }}
                     />
                   </Elements>
                   {expressAvailable && (
@@ -1118,6 +1169,18 @@ export default function BuyPage() {
 
               {/* Progress bar — card path only; express payers skip these steps */}
               {step === 'details' && <ProgressBar step="details" />}
+
+              {/* Trust row at the commit moment — Baymard: surprise costs are
+                  the #1 abandonment cause, so "free, no surprises" lives here,
+                  not buried below the fold */}
+              {step === 'details' && (
+                <div className="co-form-trust">
+                  <span>📦 Ships {fmtDay(dispatch)} · free UK delivery, no surprise costs</span>
+                  <span>✓ 14-day returns</span>
+                  <span>🔒 Secured by Stripe</span>
+                  <span>📞 Questions? <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></span>
+                </div>
+              )}
 
               {/* Step 1: Details */}
               {step === 'details' && (
