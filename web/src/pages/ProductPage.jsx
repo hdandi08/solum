@@ -153,7 +153,7 @@ export default function ProductPage() {
             <div className="pp-chips">{(p.highlights || []).map(h => <span key={h} className="pp-chip">{h}</span>)}</div>
             {p.value > 0 && (
               <div className="pp-worth">
-                <span className="pp-worth-price">Worth £{p.value}</span> — not sold separately.
+                <span className="pp-worth-price">Worth £{p.value}</span> · not sold separately.
                 The results come from the full ritual, so we only ship complete kits.
               </div>
             )}

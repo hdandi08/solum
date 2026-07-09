@@ -1,7 +1,7 @@
 export const PRODUCTS = [
   {
     num: '01',
-    value: 16,  // standalone worth (£) — not sold separately
+    value: 16,  // standalone worth (£) · not sold separately
     name: 'Body Wash',
     fullName: 'Skin Protect Body Wash 250ml',
     size: '250ml',
@@ -11,14 +11,14 @@ export const PRODUCTS = [
     lifespan: '~4 weeks daily use',
     highlights: ['Sulphate-free', 'Paraben-free', 'pH 4.5', 'Safe for sensitive + intimate skin'],
     benefits: [
-      'Gentle enough for every area — face, body, sensitive skin, intimate areas — without irritation',
-      'pH 4.5 matches your skin\'s natural acid mantle — the barrier stays intact everywhere',
+      'Gentle enough for every area · face, body, sensitive skin, intimate areas · without irritation',
+      'pH 4.5 matches your skin\'s natural acid mantle · the barrier stays intact everywhere',
       'SLS strips that barrier and takes 17 hrs to recover. Amino acid surfactants don\'t.',
-      'Clinically 75× milder than SLS — cleans properly without damaging skin',
-      'No tightness, no irritation, no odour — just clean skin, everywhere',
+      'Clinically 75× milder than SLS · cleans properly without damaging skin',
+      'No tightness, no irritation, no odour · just clean skin, everywhere',
       '250ml · lasts ~4 weeks with daily use · Sulphate-free · Cedarwood + vetiver',
     ],
-    desc: 'One wash for your whole body — including the areas most washes are too harsh for. Sensitive skin, intimate areas, face — the amino acid formula at pH 4.5 is gentle enough for all of it without stripping. Standard body wash uses SLS, a detergent that forces skin pH to 9–10 and tears through the acid mantle protecting every surface it touches. Recovery takes up to 17 hours. You shower again before it happens. This doesn\'t do that. It cleans every part of your body properly, leaves the barrier intact everywhere, and keeps odour-causing bacteria from taking hold. 250ml lasts around 4 weeks with daily use.',
+    desc: 'One wash for your whole body · including the areas most washes are too harsh for. Sensitive skin, intimate areas, face · the amino acid formula at pH 4.5 is gentle enough for all of it without stripping. Standard body wash uses SLS, a detergent that forces skin pH to 9–10 and tears through the acid mantle protecting every surface it touches. Recovery takes up to 17 hours. You shower again before it happens. This doesn\'t do that. It cleans every part of your body properly, leaves the barrier intact everywhere, and keeps odour-causing bacteria from taking hold. 250ml lasts around 4 weeks with daily use.',
     slug: '01-body-wash',
     media: { still:'/products/01/still.webp', stillMobile:'/products/01/still@600.webp',
       gallery:['/products/01/use-1.webp','/products/01/use-2.webp','/products/01/detail.webp'],
@@ -28,7 +28,7 @@ export const PRODUCTS = [
   },
   {
     num: '02',
-    value: 10,  // standalone worth (£) — not sold separately
+    value: 10,  // standalone worth (£) · not sold separately
     name: 'Italy Towel Mitt',
     fullName: 'Italy Towel Mitt',
     size: '25×20cm',
@@ -38,14 +38,14 @@ export const PRODUCTS = [
     lifespan: 'Replace every 8 weeks · weekly use',
     highlights: ['100% viscose', '25×20cm', 'Removes odour-causing bacteria'],
     benefits: [
-      'Dead skin cells are where odour-causing bacteria live — this removes them completely',
+      'Dead skin cells are where odour-causing bacteria live · this removes them completely',
       'Visibly smoother, softer skin from the first use',
-      'You\'ll see buildup roll off the mitt — weeks of accumulation, gone',
+      'You\'ll see buildup roll off the mitt · weeks of accumulation, gone',
       'Once dead skin is cleared, lotion and products absorb properly',
-      '25×20cm — full coverage without slipping, sized for a male hand',
+      '25×20cm · full coverage without slipping, sized for a male hand',
       'Lasts up to 8 weeks with weekly use · 100% viscose · Korean bathhouse tradition',
     ],
-    desc: 'Smoother skin and less body odour — from the first use. Dead skin cells build up on the surface and never shed on their own. That\'s the dullness, the rough patches, the bumps — and it\'s also where odour-causing bacteria live and multiply. A regular shower wets the surface. This mitt physically removes it. Korean bathhouses have used 100% viscose mitts for generations to lift this layer on warm, wet skin. You\'ll see it roll off the first time. When the bacteria have nothing to feed on, the smell goes with it. Lasts up to 8 weeks — replace it every 8 weeks at most.',
+    desc: 'Smoother skin and less body odour · from the first use. Dead skin cells build up on the surface and never shed on their own. That\'s the dullness, the rough patches, the bumps · and it\'s also where odour-causing bacteria live and multiply. A regular shower wets the surface. This mitt physically removes it. Korean bathhouses have used 100% viscose mitts for generations to lift this layer on warm, wet skin. You\'ll see it roll off the first time. When the bacteria have nothing to feed on, the smell goes with it. Lasts up to 8 weeks · replace it every 8 weeks at most.',
     slug: '02-italy-towel-mitt',
     media: { still:'/products/02/still.webp', stillMobile:'/products/02/still@600.webp',
       gallery:['/products/02/use-1.webp','/products/02/use-2.webp','/products/02/detail.webp'],
@@ -55,7 +55,7 @@ export const PRODUCTS = [
   },
   {
     num: '03',
-    value: 12,  // standalone worth (£) — not sold separately
+    value: 12,  // standalone worth (£) · not sold separately
     name: 'Back Scrub Cloth',
     fullName: 'Back Scrub Cloth 90cm',
     size: '90cm',
@@ -65,14 +65,14 @@ export const PRODUCTS = [
     lifespan: '2–3 months · rinse after use, wash weekly',
     highlights: ['Silver ion antibacterial', 'Dual-sided', '90cm', 'Odour control'],
     benefits: [
-      'The back has more oil glands than anywhere — constant bacterial buildup, constant odour source',
-      'Silver ions woven into the fabric — actively kills odour-causing bacteria between uses',
+      'The back has more oil glands than anywhere · constant bacterial buildup, constant odour source',
+      'Silver ions woven into the fabric · actively kills odour-causing bacteria between uses',
       'Dual-sided: one side for gentle daily cleansing, one side for firmer scrubbing',
-      'The only tool that reaches the back properly — 90cm, handles at both ends',
-      'Milder than the mitt — safe for daily full body use, including intimate areas',
+      'The only tool that reaches the back properly · 90cm, handles at both ends',
+      'Milder than the mitt · safe for daily full body use, including intimate areas',
       'Lasts 2–3 months · rinse after use · wash weekly',
     ],
-    desc: 'Properly clean from head to toe — including the back most men have never actually cleaned properly. The back has more and larger oil glands than anywhere else on the body. Bacteria build up there every single day and nothing standard reaches it. That\'s an ongoing odour source most men don\'t think to fix. The 90cm length with handles at each end changes that — drape it over your shoulder, saw back and forth, every inch done in 60 seconds. Silver ions in the fabric kill bacteria between uses. Dual-sided so you choose the intensity. Rinse after each use, wash weekly. Lasts 2–3 months.',
+    desc: 'Properly clean from head to toe · including the back most men have never actually cleaned properly. The back has more and larger oil glands than anywhere else on the body. Bacteria build up there every single day and nothing standard reaches it. That\'s an ongoing odour source most men don\'t think to fix. The 90cm length with handles at each end changes that · drape it over your shoulder, saw back and forth, every inch done in 60 seconds. Silver ions in the fabric kill bacteria between uses. Dual-sided so you choose the intensity. Rinse after each use, wash weekly. Lasts 2–3 months.',
     slug: '03-back-scrub-cloth',
     media: { still:'/products/03/still.webp', stillMobile:'/products/03/still@600.webp',
       gallery:['/products/03/use-1.webp','/products/03/use-2.webp','/products/03/detail.webp'],
@@ -82,7 +82,7 @@ export const PRODUCTS = [
   },
   {
     num: '04',
-    value: 15,  // standalone worth (£) — not sold separately
+    value: 15,  // standalone worth (£) · not sold separately
     name: 'Scalp Massager',
     fullName: 'Silicone Scalp Massager',
     size: null,
@@ -92,13 +92,13 @@ export const PRODUCTS = [
     lifespan: '6+ months',
     highlights: ['Premium silicone', '+120% blood flow', '24-week study backed'],
     benefits: [
-      'Scalp buildup is a major cause of scalp odour — silicone pins dislodge what shampoo moves around',
+      'Scalp buildup is a major cause of scalp odour · silicone pins dislodge what shampoo moves around',
       'Measurable increase in hair shaft thickness after 24 weeks of daily use',
-      'Scalp blood flow increases 120% above baseline — oxygen and nutrients to follicles',
-      'Distributes shampoo evenly through thick hair — actually activates it',
+      'Scalp blood flow increases 120% above baseline · oxygen and nutrients to follicles',
+      'Distributes shampoo evenly through thick hair · actually activates it',
       'Lasts 6+ months with daily use · Made in South Korea · Premium silicone',
     ],
-    desc: 'Thicker hair, a genuinely clean scalp, and no scalp odour — three things shampoo alone cannot deliver. Dead skin and sebum build up on the scalp every day. Shampoo moves it around but doesn\'t shift it. That buildup is the source of scalp smell most men just accept. The silicone pins dislodge it properly. A single session also raises scalp blood flow 120% above baseline, and a 24-week study showed daily use produces a measurable increase in hair shaft thickness. Two minutes in the shower. Everything changes. Lasts 6+ months.',
+    desc: 'Thicker hair, a genuinely clean scalp, and no scalp odour · three things shampoo alone cannot deliver. Dead skin and sebum build up on the scalp every day. Shampoo moves it around but doesn\'t shift it. That buildup is the source of scalp smell most men just accept. The silicone pins dislodge it properly. A single session also raises scalp blood flow 120% above baseline, and a 24-week study showed daily use produces a measurable increase in hair shaft thickness. Two minutes in the shower. Everything changes. Lasts 6+ months.',
     slug: '04-scalp-massager',
     media: { still:'/products/04/still.webp', stillMobile:'/products/04/still@600.webp',
       gallery:['/products/04/use-1.webp','/products/04/use-2.webp','/products/04/detail.webp'],
@@ -108,7 +108,7 @@ export const PRODUCTS = [
   },
   {
     num: '05',
-    value: 18,  // standalone worth (£) — not sold separately
+    value: 18,  // standalone worth (£) · not sold separately
     name: 'Atlas Clay Mask',
     fullName: 'Atlas Clay Mask 300g',
     size: '300g',
@@ -116,15 +116,15 @@ export const PRODUCTS = [
     tag: 'Body · Weekly',
     tagline: 'Clearer skin. Emptied pores. Real confidence.',
     lifespan: '~4 weeks · 4 weekly sessions at 75g each',
-    highlights: ['100% natural — nothing added', '68% clearer skin', 'Mineral-rich', '1,000+ yr tradition'],
+    highlights: ['100% natural · nothing added', '68% clearer skin', 'Mineral-rich', '1,000+ yr tradition'],
     benefits: [
       'Empties pores of the sebum and bacteria that cause spots, dullness and skin odour',
       '68% improvement in skin clarity from a single application (research-backed)',
-      '24% improvement in skin firmness — minerals feed the skin while it cleans',
-      'Negative ionic charge draws toxins out of pores — washing can only clean the surface',
+      '24% improvement in skin firmness · minerals feed the skin while it cleans',
+      'Negative ionic charge draws toxins out of pores · washing can only clean the surface',
       '300g · 4 weekly sessions at ~75g each · lasts ~4 weeks',
     ],
-    desc: 'Clearer, firmer skin — and the kind of confidence that comes from knowing your skin is genuinely clean underneath. Washing cleans the surface. Rhassoul clay goes deeper. It carries a negative ionic charge; toxins and sebum in your pores carry a positive charge. The clay draws them out and binds them, then rinses away. One application links to a 68% improvement in skin clarity and 24% improvement in firmness. 300g gives you 4 weekly sessions at around 75g each — approximately one month\'s supply.',
+    desc: 'Clearer, firmer skin · and the kind of confidence that comes from knowing your skin is genuinely clean underneath. Washing cleans the surface. Rhassoul clay goes deeper. It carries a negative ionic charge; toxins and sebum in your pores carry a positive charge. The clay draws them out and binds them, then rinses away. One application links to a 68% improvement in skin clarity and 24% improvement in firmness. 300g gives you 4 weekly sessions at around 75g each · approximately one month\'s supply.',
     slug: '05-atlas-clay',
     media: { still:'/products/05/still.webp', stillMobile:'/products/05/still@600.webp',
       gallery:['/products/05/use-1.webp','/products/05/use-2.webp','/products/05/detail.webp'],
@@ -134,7 +134,7 @@ export const PRODUCTS = [
   },
   {
     num: '06',
-    value: 28,  // standalone worth (£) — not sold separately
+    value: 28,  // standalone worth (£) · not sold separately
     name: 'Argan Body Oil',
     fullName: 'Organic Argan Body Oil 50ml',
     size: '50ml',
@@ -144,13 +144,13 @@ export const PRODUCTS = [
     lifespan: '~4 weeks · used weekly on scalp, body and clay mix',
     highlights: ['100% certified organic', 'Cold-pressed', 'Single ingredient', 'Zero residue'],
     benefits: [
-      'Absorbs fully with zero greasy residue — fatty acids match your skin\'s own sebum',
-      '43–52% oleic acid — the same fatty acid your skin produces naturally',
-      'Linoleic acid repairs the skin barrier at a structural level — your body can\'t make it',
-      'Apply on damp skin right after the clay wash — absorption is at its peak',
+      'Absorbs fully with zero greasy residue · fatty acids match your skin\'s own sebum',
+      '43–52% oleic acid · the same fatty acid your skin produces naturally',
+      'Linoleic acid repairs the skin barrier at a structural level · your body can\'t make it',
+      'Apply on damp skin right after the clay wash · absorption is at its peak',
       '50ml · used weekly for scalp, body and clay mix · lasts ~4 weeks',
     ],
-    desc: 'Skin that\'s properly fed — not just moisturised. 100% certified organic cold-pressed argan oil from Morocco. One ingredient, nothing added. 43–52% oleic acid — the same fatty acid as human sebum — is why it absorbs completely without a film. Linoleic acid rebuilds the skin barrier at a structural level, and the body cannot produce it on its own. Used weekly: a few drops into the clay mix, into the scalp during the mask, and pressed into damp skin after rinsing. 50ml lasts around 4 weeks at this pace.',
+    desc: 'Skin that\'s properly fed · not just moisturised. 100% certified organic cold-pressed argan oil from Morocco. One ingredient, nothing added. 43–52% oleic acid · the same fatty acid as human sebum · is why it absorbs completely without a film. Linoleic acid rebuilds the skin barrier at a structural level, and the body cannot produce it on its own. Used weekly: a few drops into the clay mix, into the scalp during the mask, and pressed into damp skin after rinsing. 50ml lasts around 4 weeks at this pace.',
     slug: '06-argan-oil',
     media: { still:'/products/06/still.webp', stillMobile:'/products/06/still@600.webp',
       gallery:['/products/06/use-1.webp','/products/06/use-2.webp','/products/06/detail.webp'],
@@ -160,7 +160,7 @@ export const PRODUCTS = [
   },
   {
     num: '07',
-    value: 20,  // standalone worth (£) — not sold separately
+    value: 20,  // standalone worth (£) · not sold separately
     name: 'Body Lotion',
     fullName: 'Daily Restore Body Lotion 200ml',
     size: '200ml',
@@ -170,13 +170,13 @@ export const PRODUCTS = [
     lifespan: '4–5 weeks · spreads well, less than you think',
     highlights: ['Restores barrier', 'Repairs skin', '10× absorption post-shower', 'No residue'],
     benefits: [
-      'Restores the skin barrier stripped by daily washing — rebuilds what the shower takes out',
+      'Restores the skin barrier stripped by daily washing · rebuilds what the shower takes out',
       'Repairs dry, rough or irritated skin with continued daily use',
-      'Hydrates at up to 10× the rate of applying later — the 3-minute post-shower window',
+      'Hydrates at up to 10× the rate of applying later · the 3-minute post-shower window',
       'The American Academy of Dermatology recommends immediate post-shower application',
-      'Spreads well — two pumps is enough · 200ml lasts 4–5 weeks · no residue',
+      'Spreads well · two pumps is enough · 200ml lasts 4–5 weeks · no residue',
     ],
-    desc: 'Restores, repairs and hydrates — in the 3 minutes most men waste every day. Every shower takes something from your skin. The lotion gives it back. Applied immediately after drying, skin absorbs up to 10× more than at any other point — that window closes fast as moisture starts evaporating. Most men miss it. With regular daily use the difference compounds: the barrier gets stronger, rough patches repair, skin stays comfortable through the day instead of getting tighter by lunchtime. Two pumps is enough — it spreads well. 200ml lasts 4–5 weeks.',
+    desc: 'Restores, repairs and hydrates · in the 3 minutes most men waste every day. Every shower takes something from your skin. The lotion gives it back. Applied immediately after drying, skin absorbs up to 10× more than at any other point · that window closes fast as moisture starts evaporating. Most men miss it. With regular daily use the difference compounds: the barrier gets stronger, rough patches repair, skin stays comfortable through the day instead of getting tighter by lunchtime. Two pumps is enough · it spreads well. 200ml lasts 4–5 weeks.',
     slug: '07-body-lotion',
     media: { still:'/products/07/still.webp', stillMobile:'/products/07/still@600.webp',
       gallery:['/products/07/use-1.webp','/products/07/use-2.webp'],
@@ -186,7 +186,7 @@ export const PRODUCTS = [
   },
   {
     num: '08',
-    value: 8,  // standalone worth (£) — not sold separately
+    value: 8,  // standalone worth (£) · not sold separately
     name: 'Intimate Cleansing Cloth',
     fullName: 'Bamboo + Cotton Intimate Cleansing Cloth',
     size: '25×25cm',
@@ -196,13 +196,13 @@ export const PRODUCTS = [
     lifespan: '~1 month · wash weekly, replace monthly',
     highlights: ['Bamboo kun antibacterial', 'Ultra-soft', 'Wash weekly · replace monthly', 'Biodegradable'],
     benefits: [
-      'Eliminates intimate odour at the source — bacteria, not just surface dirt',
+      'Eliminates intimate odour at the source · bacteria, not just surface dirt',
       'Bamboo kun naturally inhibits bacterial regrowth in the cloth between uses',
-      'Ultra-soft fibres — safe for daily use on intimate areas, never exfoliates',
-      'Hands spread bacteria as much as they remove it — a dedicated cloth doesn\'t',
+      'Ultra-soft fibres · safe for daily use on intimate areas, never exfoliates',
+      'Hands spread bacteria as much as they remove it · a dedicated cloth doesn\'t',
       '25×25cm · wash weekly · replace monthly · Bamboo + cotton · Biodegradable',
     ],
-    desc: 'The confidence of knowing you smell clean — all day, not just in the shower. Most men use their hands for intimate cleansing. Hands spread bacteria more than they remove it and have no consistent cleansing action. That\'s why intimate odour is so common and so persistent. This cloth is built for this specific job: ultra-soft bamboo and cotton that\'s gentle on intimate areas, and bamboo kun — a natural antimicrobial compound that inhibits bacterial regrowth in the cloth between uses. Wash weekly, replace monthly.',
+    desc: 'The confidence of knowing you smell clean · all day, not just in the shower. Most men use their hands for intimate cleansing. Hands spread bacteria more than they remove it and have no consistent cleansing action. That\'s why intimate odour is so common and so persistent. This cloth is built for this specific job: ultra-soft bamboo and cotton that\'s gentle on intimate areas, and bamboo kun · a natural antimicrobial compound that inhibits bacterial regrowth in the cloth between uses. Wash weekly, replace monthly.',
     slug: '08-cleansing-cloth',
     media: { still:'/products/08/still.webp', stillMobile:'/products/08/still@600.webp', gallery:['/products/08/use-1.webp','/products/08/use-2.webp','/products/08/detail.webp'], poster:null, video:null },
     replacementCycleDays: 30,
@@ -210,7 +210,7 @@ export const PRODUCTS = [
   },
   {
     num: '11',
-    value: 6,  // standalone worth (£) — not sold separately
+    value: 6,  // standalone worth (£) · not sold separately
     name: 'Clay Mixing Bowl',
     fullName: 'SOLUM Clay Mixing Bowl',
     size: null,

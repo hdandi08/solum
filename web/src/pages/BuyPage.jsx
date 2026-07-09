@@ -76,11 +76,14 @@ const CSS = `
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
 .by-kit-confirm-change{background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
 .by-kit-confirm-change:hover{color:var(--bone);border-color:var(--stone);}
-.co-form-trust{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--stone);border:1px solid var(--line);padding:12px 16px;margin:0 0 14px;}
-.co-form-trust-line{color:var(--bone);}
-.co-form-trust-row{display:flex;flex-wrap:wrap;gap:4px 18px;}
-.co-form-trust-row span{white-space:nowrap;}
+.co-form-trust{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--stone);border:1px solid var(--line);padding:12px 16px;margin:0 0 14px;}
+.co-form-trust-line:first-child{color:var(--bone);font-weight:500;}
 .co-form-trust a{color:inherit;}
+.co-mobile-product-worth{margin-left:auto;color:var(--stone);font-size:12px;white-space:nowrap;}
+.co-product-worth{margin-left:auto;color:var(--stone);font-size:13px;white-space:nowrap;}
+.co-worth-total{font-size:13px;color:var(--mist);font-weight:500;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
+.co-worth-total s{color:var(--stone);}
+.co-price-worth{font-size:18px;color:var(--stone);}
 .by-kit-stock{font-size:13px;font-weight:600;color:var(--blit);margin-top:7px;letter-spacing:.3px;}
 .by-kit-cert{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
 .by-kit-worth{font-size:13px;color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.4);margin-bottom:2px;}
@@ -319,13 +322,17 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
                   : <span className="co-mobile-product-thumb ph" />}
                 <span className="co-mobile-product-num">{p.num}</span>
                 <span className="co-mobile-product-name">{p.name}</span>
+                {p.value > 0 && <span className="co-mobile-product-worth">£{p.value}</span>}
                 {p.media?.still && <span className="co-mobile-product-zoom" aria-hidden="true">⤢</span>}
               </button>
             ))}
           </div>
+          <div className="co-worth-total">
+            <s>£{kitWorth(kit)} of product</s> · you pay £{price}
+          </div>
           <div className="co-mobile-trust">
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
-            <div className="co-mobile-trust-line">🔒 Secured by Stripe — encrypted end to end</div>
+            <div className="co-mobile-trust-line">🔒 Secured by Stripe · encrypted end to end</div>
             <div className="co-mobile-trust-line">✓ 14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></div>
             <div className="co-mobile-trust-line">📞 Questions? <a href="tel:03330502313" className="co-returns-link" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a> · Mon–Fri 9–5</div>
             <div className="co-mobile-trust-line">🏢 Bysolum Limited · Company No. 17117056</div>
@@ -387,7 +394,8 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
       {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
       <div className="co-kit-name">{kit.name}</div>
       {kit.outcome && <div className="co-outcome">{kit.outcome}</div>}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
+        <span className="co-price-worth"><s>£{kitWorth(kit)}</s></span>
         <span className="co-price-main">£{price}</span>
         <span className="co-price-label">one-time</span>
       </div>
@@ -411,11 +419,11 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
-          <span>Ritual guide included in the box — QR code to bysolum.co.uk/ritual</span>
+          <span>Ritual guide included in the box · QR code to bysolum.co.uk/ritual</span>
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
-          <span>Secured by Stripe — your card details never touch our servers</span>
+          <span>Secured by Stripe · your card details never touch our servers</span>
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">◆</span>
@@ -452,8 +460,12 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
             }
             <span className="co-product-num">{p.num}</span>
             <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+            {p.value > 0 && !p.comingSoon && <span className="co-product-worth">£{p.value}</span>}
           </div>
         ))}
+      </div>
+      <div className="co-worth-total">
+        <s>£{kitWorth(kit)} of product</s> · you pay £{price}
       </div>
       {products.some(p => p.comingSoon) && (
         <div className="co-soon-note">* Coming soon — included when available</div>
@@ -544,7 +556,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
   return (
     <form onSubmit={handlePay} noValidate>
       <div className="co-step-heading">Payment.</div>
-      <div className="co-step-subhead">Your card details are encrypted — never stored on our servers.</div>
+      <div className="co-step-subhead">Your card details are encrypted, never stored on our servers.</div>
 
       <div className="co-email-confirm">
         <span className="co-email-confirm-label">Paying as</span>
@@ -723,21 +735,48 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
 // convincing asset in this category. Compact thumbnail loop + caption.
 function MittDemo() {
   const v = videoFor('02-italy-towel-mitt');
+  const wrapRef = useRef(null);
+  // The film is 0.8-1.9 MB; loading it on page-open competes with Stripe for
+  // bandwidth at the exact moment the wallets render. Mount the <video> only
+  // when the section approaches the viewport; until then show the poster.
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (!v || !wrapRef.current) return undefined;
+    let io;
+    // Arm the observer only after window load, so the film never competes
+    // with Stripe/fonts/images during the initial page load.
+    const arm = () => {
+      if (!wrapRef.current) return;
+      io = new IntersectionObserver(
+        ([e]) => { if (e.isIntersecting) setInView(true); },
+        { rootMargin: '200px' },
+      );
+      io.observe(wrapRef.current);
+    };
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
+    return () => { window.removeEventListener('load', arm); io?.disconnect(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   if (!v) return null;
   return (
-    <div className="by-demo">
-      <video
-        className="by-demo-video"
-        autoPlay muted loop playsInline preload="metadata"
-        poster={v.poster}
-        aria-label="Italy Towel Mitt lifting dead skin on first use"
-      >
-        <source src={v.webm} type="video/webm" />
-        <source src={v.mp4} type="video/mp4" />
-      </video>
+    <div className="by-demo" ref={wrapRef}>
+      {inView ? (
+        <video
+          className="by-demo-video"
+          autoPlay muted loop playsInline preload="none"
+          poster={v.poster}
+          aria-label="Italy Towel Mitt lifting dead skin on first use"
+        >
+          <source src={v.webm} type="video/webm" />
+          <source src={v.mp4} type="video/mp4" />
+        </video>
+      ) : (
+        <img className="by-demo-video" src={v.poster} alt="" aria-hidden="true" />
+      )}
       <div className="by-demo-text">
         <div className="by-demo-head">Watch it work</div>
-        <div className="by-demo-caption">First use. Weeks of dead skin your shower never touched — you'll see it roll off.</div>
+        <div className="by-demo-caption">First use. Weeks of dead skin your shower never touched. You'll see it roll off.</div>
       </div>
     </div>
   );
@@ -1168,7 +1207,7 @@ export default function BuyPage() {
                         {isFirstBatch && (
                           inventory?.[id]?.count > 0 && inventory[id].count <= 30
                             ? <div className="by-kit-stock">Only {inventory[id].count} left in the first batch</div>
-                            : <div className="by-kit-stock">First batch — only 250 kits made</div>
+                            : <div className="by-kit-stock">First batch · only 250 kits made</div>
                         )}
                         <div className="by-kit-buyrow">
                           <div>
@@ -1203,12 +1242,10 @@ export default function BuyPage() {
                   OfferBar already covers the very top of the page. */}
               {step === 'details' && (
                 <div className="co-form-trust">
-                  <div className="co-form-trust-line">📦 {cutoffText} — ships {fmtDay(dispatch)} · free UK delivery · no hidden costs</div>
-                  <div className="co-form-trust-row">
-                    <span>✓ 14-day returns</span>
-                    <span>🔒 Secured by Stripe</span>
-                    <span>📞 <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></span>
-                  </div>
+                  <div className="co-form-trust-line">📦 {cutoffText} · ships {fmtDay(dispatch)}</div>
+                  <div className="co-form-trust-line">🚚 Free UK delivery · no hidden costs</div>
+                  <div className="co-form-trust-line">✓ 14-day returns · 🔒 Secured by Stripe</div>
+                  <div className="co-form-trust-line">📞 Questions? <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></div>
                 </div>
               )}
 

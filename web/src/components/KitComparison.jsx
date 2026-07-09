@@ -221,7 +221,7 @@ export default function KitComparison() {
                     ))}
                     {!kit.comingSoon && (
                       <div className="kit-products-total">
-                        £{kitWorth(kit)} of product — only available as the kit, £{kit.firstBoxPrice}
+                        £{kitWorth(kit)} of product · only available as the kit, £{kit.firstBoxPrice}
                       </div>
                     )}
                     {isSovereign && (

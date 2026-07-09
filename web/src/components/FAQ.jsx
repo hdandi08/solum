@@ -40,7 +40,7 @@ const FAQS = [
   },
   {
     q: 'Can I buy the products individually?',
-    a: 'No — and that is deliberate. The results come from the ritual, not any single product: the wash prepares the skin, the mitt clears it, the lotion seals it. One piece on its own does half a job, so we only ship complete kits. Together the products in RITUAL are worth £133 — the kit is £85.',
+    a: 'No, and that is deliberate. The results come from the ritual, not any single product: the wash prepares the skin, the mitt clears it, the lotion seals it. One piece on its own does half a job, so we only ship complete kits. Together the products in RITUAL are worth £133. The kit is £85.',
   },
   {
     q: 'I have sensitive skin. Is it harsh?',
