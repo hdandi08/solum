@@ -12,7 +12,7 @@ import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
-import ReviewsBadge from '../components/ReviewsBadge.jsx';
+import { videoFor } from '../data/productMedia.js';
 import './checkout/checkout.css';
 import { jumpTop } from '../lib/scroll.js';
 
@@ -81,6 +81,11 @@ const CSS = `
 .co-form-trust-row{display:flex;flex-wrap:wrap;gap:4px 18px;}
 .co-form-trust-row span{white-space:nowrap;}
 .co-form-trust a{color:inherit;}
+.by-kit-stock{font-size:13px;font-weight:600;color:var(--blit);margin-top:7px;letter-spacing:.3px;}
+.by-demo{display:flex;align-items:center;gap:16px;background:var(--char);border:1px solid var(--line);padding:12px;margin:0 0 24px;}
+.by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}
+.by-demo-head{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:var(--bone);margin-bottom:6px;}
+.by-demo-caption{font-size:14px;font-weight:300;color:var(--mist);line-height:1.5;}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
@@ -710,6 +715,31 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// ── Mitt demo loop ─────────────────────────────────────────────────────────
+// The product demos itself: dead skin visibly rolling off is the single most
+// convincing asset in this category. Compact thumbnail loop + caption.
+function MittDemo() {
+  const v = videoFor('02-italy-towel-mitt');
+  if (!v) return null;
+  return (
+    <div className="by-demo">
+      <video
+        className="by-demo-video"
+        autoPlay muted loop playsInline preload="metadata"
+        poster={v.poster}
+        aria-label="Italy Towel Mitt lifting dead skin on first use"
+      >
+        <source src={v.webm} type="video/webm" />
+        <source src={v.mp4} type="video/mp4" />
+      </video>
+      <div className="by-demo-text">
+        <div className="by-demo-head">Watch it work</div>
+        <div className="by-demo-caption">First use. Weeks of dead skin your shower never touched — you'll see it roll off.</div>
+      </div>
+    </div>
+  );
+}
+
 export default function BuyPage() {
   const [params] = useSearchParams();
 
@@ -1064,7 +1094,6 @@ export default function BuyPage() {
                       <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
                     </>
                   )}
-                  <ReviewsBadge />
                 </div>
               )}
 
@@ -1115,6 +1144,9 @@ export default function BuyPage() {
                         <div className="by-kit-name">{kit?.name}</div>
                         <div className="by-kit-outcome">{kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box · {id === 'ritual' ? 'daily + weekly ritual' : 'the daily system'}</div>
+                        {inventory?.[id]?.count > 0 && (
+                          <div className="by-kit-stock">First batch · {inventory[id].count} left</div>
+                        )}
                         <div className="by-kit-buyrow">
                           <div>
                             <div className="by-kit-price">£{KIT_PRICES[id]}</div>
@@ -1133,6 +1165,10 @@ export default function BuyPage() {
                   })}
                 </div>
               )}
+
+              {/* Demo loop: for cold visitors it sits right after the kit choice;
+                  warm arrivals get it below the form so wallets stay at the fold */}
+              {step === 'details' && kitPickerOpen && <MittDemo />}
 
               {/* Trust strip just before the payment decision — Baymard: surprise
                   costs are the #1 abandonment cause, so "free · no hidden costs"
@@ -1229,6 +1265,9 @@ export default function BuyPage() {
                   </div>
                 </form>
               )}
+
+              {/* Warm arrivals get the demo below the form (see above) */}
+              {step === 'details' && !kitPickerOpen && <MittDemo />}
 
               {/* Step 2: Delivery */}
               {step === 'delivery' && (
