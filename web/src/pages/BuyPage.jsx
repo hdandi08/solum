@@ -1150,7 +1150,7 @@ export default function BuyPage() {
                             ? '100% certified organic argan oil · 100% natural Atlas clay'
                             : '100% natural Atlas clay · sulphate-free wash'}
                         </div>
-                        <div className="by-kit-stock">First batch — only 250 kits made</div>
+                        {isFirstBatch && <div className="by-kit-stock">First batch — only 250 kits made</div>}
                         <div className="by-kit-buyrow">
                           <div>
                             <div className="by-kit-price">£{KIT_PRICES[id]}</div>
