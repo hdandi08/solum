@@ -287,7 +287,7 @@ export default function TermsPage() {
                 <li><strong>Product 02 — Exfoliating Mitt</strong> — 100% viscose rayon textile tool</li>
                 <li><strong>Product 03 — Back Scrub Cloth 70cm</strong> — 100% viscose textile tool</li>
                 <li><strong>Product 04 — Silicone Scalp Massager</strong> — silicone grooming tool, made in South Korea</li>
-                <li><strong>Product 08 — Cleansing Cloth</strong> — textile tool</li>
+                <li><strong>Product 08 — Intimate Cleansing Cloth</strong> — textile tool</li>
               </ul>
 
               <p className="terms-p">All products are intended for personal care use only and are not medical devices or medicinal products. See Section 8 for full safety information.</p>

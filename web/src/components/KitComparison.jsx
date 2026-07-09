@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KITS } from '../data/kits.js';
+import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
@@ -39,6 +39,9 @@ const CSS = `
 .kit-prices{margin-bottom:24px;}
 .kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
 .kit-cert-line{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
+.kit-worth-line{font-size:14px;color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.4);margin-top:6px;}
+.kit-product-worth{margin-left:auto;font-size:11px;color:var(--stone);white-space:nowrap;}
+.kit-products-total{font-size:13px;color:var(--mist);font-weight:500;padding:10px 0 2px;border-top:1px solid var(--line);margin-top:8px;}
 .kit-price-first{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
 .kit-price-first-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--bone);letter-spacing:-1px;line-height:1;}
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
@@ -176,6 +179,7 @@ export default function KitComparison() {
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                     </div>
+                    {!kit.comingSoon && <div className="kit-worth-line">£{kitWorth(kit)} of product</div>}
                     <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece system · tools last 6–12 months</div>
                     {!kit.comingSoon && (
                       <div className="kit-cert-line">
@@ -212,8 +216,14 @@ export default function KitComparison() {
                         }
                         <span className="kit-product-num">{p.num}</span>
                         <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+                        {p.value > 0 && <span className="kit-product-worth">worth £{p.value}</span>}
                       </div>
                     ))}
+                    {!kit.comingSoon && (
+                      <div className="kit-products-total">
+                        £{kitWorth(kit)} of product — only available as the kit, £{kit.firstBoxPrice}
+                      </div>
+                    )}
                     {isSovereign && (
                       <div className="kit-product-replacement">
                         * Turkish Kese Mitt replaces Italy Towel Mitt · Beidi Black Soap. Both coming soon.

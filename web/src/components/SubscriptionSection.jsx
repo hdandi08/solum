@@ -65,7 +65,7 @@ const CSS = `
 const CADENCE = [
   {
     label: 'Every Month',
-    products: 'Body Wash · Body Lotion · Cleansing Cloth · Atlas Clay',
+    products: 'Body Wash · Body Lotion · Intimate Cleansing Cloth · Atlas Clay',
     note: '+ Argan Body Oil (RITUAL only)',
     copy: 'Everything that depletes or wears within a month. Always fresh, always ready.',
   },

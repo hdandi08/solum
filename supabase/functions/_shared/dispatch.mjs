@@ -1,8 +1,17 @@
 // Server-side dispatch-date logic, shared by the payment functions.
-// Rule (locked 2026-07-06): order before noon on a working day -> next working
-// day; at/after noon, or on a weekend -> second working day. Never a weekend.
-// Mirrors web/src/lib/dispatch.js. We surface only the dispatch date, no arrival
-// estimate (Royal Mail Tracked 48 is an aim, not a guarantee).
+// Rule (updated 2026-07-09, was noon): order before 6 PM UK time on a working
+// day -> next working day; at/after 6 PM, or on a weekend -> second working
+// day. Never a weekend. Mirrors web/src/lib/dispatch.js. We surface only the
+// dispatch date, no arrival estimate (Royal Mail Tracked 48 is an aim, not a
+// guarantee).
+//
+// The server clock is UTC; the cutoff is UK wall time (BST in summer), so the
+// default `now` converts to Europe/London first. Explicit `now` arguments are
+// treated as UK wall time (tests rely on this).
+function ukNow() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/London' }));
+}
+
 function isWeekend(d) {
   const day = d.getDay();
   return day === 0 || day === 6;
@@ -19,8 +28,8 @@ function addWorkingDays(from, n) {
   return d;
 }
 
-export function getDispatchDate(now = new Date()) {
-  const beforeCutoff = !isWeekend(now) && now.getHours() < 12;
+export function getDispatchDate(now = ukNow()) {
+  const beforeCutoff = !isWeekend(now) && now.getHours() < 18;
   return addWorkingDays(now, beforeCutoff ? 1 : 2);
 }
 

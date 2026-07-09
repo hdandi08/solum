@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { KITS } from '../data/kits.js';
+import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
-import { getDispatchDate, estDeliveryDate } from '../lib/dispatch.js';
+import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
@@ -83,6 +83,8 @@ const CSS = `
 .co-form-trust a{color:inherit;}
 .by-kit-stock{font-size:13px;font-weight:600;color:var(--blit);margin-top:7px;letter-spacing:.3px;}
 .by-kit-cert{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
+.by-kit-worth{font-size:13px;color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.4);margin-bottom:2px;}
+.by-kit-nextprice{font-size:13px;color:var(--stone);margin-top:3px;}
 .by-demo{display:flex;align-items:center;gap:16px;background:var(--char);border:1px solid var(--line);padding:12px;margin:0 0 24px;}
 .by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}
 .by-demo-head{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:var(--bone);margin-bottom:6px;}
@@ -818,8 +820,21 @@ export default function BuyPage() {
       .catch(() => setInventory({}));
   }, []); // eslint-disable-line
 
+  // Ticks every 30s so the cutoff countdown and dispatch date stay honest
+  // across the 6 PM boundary without a reload.
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNowTs(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, []);
+
   const dispatch = getDispatchDate();
   const arrival  = estDeliveryDate(dispatch);
+  const cutoff   = nextDispatchCutoff();
+  const cutoffMins = Math.max(1, Math.floor((cutoff.getTime() - new Date(new Date(nowTs).toLocaleString('en-US', { timeZone: 'Europe/London' })).getTime()) / 60000));
+  const cutoffText = cutoffMins < 720
+    ? `Order within ${Math.floor(cutoffMins / 60)}h ${cutoffMins % 60}m`
+    : `Order by ${cutoff.toLocaleDateString('en-GB', { weekday: 'long' })} 6 PM`;
 
   const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
   const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
@@ -1104,7 +1119,7 @@ export default function BuyPage() {
                 <div className="by-kit-confirm" data-testid="kit-confirm">
                   <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
-                    <span className="by-kit-confirm-meta">£{price} one-time · free UK delivery</span>
+                    <span className="by-kit-confirm-meta">£{price} one-time · £{kitWorth(activeKit)} of product inside · free UK delivery</span>
                   </div>
                   <button
                     type="button"
@@ -1150,11 +1165,19 @@ export default function BuyPage() {
                             ? '100% certified organic argan oil · 100% natural Atlas clay'
                             : '100% natural Atlas clay · sulphate-free wash'}
                         </div>
-                        {isFirstBatch && <div className="by-kit-stock">First batch — only 250 kits made</div>}
+                        {isFirstBatch && (
+                          inventory?.[id]?.count > 0 && inventory[id].count <= 30
+                            ? <div className="by-kit-stock">Only {inventory[id].count} left in the first batch</div>
+                            : <div className="by-kit-stock">First batch — only 250 kits made</div>
+                        )}
                         <div className="by-kit-buyrow">
                           <div>
+                            <div className="by-kit-worth">£{kitWorth(kit)} of product</div>
                             <div className="by-kit-price">£{KIT_PRICES[id]}</div>
                             <div className="by-kit-price-label">one-time</div>
+                            {isFirstBatch && (
+                              <div className="by-kit-nextprice">£{id === 'ritual' ? 95 : 75} after this batch</div>
+                            )}
                           </div>
                           <button
                             type="button"
@@ -1180,7 +1203,7 @@ export default function BuyPage() {
                   OfferBar already covers the very top of the page. */}
               {step === 'details' && (
                 <div className="co-form-trust">
-                  <div className="co-form-trust-line">📦 Ships {fmtDay(dispatch)} · free UK delivery · no hidden costs</div>
+                  <div className="co-form-trust-line">📦 {cutoffText} — ships {fmtDay(dispatch)} · free UK delivery · no hidden costs</div>
                   <div className="co-form-trust-row">
                     <span>✓ 14-day returns</span>
                     <span>🔒 Secured by Stripe</span>

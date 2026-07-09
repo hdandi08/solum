@@ -1,6 +1,7 @@
 export const PRODUCTS = [
   {
     num: '01',
+    value: 16,  // standalone worth (£) — not sold separately
     name: 'Body Wash',
     fullName: 'Skin Protect Body Wash 250ml',
     size: '250ml',
@@ -27,6 +28,7 @@ export const PRODUCTS = [
   },
   {
     num: '02',
+    value: 10,  // standalone worth (£) — not sold separately
     name: 'Italy Towel Mitt',
     fullName: 'Italy Towel Mitt',
     size: '25×20cm',
@@ -53,6 +55,7 @@ export const PRODUCTS = [
   },
   {
     num: '03',
+    value: 12,  // standalone worth (£) — not sold separately
     name: 'Back Scrub Cloth',
     fullName: 'Back Scrub Cloth 90cm',
     size: '90cm',
@@ -79,6 +82,7 @@ export const PRODUCTS = [
   },
   {
     num: '04',
+    value: 15,  // standalone worth (£) — not sold separately
     name: 'Scalp Massager',
     fullName: 'Silicone Scalp Massager',
     size: null,
@@ -104,6 +108,7 @@ export const PRODUCTS = [
   },
   {
     num: '05',
+    value: 18,  // standalone worth (£) — not sold separately
     name: 'Atlas Clay Mask',
     fullName: 'Atlas Clay Mask 300g',
     size: '300g',
@@ -129,6 +134,7 @@ export const PRODUCTS = [
   },
   {
     num: '06',
+    value: 28,  // standalone worth (£) — not sold separately
     name: 'Argan Body Oil',
     fullName: 'Organic Argan Body Oil 50ml',
     size: '50ml',
@@ -154,6 +160,7 @@ export const PRODUCTS = [
   },
   {
     num: '07',
+    value: 20,  // standalone worth (£) — not sold separately
     name: 'Body Lotion',
     fullName: 'Daily Restore Body Lotion 200ml',
     size: '200ml',
@@ -179,8 +186,9 @@ export const PRODUCTS = [
   },
   {
     num: '08',
-    name: 'Cleansing Cloth',
-    fullName: 'Bamboo + Cotton Cleansing Cloth',
+    value: 8,  // standalone worth (£) — not sold separately
+    name: 'Intimate Cleansing Cloth',
+    fullName: 'Bamboo + Cotton Intimate Cleansing Cloth',
     size: '25×25cm',
     origin: '🌿 Bamboo & Cotton',
     tag: 'Intimate Areas · Daily',
@@ -202,6 +210,7 @@ export const PRODUCTS = [
   },
   {
     num: '11',
+    value: 6,  // standalone worth (£) — not sold separately
     name: 'Clay Mixing Bowl',
     fullName: 'SOLUM Clay Mixing Bowl',
     size: null,

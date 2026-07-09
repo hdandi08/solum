@@ -1569,7 +1569,7 @@ export default function ComingSoon() {
                   { n: '1', name: 'Scalp Massage', prod: '04' },
                   { n: '2', name: 'Body Wash', prod: '01' },
                   { n: '3', name: 'Antibacterial Shower Towel', prod: '03' },
-                  { n: '4', name: 'Cleansing Cloth', prod: '08' },
+                  { n: '4', name: 'Intimate Cleansing Cloth', prod: '08' },
                   { n: '5', name: 'Body Lotion', prod: '07' },
                 ].map(s => (
                   <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>
@@ -1595,7 +1595,7 @@ export default function ComingSoon() {
                   { n: '1', name: 'Deep Scalp Massage', prod: '04' },
                   { n: '2', name: 'Atlas Clay Mask', prod: '05' },
                   { n: '3', name: 'Italy Towel Mitt', prod: '02' },
-                  { n: '4', name: 'Cleansing Cloth', prod: '08' },
+                  { n: '4', name: 'Intimate Cleansing Cloth', prod: '08' },
                   { n: '5', name: 'Argan Body Oil', prod: '06' },
                 ].map(s => (
                   <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>
@@ -1616,7 +1616,7 @@ export default function ComingSoon() {
                   { name: 'Italy Towel Mitt', care: 'Rinse after every use. Hang to dry fully before storing.', life: 'Replace every 3 months', n: '1' },
                   { name: 'Antibacterial Shower Towel', care: 'Rinse and hang flat. Silver prevents bacteria growth between uses.', life: 'Replace every 6 months', n: '2' },
                   { name: 'Scalp Massager', care: 'Rinse under water after every use. Air dry silicone.', life: 'Lasts 12+ months', n: '3' },
-                  { name: 'Cleansing Cloth', care: 'Single use per session. Replace each month without exception.', life: 'Replace every 30 days', n: '4' },
+                  { name: 'Intimate Cleansing Cloth', care: 'Single use per session. Replace each month without exception.', life: 'Replace every 30 days', n: '4' },
                   { name: 'Mixing Bowl', care: 'Rinse clean in seconds after each clay session.', life: 'Silicone lasts indefinitely', n: '5' },
                 ].map(s => (
                   <div key={s.n} className="cs-ritual-step" style={{ opacity: s.n > '2' ? 0.25 : 1 }}>

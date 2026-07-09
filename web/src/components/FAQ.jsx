@@ -36,7 +36,7 @@ const FAQS = [
   },
   {
     q: 'What is the difference between GROUND and RITUAL?',
-    a: 'GROUND is the full daily clean: body wash, exfoliating mitt, back cloth, scalp massager, clay mask, lotion and cleansing cloth. RITUAL adds the weekly finish, Argan Body Oil and the clay mixing bowl. If you want the complete system, choose RITUAL.',
+    a: 'GROUND is the full daily clean: body wash, exfoliating mitt, back cloth, scalp massager, clay mask, lotion and intimate cleansing cloth. RITUAL adds the weekly finish, Argan Body Oil and the clay mixing bowl. If you want the complete system, choose RITUAL.',
   },
   {
     q: 'I have sensitive skin. Is it harsh?',

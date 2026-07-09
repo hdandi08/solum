@@ -57,6 +57,8 @@ const CSS = `
 .pp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0;}
 .pp-chip{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;color:var(--bone);border:1px solid var(--line);padding:6px 12px;border-radius:3px;}
 .pp-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--stone);margin:20px 0;}
+.pp-worth{font-size:14px;font-weight:300;color:var(--stone);line-height:1.5;max-width:440px;}
+.pp-worth-price{color:var(--bone);font-weight:600;}
 .pp-cta{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:var(--bone);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:13px;padding:14px 28px;border-radius:4px;text-decoration:none;margin-top:8px;}
 /* bottom product navigator (a div — must not be a <nav>, or the global nav{position:fixed} rule pins it to the header) */
 .pp-nav{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:760px;margin:0 auto;padding:30px 24px 52px;}
@@ -149,6 +151,12 @@ export default function ProductPage() {
               <span>{p.origin}</span>{p.size && <span>{p.size}</span>}{p.lifespan && <span>{p.lifespan}</span>}
             </div>
             <div className="pp-chips">{(p.highlights || []).map(h => <span key={h} className="pp-chip">{h}</span>)}</div>
+            {p.value > 0 && (
+              <div className="pp-worth">
+                <span className="pp-worth-price">Worth £{p.value}</span> — not sold separately.
+                The results come from the full ritual, so we only ship complete kits.
+              </div>
+            )}
             <div><Link to="/buy" className="pp-cta" onClick={() => capture('product_buy_clicked', { slug })}>Shop the kits</Link></div>
           </div>
         </div>

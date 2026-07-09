@@ -1,3 +1,15 @@
+import { PRODUCTS } from './products.js';
+
+// Sum of the standalone worth of everything in the kit — the "£X of product ·
+// £Y as the kit" anchor. Products without a value (coming soon) contribute 0.
+export function kitWorth(kit) {
+  if (!kit) return 0;
+  return kit.productNums.reduce((sum, num) => {
+    const p = PRODUCTS.find(pr => pr.num === num);
+    return sum + (p && !p.comingSoon && p.value ? p.value : 0);
+  }, 0);
+}
+
 // SOVEREIGN contains 9 products: replaces 02 (Italy Towel Mitt) with 09 (Turkish Kese Mitt). Does not include 02.
 export const KITS = [
   {

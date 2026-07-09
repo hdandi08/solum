@@ -5,18 +5,19 @@ import { getDispatchDate, estDeliveryDate } from './dispatch.mjs';
 const ymd = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+// Cutoff is 6 PM UK wall time (updated 2026-07-09, was noon).
 // Reference week: Mon 2026-07-06 ... Sun 2026-07-12, Mon 13, Tue 14
-test('before noon weekday -> next working day (Mon 9am -> Tue)', () => {
-  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 6, 9, 0))), '2026-07-07');
+test('before 6 PM weekday -> next working day (Mon 17:59 -> Tue)', () => {
+  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 6, 17, 59))), '2026-07-07');
 });
-test('at/after noon weekday -> second working day (Mon 12:00 -> Wed)', () => {
-  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 6, 12, 0))), '2026-07-08');
+test('at/after 6 PM weekday -> second working day (Mon 18:00 -> Wed)', () => {
+  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 6, 18, 0))), '2026-07-08');
 });
-test('before noon Friday skips weekend (Fri 9am -> Mon)', () => {
+test('before 6 PM Friday skips weekend (Fri 9am -> Mon)', () => {
   assert.equal(ymd(getDispatchDate(new Date(2026, 6, 10, 9, 0))), '2026-07-13');
 });
-test('after noon Friday -> Tuesday', () => {
-  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 10, 14, 0))), '2026-07-14');
+test('after 6 PM Friday -> Tuesday', () => {
+  assert.equal(ymd(getDispatchDate(new Date(2026, 6, 10, 19, 0))), '2026-07-14');
 });
 test('weekend orders -> Tuesday (Sat, Sun)', () => {
   assert.equal(ymd(getDispatchDate(new Date(2026, 6, 11, 10, 0))), '2026-07-14');
