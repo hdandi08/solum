@@ -39,6 +39,10 @@ const FAQS = [
     a: 'GROUND is the full daily clean: body wash, exfoliating mitt, back cloth, scalp massager, clay mask, lotion and intimate cleansing cloth. RITUAL adds the weekly finish, Argan Body Oil and the clay mixing bowl. If you want the complete system, choose RITUAL.',
   },
   {
+    q: 'Can I buy the products individually?',
+    a: 'No — and that is deliberate. The results come from the ritual, not any single product: the wash prepares the skin, the mitt clears it, the lotion seals it. One piece on its own does half a job, so we only ship complete kits. Together the products in RITUAL are worth £133 — the kit is £85.',
+  },
+  {
     q: 'I have sensitive skin. Is it harsh?',
     a: 'No. The body wash is sulphate free and pH balanced, made to clean without stripping your skin. If you have known sensitivities, patch test first.',
   },
@@ -48,7 +52,7 @@ const FAQS = [
   },
   {
     q: 'How much is delivery, and how fast will it arrive?',
-    a: 'Free UK delivery, sent Royal Mail Tracked 48. Order before noon on a working day and it is dispatched the next working day. Afternoon and weekend orders go the second working day. You will get tracking by email.',
+    a: 'Free UK delivery, sent Royal Mail Tracked 48. Order before 6 PM on a working day and it is dispatched the next working day. Evening and weekend orders go the second working day. You will get tracking by email.',
   },
   {
     q: 'What if it is not for me?',
