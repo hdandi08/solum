@@ -81,12 +81,12 @@ const CSS = `
 .co-form-trust a{color:inherit;}
 .co-mobile-product-worth{margin-left:auto;color:var(--stone);font-size:12px;white-space:nowrap;}
 .co-product-worth{margin-left:auto;color:var(--stone);font-size:13px;white-space:nowrap;}
-.co-worth-total{font-size:13px;color:var(--mist);font-weight:500;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
-.co-worth-total s{color:var(--stone);}
-.co-price-worth{font-size:18px;color:var(--stone);}
+.co-worth-total{font-size:14px;color:var(--bone);font-weight:600;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
+.co-worth-total s{color:var(--mist);font-weight:500;}
+.co-price-worth{font-size:20px;font-weight:600;color:var(--mist);}
 .by-kit-stock{font-size:13px;font-weight:600;color:var(--blit);margin-top:7px;letter-spacing:.3px;}
 .by-kit-cert{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
-.by-kit-worth{font-size:13px;color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.4);margin-bottom:2px;}
+.by-kit-worth{font-size:15px;font-weight:600;color:var(--mist);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.5);margin-bottom:2px;}
 .by-kit-nextprice{font-size:13px;color:var(--stone);margin-top:3px;}
 .by-demo{display:flex;align-items:center;gap:16px;background:var(--char);border:1px solid var(--line);padding:12px;margin:0 0 24px;}
 .by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}

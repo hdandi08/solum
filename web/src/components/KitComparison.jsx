@@ -39,9 +39,9 @@ const CSS = `
 .kit-prices{margin-bottom:24px;}
 .kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
 .kit-cert-line{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
-.kit-worth-line{font-size:14px;color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.4);margin-top:6px;}
+.kit-worth-line{font-size:16px;font-weight:600;color:var(--mist);text-decoration:line-through;text-decoration-color:rgba(240,236,226,0.5);margin-top:6px;}
 .kit-product-worth{margin-left:auto;font-size:11px;color:var(--stone);white-space:nowrap;}
-.kit-products-total{font-size:13px;color:var(--mist);font-weight:500;padding:10px 0 2px;border-top:1px solid var(--line);margin-top:8px;}
+.kit-products-total{font-size:14px;color:var(--bone);font-weight:600;padding:10px 0 2px;border-top:1px solid var(--line);margin-top:8px;}
 .kit-price-first{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
 .kit-price-first-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--bone);letter-spacing:-1px;line-height:1;}
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
