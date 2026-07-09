@@ -82,6 +82,7 @@ const CSS = `
 .co-form-trust-row span{white-space:nowrap;}
 .co-form-trust a{color:inherit;}
 .by-kit-stock{font-size:13px;font-weight:600;color:var(--blit);margin-top:7px;letter-spacing:.3px;}
+.by-kit-cert{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
 .by-demo{display:flex;align-items:center;gap:16px;background:var(--char);border:1px solid var(--line);padding:12px;margin:0 0 24px;}
 .by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}
 .by-demo-head{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:var(--bone);margin-bottom:6px;}
@@ -1144,6 +1145,11 @@ export default function BuyPage() {
                         <div className="by-kit-name">{kit?.name}</div>
                         <div className="by-kit-outcome">{kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box · {id === 'ritual' ? 'daily + weekly ritual' : 'the daily system'}</div>
+                        <div className="by-kit-cert">
+                          {id === 'ritual'
+                            ? '100% certified organic argan oil · 100% natural Atlas clay'
+                            : '100% natural Atlas clay · sulphate-free wash'}
+                        </div>
                         <div className="by-kit-stock">First batch — only 250 kits made</div>
                         <div className="by-kit-buyrow">
                           <div>

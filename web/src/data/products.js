@@ -111,7 +111,7 @@ export const PRODUCTS = [
     tag: 'Body · Weekly',
     tagline: 'Clearer skin. Emptied pores. Real confidence.',
     lifespan: '~4 weeks · 4 weekly sessions at 75g each',
-    highlights: ['Rhassoul clay', '68% clearer skin', 'Mineral-rich', '1,000+ yr tradition'],
+    highlights: ['100% natural — nothing added', '68% clearer skin', 'Mineral-rich', '1,000+ yr tradition'],
     benefits: [
       'Empties pores of the sebum and bacteria that cause spots, dullness and skin odour',
       '68% improvement in skin clarity from a single application (research-backed)',
@@ -136,7 +136,7 @@ export const PRODUCTS = [
     tag: 'Body · Weekly',
     tagline: 'Skin properly fed. Not just moisturised.',
     lifespan: '~4 weeks · used weekly on scalp, body and clay mix',
-    highlights: ['100% organic', 'Cold-pressed', 'Single ingredient', 'Zero residue'],
+    highlights: ['100% certified organic', 'Cold-pressed', 'Single ingredient', 'Zero residue'],
     benefits: [
       'Absorbs fully with zero greasy residue — fatty acids match your skin\'s own sebum',
       '43–52% oleic acid — the same fatty acid your skin produces naturally',

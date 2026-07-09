@@ -38,6 +38,7 @@ const CSS = `
 .kit-chooser{font-size:15px;color:var(--mist);font-weight:300;line-height:1.55;margin-bottom:24px;}
 .kit-prices{margin-bottom:24px;}
 .kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
+.kit-cert-line{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
 .kit-price-first{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
 .kit-price-first-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--bone);letter-spacing:-1px;line-height:1;}
 .kit-price-first-label{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);}
@@ -176,6 +177,13 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                     </div>
                     <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece system · tools last 6–12 months</div>
+                    {!kit.comingSoon && (
+                      <div className="kit-cert-line">
+                        {kit.id === 'ritual'
+                          ? '100% certified organic argan oil · 100% natural Atlas clay'
+                          : '100% natural Atlas clay · sulphate-free wash'}
+                      </div>
+                    )}
                     {offerActive() && !kit.comingSoon && (
                       <div className="kit-price-delivery">
                         Delivery <s>£5.95</s> <span className="free">FREE</span>
