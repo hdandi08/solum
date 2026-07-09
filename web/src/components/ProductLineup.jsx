@@ -40,6 +40,7 @@ const CSS = `
 .prod-info{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px;flex:1;}
 .prod-name{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bone);font-weight:700;line-height:1.3;}
 .prod-tagline{font-size:13px;font-weight:600;color:var(--bone);line-height:1.4;margin-top:8px;}
+.prod-worth{font-size:13px;color:var(--stone);margin-top:5px;}
 
 /* View details affordance — pinned to bottom of card */
 .prod-view-details{
@@ -139,6 +140,9 @@ export default function ProductLineup() {
               <div className="prod-info">
                 <div className="prod-name">{p.name}</div>
                 <div className="prod-tagline">{p.tagline}</div>
+                {p.value > 0 && !p.comingSoon && (
+                  <div className="prod-worth">Worth £{p.value} · only in the kit</div>
+                )}
                 {!p.comingSoon && <span className="prod-view-details">View Product →</span>}
               </div>
             );
