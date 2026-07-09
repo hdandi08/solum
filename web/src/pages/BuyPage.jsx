@@ -1034,7 +1034,9 @@ export default function BuyPage() {
                 </div>
               )}
 
-              {/* Kit selector — shown on step 1 only */}
+              {/* Kit selector — shown on step 1 only. AddToCart is gated on
+                  in-site arrival: cold ad clicks landing straight on /buy must
+                  not feed Meta's AddToCart optimisation. */}
               {step === 'details' && (
                 <div className="by-kits" data-testid="kit-selector">
                   {(preselect === 'ground' ? ['ground', 'ritual'] : ['ritual', 'ground']).map((id, i) => {
@@ -1045,7 +1047,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => { setSelectedKit(id); trackAddToCart(id); }}
+                        onClick={() => { setSelectedKit(id); if (!isDirectLanding) trackAddToCart(id); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         {kit?.image && (
@@ -1068,7 +1070,7 @@ export default function BuyPage() {
                           <button
                             type="button"
                             className="by-kit-cta"
-                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
+                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); if (!isDirectLanding) trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
                           >
                             Buy {kit?.name} →
                           </button>
