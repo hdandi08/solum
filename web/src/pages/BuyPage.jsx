@@ -1144,9 +1144,7 @@ export default function BuyPage() {
                         <div className="by-kit-name">{kit?.name}</div>
                         <div className="by-kit-outcome">{kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box · {id === 'ritual' ? 'daily + weekly ritual' : 'the daily system'}</div>
-                        {inventory?.[id]?.count > 0 && (
-                          <div className="by-kit-stock">First batch · {inventory[id].count} left</div>
-                        )}
+                        <div className="by-kit-stock">First batch — only 250 kits made</div>
                         <div className="by-kit-buyrow">
                           <div>
                             <div className="by-kit-price">£{KIT_PRICES[id]}</div>
