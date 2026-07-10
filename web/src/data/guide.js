@@ -37,10 +37,10 @@ export const ARTICLES = [
         h2: 'The Weekly Deep Ritual — 22 Minutes',
         paras: [
           "Once a week, replace the daily routine with this. It takes longer but the difference is visible.",
-          "Step 1 — Scalp Massager (5 min). More time, more pressure. Full scalp coverage including sides and nape.",
-          "Step 2 — Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8–10 minutes. Atlas Mountain clay draws impurities — dead cells, excess sebum, toxins — to the surface. It's been used this way in Moroccan hammams for over a thousand years.",
-          "Step 3 — Exfoliating Mitt + Back Scrub Cloth. Firm, slow strokes top to bottom simultaneously. After the clay, dead skin comes off visibly. This is the step that makes men understand the system.",
-          "Step 4 — Argan Body Oil. Rinse, towel lightly — stay slightly damp. 10–15 drops pressed into skin. Press and hold, don't rub. No lotion needed on weekly ritual days. Argan oil on damp, freshly exfoliated skin absorbs completely within minutes.",
+          "Step 1. Scalp Massager (5 min). More time, more pressure. Full scalp coverage including sides and nape.",
+          "Step 2. Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8–10 minutes. Atlas Mountain clay draws impurities — dead cells, excess sebum, toxins — to the surface. It's been used this way in Moroccan hammams for over a thousand years.",
+          "Step 3. Exfoliating Mitt + Back Scrub Cloth. Firm, slow strokes top to bottom simultaneously. After the clay, dead skin comes off visibly. This is the step that makes men understand the system.",
+          "Step 4. Argan Body Oil. Rinse, towel lightly — stay slightly damp. 10–15 drops pressed into skin. Press and hold, don't rub. No lotion needed on weekly ritual days. Argan oil on damp, freshly exfoliated skin absorbs completely within minutes.",
         ],
       },
       {
