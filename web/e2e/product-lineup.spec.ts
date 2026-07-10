@@ -9,3 +9,11 @@ test('homepage product card links to its product page', async ({ page }) => {
   await card.click();
   await expect(page).toHaveURL(/\/product\/[a-z0-9-]+/);
 });
+
+test('tiles show transformation line and stat pill', async ({ page }) => {
+  await page.goto('/');
+  const tile = page.locator('.product-card', { hasText: 'Scalp Massager' });
+  await expect(tile.locator('.prod-transform')).toContainText('Itchy, flaky scalp');
+  await expect(tile.locator('.prod-transform')).toContainText('clean scalp, thicker hair');
+  await expect(tile.locator('.prod-statpill')).toContainText('+120%');
+});

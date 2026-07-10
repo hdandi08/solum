@@ -40,6 +40,13 @@ const CSS = `
 .prod-info{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px;flex:1;}
 .prod-name{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bone);font-weight:700;line-height:1.3;}
 .prod-tagline{font-size:13px;font-weight:600;color:var(--bone);line-height:1.4;margin-top:8px;}
+.prod-transform{font-size:13px;line-height:1.45;margin-top:8px;}
+.prod-transform .pt-now{color:var(--stone);font-weight:300;}
+.prod-transform .pt-arrow{color:var(--blit);margin:0 5px;}
+.prod-transform .pt-after{color:var(--bone);font-weight:600;}
+.prod-statpill{display:inline-flex;align-items:center;gap:7px;background:var(--char);border:1px solid var(--blue);border-radius:999px;padding:3px 10px;margin-top:7px;align-self:flex-start;max-width:100%;}
+.prod-statpill strong{font-size:14px;font-weight:700;color:var(--blit);white-space:nowrap;}
+.prod-statpill span{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--stone);font-weight:600;line-height:1.3;}
 .prod-worth{font-size:13px;color:var(--stone);margin-top:5px;}
 
 /* View details affordance — pinned to bottom of card */
@@ -139,7 +146,21 @@ export default function ProductLineup() {
             const infoEl = (
               <div className="prod-info">
                 <div className="prod-name">{p.name}</div>
-                <div className="prod-tagline">{p.tagline}</div>
+                {p.outcome ? (
+                  <>
+                    <div className="prod-transform">
+                      <span className="pt-now">{p.outcome.tileNow}</span>
+                      <span className="pt-arrow" aria-hidden="true">→</span>
+                      <span className="pt-after">{p.outcome.tileAfter}</span>
+                    </div>
+                    <div className="prod-statpill">
+                      <strong>{p.outcome.stat}</strong>
+                      <span>{p.outcome.tileStatMeaning}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="prod-tagline">{p.tagline}</div>
+                )}
                 {p.value > 0 && !p.comingSoon && (
                   <div className="prod-worth">Worth £{p.value} · only in the kit</div>
                 )}
