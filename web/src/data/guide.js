@@ -25,11 +25,11 @@ export const ARTICLES = [
       {
         h2: 'The Daily Ritual — 10 Minutes',
         paras: [
-          "Step 1. Scalp Massager (2–3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening buildup — dead skin, product residue, sebum — that shampooing alone doesn't shift.",
-          "Step 2. Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate — an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
-          "Step 3. Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique — viscose rayon loosens dead skin that soap and water alone can't shift.",
+          "Step 1. Scalp Massager (2 to 3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening the buildup of dead skin, product residue and sebum that shampooing alone doesn't shift.",
+          "Step 2. Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate, an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
+          "Step 3. Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique. Viscose rayon loosens dead skin that washing alone can't shift.",
           "Step 4. Back Scrub Cloth. One handle each hand, drape over your shoulder, saw back and forth across the upper, middle, and lower back. This is the only essential that properly reaches every zone of your back. 60 seconds.",
-          "Step 5. Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in — don't rub.",
+          "Step 5. Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in. Don't rub.",
         ],
         tip: 'The 3-minute lotion window is the most important thing most men have never heard of.',
       },
@@ -38,9 +38,9 @@ export const ARTICLES = [
         paras: [
           "Once a week, replace the daily routine with this. It takes longer but the difference is visible.",
           "Step 1. Scalp Massager (5 min). More time, more pressure. Full scalp coverage including sides and nape.",
-          "Step 2. Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8–10 minutes. Atlas Mountain clay draws impurities — dead cells, excess sebum, toxins — to the surface. It's been used this way in Moroccan hammams for over a thousand years.",
+          "Step 2. Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8 to 10 minutes. Atlas Mountain clay draws impurities to the surface, including dead cells, excess sebum and toxins. It's been used this way in Moroccan hammams for over a thousand years.",
           "Step 3. Exfoliating Mitt + Back Scrub Cloth. Firm, slow strokes top to bottom simultaneously. After the clay, dead skin comes off visibly. This is the step that makes men understand the system.",
-          "Step 4. Argan Body Oil. Rinse, towel lightly — stay slightly damp. 10–15 drops pressed into skin. Press and hold, don't rub. No lotion needed on weekly ritual days. Argan oil on damp, freshly exfoliated skin absorbs completely within minutes.",
+          "Step 4. Argan Body Oil. Rinse, towel lightly, stay slightly damp. 10 to 15 drops pressed into skin. Press and hold, don't rub. No lotion needed on weekly ritual days. Argan oil on damp, freshly exfoliated skin absorbs completely within minutes.",
         ],
       },
       {
@@ -73,14 +73,14 @@ export const ARTICLES = [
         h2: "Why Most Men Never Exfoliate Properly",
         paras: [
           "Body scrubs exist, but most men either never use them or scrub with a loofa that's collected bacteria for six months. The bigger issue is that the best exfoliator isn't a scrub at all. It's a cloth.",
-          "Specifically, a viscose rayon exfoliating mitt. Used in Korean bathhouses for decades. The mechanical friction lifts dead skin that soap and water can't touch, without the need for abrasive particles.",
+          "Specifically, a viscose rayon exfoliating mitt. Used in Korean bathhouses for decades. The mechanical friction lifts dead skin that washing alone can't touch, without the need for abrasive particles.",
         ],
       },
       {
         h2: 'The Two Essentials You Need',
         paras: [
           "The Exfoliating Mitt handles the front of your body — arms, chest, stomach, legs. Wet the mitt, add body wash, use long circular strokes with medium pressure. You're not scrubbing hard — you're letting the material do the work.",
-          "The Back Scrub Cloth handles the one place you can't reach with a mitt. 70cm length with handles at each end. Drape over your shoulder, one handle in each hand, and saw back and forth across the upper, middle, and lower back. 60 seconds covers every zone.",
+          "The Back Scrub Cloth handles the one place you can't reach with a mitt. 90cm length with handles at each end. Drape over your shoulder, one handle in each hand, and saw back and forth across the upper, middle, and lower back. 60 seconds covers every zone.",
           "These are two separate essentials for a reason. The mitt can't reach your back. The cloth covers your back but nothing else. Together they cover the entire body.",
         ],
         tip: 'Wet the mitt thoroughly before use — dry viscose rayon is too rough. Wet, it works perfectly.',
@@ -269,7 +269,7 @@ export const ARTICLES = [
     category: 'The Origin',
     readMins: 4,
     title: 'Rhassoul Clay for Men — What It Does and How to Use It',
-    intro: "Rhassoul clay has been used in Moroccan hammams for over a thousand years. Mined from the Atlas Mountains. A mineral-rich clay that draws impurities out of skin in a way soap can't. For men who've never tried it: the first time you use it properly, you'll understand why it's been standard practice for a millennium.",
+    intro: "Rhassoul clay has been used in Moroccan hammams for over a thousand years. Mined from the Atlas Mountains. A mineral-rich clay that draws impurities out of skin in a way washing alone can't. For men who've never tried it: the first time you use it properly, you'll understand why it's been standard practice for a millennium.",
     sections: [
       {
         h2: 'What Makes It Different',
