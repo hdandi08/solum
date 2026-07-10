@@ -42,3 +42,17 @@ test('homepage kit card product list shows outcome lines after expanding', async
   await page.locator('.kit-products-toggle').first().click();
   await expect(page.locator('.kit-product-outcome', { hasText: 'clean scalp, thicker hair' }).first()).toBeVisible();
 });
+
+test('mid-scroll ritual CTA band renders after the ritual section', async ({ page }) => {
+  await page.goto('/');
+  const band = page.locator('#ritual-cta');
+  await expect(band).toBeVisible();
+  await expect(band.locator('.btn-primary')).toContainText('Start the ritual');
+  const order = await page.evaluate(() => {
+    const ritual = document.querySelector('#ritual');
+    const band = document.querySelector('#ritual-cta');
+    if (!ritual || !band) return 'missing';
+    return ritual.compareDocumentPosition(band) & Node.DOCUMENT_POSITION_FOLLOWING ? 'ritual-first' : 'band-first';
+  });
+  expect(order).toBe('ritual-first');
+});
