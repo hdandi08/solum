@@ -25,11 +25,11 @@ export const ARTICLES = [
       {
         h2: 'The Daily Ritual — 10 Minutes',
         paras: [
-          "Step 1 — Scalp Massager (2–3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening buildup — dead skin, product residue, sebum — that shampooing alone doesn't shift.",
-          "Step 2 — Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate — an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
-          "Step 3 — Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique — viscose rayon loosens dead skin that soap and water alone can't shift.",
+          "Step 1. Scalp Massager (2–3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening buildup — dead skin, product residue, sebum — that shampooing alone doesn't shift.",
+          "Step 2. Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate — an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
+          "Step 3. Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique — viscose rayon loosens dead skin that soap and water alone can't shift.",
           "Step 4. Back Scrub Cloth. One handle each hand, drape over your shoulder, saw back and forth across the upper, middle, and lower back. This is the only essential that properly reaches every zone of your back. 60 seconds.",
-          "Step 5 — Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in — don't rub.",
+          "Step 5. Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in — don't rub.",
         ],
         tip: 'The 3-minute lotion window is the most important thing most men have never heard of.',
       },
@@ -63,7 +63,7 @@ export const ARTICLES = [
   {
     slug: 'how-to-exfoliate-body-men',
     metaTitle: "How to Exfoliate Your Body (Men) | SOLUM Guide",
-    metaDescription: "Exfoliation is the step that makes everything else work. Here's how to exfoliate your body properly: the right essentials, the right technique, and how often.",
+    metaDescription: "Exfoliation is the step that makes everything else work. Here's how to exfoliate your body properly. The right essentials, the right technique, and how often.",
     category: 'The Ritual',
     readMins: 5,
     title: 'How to Exfoliate Your Body — The Right Way',

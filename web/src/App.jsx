@@ -3,13 +3,12 @@ import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import { capture } from './lib/analytics';
 import OfferBar from './components/OfferBar.jsx';
-import ComingSoon from './pages/ComingSoon';
 import FullSite from './pages/FullSite';
 import './styles/global.css';
 
-// Ad traffic lands on / — keep FullSite/ComingSoon eager so the homepage paints
-// from the main bundle. Everything else (incl. Stripe via BuyPage/CheckoutPage)
-// loads only when its route is visited.
+// Ad traffic lands on / — keep FullSite eager so the homepage paints from the
+// main bundle. Everything else (incl. Stripe via BuyPage/CheckoutPage) loads
+// only when its route is visited.
 const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
 const SuccessPage = lazy(() => import('./pages/SuccessPage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
@@ -53,8 +52,6 @@ function AuthRedirectGuard() {
   return null
 }
 
-const IS_LIVE = import.meta.env.VITE_LAUNCH_MODE === 'live';
-
 export default function App() {
   useEffect(() => { initQualifiedVisitTracker(); }, []);
 
@@ -87,7 +84,7 @@ export default function App() {
       <AuthRedirectGuard />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={IS_LIVE ? <FullSite /> : <ComingSoon />} />
+          <Route path="/" element={<FullSite />} />
           <Route path="/full" element={<FullSite />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/buy" element={<BuyPage />} />
