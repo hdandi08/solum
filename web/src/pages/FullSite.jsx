@@ -5,7 +5,7 @@ import Hero from '../components/Hero.jsx';
 import Marquee from '../components/Marquee.jsx';
 import RitualInAction from '../components/RitualInAction.jsx';
 import KitComparison from '../components/KitComparison.jsx';
-import Reviews from '../components/Reviews.jsx';
+import SystemSection from '../components/SystemSection.jsx';
 import FrictionStrip from '../components/FrictionStrip.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import UnboxingFilm from '../components/UnboxingFilm.jsx';
@@ -95,10 +95,10 @@ export default function FullSite() {
       <Marquee />
       <ProblemSection />
       <KitComparison />
-      <Reviews />
+      <SystemSection />
       <FrictionStrip />
-      <RitualInAction />
       <ProductLineup />
+      <RitualInAction />
       <UnboxingFilm />
       <WhatSolumIs />
       <FAQ />
