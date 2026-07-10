@@ -67,6 +67,33 @@ const CSS = `
 .pp-nav-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);font-weight:600;}
 .pp-nav-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--bone);line-height:1.05;transition:color .2s;}
 .pp-nav-link:hover .pp-nav-name{color:var(--blit);}
+/* ── Outcome story ─────────────────────────────── */
+.pp-outcome{max-width:1000px;margin:0 auto;padding:48px 24px 8px;}
+.pp-outcome-head{margin-bottom:24px;}
+.pp-outcome-headline{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,3.4vw,38px);font-weight:700;letter-spacing:.04em;line-height:1.12;color:var(--bone);margin:0 0 12px;text-transform:uppercase;}
+.pp-outcome-headline span{color:var(--blit);}
+.pp-statpill{display:inline-flex;align-items:center;gap:10px;background:var(--char);border:1px solid var(--blue);border-radius:999px;padding:7px 16px;max-width:100%;}
+.pp-statpill strong{font-size:20px;font-weight:700;color:var(--blit);white-space:nowrap;}
+.pp-statpill span{font-size:13px;color:var(--stone);line-height:1.35;}
+.pp-outcome-grid{display:grid;grid-template-columns:1fr;gap:0;}
+.pp-outcome-photo img{width:100%;height:100%;object-fit:cover;display:block;border:1px solid var(--line);}
+.pp-ba{padding:18px;}
+.pp-ba-label{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;margin-bottom:7px;}
+.pp-ba p{font-size:15px;line-height:1.5;margin:0;}
+.pp-ba-now{background:var(--char);border:1px solid var(--line);border-radius:8px 8px 0 0;}
+.pp-ba-now .pp-ba-label{color:var(--stone);}
+.pp-ba-now p{color:var(--mist);font-weight:300;}
+.pp-ba-after{background:#12233a;border:1px solid var(--blue);border-radius:0 0 8px 8px;}
+.pp-ba-after .pp-ba-label{color:var(--blit);}
+.pp-ba-after p{color:var(--bone);font-weight:400;}
+@keyframes ppPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,143,199,.5);}50%{box-shadow:0 0 0 8px rgba(74,143,199,0);}}
+.pp-ba-arrow{width:32px;height:32px;border-radius:50%;background:var(--blue);color:var(--bone);display:flex;align-items:center;justify-content:center;font-size:15px;border:3px solid var(--black);animation:ppPulse 2s infinite;position:relative;z-index:2;margin:-16px auto;transform:rotate(90deg);}
+.pp-outcome-photo{display:none;}
+@media(min-width:769px){
+  .pp-outcome-grid{grid-template-columns:2fr 3fr;gap:20px;align-items:stretch;}
+  .pp-outcome-photo{display:block;min-height:280px;}
+  .pp-outcome-photo img{height:100%;}
+}
 `;
 
 const BACK_ARROW = (
@@ -160,6 +187,38 @@ export default function ProductPage() {
             <div><Link to="/buy" className="pp-cta" onClick={() => capture('product_buy_clicked', { slug })}>Shop the kits</Link></div>
           </div>
         </div>
+
+        {p.outcome && (
+          <section className="pp-outcome">
+            <div className="pp-outcome-head">
+              <h2 className="pp-outcome-headline">
+                {p.outcome.headline}<br /><span>{p.outcome.headlineAccent}</span>
+              </h2>
+              <div className="pp-statpill">
+                <strong>{p.outcome.stat}</strong>
+                <span>{p.outcome.statMeaning}</span>
+              </div>
+            </div>
+            <div className="pp-outcome-grid">
+              {p.media?.gallery?.[0] && (
+                <div className="pp-outcome-photo">
+                  <img src={p.media.gallery[0]} alt={`${p.name} in use`} loading="lazy" width="600" height="800" />
+                </div>
+              )}
+              <div className="pp-outcome-panels">
+                <div className="pp-ba pp-ba-now">
+                  <div className="pp-ba-label">Now</div>
+                  <p>{p.outcome.now}</p>
+                </div>
+                <div className="pp-ba-arrow" aria-hidden="true">→</div>
+                <div className="pp-ba pp-ba-after">
+                  <div className="pp-ba-label">With SOLUM</div>
+                  <p>{p.outcome.after}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <div className="pp-body">
           <p className="pp-desc">{p.desc}</p>

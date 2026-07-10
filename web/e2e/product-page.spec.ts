@@ -26,3 +26,17 @@ test('hero video reloads to the new product when navigating prev/next', async ({
   // key={slug} on the <video> element forces React to remount it with the new sources.
   await expect.poll(loadedSrc, { timeout: 10_000 }).toContain('/video/products/06_720');
 });
+
+test('outcome block renders on the scalp massager page', async ({ page }) => {
+  await page.goto('/product/04-scalp-massager');
+  const block = page.locator('.pp-outcome');
+  await expect(block).toBeVisible();
+  await expect(block.locator('.pp-statpill')).toContainText('+120%');
+  await expect(block.locator('.pp-ba-now')).toContainText('Itchy, flaky scalp');
+  await expect(block.locator('.pp-ba-after')).toContainText('With SOLUM');
+});
+
+test('outcome block absent on a product without outcome data', async ({ page }) => {
+  await page.goto('/product/11-clay-mixing-bowl');
+  await expect(page.locator('.pp-outcome')).toHaveCount(0);
+});
