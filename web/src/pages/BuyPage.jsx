@@ -81,6 +81,9 @@ const CSS = `
 .co-form-trust a{color:inherit;}
 .co-mobile-product-worth{margin-left:auto;color:var(--stone);font-size:12px;white-space:nowrap;}
 .co-product-worth{margin-left:auto;color:var(--stone);font-size:13px;white-space:nowrap;}
+.co-product-name-wrap{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.co-product-outcome{font-size:13px;color:var(--stone);font-weight:300;line-height:1.3;}
+.co-mobile-product-outcome{display:block;font-size:13px;color:var(--stone);font-weight:300;line-height:1.3;margin-top:2px;}
 .co-worth-total{font-size:14px;color:var(--bone);font-weight:600;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
 .co-worth-total s{color:var(--mist);font-weight:500;}
 .co-price-worth{font-size:20px;font-weight:600;color:var(--mist);}
@@ -321,7 +324,10 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
                   ? <img src={p.media.still} alt="" className="co-mobile-product-thumb" loading="lazy" />
                   : <span className="co-mobile-product-thumb ph" />}
                 <span className="co-mobile-product-num">{p.num}</span>
-                <span className="co-mobile-product-name">{p.name}</span>
+                <span className="co-mobile-product-name">
+                  {p.name}
+                  {p.outcome?.tileAfter && <span className="co-mobile-product-outcome">{p.outcome.tileAfter}</span>}
+                </span>
                 {p.value > 0 && <span className="co-mobile-product-worth">£{p.value}</span>}
                 {p.media?.still && <span className="co-mobile-product-zoom" aria-hidden="true">⤢</span>}
               </button>
@@ -459,7 +465,10 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
               : <div className="co-product-thumb-ph" />
             }
             <span className="co-product-num">{p.num}</span>
-            <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+            <span className="co-product-name-wrap">
+              <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+              {p.outcome?.tileAfter && <span className="co-product-outcome">{p.outcome.tileAfter}</span>}
+            </span>
             {p.value > 0 && !p.comingSoon && <span className="co-product-worth">£{p.value}</span>}
           </div>
         ))}

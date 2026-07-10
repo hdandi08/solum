@@ -420,3 +420,8 @@ test.describe('SuccessPage shows correct copy by purchase type', () => {
     await expect(page.getByText(/#ABCDEFGH/i)).toBeVisible();
   });
 });
+
+test('kit product lists show outcome lines', async ({ page }) => {
+  await page.goto('/buy');
+  await expect(page.locator('.co-product-outcome', { hasText: 'clean scalp, thicker hair' }).first()).toBeVisible();
+});

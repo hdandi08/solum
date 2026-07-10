@@ -54,6 +54,8 @@ const CSS = `
 .kit-card.products-open .kit-products{display:flex;}
 .kit-product{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mist);font-weight:300;}
 .kit-product-num{font-size:10px;letter-spacing:2px;color:var(--blue);font-weight:600;min-width:20px;}
+.kit-product-name-wrap{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.kit-product-outcome{font-size:13px;color:var(--stone);font-weight:300;line-height:1.3;}
 .kit-product-thumb-wrap{position:relative;flex-shrink:0;}
 .kit-product-thumb{width:40px;height:52px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);flex-shrink:0;display:block;}
 .kit-product-thumb-placeholder{width:40px;height:52px;background:var(--dark);border:1px solid var(--line);flex-shrink:0;}
@@ -215,7 +217,10 @@ export default function KitComparison() {
                           : <div className="kit-product-thumb-placeholder" />
                         }
                         <span className="kit-product-num">{p.num}</span>
-                        <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+                        <span className="kit-product-name-wrap">
+                          <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
+                          {p.outcome?.tileAfter && <span className="kit-product-outcome">{p.outcome.tileAfter}</span>}
+                        </span>
                         {p.value > 0 && <span className="kit-product-worth">worth £{p.value}</span>}
                       </div>
                     ))}

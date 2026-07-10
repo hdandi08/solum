@@ -36,3 +36,9 @@ test('system section replaces reviews and products precede ritual', async ({ pag
   });
   expect(order).toBe('products-first');
 });
+
+test('homepage kit card product list shows outcome lines after expanding', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.kit-products-toggle').first().click();
+  await expect(page.locator('.kit-product-outcome', { hasText: 'clean scalp, thicker hair' }).first()).toBeVisible();
+});
