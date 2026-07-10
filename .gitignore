@@ -6,3 +6,4 @@ artefacts/social/**/*.mp4
 artefacts/social/**/*.jpg
 artefacts/social/**/*.png
 .env.posthog
+.superpowers/
