@@ -93,6 +93,7 @@ const CSS = `
   .pp-outcome-grid{grid-template-columns:2fr 3fr;gap:20px;align-items:stretch;}
   .pp-outcome-photo{display:block;min-height:280px;}
   .pp-outcome-photo img{height:100%;}
+  .pp-outcome-panels{align-self:center;}
 }
 `;
 
