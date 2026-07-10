@@ -108,14 +108,14 @@ export default function UnboxingFilm() {
               </div>
               <div className="unbox-side">
                 <div className="unbox-side-shot">
-                  <img src="/products/kit/use-1.webp" width={1200} height={1500} loading="lazy" alt="SOLUM kit products laid out showing the daily ritual tools" />
+                  <img src="/products/kit/use-1.webp" width={1200} height={1500} loading="lazy" alt="SOLUM kit products laid out showing the daily ritual essentials" />
                 </div>
                 <div className="unbox-side-shot">
                   <img src="/products/kit/use-2.webp" width={1200} height={1500} loading="lazy" alt="Close-up of SOLUM kit packaging and product detail" />
                 </div>
               </div>
             </div>
-            <p className="unbox-caption">Every kit ships as one system. Wash, tools, and lotion together. Nothing to figure out, nothing missing.</p>
+            <p className="unbox-caption">Every kit ships as one system. Your refills and your shower essentials, together. Nothing to figure out, nothing missing.</p>
           </div>
         </div>
       </section>

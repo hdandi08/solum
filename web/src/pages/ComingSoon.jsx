@@ -1554,7 +1554,7 @@ export default function ComingSoon() {
             <div className="cs-ritual-section-sub">
               <span className="cs-ritual-section-pill">Step by step guide</span>
               <span className="cs-ritual-section-pill">Video walkthroughs</span>
-              <span className="cs-ritual-section-pill">Tool care</span>
+              <span className="cs-ritual-section-pill">Essentials care</span>
             </div>
           </div>
           <div className="cs-ritual-blur">
@@ -1631,8 +1631,8 @@ export default function ComingSoon() {
             </div>
 
             <div className="cs-ritual-blur-overlay">
-              <div className="cs-ritual-gate-label">Step by step guide · Video walkthroughs · Tool care</div>
-              <div className="cs-ritual-gate-title">The full ritual guide + videos.<br />Every step. Every tool. Every detail.</div>
+              <div className="cs-ritual-gate-label">Step by step guide · Video walkthroughs · Essentials care</div>
+              <div className="cs-ritual-gate-title">The full ritual guide + videos.<br />Every step. Every essential. Every detail.</div>
               <a href="#signup" className="cs-ritual-gate-cta" onClick={e => { e.preventDefault(); document.getElementById('signup-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>
                 Sign Up to Unlock the Full Guide
               </a>
@@ -1667,7 +1667,7 @@ export default function ComingSoon() {
             <div className="cs-prov-flag">🇹🇷</div>
             <div className="cs-prov-country">Turkey</div>
             <div className="cs-prov-tradition">Hamam Craft</div>
-            <div className="cs-prov-body">The exfoliation step that goes further than the daily mitt. Istanbul artisans hand-weave raw silk Kese mitts for the Ottoman hamam tradition. The rougher resistance that does what softer tools can't.</div>
+            <div className="cs-prov-body">The exfoliation step that goes further than the daily mitt. Istanbul artisans hand-weave raw silk Kese mitts for the Ottoman hamam tradition. The rougher resistance that does what softer essentials can't.</div>
             <div className="cs-prov-products">Products 09 · 10</div>
           </div>
         </div>
@@ -1678,7 +1678,7 @@ export default function ComingSoon() {
             <div className="cs-sub-tag">Subscription</div>
             <div className="cs-sub-title">Your system.<br />On autopilot.</div>
             <div className="cs-sub-body">
-              The tools last months. The consumables run out. Your monthly
+              Your shower essentials last months. The wash, lotion, clay and oil run out. Your monthly
               refill arrives automatically: body wash, lotion, clay, oil.
               The ritual never stops. You never have to think about it.
             </div>
@@ -1687,12 +1687,12 @@ export default function ComingSoon() {
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">First Box</div>
               <div className="cs-sub-item-title">Your ritual starts day one</div>
-              <div className="cs-sub-item-body">All 9 products arrive together. Tools and consumables. Everything you need to run both rituals from the moment the box opens.</div>
+              <div className="cs-sub-item-body">All 9 products arrive together. Shower essentials and refills. Everything you need to run both rituals from the moment the box opens.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Monthly Refill</div>
               <div className="cs-sub-item-title">The ritual never stops</div>
-              <div className="cs-sub-item-body">Consumables replenished automatically before you run out. Body wash, lotion, clay, oil. The tools stay in your bathroom. They last 6–12 months.</div>
+              <div className="cs-sub-item-body">Refills arrive automatically before you run out. Body wash, lotion, clay, oil. Your shower essentials stay in your bathroom. They last 6 to 12 months.</div>
             </div>
             <div className="cs-sub-item">
               <div className="cs-sub-item-tag">Built to stay</div>

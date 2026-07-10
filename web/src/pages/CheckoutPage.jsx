@@ -553,7 +553,7 @@ export default function CheckoutPage() {
           </div>
           <div className="co-trust-line">
             <span className="co-trust-check">📦</span>
-            <span>Your consumables arrive before you run out — tools replaced when due</span>
+            <span>Your refills arrive before you run out · essentials replaced when due</span>
           </div>
           <div className="co-trust-line">
             <span className="co-trust-check">🚚</span>

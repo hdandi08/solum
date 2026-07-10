@@ -63,7 +63,7 @@ export default function OrderSummary({
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">📦</span>
-          <span>Refills arrive before you run out — tools replaced when due</span>
+          <span>Refills arrive before you run out · essentials replaced when due</span>
         </div>
         <div className="co-promise-item">
           <span className="co-promise-check">🛡️</span>

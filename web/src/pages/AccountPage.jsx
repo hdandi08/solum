@@ -319,7 +319,7 @@ function NextBoxPanel({ sub, kitId }) {
         </div>
         {(isQuarterlyMonth || is6Month) && (
           <div className="next-note">
-            This is a quarterly refresh box — tools and weekly ritual products ship alongside your monthly essentials.
+            This is a quarterly refresh box. Your shower essentials and weekly ritual products ship alongside your monthly refills.
           </div>
         )}
       </div>

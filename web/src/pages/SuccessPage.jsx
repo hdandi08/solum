@@ -158,7 +158,7 @@ export default function SuccessPage() {
               <span className="su-step-num">2</span>
               <div className="su-step-body">
                 <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</div>
-                <div className="su-step-copy">Your full {kitName} kit — tools and consumables — packed and dispatched.{arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
+                <div className="su-step-copy">Your full {kitName} kit, shower essentials and refills, packed and dispatched.{arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
             {isOneTime ? (
@@ -174,7 +174,7 @@ export default function SuccessPage() {
                 <span className="su-step-num">3</span>
                 <div className="su-step-body">
                   <div className="su-step-title">Monthly refills arrive before you run out</div>
-                  <div className="su-step-copy">Consumables replenish automatically every 30 days. Your first box lasts 4–6 weeks — you won't run out before the first refill arrives.</div>
+                  <div className="su-step-copy">Refills arrive automatically every 30 days. Your first box lasts 4 to 6 weeks, you won't run out before the first one arrives.</div>
                 </div>
               </div>
             )}

@@ -195,7 +195,7 @@ export default function SubscriptionSection() {
                     width={1200}
                     height={1500}
                     loading="lazy"
-                    alt="SOLUM kit products laid out showing the daily ritual tools"
+                    alt="SOLUM kit products laid out showing the daily ritual essentials"
                   />
                 </div>
                 <div className="unbox-side-shot">
@@ -209,7 +209,7 @@ export default function SubscriptionSection() {
                 </div>
               </div>
             </div>
-            <p className="unbox-caption">Every kit ships as one system — wash, tools, and lotion together. Nothing to figure out, nothing missing.</p>
+            <p className="unbox-caption">Every kit ships as one system. Your refills and your shower essentials, together. Nothing to figure out, nothing missing.</p>
           </div>
 
           <div className="sub-header reveal">

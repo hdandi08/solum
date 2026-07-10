@@ -11,7 +11,7 @@ export const ARTICLES = [
       {
         h2: "Why Your Current Shower Routine Isn't Working",
         paras: [
-          "Most shower routines look like this: hot water, a squirt of body wash, a quick scrub with your hands, done. The problem isn't effort — it's the tools and the order.",
+          "Most shower routines look like this: hot water, a squirt of body wash, a quick scrub with your hands, done. The problem isn't effort. It's the essentials and the order.",
           "Your hands cannot exfoliate. Your body wash is probably stripping your skin barrier every morning. And your back — the hardest part of your body to reach — is almost certainly never properly cleaned. These aren't small gaps. They compound over years.",
         ],
       },
@@ -28,7 +28,7 @@ export const ARTICLES = [
           "Step 1 — Scalp Massager (2–3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening buildup — dead skin, product residue, sebum — that shampooing alone doesn't shift.",
           "Step 2 — Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate — an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
           "Step 3 — Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique — viscose rayon loosens dead skin that soap and water alone can't shift.",
-          "Step 4 — Back Scrub Cloth. One handle each hand, drape over your shoulder, saw back and forth across the upper, middle, and lower back. This is the only tool that properly reaches every zone of your back. 60 seconds.",
+          "Step 4. Back Scrub Cloth. One handle each hand, drape over your shoulder, saw back and forth across the upper, middle, and lower back. This is the only essential that properly reaches every zone of your back. 60 seconds.",
           "Step 5 — Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in — don't rub.",
         ],
         tip: 'The 3-minute lotion window is the most important thing most men have never heard of.',
@@ -63,25 +63,25 @@ export const ARTICLES = [
   {
     slug: 'how-to-exfoliate-body-men',
     metaTitle: "How to Exfoliate Your Body (Men) | SOLUM Guide",
-    metaDescription: "Exfoliation is the step that makes everything else work. Here's how to exfoliate your body properly — the right tools, the right technique, and how often.",
+    metaDescription: "Exfoliation is the step that makes everything else work. Here's how to exfoliate your body properly: the right essentials, the right technique, and how often.",
     category: 'The Ritual',
     readMins: 5,
     title: 'How to Exfoliate Your Body — The Right Way',
-    intro: "Exfoliation is the one step that makes every other step work better. Moisturiser penetrates further. Skin looks cleaner. Your back stops breaking out. Most men have either never exfoliated properly or use the wrong tool. Here's how to do it correctly.",
+    intro: "Exfoliation is the one step that makes every other step work better. Moisturiser penetrates further. Skin looks cleaner. Your back stops breaking out. Most men have either never exfoliated properly or scrub with the wrong thing. Here's how to do it correctly.",
     sections: [
       {
         h2: "Why Most Men Never Exfoliate Properly",
         paras: [
-          "Body scrubs exist, but most men either never use them or scrub with a loofa that's collected bacteria for six months. The bigger issue is that the best exfoliation tool isn't a scrub at all — it's a cloth.",
+          "Body scrubs exist, but most men either never use them or scrub with a loofa that's collected bacteria for six months. The bigger issue is that the best exfoliator isn't a scrub at all. It's a cloth.",
           "Specifically, a viscose rayon exfoliating mitt. Used in Korean bathhouses for decades. The mechanical friction lifts dead skin that soap and water can't touch, without the need for abrasive particles.",
         ],
       },
       {
-        h2: 'The Two Tools You Need',
+        h2: 'The Two Essentials You Need',
         paras: [
           "The Exfoliating Mitt handles the front of your body — arms, chest, stomach, legs. Wet the mitt, add body wash, use long circular strokes with medium pressure. You're not scrubbing hard — you're letting the material do the work.",
           "The Back Scrub Cloth handles the one place you can't reach with a mitt. 70cm length with handles at each end. Drape over your shoulder, one handle in each hand, and saw back and forth across the upper, middle, and lower back. 60 seconds covers every zone.",
-          "These are two separate tools for a reason. The mitt can't reach your back. The cloth covers your back but nothing else. Together they cover the entire body.",
+          "These are two separate essentials for a reason. The mitt can't reach your back. The cloth covers your back but nothing else. Together they cover the entire body.",
         ],
         tip: 'Wet the mitt thoroughly before use — dry viscose rayon is too rough. Wet, it works perfectly.',
       },
@@ -89,7 +89,7 @@ export const ARTICLES = [
         h2: 'Daily vs Weekly Exfoliation',
         paras: [
           "Daily: use the mitt and back cloth as part of your normal shower. Medium pressure. This keeps dead skin from accumulating.",
-          "Weekly: use both tools after the rhassoul clay mask, with firmer pressure and slower strokes. This is when the most dead skin comes off. You'll see it.",
+          "Weekly: use both essentials after the rhassoul clay mask, with firmer pressure and slower strokes. This is when the most dead skin comes off. You'll see it.",
           "This is the Korean bathhouse method — the clay loosens everything that's built up, and the mitt takes it off. Most men find this the most satisfying part of the weekly ritual.",
         ],
       },
@@ -103,7 +103,7 @@ export const ARTICLES = [
     ],
     cta: {
       heading: 'The Mitt and Back Cloth',
-      body: 'Both are included in every SOLUM kit. The only tools that cover the whole body properly.',
+      body: 'Both are included in every SOLUM kit. The only essentials that cover the whole body properly.',
       link: '/full#products',
       label: 'See the Products',
     },
@@ -200,13 +200,13 @@ export const ARTICLES = [
         paras: [
           "Skipping the lotion. The shower cleans, but the lotion is where the skin actually recovers. Without it, you undo half of what the shower accomplished.",
           "Using water that's too hot. Hot water strips the skin barrier faster than warm. Turn it down slightly — your skin will tell you the difference within a week.",
-          "Scrubbing with their hands instead of a tool. Your hands cannot exfoliate. They move surface-level debris around. The mitt and back cloth get into the skin in a way hands physically can't.",
+          "Scrubbing with their hands instead of the right essential. Your hands cannot exfoliate. They move surface-level debris around. The mitt and back cloth get into the skin in a way hands physically can't.",
         ],
       },
     ],
     cta: {
       heading: 'The Full System',
-      body: 'Every step in this routine is covered by a SOLUM kit. Tools that last, consumables that replenish monthly.',
+      body: 'Every step in this routine is covered by a SOLUM kit. Shower essentials that last, refills that arrive monthly.',
       link: '/full#kits',
       label: 'Choose Your Kit',
     },
@@ -220,7 +220,7 @@ export const ARTICLES = [
     category: 'The Science',
     readMins: 4,
     title: 'What Does a Scalp Massager Actually Do?',
-    intro: "The scalp is skin. It has pores, produces sebum, accumulates dead cells, and gets clogged like any other area of skin — probably more, because it also deals with hair product residue. Most men have never once cleaned it properly. A silicone scalp massager changes that, and it's the simplest tool in the system.",
+    intro: "The scalp is skin. It has pores, produces sebum, accumulates dead cells, and gets clogged like any other area of skin, probably more, because it also deals with hair product residue. Most men have never once cleaned it properly. A silicone scalp massager changes that, and it's the simplest essential in the system.",
     sections: [
       {
         h2: 'What It Does — The Mechanics',
@@ -248,7 +248,7 @@ export const ARTICLES = [
       {
         h2: 'The SOLUM Scalp Massager',
         paras: [
-          "Black silicone. SOLUM debossed into the top face. Made in South Korea by COOLFIN A — the supplier that produces silicone scalp tools for the Korean market, where scalp care is a standard part of the male grooming routine.",
+          "Black silicone. SOLUM debossed into the top face. Made in South Korea by COOLFIN A, the supplier that produces silicone scalp massagers for the Korean market, where scalp care is a standard part of the male grooming routine.",
           "Works with any shampoo or body wash. Included in all three SOLUM kits.",
         ],
       },
@@ -284,7 +284,7 @@ export const ARTICLES = [
         paras: [
           "Apply to damp skin after wetting in the shower. Cover head to toe — chest, arms, legs, back. Apply generously.",
           "Leave for 8 to 10 minutes. Don't let it dry completely — that's too long and pulls more than necessary for normal skin. Damp-to-tacky is the target.",
-          "Rinse, then immediately exfoliate with the mitt and back cloth. This is the sequence that makes the weekly ritual work: the clay loosens everything that's built up, the exfoliating tools remove it. Done in that order, you'll see the results visibly.",
+          "Rinse, then immediately exfoliate with the mitt and back cloth. This is the sequence that makes the weekly ritual work: the clay loosens everything that's built up, the exfoliating essentials remove it. Done in that order, you'll see the results visibly.",
           "After exfoliating: pat dry — stay slightly damp — then apply argan oil. 10 to 15 drops, pressed into skin. The freshly cleared skin absorbs it completely.",
         ],
         tip: "Don't use lotion after the weekly clay ritual — use argan oil instead. Your skin doesn't need the additional film when it's been this thoroughly reset.",
