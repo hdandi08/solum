@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react';
 import { capture } from '../../lib/analytics.js';
 import { markRitualProgress } from '../../lib/qualifiedVisitTracker.js';
-import { DAILY_VIDEO, DAILY_POSTER, WEEKLY_READY, RITUALS, GOLD } from '../../data/ritualVideo.js';
+import { DAILY_VIDEO, DAILY_POSTER, WEEKLY_VIDEO, WEEKLY_POSTER, WEEKLY_READY, RITUALS, GOLD } from '../../data/ritualVideo.js';
+
+const VIDEOS  = { daily: DAILY_VIDEO,  weekly: WEEKLY_VIDEO };
+const POSTERS = { daily: DAILY_POSTER, weekly: WEEKLY_POSTER };
 
 const CSS = `
 /* ── Section shell ─────────────────────────────── */
@@ -45,13 +48,14 @@ const CSS = `
 
 .rv-poster{position:absolute;inset:0;width:100%;height:100%;border:none;padding:0;cursor:pointer;background:#000;display:block;}
 .rv-poster-img{position:absolute;inset:0;background-size:cover;background-position:center;}
-.rv-pi-d{background-image:url(${DAILY_POSTER.desktop});display:none;}
-.rv-pi-m{background-image:url(${DAILY_POSTER.mobile});}
+.rv-pi-d{display:none;}
 .rv-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,9,11,0.55),rgba(8,9,11,0) 38%,rgba(8,9,11,0) 70%,rgba(8,9,11,0.45));}
 .rv-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;background:rgba(8,9,11,0.55);border:1.5px solid var(--bone);display:flex;align-items:center;justify-content:center;color:var(--bone);backdrop-filter:blur(3px);transition:transform .2s,background .2s;}
 .rv-poster:hover .rv-play{transform:translate(-50%,-50%) scale(1.08);background:var(--blue);border-color:var(--blue);}
+.rv-stage.weekly .rv-poster:hover .rv-play{background:${GOLD};border-color:${GOLD};}
 .rv-dur{position:absolute;bottom:12px;right:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone);font-weight:600;background:rgba(8,9,11,0.5);padding:4px 8px;}
 .rv-vlabel{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;color:var(--blit);background:rgba(8,9,11,0.5);padding:5px 10px;pointer-events:none;}
+.rv-stage.weekly .rv-vlabel{color:${GOLD};}
 
 /* coming-soon (weekly) */
 .rv-soon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:32px;background:radial-gradient(circle at 50% 35%,rgba(200,169,110,0.12),rgba(8,9,11,0.96));}
@@ -133,7 +137,7 @@ function Pill({ id, active, onSelect }) {
       <div className="rv-pill-time">{r.time}</div>
       <p className="rv-pill-copy">{r.copy}</p>
       <span className="rv-pill-hint">
-        {id === 'daily' ? `▶ ${r.duration} film` : (WEEKLY_READY ? '▶ Watch the film' : '◇ Film coming soon')}
+        {id === 'daily' || WEEKLY_READY ? `▶ ${r.duration} film` : '◇ Film coming soon'}
       </span>
       {selected && <span className="rv-arrow">{CHEVRON}</span>}
     </button>
@@ -191,6 +195,8 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
 
   const ritual = RITUALS[active];
   const showVideo = active === 'daily' || WEEKLY_READY;
+  const video = VIDEOS[active];
+  const poster = POSTERS[active];
 
   return (
     <>
@@ -215,22 +221,23 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                 {showVideo ? (
                   <>
                     <video
+                      key={active}
                       ref={videoRef}
                       className="rv-video"
-                      poster={DAILY_POSTER.desktop}
+                      poster={poster.desktop}
                       controls={playing}
                       preload="metadata"
                       playsInline
                       onTimeUpdate={onTimeUpdate}
                       onEnded={() => { setPlaying(false); setEnded(true); }}
                     >
-                      <source src={DAILY_VIDEO.mobile} media="(max-width:768px)" />
-                      <source src={DAILY_VIDEO.desktop} />
+                      <source src={video.mobile} media="(max-width:768px)" />
+                      <source src={video.desktop} />
                     </video>
                     {!playing && !ended && (
-                      <button className="rv-poster" onClick={play} aria-label="Play the daily ritual film">
-                        <span className="rv-poster-img rv-pi-d" />
-                        <span className="rv-poster-img rv-pi-m" />
+                      <button className="rv-poster" onClick={play} aria-label={`Play the ${active} ritual film`}>
+                        <span className="rv-poster-img rv-pi-d" style={{ backgroundImage: `url(${poster.desktop})` }} />
+                        <span className="rv-poster-img rv-pi-m" style={{ backgroundImage: `url(${poster.mobile})` }} />
                         <span className="rv-scrim" />
                         <span className="rv-play">{PLAY}</span>
                         {ritual.duration && <span className="rv-dur">{ritual.duration}</span>}

@@ -8,16 +8,20 @@ export const DAILY_VIDEO = {
   mobile:  `${CDN}/video/daily/solum_daily_mobile_v2.mp4`,
 };
 
-// Weekly film not yet shot. When ready, transcode to these paths and flip WEEKLY_READY.
-// export const WEEKLY_VIDEO = {
-//   desktop: `${CDN}/video/weekly/solum_weekly_desktop.mp4`,
-//   mobile:  `${CDN}/video/weekly/solum_weekly_mobile.mp4`,
-// };
-export const WEEKLY_READY = false;
+export const WEEKLY_VIDEO = {
+  desktop: `${CDN}/video/weekly/solum_weekly_desktop.mp4`,
+  mobile:  `${CDN}/video/weekly/solum_weekly_mobile.mp4`,
+};
+export const WEEKLY_READY = true;
 
 export const DAILY_POSTER = {
   desktop: '/video/daily-poster-desktop.jpg',
   mobile:  '/video/daily-poster-mobile.jpg',
+};
+
+export const WEEKLY_POSTER = {
+  desktop: '/video/weekly-poster-desktop.jpg',
+  mobile:  '/video/weekly-poster-mobile.jpg',
 };
 
 export const GOLD = '#c8a96e';
@@ -44,7 +48,7 @@ export const RITUALS = {
     time: '22 min · 4 products',
     short: '22 min · 4 products',
     copy: 'Replaces daily that day. Come back once the daily habit is locked in.',
-    duration: null,
+    duration: '2:14',
     products: [
       { num: '05', name: 'Atlas Clay Mask',   img: '/products/05/still.webp' },
       { num: '04', name: 'Scalp Massager',    img: '/products/04/still.webp' },
