@@ -78,6 +78,10 @@ const CSS = `
 @keyframes rvnudge{0%,100%{transform:translateX(0);}50%{transform:translateX(7px);}}
 @keyframes rvgrow{0%,100%{opacity:.5;transform:scaleX(.65);}50%{opacity:1;transform:scaleX(1);}}
 
+/* ── AI disclosure note ────────────────────────── */
+.rv-note{font-size:11px;font-weight:300;letter-spacing:.4px;color:var(--stone);text-align:center;line-height:1.5;margin:0;}
+.rv-end-note{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--stone);font-weight:500;}
+
 /* ── Product rail ──────────────────────────────── */
 .rv-rail{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px;}
 .rv-rail.weekly{grid-template-columns:repeat(4,1fr);}
@@ -253,6 +257,7 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                         </button>
                         <span className="rv-end-line" />
                         <button className="rv-replay" onClick={replay}>↻ Replay</button>
+                        <span className="rv-end-note">AI visuals · real ritual, real products</span>
                       </div>
                     )}
                   </>
@@ -263,6 +268,8 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                   </div>
                 )}
               </div>
+
+              <p className="rv-note">Demonstration film. Visuals created with AI. The ritual is correct and the products are real.</p>
 
               <div className={`rv-rail ${active}`}>
                 {ritual.products.map((p) => (
