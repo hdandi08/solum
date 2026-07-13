@@ -1188,7 +1188,10 @@ export default function BuyPage() {
                 <div className="by-intro">
                   <span className="by-intro-eyebrow">Men's Body Care</span>
                   {isWarmArrival ? (
-                    <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
+                    <>
+                      <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
+                      <p className="by-intro-sub">Every product numbered, every step timed. The exact routine is on the card in your box.</p>
+                    </>
                   ) : (
                     <>
                       <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
@@ -1204,7 +1207,7 @@ export default function BuyPage() {
                 <div className="by-kit-confirm" data-testid="kit-confirm">
                   <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
-                    <span className="by-kit-confirm-meta">£{price} one-time · £{kitWorth(activeKit)} of product inside · free UK delivery</span>
+                    <span className="by-kit-confirm-meta">£{price} one-time · £{kitWorth(activeKit)} of product + the step-by-step routine inside · free UK delivery</span>
                   </div>
                   <button
                     type="button"
