@@ -170,6 +170,28 @@ export function fbCustom(event, props = {}) {
   fbq('trackCustom', event, props);
 }
 
+// ─── Google Ads (gtag) helpers ───────────────────────────────────────────────
+
+const GADS_ID = 'AW-18320153611';
+// Conversion label from the Purchase conversion action's event snippet in
+// Google Ads (the part after the slash in send_to). Empty = conversion send
+// is disabled; the base tag still captures gclid site-wide.
+const GADS_PURCHASE_LABEL = '';
+
+// Fires on SuccessPage — transactionId is the Stripe PaymentIntent ID (dedup).
+// Email powers Enhanced Conversions (allow_enhanced_conversions is on in the
+// base config; Google hashes the value client-side).
+export function gadsPurchase(value, transactionId, email) {
+  if (!IS_PROD || typeof window.gtag !== 'function' || !GADS_PURCHASE_LABEL) return;
+  if (email) window.gtag('set', 'user_data', { email: email.trim().toLowerCase() });
+  window.gtag('event', 'conversion', {
+    send_to: `${GADS_ID}/${GADS_PURCHASE_LABEL}`,
+    value,
+    currency: 'GBP',
+    transaction_id: transactionId,
+  });
+}
+
 // ─── TikTok Pixel helpers ────────────────────────────────────────────────────
 
 function ttq(method, ...args) {

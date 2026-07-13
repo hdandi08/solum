@@ -117,6 +117,12 @@
         }(window);
         fbq('init','690345887768095');
         fbq('track','PageView');
+        // Google Ads stub — dataLayer queues until gtag.js arrives with the
+        // other delayed pixels; gclid capture + config replay on load.
+        window.dataLayer=window.dataLayer||[];
+        window.gtag=function(){dataLayer.push(arguments);};
+        gtag('js',new Date());
+        gtag('config','AW-18320153611',{allow_enhanced_conversions:true});
         // TikTok stub (queues method calls until events.js flushes them)
         !function (w, d, t) {
           w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
@@ -131,6 +137,9 @@
             var s=document.createElement('script');s.async=!0;
             s.src='https://connect.facebook.net/en_US/fbevents.js';
             document.head.appendChild(s);
+            var g=document.createElement('script');g.async=!0;
+            g.src='https://www.googletagmanager.com/gtag/js?id=AW-18320153611';
+            document.head.appendChild(g);
             window.ttq.load('D8NHU2RC77UCVEHVNJNG');
             window.ttq.page();
           },2500);
