@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import posthog from 'posthog-js';
 import { detectInAppBrowser, detectPlatform, buildBreakoutUrl, buildAndroidIntentUrl } from '../lib/inAppBrowser.js';
 import { capture } from '../lib/analytics.js';
+// Overlay (.iab-overlay*) styles live in the banner's stylesheet — import it
+// directly so the gate never depends on InAppBrowserBanner staying on /buy.
+import './InAppBrowserBanner.css';
 import './IabCheckoutGate.css';
 
 const SHOWN_KEY = 'solum_iab_gate_shown';

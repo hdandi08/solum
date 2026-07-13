@@ -1300,7 +1300,7 @@ export default function BuyPage() {
               {step === 'details' && (
                 <div className="by-express-wrap" ref={formStartRef}>
                   {iabGate ? (
-                    <IabCheckoutGate kit={selectedKit} source={source} onContinue={continueInApp} />
+                    <IabCheckoutGate key={selectedKit} kit={selectedKit} source={source} onContinue={continueInApp} />
                   ) : (
                     <>
                       {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
