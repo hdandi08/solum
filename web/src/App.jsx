@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import { capture } from './lib/analytics';
@@ -36,6 +36,15 @@ function RouteFallback() {
       <img src="/solum-wordmark-clean.svg" alt="SOLUM" style={{ height: 22, opacity: 0.65 }} />
     </div>
   );
+}
+
+// Old kit URLs (/kit/ground, /kit/ritual) still live in past ad destinations and
+// bio links; they hit the * catch-all and soft-404. Redirect them to /buy.
+function KitRedirect() {
+  const { kitId } = useParams();
+  return ['ground', 'ritual'].includes(kitId)
+    ? <Navigate to={`/buy?kit=${kitId}`} replace />
+    : <NotFoundPage />;
 }
 
 // If Supabase drops auth tokens on the wrong page, forward to /account.
@@ -100,6 +109,7 @@ export default function App() {
           <Route path="/creators" element={<CreatorsApplyPage />} />
           <Route path="/email-preview" element={<EmailPreviewPage />} />
           <Route path="/product/:slug" element={<ProductPage />} />
+          <Route path="/kit/:kitId" element={<KitRedirect />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
