@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectInAppBrowser } from './inAppBrowser';
+import { detectInAppBrowser, shouldShowIabGate } from './inAppBrowser';
 
 // Representative real-world user-agent strings for the in-app webviews we care about.
 const UA = {
@@ -98,4 +98,19 @@ describe('buildAndroidIntentUrl', () => {
     expect(out.match(/#/g)).toHaveLength(1);
     expect(out).not.toContain('#section');
   });
+});
+
+describe('shouldShowIabGate', () => {
+  it('shows for Facebook iOS in-app browser', () =>
+    expect(shouldShowIabGate(UA.facebook, '')).toBe(true));
+  it('shows for a generic Android WebView', () =>
+    expect(shouldShowIabGate(UA.androidWv, '')).toBe(true));
+  it('hides for real Safari', () =>
+    expect(shouldShowIabGate(UA.safari, '')).toBe(false));
+  it('hides for real Chrome', () =>
+    expect(shouldShowIabGate(UA.chrome, '')).toBe(false));
+  it('forceIab=1 forces the gate in any browser', () =>
+    expect(shouldShowIabGate(UA.chrome, '?forceIab=1')).toBe(true));
+  it('handles missing search string', () =>
+    expect(shouldShowIabGate(UA.safari, undefined)).toBe(false));
 });

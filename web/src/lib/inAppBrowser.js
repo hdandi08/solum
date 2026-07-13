@@ -80,3 +80,19 @@ export function buildAndroidIntentUrl(httpsUrl) {
   const withoutScheme = u.host + u.pathname + u.search; // host + path + query
   return `intent://${withoutScheme}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
 }
+
+/**
+ * Whether /buy should replace the payment area with the in-app-browser gate:
+ * a blocking "open in browser / continue here" choice card. True inside any
+ * recognised iOS/Android in-app webview, where Apple Pay / Google Pay /
+ * PayPal never render. `?forceIab=1` forces it for preview in any browser.
+ * @param {string} [ua] user-agent; defaults to navigator.userAgent
+ * @param {string} [search] location search string, e.g. '?forceIab=1'
+ * @returns {boolean}
+ */
+export function shouldShowIabGate(ua, search) {
+  if (search && new URLSearchParams(search).has('forceIab')) return true;
+  if (!isInAppBrowser(ua)) return false;
+  const platform = detectPlatform(ua);
+  return platform === 'ios' || platform === 'android';
+}
