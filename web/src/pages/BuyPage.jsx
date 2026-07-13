@@ -631,6 +631,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
 // Deferred PaymentIntent flow: wallet supplies email + shipping address, then we
 // create the PI server-side (existing function) and confirm. One tap, no form.
 
+// Truncate error text for analytics payloads — PostHog properties, not logs.
+const errText = (m) => String(m ?? '').slice(0, 200);
+
 function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailability }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -639,7 +642,10 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
     if (!stripe || !elements) return;
     onError('');
     const { error: submitError } = await elements.submit();
-    if (submitError) { onError(submitError.message ?? 'Could not start payment.'); return; }
+    if (submitError) {
+      capture('express_error', { kit: kitId, source, stage: 'submit', message: errText(submitError.message) });
+      onError(submitError.message ?? 'Could not start payment.'); return;
+    }
 
     const ship   = event.shippingAddress ?? {};
     const addr    = ship.address ?? {};
@@ -670,7 +676,10 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
         }),
       });
       const data = await res.json();
-      if (!res.ok) { onError(data.message ?? data.error ?? 'Something went wrong. Please try again.'); return; }
+      if (!res.ok) {
+        capture('express_error', { kit: kitId, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
+        onError(data.message ?? data.error ?? 'Something went wrong. Please try again.'); return;
+      }
 
       identify(email, { first_name: first_name || '', kit: kitId, source });
       // expressPaymentType distinguishes the wallet used: 'apple_pay' | 'google_pay' | 'link' | 'paypal'
@@ -691,12 +700,16 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
         redirect: 'if_required',
       });
 
-      if (confirmError) { onError(confirmError.message ?? 'Payment failed. Please try again.'); return; }
+      if (confirmError) {
+        capture('express_error', { kit: kitId, source, stage: 'confirm', message: errText(confirmError.message) });
+        onError(confirmError.message ?? 'Payment failed. Please try again.'); return;
+      }
       if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
       }
     } catch {
+      capture('express_error', { kit: kitId, source, stage: 'network', message: '' });
       onError('Network error. Please try again.');
     }
   }
@@ -725,14 +738,19 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
         });
         onAvailability(!!availablePaymentMethods);
       }}
-      onClick={({ resolve }) => resolve({
-        emailRequired: true,
-        shippingAddressRequired: true,
-        phoneNumberRequired: false,
-        allowedShippingCountries: ['GB'],
-      })}
+      onClick={(event) => {
+        // The only signal that a wallet button was tapped at all — the sheet,
+        // like everything else inside the Stripe iframe, is invisible to replays.
+        capture('express_clicked', { kit: kitId, source, wallet: event.expressPaymentType });
+        event.resolve({
+          emailRequired: true,
+          shippingAddressRequired: true,
+          phoneNumberRequired: false,
+          allowedShippingCountries: ['GB'],
+        });
+      }}
       onConfirm={onConfirm}
-      onCancel={() => {}}
+      onCancel={() => capture('express_cancelled', { kit: kitId, source })}
     />
   );
 }
