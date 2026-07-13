@@ -336,7 +336,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
             ))}
           </div>
           <div className="co-worth-total">
-            <s>£{kitWorth(kit)} of product</s> · you pay £{price}
+            <s>£{kitWorth(kit)} of product</s> · yours for £{price}
           </div>
           <div className="co-mobile-trust">
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
@@ -476,7 +476,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
         ))}
       </div>
       <div className="co-worth-total">
-        <s>£{kitWorth(kit)} of product</s> · you pay £{price}
+        <s>£{kitWorth(kit)} of product</s> · yours for £{price}
       </div>
       {products.some(p => p.comingSoon) && (
         <div className="co-soon-note">* Coming soon — included when available</div>

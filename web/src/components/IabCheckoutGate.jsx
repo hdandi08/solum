@@ -76,8 +76,8 @@ export default function IabCheckoutGate({ kit, source, onContinue }) {
           <div className="iab-overlay-card" onClick={(e) => e.stopPropagation()}>
             <div className="iab-overlay-title">Open in Safari for 1 tap Apple Pay</div>
             <ol className="iab-overlay-steps">
-              <li>Tap the menu (the dots or aA) at the top of the screen.</li>
-              <li>Choose Open in Safari (or Open in Browser).</li>
+              <li>Tap the <strong>···</strong> menu (or <strong>aA</strong>) at the top of the screen.</li>
+              <li>Choose <strong>&ldquo;Open in Safari&rdquo;</strong> or <strong>&ldquo;Open in browser&rdquo;</strong>.</li>
             </ol>
             <button type="button" className="iab-overlay-btn" onClick={() => setShowOverlay(false)}>Got it</button>
           </div>

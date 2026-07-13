@@ -362,7 +362,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s5">
               <span className="terms-section-num">Section 05</span>
               <h2 className="terms-section-title">Subscription Terms</h2>
-              <p className="terms-p">When you purchase a SOLUM kit, you are entering into a subscription agreement. Your subscription consists of a first box (containing both tools and consumable products) and monthly refill boxes thereafter (consumable products only, as tools last 6–12 months).</p>
+              <p className="terms-p">When you purchase a SOLUM kit, you are entering into a subscription agreement. Your subscription consists of a first box (containing both tools and consumable products) and monthly refill boxes thereafter (consumable products only, as tools last 1–6 months).</p>
 
               <div className="terms-h3">How the Subscription Works</div>
               <ul className="terms-list">

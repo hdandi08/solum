@@ -151,7 +151,7 @@ export default function Hero() {
               }}
             >
               <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
-              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product · kits from £{Math.min(...KITS.filter(k => !k.comingSoon && !k.hidden).map(k => k.firstBoxPrice))}
+              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product. Yours for £{KITS.find(k => k.id === 'ritual').firstBoxPrice}.
             </div>
             {offerActive() && (
               <div

@@ -184,7 +184,7 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                     </div>
                     {!kit.comingSoon && <div className="kit-worth-line">£{kitWorth(kit)} of product</div>}
-                    <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece guided system · your shower essentials last 6 to 12 months</div>
+                    <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece guided system · your shower essentials last 1 to 6 months</div>
                     {!kit.comingSoon && (
                       <div className="kit-cert-line">
                         {kit.id === 'ritual'

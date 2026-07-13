@@ -42,8 +42,8 @@ export default function HomeCTABand() {
         <div className="home-ctaband-inner reveal">
           <h2 className="home-ctaband-title">Ten minutes a day.<br /><span>Everything changes.</span></h2>
           <p className="home-ctaband-value">
-            <strong>£{kitWorth(ritual)} of product · you pay £{ritual.firstBoxPrice}.</strong><br />
-            Tools last 6 to 12 months. First batch · only 250 kits made.
+            <strong>£{kitWorth(ritual)} of product. Yours for £{ritual.firstBoxPrice}.</strong><br />
+            Tools last 1 to 6 months. First batch · only 250 kits made.
           </p>
           <div className="home-ctaband-buttons">
             <button type="button" className="home-ctaband-buy" data-buy-cta={`/buy?kit=${ritual.id}`} onClick={() => buy(ritual)}>
