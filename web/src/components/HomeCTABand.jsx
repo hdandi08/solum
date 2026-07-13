@@ -46,10 +46,10 @@ export default function HomeCTABand() {
             Tools last 6 to 12 months. First batch · only 250 kits made.
           </p>
           <div className="home-ctaband-buttons">
-            <button type="button" className="home-ctaband-buy" onClick={() => buy(ritual)}>
+            <button type="button" className="home-ctaband-buy" data-buy-cta={`/buy?kit=${ritual.id}`} onClick={() => buy(ritual)}>
               Buy {ritual.name} · £{ritual.firstBoxPrice}
             </button>
-            <button type="button" className="home-ctaband-ground" onClick={() => buy(ground)}>
+            <button type="button" className="home-ctaband-ground" data-buy-cta={`/buy?kit=${ground.id}`} onClick={() => buy(ground)}>
               Start with {ground.name} · £{ground.firstBoxPrice}
             </button>
           </div>
