@@ -120,7 +120,7 @@ export default function Hero() {
               You shower every day.<br />So why don't you feel clean?
             </h1>
             <div className="hero-line" />
-            <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower.</span></p>
+            <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Every step laid out: what to use, when, and exactly how.</span></p>
             <div className="hero-actions">
               {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
               <a
@@ -131,41 +131,42 @@ export default function Hero() {
                 Fix My Shower Routine
               </a>
             </div>
+            {/* Value anchor is the first-tier signal; delivery is the quiet second line. */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 7,
+                marginTop: 14,
+                padding: '6px 12px',
+                border: '1px solid #2E6DA4',
+                borderRadius: 2,
+                background: 'rgba(46,109,164,0.12)',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '1.2px',
+                textTransform: 'uppercase',
+                color: '#F0ECE2',
+              }}
+            >
+              <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
+              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product · kits from £{Math.min(...KITS.filter(k => !k.comingSoon && !k.hidden).map(k => k.firstBoxPrice))}
+            </div>
             {offerActive() && (
               <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  marginTop: 14,
-                  padding: '6px 12px',
-                  border: '1px solid #2E6DA4',
-                  borderRadius: 2,
-                  background: 'rgba(46,109,164,0.12)',
+                  marginTop: 10,
                   fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '1.2px',
-                  textTransform: 'uppercase',
-                  color: '#F0ECE2',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  letterSpacing: '0.8px',
+                  color: 'rgba(240,236,226,0.62)',
                 }}
               >
-                <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
                 Free UK delivery · worth £5.95
               </div>
             )}
-            <div
-              style={{
-                marginTop: 10,
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 13,
-                fontWeight: 500,
-                letterSpacing: '0.8px',
-                color: 'rgba(240,236,226,0.62)',
-              }}
-            >
-              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product · kits from £{Math.min(...KITS.filter(k => !k.comingSoon && !k.hidden).map(k => k.firstBoxPrice))}
-            </div>
           </div>
         </div>
         <div className="hero-visual">

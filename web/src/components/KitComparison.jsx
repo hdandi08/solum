@@ -163,7 +163,7 @@ export default function KitComparison() {
           <div className="kits-header reveal">
             <div className="k-sec-tag">Two ways to begin.</div>
             <h2>Choose<br />Your Kit.</h2>
-            <p>Each kit arrives once. After that, we only send what you've run out of.</p>
+            <p>You're not buying products. You're following a system. Every product numbered, every step timed, the exact routine in the box.</p>
           </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
@@ -184,7 +184,7 @@ export default function KitComparison() {
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>
                     </div>
                     {!kit.comingSoon && <div className="kit-worth-line">£{kitWorth(kit)} of product</div>}
-                    <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece system · your shower essentials last 6 to 12 months</div>
+                    <div className="kit-value-line">Complete {products.filter(p => !p.comingSoon).length}-piece guided system · your shower essentials last 6 to 12 months</div>
                     {!kit.comingSoon && (
                       <div className="kit-cert-line">
                         {kit.id === 'ritual'
