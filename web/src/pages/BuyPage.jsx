@@ -12,6 +12,8 @@ import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
+import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
+import { shouldShowIabGate } from '../lib/inAppBrowser.js';
 import { videoFor } from '../data/productMedia.js';
 import './checkout/checkout.css';
 import { jumpTop } from '../lib/scroll.js';
@@ -847,6 +849,18 @@ export default function BuyPage() {
   const [expressReady, setExpressReady]         = useState(false);
   const [kitPickerOpen, setKitPickerOpen]       = useState(!isWarmArrival);
 
+  // In-app-browser gate: block the payment area until the visitor either
+  // breaks out to their real browser or knowingly continues in-app.
+  const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
+  const [iabContinued, setIabContinued] = useState(() => {
+    try { return sessionStorage.getItem(IAB_CONTINUE_KEY) === '1'; } catch { return false; }
+  });
+  const iabGate = !iabContinued && shouldShowIabGate(undefined, window.location.search);
+  const continueInApp = () => {
+    try { sessionStorage.setItem(IAB_CONTINUE_KEY, '1'); } catch { /* no-op */ }
+    setIabContinued(true);
+  };
+
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
   // Stripe's wallet iframe takes 1.5–4s to render (measured via
@@ -1281,47 +1295,50 @@ export default function BuyPage() {
                 </div>
               )}
 
-              {/* In-app browsers can't show Apple Pay — offer the breakout here,
-                  at the payment decision, instead of as the first thing on screen */}
-              {step === 'details' && <InAppBrowserBanner variant="inline" />}
-
-              {/* Express checkout — one-tap wallets, above the manual form */}
+              {/* Express checkout — one-tap wallets, above the manual form. For in-app
+                  browsers the blocking gate takes this slot until the visitor chooses. */}
               {step === 'details' && (
                 <div className="by-express-wrap" ref={formStartRef}>
-                  {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
-                  <Elements
-                    key={selectedKit}
-                    stripe={stripePromise}
-                    options={{ mode: 'payment', amount: price * 100, currency: 'gbp', appearance: stripeAppearance }}
-                  >
-                    <ExpressCheckout
-                      kitId={selectedKit}
-                      price={price}
-                      source={source}
-                      authHeaders={authHeaders}
-                      onError={setError}
-                      onAvailability={(a) => { setExpressAvailable(a); setExpressReady(true); }}
-                    />
-                  </Elements>
-                  {expressAvailable && (
+                  {iabGate ? (
+                    <IabCheckoutGate kit={selectedKit} source={source} onContinue={continueInApp} />
+                  ) : (
                     <>
-                      <div className="by-express-consent">
-                        By continuing with Apple Pay or Link, you agree to our{' '}
-                        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
-                        {' '}and{' '}
-                        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-                      </div>
-                      <div className="by-express-or"><span>or pay by card</span></div>
+                      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
+                      <Elements
+                        key={selectedKit}
+                        stripe={stripePromise}
+                        options={{ mode: 'payment', amount: price * 100, currency: 'gbp', appearance: stripeAppearance }}
+                      >
+                        <ExpressCheckout
+                          kitId={selectedKit}
+                          price={price}
+                          source={source}
+                          authHeaders={authHeaders}
+                          onError={setError}
+                          onAvailability={(a) => { setExpressAvailable(a); setExpressReady(true); }}
+                        />
+                      </Elements>
+                      {expressAvailable && (
+                        <>
+                          <div className="by-express-consent">
+                            By continuing with Apple Pay or Link, you agree to our{' '}
+                            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+                            {' '}and{' '}
+                            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                          </div>
+                          <div className="by-express-or"><span>or pay by card</span></div>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
               )}
 
               {/* Progress bar — card path only; express payers skip these steps */}
-              {step === 'details' && <ProgressBar step="details" />}
+              {step === 'details' && !iabGate && <ProgressBar step="details" />}
 
               {/* Step 1: Details */}
-              {step === 'details' && (
+              {step === 'details' && !iabGate && (
                 <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
                   <div className="co-step-heading">Your Details.</div>
                   <div className="co-step-subhead">Takes 60 seconds. We only ask what we need.</div>
