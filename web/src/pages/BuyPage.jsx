@@ -546,15 +546,18 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       });
 
       if (confirmError) {
+        capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: errText(confirmError.message) });
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
       } else {
+        capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: `unexpected status ${paymentIntent?.status}` });
         setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       }
     } catch (err) {
+      capture('checkout_error', { kit: activeKit.id, source, stage: 'network', message: '' });
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
     } finally {
       submitting.current = false;
@@ -999,6 +1002,7 @@ export default function BuyPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        capture('checkout_error', { kit: selectedKit, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
         setError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
       }
@@ -1022,6 +1026,7 @@ export default function BuyPage() {
         }));
       } catch {}
     } catch {
+      capture('checkout_error', { kit: selectedKit, source, stage: 'network', message: '' });
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
