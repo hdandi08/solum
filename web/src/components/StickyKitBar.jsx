@@ -13,11 +13,12 @@ const CSS = `
 .sticky-kitbar-prices{
   font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;
   letter-spacing:1.2px;text-transform:uppercase;color:var(--mist);white-space:nowrap;
+  min-width:0;overflow:hidden;text-overflow:ellipsis;
 }
 .sticky-kitbar-cta{
   font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;
   background:var(--bone);color:var(--black);border:none;
-  padding:13px 22px;cursor:pointer;white-space:nowrap;
+  padding:13px 22px;cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
 /* Lift the founder chat launcher above the bar while it is shown */
 body.has-kitbar .fc-launcher{bottom:calc(80px + env(safe-area-inset-bottom, 0px));}
