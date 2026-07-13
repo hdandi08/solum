@@ -39,12 +39,14 @@ function RouteFallback() {
 }
 
 // Old kit URLs (/kit/ground, /kit/ritual) still live in past ad destinations and
-// bio links; they hit the * catch-all and soft-404. Redirect them to /buy.
+// bio links; they hit the * catch-all and soft-404. Redirect them to /buy,
+// keeping any attribution params (utm_*, fbclid) the old link carried.
 function KitRedirect() {
   const { kitId } = useParams();
-  return ['ground', 'ritual'].includes(kitId)
-    ? <Navigate to={`/buy?kit=${kitId}`} replace />
-    : <NotFoundPage />;
+  if (!['ground', 'ritual'].includes(kitId)) return <NotFoundPage />;
+  const search = new URLSearchParams(window.location.search);
+  search.set('kit', kitId);
+  return <Navigate to={{ pathname: '/buy', search: `?${search.toString()}` }} replace />;
 }
 
 // If Supabase drops auth tokens on the wrong page, forward to /account.

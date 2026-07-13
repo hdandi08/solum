@@ -20,11 +20,16 @@ const CSS = `
   background:var(--bone);color:var(--black);border:none;
   padding:13px 22px;cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
-/* Lift the founder chat launcher above the bar while it is shown */
-body.has-kitbar .fc-launcher{bottom:calc(80px + env(safe-area-inset-bottom, 0px));}
-body.has-kitbar .fc-bubble{bottom:calc(142px + env(safe-area-inset-bottom, 0px));}
-@media(max-width:768px){.sticky-kitbar{display:flex;}}
+/* Bar and founder-chat lift are mobile-only: the has-kitbar class is also set
+   on desktop scrolls, so the launcher offsets must stay inside the query. */
+@media(max-width:768px){
+  .sticky-kitbar{display:flex;}
+  body.has-kitbar .fc-launcher{bottom:calc(80px + env(safe-area-inset-bottom, 0px));}
+  body.has-kitbar .fc-bubble{bottom:calc(142px + env(safe-area-inset-bottom, 0px));}
+}
 `;
+
+const MOBILE_QUERY = '(max-width: 768px)';
 
 // Mobile-only persistent path to purchase: appears once the visitor scrolls past
 // the hero and stays until the kit cards are actually on screen — the one moment
@@ -32,7 +37,15 @@ body.has-kitbar .fc-bubble{bottom:calc(142px + env(safe-area-inset-bottom, 0px))
 export default function StickyKitBar() {
   const [pastHero, setPastHero] = useState(false);
   const [kitsInView, setKitsInView] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const shownOnce = useRef(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.9);
@@ -52,7 +65,7 @@ export default function StickyKitBar() {
     return () => obs.disconnect();
   }, []);
 
-  const show = pastHero && !kitsInView;
+  const show = isMobile && pastHero && !kitsInView;
 
   useEffect(() => {
     document.body.classList.toggle('has-kitbar', show);
