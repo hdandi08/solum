@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useVariant, trackGoal } from '../hooks/useVariant';
 import { BANNER } from '../data/productMedia.js';
 import { offerActive } from '../lib/offer.js';
+import { KITS, kitWorth } from '../data/kits.js';
 
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SMALL_SCREEN = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
@@ -153,6 +154,18 @@ export default function Hero() {
                 Free UK delivery · worth £5.95
               </div>
             )}
+            <div
+              style={{
+                marginTop: 10,
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: 13,
+                fontWeight: 500,
+                letterSpacing: '0.8px',
+                color: 'rgba(240,236,226,0.62)',
+              }}
+            >
+              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product · kits from £{Math.min(...KITS.filter(k => !k.comingSoon && !k.hidden).map(k => k.firstBoxPrice))}
+            </div>
           </div>
         </div>
         <div className="hero-visual">

@@ -74,6 +74,8 @@ const CSS = `
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
+.kits-footnote strong{color:var(--bone);font-weight:600;}
+.kits-trust-row{margin-top:10px;font-size:13px;color:var(--stone);font-weight:300;letter-spacing:.3px;}
 /* Contents live behind the toggle at ALL widths — the value line + count carry the
    system story; the full list is one tap away (was desktop-always-open pre 2026-07-08). */
 .kit-products-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--lineb);color:var(--stone);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;padding:12px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:border-color .2s,color .2s;margin-bottom:20px;}
@@ -253,6 +255,10 @@ export default function KitComparison() {
                 </div>
               );
             })}
+          </div>
+          <div className="kits-footnote reveal">
+            <strong>First batch · only 250 kits made.</strong> Next batch £75 and £95.
+            <div className="kits-trust-row">🚚 Free UK delivery · ✓ 14-day returns · 🔒 Secured by Stripe</div>
           </div>
         </div>
       </section>
