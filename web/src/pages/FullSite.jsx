@@ -21,6 +21,7 @@ import CTASection from '../components/CTASection.jsx';
 import SolumFooter from '../components/SolumFooter.jsx';
 import ABDevPanel from '../components/ABDevPanel.jsx';
 import FounderChat from '../components/FounderChat.jsx';
+import StickyKitBar from '../components/StickyKitBar.jsx';
 
 const IS_FIRST_BATCH = import.meta.env.VITE_SITE_MODE === 'first_batch';
 
@@ -115,6 +116,7 @@ export default function FullSite() {
       <SolumFooter />
       <ABDevPanel />
       <FounderChat />
+      <StickyKitBar />
     </>
   );
 }
