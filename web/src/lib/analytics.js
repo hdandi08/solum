@@ -176,7 +176,7 @@ const GADS_ID = 'AW-18320153611';
 // Conversion label from the Purchase conversion action's event snippet in
 // Google Ads (the part after the slash in send_to). Empty = conversion send
 // is disabled; the base tag still captures gclid site-wide.
-const GADS_PURCHASE_LABEL = '';
+const GADS_PURCHASE_LABEL = 'UOVYCN-U7c8cEIu43Z9E';
 
 // Fires on SuccessPage — transactionId is the Stripe PaymentIntent ID (dedup).
 // Email powers Enhanced Conversions (allow_enhanced_conversions is on in the
