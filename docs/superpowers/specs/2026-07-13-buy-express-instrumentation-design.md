@@ -1,7 +1,8 @@
 # /buy Express Checkout Instrumentation — Design
 
 Date: 2026-07-13
-Status: Part A approved for build. Part B deferred until Part A data confirms the failure mode.
+Status: Parts A and B both approved for build (2026-07-13 — Harsha: most /buy visitors never see
+Apple/Google Pay, so the IAB gate is the high-leverage fix; no need to wait for Part A data).
 
 ## Background
 
@@ -48,20 +49,36 @@ express + `express_cancelled` + `express_error`) ≈ 0.
   confirm events in PostHog dev traffic.
 - Deploy to dev branch; Harsha sign-off before merge to master (standard workflow).
 
-## Part B — IAB checkout gate (DEFERRED — do not build yet)
+## Part B — IAB checkout gate (build now)
 
-Decision gate: review Part A data after ~48h of meaningful ad traffic.
+Blocking choice card on the /buy details step for in-app-browser users. Layout chosen over
+prominent-inline-card and Android-auto-breakout on 2026-07-13.
 
-- If IAB visitors show ~zero `express_clicked` and no form input → build the gate: blocking choice card on
-  /buy details step for in-app-browser users (headline "Pay with Apple Pay, Google Pay or PayPal", app-aware
-  copy, primary "Open in browser ↗" reusing existing breakout machinery — Android `intent://` auto-open,
-  iOS instruction overlay — secondary quiet "continue here — pay by card" with sessionStorage persistence,
-  events `iab_gate_shown/open_clicked/continue_clicked`, `?forceIab=1` preview override, replaces the
-  current inline nudge on the details step only).
-- If instead visitors tap Link/PayPal and cancel/error → different fix; re-diagnose from the new events.
+- **Trigger:** `isInAppBrowser()` and platform iOS/Android, on the details step only, unless the user chose
+  "continue here" earlier this session (sessionStorage flag `solum_iab_gate_continue`). Detection is
+  synchronous (user-agent), so no flicker and no dependency on Stripe's async `express_availability`.
+- **Render:** the card mounts *in place of* the express wrap + details form (they do not mount until the
+  user chooses a path). Existing kit summary above stays.
+- **Copy (app- and platform-aware):** headline "Pay with Apple Pay, Google Pay or PayPal" (lead wallet =
+  Apple Pay on iOS, Google Pay on Android); body "They only work in your full browser, not inside the
+  {Facebook/Instagram/TikTok/this} app" (app name from `detectInAppBrowser()`).
+- **Primary button "Open in browser ↗":** reuse existing breakout machinery — Android `intent://`
+  auto-open with fallback, iOS instruction overlay, `distinct_id` + full URL (incl. `?kit=`) forwarded via
+  `buildBreakoutUrl`.
+- **Secondary quiet link "or continue here — pay by card":** sets the session flag and reveals the normal
+  express + form flow.
+- **Housekeeping:** replaces the current inline `InAppBrowserBanner variant="inline"` on the details step;
+  the fixed top banner on other steps stays. Honest copy: Link still renders in-app, so the card names the
+  three missing wallets and never claims payment is impossible in-app.
+- **Events:** `iab_gate_shown` (once per session), `iab_gate_open_clicked`, `iab_gate_continue_clicked` —
+  all with `{ platform, app, kit, source }`.
+- **Preview override:** `?forceIab=1` query param forces the gate in a normal browser for verification.
 
-Approved layout for the gate (if built): blocking choice card, chosen over prominent-inline-card and
-Android-auto-breakout on 2026-07-13.
+### Success criteria
+
+IAB visitors on /buy either break out to the system browser (measurable: `iab_gate_open_clicked` followed
+by a new session with the same `distinct_id` in a real browser) or knowingly continue to the card form
+(`iab_gate_continue_clicked`). The silent 60-second bounce with zero interaction should shrink.
 
 ## Out of scope
 
