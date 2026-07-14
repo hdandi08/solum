@@ -15,8 +15,8 @@ export const KITS = [
   {
     id: 'ground',
     name: 'GROUND',
-    image: '/products/kit/ground-group.webp', // GROUND-only composite (no argan oil / mixing bowl — those are the RITUAL upgrade)
-    gallery: ['/products/kit/ground-group.webp', '/products/kit/ground.webp', '/products/kit/outer-box.webp'],
+    image: '/products/kit/ground.webp', // open box with GROUND-correct contents (no argan oil / mixing bowl — those are the RITUAL upgrade)
+    gallery: ['/products/kit/ground.webp', '/products/kit/model-back.webp', '/products/kit/ground-group.webp', '/products/kit/outer-box.webp'],
     firstBoxPrice: 65,
     monthlyPrice: 38,
     productNums: ['01','02','03','04','05','07','08'],
@@ -29,8 +29,8 @@ export const KITS = [
   {
     id: 'ritual',
     name: 'RITUAL',
-    image: '/products/kit/group.webp', // full 9-product studio grouping (oil + bowl included)
-    gallery: ['/products/kit/group.webp', '/products/kit/group-detail.webp', '/products/kit/still.webp', '/products/kit/outer-box.webp', '/products/kit/holding-box.webp'],
+    image: '/products/kit/box-open.webp', // open box with full RITUAL contents (oil + bowl visible)
+    gallery: ['/products/kit/box-open.webp', '/products/kit/holding-box.webp', '/products/kit/group.webp', '/products/kit/group-detail.webp', '/products/kit/outer-box.webp'],
     firstBoxPrice: 85,
     monthlyPrice: 48,
     productNums: ['01','02','03','04','05','06','07','08','11'],
