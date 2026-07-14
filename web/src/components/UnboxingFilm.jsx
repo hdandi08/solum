@@ -111,7 +111,7 @@ export default function UnboxingFilm() {
                   <img src="/products/kit/use-1.webp" width={1200} height={1500} loading="lazy" alt="SOLUM kit products laid out showing the daily ritual essentials" />
                 </div>
                 <div className="unbox-side-shot">
-                  <img src="/products/kit/use-2.webp" width={1200} height={1500} loading="lazy" alt="Close-up of SOLUM kit packaging and product detail" />
+                  <img src="/products/kit/outer-box-products.webp" width={1200} height={1500} loading="lazy" alt="SOLUM matte black outer box with blue accent line standing behind the kit products" />
                 </div>
               </div>
             </div>
