@@ -48,7 +48,7 @@ const FAQS = [
   },
   {
     q: 'Is it complicated to use?',
-    a: 'Not at all. The daily routine takes about 10 minutes in the shower you already take, and every kit comes with a step by step ritual card. There is a full walkthrough on the site too.',
+    a: 'Not at all. The daily routine takes about 10 minutes in the shower you already take, and the QR code on the box opens your full step by step ritual guide. There is a full walkthrough on the site too.',
   },
   {
     q: 'How much is delivery, and how fast will it arrive?',

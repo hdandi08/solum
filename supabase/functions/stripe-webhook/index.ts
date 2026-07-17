@@ -203,7 +203,7 @@ async function sendConfirmationEmail(
             <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">4</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">Your ritual guide</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Full step-by-step for your daily and weekly ritual. Scan the QR code in the box or go to <a href="https://bysolum.co.uk/ritual" style="color:#4A8FC7;text-decoration:none;">bysolum.co.uk/ritual</a></p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">Your ritual guide</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Full step-by-step for your daily and weekly ritual. Scan the QR code on the box or go to <a href="https://bysolum.co.uk/ritual" style="color:#4A8FC7;text-decoration:none;">bysolum.co.uk/ritual</a></p></td>
               </tr></table>
             </td></tr>
           </table>

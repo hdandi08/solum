@@ -266,9 +266,13 @@ Deno.serve(async (req) => {
   }
   const parcelId    = parcel.id as number;
   const trackingNum = parcel.tracking_number as string;
-  const trackingUrl = (parcel.tracking_url ?? null) as string | null;
   const labelUrl     = (parcel.documents?.find((d: { type: string }) => d.type === 'label')?.link ?? null) as string | null;
-  const carrierCode  = scData.data?.carrier?.code ?? 'royal-mail';
+  const carrierCode  = (scData.data?.carrier?.code ?? 'royal-mail') as string;
+  // SendCloud's parcel.tracking_url forwards to Royal Mail's retired portal URL
+  // (/portal/rm/track → 403 dead page), so build the current RM tracking link ourselves.
+  const trackingUrl = trackingNum && carrierCode.includes('royal')
+    ? `https://www.royalmail.com/track-your-item#/tracking-results/${trackingNum}`
+    : ((parcel.tracking_url ?? null) as string | null);
 
   await db.from('orders').update({
     sendcloud_parcel_id: parcelId,

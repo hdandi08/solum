@@ -119,7 +119,7 @@ export async function sendDeliveredEmail(
       <tr><td style="padding:24px 28px;">
         <p style="margin:0 0 4px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">Start Here</p>
         <p style="margin:12px 0 0;font-size:15px;color:rgba(240,236,226,0.85);line-height:1.75;">
-          Your ritual card is in the box — it walks you through every product in the right order. Daily ritual: 10 minutes. Weekly deep ritual: 22 minutes.
+          Scan the QR code on your box — it opens the full step-by-step ritual, every product in the right order. Or go straight to <a href="https://bysolum.co.uk/ritual" style="color:#4A8FC7;text-decoration:none;">bysolum.co.uk/ritual</a>. Daily ritual: 10 minutes. Weekly deep ritual: 22 minutes.
         </p>
       </td></tr>
     </table>
