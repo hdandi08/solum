@@ -8,7 +8,7 @@ test.describe('Homepage', () => {
 
   test('page loads with all key sections', async ({ page }) => {
     await expect(page).toHaveTitle(/SOLUM/i);
-    for (const id of ['truth', 'kits', 'products', 'ritual', 'subscription']) {
+    for (const id of ['problem', 'kits', 'products', 'ritual', 'system']) {
       await expect(page.locator(`#${id}`)).toBeAttached();
     }
   });
@@ -16,26 +16,25 @@ test.describe('Homepage', () => {
   test('kit cards show correct names and prices', async ({ page }) => {
     const kits = page.locator('#kits');
     await kits.scrollIntoViewIfNeeded();
+    // Two live kits only — SOVEREIGN is coming-soon and not shown as a kit card.
     await expect(kits.locator('.kit-name', { hasText: 'GROUND' }).first()).toBeVisible();
     await expect(kits.locator('.kit-name', { hasText: 'RITUAL' }).first()).toBeVisible();
-    await expect(kits.locator('.kit-name', { hasText: 'SOVEREIGN' }).first()).toBeVisible();
     await expect(kits.getByText('£65').first()).toBeVisible();
     await expect(kits.getByText('£85').first()).toBeVisible();
-    // SOVEREIGN is Coming Soon — price may not render
   });
 
-  test('kit CTA navigates to checkout', async ({ page }) => {
+  test('kit CTA navigates to /buy', async ({ page }) => {
     const kits = page.locator('#kits');
     await kits.scrollIntoViewIfNeeded();
-    // CTAs may be buttons or links — find the RITUAL kit CTA by button text
-    const cta = kits.getByRole('button', { name: /start with ritual/i }).first();
+    // CTAs are buttons that navigate programmatically to the one-time /buy flow.
+    const cta = kits.getByRole('button', { name: /get ritual/i }).first();
     await cta.click();
-    await expect(page).toHaveURL(/\/checkout\?kit=ritual/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/buy\?kit=ritual/, { timeout: 15_000 });
   });
 
-  test('ritual section has Full Instructions link', async ({ page }) => {
-    await page.locator('#ritual').scrollIntoViewIfNeeded();
-    const link = page.getByRole('link', { name: /full instructions/i });
+  test('a ritual link navigates to /ritual', async ({ page }) => {
+    const link = page.locator('a[href="/ritual"]').first();
+    await link.scrollIntoViewIfNeeded();
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL(/\/ritual/);
