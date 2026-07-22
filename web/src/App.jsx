@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
-import { capture } from './lib/analytics';
+import { capture, getAwc, getTikTokIds } from './lib/analytics';
 import OfferBar from './components/OfferBar.jsx';
 import FullSite from './pages/FullSite';
 import './styles/global.css';
@@ -65,6 +65,12 @@ function AuthRedirectGuard() {
 
 export default function App() {
   useEffect(() => { initQualifiedVisitTracker(); }, []);
+
+  // Capture affiliate/ad attribution (Awin awc, TikTok ttclid) on first landing,
+  // on ANY page, so it survives internal navigation to /buy. Both getters persist
+  // the URL param to localStorage; checkout reads it back regardless of route.
+  // Without this, awc was only captured on direct /buy landings.
+  useEffect(() => { getAwc(); getTikTokIds(); }, []);
 
   // Canonical buy-intent event: record EVERY click that sends the visitor to
   // /buy, site-wide, via delegation — covers <a href="/buy..."> links and any
