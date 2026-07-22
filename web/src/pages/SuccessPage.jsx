@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
-import { identify, fbPurchase, gadsPurchase, ttqIdentify, ttqCompletePayment } from '../lib/analytics.js';
+import { identify, fbPurchase, gadsPurchase, ttqIdentify, ttqCompletePayment, awinConversion } from '../lib/analytics.js';
 
 const CSS = `
 .su-page{min-height:100vh;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;position:relative;overflow:hidden;}
@@ -95,6 +95,7 @@ export default function SuccessPage() {
     if (amountGbp) fbPurchase(kitId ?? 'unknown', amountGbp, rawRef);
     if (amountGbp) gadsPurchase(amountGbp, rawRef, buyerEmail);
     if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
+    if (amountGbp) awinConversion(amountGbp, rawRef);
   }, []); // eslint-disable-line
 
   if (paymentFailed) {
