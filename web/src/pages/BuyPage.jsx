@@ -6,7 +6,7 @@ import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
 import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds, getAwc } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
@@ -673,6 +673,7 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
           source,
           site_host:  window.location.hostname,
           ...getTikTokIds(),
+          awc:        getAwc(),
           line1:      addr.line1 || '',
           line2:      addr.line2 || null,
           city:       addr.city || '',
@@ -1007,6 +1008,7 @@ export default function BuyPage() {
           source,
           site_host:  window.location.hostname,
           ...getTikTokIds(),
+          awc:        getAwc(),
           line1:      form.line1.trim(),
           line2:      form.line2.trim() || null,
           city:       form.city.trim(),

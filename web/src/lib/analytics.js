@@ -259,6 +259,19 @@ export function getTikTokIds() {
 
 const AWIN_MERCHANT = '129171';
 
+// Awin affiliate click ref: ?awc= on the landing URL (persisted so it survives
+// the journey to checkout), falling back to the first-party awc cookie set by
+// the MasterTag. Threaded into Stripe metadata so the webhook can fire Awin's
+// server-to-server conversion (cks param) — reliable even when the browser
+// conversion pixel is blocked.
+export function getAwc() {
+  try {
+    const fromUrl = new URL(window.location.href).searchParams.get('awc');
+    if (fromUrl) localStorage.setItem('awc', fromUrl);
+    return fromUrl || localStorage.getItem('awc') || readCookie('awc') || undefined;
+  } catch { return undefined; }
+}
+
 // Fires the Awin sale conversion on SuccessPage. Sets the Sale object then
 // (re)loads the Awin tag on this route so it registers the transaction: the
 // MasterTag in index.html loads before React sets the sale and does not reload

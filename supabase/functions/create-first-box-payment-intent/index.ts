@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id = body.kit_id;
     email  = body.email?.trim().toLowerCase();
-    const { first_name, last_name, source, phone, site_host, line1, line2, city, postcode, ttclid, ttp } = body;
+    const { first_name, last_name, source, phone, site_host, line1, line2, city, postcode, ttclid, ttp, awc } = body;
 
     if (!KIT_PENCE[kit_id!]) {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), {
@@ -95,6 +95,7 @@ Deno.serve(async (req) => {
         site_host:    site_host ?? '',
         ttclid:       ttclid ?? '',
         ttp:          ttp ?? '',
+        awc:          awc ?? '',
         dispatch_date: fmtDay(dispatch),
         arrival_date:  fmtDay(arrival),
       },
