@@ -17,6 +17,17 @@ const PRODUCTS = [
     title: "SOLUM GROUND Kit — Complete Men's Body Ritual",
     link: 'https://bysolum.co.uk/buy?kit=ground',
     image_link: 'https://bysolum.co.uk/products/kit/ground.webp',
+    additional_image_link: [
+      'https://bysolum.co.uk/products/01/still.webp',
+      'https://bysolum.co.uk/products/02/use-1.webp',
+      'https://bysolum.co.uk/products/03/use-1.webp',
+      'https://bysolum.co.uk/products/04/still.webp',
+      'https://bysolum.co.uk/products/05/still.webp',
+      'https://bysolum.co.uk/products/07/still.webp',
+      'https://bysolum.co.uk/products/08/use-1.webp',
+      'https://bysolum.co.uk/products/kit/use-1.webp',
+      'https://bysolum.co.uk/products/kit/use-2.webp',
+    ],
     description:
       "Properly clean for the first time, head to toe. The GROUND kit fixes what a daily shower misses: a back you can't reach, dead skin that dulls and traps odour, and skin that's dry by midday.\n\n" +
       "Inside the kit:\n01 Body Wash · Gentle everywhere, strips nothing, cleans everything.\n02 Italy Towel Mitt · Smoother skin and less odour from the first use.\n03 Back Scrub Cloth · A back that's finally, properly clean.\n04 Scalp Massager · Thicker-looking hair and no scalp odour.\n05 Atlas Clay Mask · Clearer skin from emptied, deep-cleaned pores.\n07 Body Lotion · Restores and hydrates within the 3-minute window.\n08 Cleansing Cloth · Gentle daily exfoliation, no odour.\n\n" +
@@ -27,6 +38,18 @@ const PRODUCTS = [
     title: "SOLUM RITUAL Kit — Complete Men's Body Ritual",
     link: 'https://bysolum.co.uk/buy?kit=ritual',
     image_link: 'https://bysolum.co.uk/products/kit/still.webp',
+    additional_image_link: [
+      'https://bysolum.co.uk/products/01/still.webp',
+      'https://bysolum.co.uk/products/02/use-1.webp',
+      'https://bysolum.co.uk/products/03/use-1.webp',
+      'https://bysolum.co.uk/products/04/still.webp',
+      'https://bysolum.co.uk/products/05/still.webp',
+      'https://bysolum.co.uk/products/06/still.webp',
+      'https://bysolum.co.uk/products/07/still.webp',
+      'https://bysolum.co.uk/products/08/use-1.webp',
+      'https://bysolum.co.uk/products/11/still.webp',
+      'https://bysolum.co.uk/products/kit/use-1.webp',
+    ],
     description:
       "Everything in GROUND, plus the weekly oil ritual most men wish they'd started years ago. Not just clean but fed: smoother skin, less odour, no midday dryness.\n\n" +
       "Inside the kit:\n01 Body Wash · Gentle everywhere, strips nothing, cleans everything.\n02 Italy Towel Mitt · Smoother skin and less odour.\n03 Back Scrub Cloth · A back that's finally clean.\n04 Scalp Massager · Thicker-looking hair, no scalp odour.\n05 Atlas Clay Mask · Clearer skin from deep-cleaned pores.\n06 Argan Body Oil · Skin properly fed, not just moisturised.\n07 Body Lotion · Restores within the 3-minute window.\n08 Cleansing Cloth · Gentle daily exfoliation.\n11 Clay Mixing Bowl · Mixes your weekly mask the right way.\n\n" +
