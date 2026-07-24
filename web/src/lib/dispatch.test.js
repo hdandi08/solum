@@ -7,25 +7,25 @@ const ymd = (d) =>
 
 // Reference week (local time):
 //   Mon 2026-07-06, Tue 07, Wed 08, Thu 09, Fri 10, Sat 11, Sun 12, Mon 13, Tue 14
-describe('getDispatchDate — next working day dispatch, no weekends', () => {
-  it('before noon on a weekday ships the next working day (Mon 9am -> Tue)', () => {
+describe('getDispatchDate — 6 PM cutoff, next working day dispatch, no weekends', () => {
+  it('before 6 PM on a weekday ships the next working day (Mon 9am -> Tue)', () => {
     expect(ymd(getDispatchDate(new Date(2026, 6, 6, 9, 0)))).toBe('2026-07-07');
   });
 
-  it('at/after noon on a weekday ships the second working day (Mon 2pm -> Wed)', () => {
-    expect(ymd(getDispatchDate(new Date(2026, 6, 6, 14, 0)))).toBe('2026-07-08');
+  it('before 6 PM on a weekday ships the next working day (Mon 5:59pm -> Tue)', () => {
+    expect(ymd(getDispatchDate(new Date(2026, 6, 6, 17, 59)))).toBe('2026-07-07');
   });
 
-  it('treats exactly noon as after the cutoff (Mon 12:00 -> Wed)', () => {
-    expect(ymd(getDispatchDate(new Date(2026, 6, 6, 12, 0)))).toBe('2026-07-08');
+  it('treats exactly 6 PM as after the cutoff (Mon 6pm -> Wed)', () => {
+    expect(ymd(getDispatchDate(new Date(2026, 6, 6, 18, 0)))).toBe('2026-07-08');
   });
 
-  it('skips the weekend when ordered before noon on Friday (Fri 9am -> Mon)', () => {
+  it('skips the weekend when ordered before 6 PM on Friday (Fri 9am -> Mon)', () => {
     expect(ymd(getDispatchDate(new Date(2026, 6, 10, 9, 0)))).toBe('2026-07-13');
   });
 
-  it('after noon on Friday ships the following Tuesday (Fri 2pm -> Tue)', () => {
-    expect(ymd(getDispatchDate(new Date(2026, 6, 10, 14, 0)))).toBe('2026-07-14');
+  it('at/after 6 PM on Friday ships the following Tuesday (Fri 6pm -> Tue)', () => {
+    expect(ymd(getDispatchDate(new Date(2026, 6, 10, 18, 0)))).toBe('2026-07-14');
   });
 
   it('weekend orders ship the following Tuesday (Sat -> Tue, Sun -> Tue)', () => {

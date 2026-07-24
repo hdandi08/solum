@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SOLUM — Gemini Prompt: The Scratch Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:  #08090B;
+    --char:   #181C24;
+    --dark:   #0F1118;
+    --blue:   #2E6DA4;
+    --bone:   #F0ECE2;
+    --stone:  #8A8F9A;
+    --line:   rgba(255,255,255,0.08);
+    --gold:   #c8a96e;
+    --red:    rgba(255,80,80,0.7);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  .header { margin-bottom: 48px; }
+  .eyebrow { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; font-weight: 600; color: var(--blue); margin-bottom: 12px; }
+  .title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 72px); letter-spacing: .05em; line-height: 1; color: var(--bone); margin-bottom: 10px; }
+  .subtitle { font-size: 15px; color: var(--stone); font-weight: 300; line-height: 1.6; max-width: 580px; }
+
+  /* Info boxes */
+  .infobox {
+    padding: 20px 24px; margin-bottom: 20px;
+    border: 1px solid var(--line);
+  }
+  .infobox-blue { border-left: 3px solid var(--blue); background: rgba(46,109,164,0.06); }
+  .infobox-red  { border-left: 3px solid var(--red);  background: rgba(255,80,80,0.04); }
+  .infobox-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; font-weight: 600; margin-bottom: 12px; }
+  .infobox-blue .infobox-title { color: var(--blue); }
+  .infobox-red  .infobox-title { color: var(--red); }
+  .infobox-body { font-size: 14px; color: var(--stone); line-height: 1.75; }
+  .infobox-body strong { color: var(--bone); font-weight: 600; }
+
+  .guardrail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+  .guardrail { font-size: 13px; font-weight: 300; color: var(--stone); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+  .guardrail::before { content: '✕'; color: var(--red); font-size: 10px; flex-shrink: 0; margin-top: 2px; }
+
+  /* Clip card */
+  .clip { background: var(--char); border: 1px solid var(--line); margin-bottom: 28px; }
+  .clip-header { padding: 20px 28px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .clip-label { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: .08em; }
+  .clip-1 .clip-label { color: var(--blue); }
+  .clip-2 .clip-label { color: var(--gold); }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .badge { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; padding: 4px 10px; border: 1px solid; }
+  .clip-1 .badge { color: var(--blue); border-color: rgba(46,109,164,0.35); }
+  .clip-2 .badge { color: var(--gold); border-color: rgba(200,169,110,0.35); }
+
+  .copy-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    font-weight: 600; padding: 10px 20px;
+    border: 1px solid; cursor: pointer; background: none;
+    transition: background .2s; flex-shrink: 0;
+  }
+  .clip-1 .copy-btn { color: var(--blue); border-color: rgba(46,109,164,0.4); }
+  .clip-1 .copy-btn:hover { background: rgba(46,109,164,0.1); border-color: var(--blue); }
+  .clip-2 .copy-btn { color: var(--gold); border-color: rgba(200,169,110,0.4); }
+  .clip-2 .copy-btn:hover { background: rgba(200,169,110,0.08); border-color: var(--gold); }
+
+  /* Prompt block — the copyable area */
+  .prompt-block {
+    margin: 0 28px 0;
+    background: var(--dark);
+    border: 1px solid var(--line);
+    font-size: 14px; line-height: 1.85;
+    color: var(--bone); font-weight: 300;
+    padding: 24px 24px;
+    white-space: pre-wrap;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: .2px;
+  }
+
+  /* Scene sections inside the card */
+  .scenes { padding: 28px; }
+  .scene { margin-bottom: 28px; }
+  .scene:last-child { margin-bottom: 0; }
+  .scene-tag {
+    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+    font-weight: 600; color: var(--stone); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .clip-1 .scene-tag { color: rgba(46,109,164,0.8); }
+  .clip-2 .scene-tag { color: rgba(200,169,110,0.8); }
+  .scene-tag::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  .scene-desc { font-size: 14px; line-height: 1.8; color: var(--bone); font-weight: 300; margin-bottom: 10px; }
+
+  .vo-block {
+    padding: 12px 16px; font-size: 14px; line-height: 1.7;
+    font-style: italic; font-weight: 300;
+    margin-top: 8px;
+  }
+  .clip-1 .vo-block { border-left: 2px solid var(--blue); background: rgba(46,109,164,0.07); color: var(--bone); }
+  .clip-2 .vo-block { border-left: 2px solid var(--gold); background: rgba(200,169,110,0.06); color: var(--bone); }
+  .vo-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; font-style: normal; margin-bottom: 4px; color: var(--stone); font-weight: 600; }
+
+  .overlay-block {
+    padding: 10px 14px; margin-top: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+  }
+  .overlay-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--stone); margin-bottom: 4px; font-weight: 600; }
+  .overlay-text { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--bone); }
+
+  /* Settings bar */
+  .settings { padding: 16px 28px; border-top: 1px solid var(--line); display: flex; gap: 20px; flex-wrap: wrap; }
+  .setting { display: flex; flex-direction: column; gap: 3px; }
+  .setting-key { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--stone); font-weight: 500; }
+  .setting-val { font-size: 13px; font-weight: 600; color: var(--bone); }
+
+  .divider { height: 1px; background: var(--line); margin: 40px 0; }
+
+  @media(max-width: 600px) {
+    .clip-header { flex-direction: column; align-items: flex-start; }
+    .guardrail-grid { grid-template-columns: 1fr; }
+    .prompt-block { margin: 0 16px; padding: 16px; }
+    .scenes { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">Gemini Video Prompts · Two-Part Series</div>
+    <div class="title">The Scratch Test</div>
+    <p class="subtitle">Generate Clip 1 first. Save the last frame. Upload it as the start frame for Clip 2. Stitch both in CapCut. Total runtime: 15 seconds.</p>
+  </div>
+
+  <!-- Before you start -->
+  <div class="infobox infobox-blue" style="margin-bottom:20px;">
+    <div class="infobox-title">Images to Attach</div>
+    <div class="infobox-body">
+      <strong>Clip 1 → Image 1:</strong> The SOLUM Body Lotion bottle on dark slate. Matte black cylindrical pump bottle, label facing forward, "SOLUM BODY LOTION · PRODUCT 07 · DAILY RITUAL" badge visible. Tell Gemini to match this product exactly throughout.<br><br>
+      <strong>Clip 2 → Image 2:</strong> The open SOLUM box, lid facing camera. "YOU SHOWER EVERY DAY. YOUR BODY IS STILL DIRTY." on the lid in large white and blue text. Products in black foam insert. Also upload the last frame of Clip 1 as the start frame for Clip 2.
+    </div>
+  </div>
+
+  <!-- Guardrails -->
+  <div class="infobox infobox-red" style="margin-bottom:32px;">
+    <div class="infobox-title">Global Guardrails — Baked Into Both Prompts</div>
+    <div class="guardrail-grid">
+      <div class="guardrail">No cinematic colour grading — no teal, no orange, no crushed blacks</div>
+      <div class="guardrail">No slow motion or speed ramping</div>
+      <div class="guardrail">No lens flares, light leaks, or bokeh halos</div>
+      <div class="guardrail">No dramatic rim lighting, spotlights, or beauty dish</div>
+      <div class="guardrail">No background music of any kind</div>
+      <div class="guardrail">No glowing, floating, or backlit product shots</div>
+      <div class="guardrail">No oiled, poreless, or retouched skin</div>
+      <div class="guardrail">No sweeping camera moves or drone-style pulls</div>
+      <div class="guardrail">No luxury spa or hotel bathroom aesthetic</div>
+      <div class="guardrail">No film grain, vignette, or anamorphic bars</div>
+      <div class="guardrail">Do not substitute or simplify the product label</div>
+      <div class="guardrail">Do not invent products not described</div>
+    </div>
+  </div>
+
+  <!-- CLIP 1 -->
+  <div class="clip clip-1">
+    <div class="clip-header">
+      <div>
+        <div class="clip-label">Clip 1 · 0:00 – 0:08</div>
+        <div class="badges">
+          <span class="badge">Hook</span>
+          <span class="badge">Product Reveal</span>
+          <span class="badge">8 Seconds · 9:16</span>
+        </div>
+      </div>
+      <button class="copy-btn" onclick="copyText('c1text', this)">Copy Full Prompt</button>
+    </div>
+
+    <div class="scenes">
+
+      <div class="scene">
+        <div class="scene-tag">Setting & Style</div>
+        <div class="scene-desc">A real, unremarkable domestic bathroom. Not a spa. Not a hotel. A man's bathroom. Dark grey or near-black wall tiles, slightly wet. A small dark slate or stone shelf is built into the shower wall — it is dark, damp, and slightly reflective. One single overhead bathroom LED panel provides the only light in the room — it is cool white and functional, not atmospheric. There are no candles, no ambient glow, no coloured lights. The bathroom has faint residual steam from a recent shower but is not fog-filled or dramatically hazy. The overall colour palette is near-black backgrounds, cool grey-blue midtones, and real unprocessed skin tones. No warmth. No amber. No colour grade of any kind. This video should look like it was shot on a high-quality phone in a real bathroom — not in a studio.</div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">Subject</div>
+        <div class="scene-desc">A man, mid-30s, athletic build but not a bodybuilder — lean and proportionate. Mixed or medium skin tone. He has just stepped out of the shower. He wears only a white towel around his waist. His skin is freshly showered — slightly damp, not dripping. Skin texture is completely natural and unretouched: pores are visible, slight texture on the shin. No oiled skin. No glowing skin. No airbrushed or artificial enhancement of any kind. He is calm, not posed, not performing for a camera.</div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">Camera Style</div>
+        <div class="scene-desc">Handheld feel throughout — slight natural camera movement as if held by a human, never fully locked off in this clip. Tight framing, close to the subject. No wide establishing shots. No sweeping movements. No rack focus pulls for dramatic effect. Depth of field keeps the subject sharp and the background softly blurred. This should feel immediate and real, not composed or cinematic.</div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">0:00 – 0:03 · The Hook</div>
+        <div class="scene-desc">The frame opens on an extreme close-up of the man's lower leg — specifically his shin, filling most of the vertical frame. The skin is damp and natural. Bathroom floor tiles are barely visible and completely blurred in the background. His hand enters frame from the top of the screen. He places two fingertips — index and middle finger — flat against the surface of his shin. In one slow, deliberate downward stroke of approximately 8–10 centimetres, he drags his fingertips across the skin. Where his fingers passed, a faint white chalky line remains on the skin's surface — this is the classic visual sign of a dehydrated skin barrier. The line does not disappear immediately. The camera holds on it for a full beat — approximately one second — before cutting. The white line is the key visual of this scene. It must be clearly visible.</div>
+        <div class="overlay-block">
+          <div class="overlay-label">Text Overlay — Top Third of Frame</div>
+          <div class="overlay-text">DO YOU PASS THE SCRATCH TEST?</div>
+        </div>
+        <div class="vo-block">
+          <div class="vo-label">Audio</div>
+          No voiceover. Bathroom ambience only — faint ventilation hum, distant water drip. Silence feels deliberate.
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">0:03 – 0:08 · The Product</div>
+        <div class="scene-desc">Cut to a medium close-up. The SOLUM Body Lotion bottle sits on the dark wet slate shelf — match the attached reference image exactly. The bottle is tall and cylindrical, matte black, with a black pump head. The label faces the camera directly and remains sharp and fully readable throughout this scene. The label reads "SOLUM" in uppercase at the top left, "BODY LOTION" at the top right, "PRODUCT · 07" below, a solid blue filled rectangle badge reads "DAILY RITUAL", and large bold text on the right side reads "RESTORE EVERY DAY". Do not blur, stylise, simplify, or alter this label in any way. The man's torso is faintly visible but out of focus behind the bottle — he has stepped out of the shower. His right hand enters from the right side of frame. He wraps his fingers around the bottle naturally and uses his left hand to stabilise it. He presses the pump head down once with his right palm. A single dose of white lotion — matte in texture, not shiny, slightly thick — dispenses into his other palm. He lifts his lotion-loaded palm slightly toward the camera. The lotion is clearly visible. End on this image — palm raised, lotion loaded, about to apply.</div>
+        <div class="vo-block">
+          <div class="vo-label">Voiceover — Male, Calm, Dry, British, Direct</div>
+          "If a light scratch leaves a white mark, your skin barrier is starving. Stop walking around dehydrated."
+        </div>
+      </div>
+
+    </div>
+
+    <div class="settings">
+      <div class="setting"><span class="setting-key">Duration</span><span class="setting-val">8 seconds</span></div>
+      <div class="setting"><span class="setting-key">Aspect Ratio</span><span class="setting-val">9:16 Vertical</span></div>
+      <div class="setting"><span class="setting-key">Creativity</span><span class="setting-val">Low</span></div>
+      <div class="setting"><span class="setting-key">Motion</span><span class="setting-val">Low</span></div>
+      <div class="setting"><span class="setting-key">Music</span><span class="setting-val">None</span></div>
+      <div class="setting"><span class="setting-key">Attach</span><span class="setting-val">Image 1 — Lotion Bottle</span></div>
+    </div>
+  </div>
+
+  <!-- CLIP 2 -->
+  <div class="clip clip-2">
+    <div class="clip-header">
+      <div>
+        <div class="clip-label">Clip 2 · Extension · 0:08 – 0:15</div>
+        <div class="badges">
+          <span class="badge">Application</span>
+          <span class="badge">CTA</span>
+          <span class="badge">8 Seconds · 9:16</span>
+        </div>
+      </div>
+      <button class="copy-btn" onclick="copyText('c2text', this)">Copy Full Prompt</button>
+    </div>
+
+    <div class="scenes">
+
+      <div class="scene">
+        <div class="scene-tag">Extension Instruction</div>
+        <div class="scene-desc">This video is a direct extension of Clip 1. Upload the final frame of Clip 1 as the start frame for this generation. Begin exactly where Clip 1 ended: the man's open palm, loaded with a single dose of white matte lotion, is raised and hovering just above his shin. The bathroom setting is identical — same dark tiles, same overhead cool white LED light, same slate shelf visible in the background, same colour treatment (none). Do not introduce any new lighting, new locations, or new colour grading. Continue forward from this exact moment without a cut back to the bottle or back to the scratch.</div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">Style Continuity</div>
+        <div class="scene-desc">All style rules from Clip 1 apply: no cinematic grade, no slow motion, no dramatic lighting, no lens flares, no background music, no film grain, no vignette. The camera remains handheld in feel for the first half of this clip, then becomes completely locked off and static for the CTA scene. Real bathroom ambience throughout. Skin remains natural and unretouched. No aesthetic shift between clips — the viewer should feel this is one continuous recording.</div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">0:00 – 0:03 of This Clip · Application</div>
+        <div class="scene-desc">Starting from the last frame of Clip 1 — palm loaded with lotion raised above the shin — the man lowers his flat palm and presses it firmly and evenly against his shin, directly over the area where the white chalk line appeared in Clip 1. He holds the press for a full second. No rubbing, no massaging — pressing and holding only. He then lifts his palm slightly and moves it lower on the shin, pressing again on the section below. The lotion absorbs cleanly into the skin. The skin does not become shiny, oily, or glossy — it looks calm, even, and natural. The chalk line from the scratch is no longer visible. The overhead LED is the only light. Shot tight on the shin and hand throughout. No cutaway to the bottle. No wide shots.</div>
+        <div class="vo-block">
+          <div class="vo-label">Voiceover — Continues from Clip 1, Same Voice</div>
+          "Lock in moisture while your skin is still warm. That's when it absorbs."
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-tag">0:03 – 0:08 of This Clip · CTA</div>
+        <div class="scene-desc">Hard cut to the open SOLUM box — match the attached reference image exactly. The box is a large matte black rigid cardboard box, open flat, with the lid propped fully open and facing the camera directly. The inside of the lid displays large bold uppercase white text: "YOU SHOWER EVERY DAY." and below it in the same scale but steel blue: "YOUR BODY IS STILL DIRTY." Below that in smaller regular weight white text: "Follow the ritual. Actually clean your body." A black and white QR code is visible at the bottom left of the lid. The interior of the box has a matte black foam insert with the full SOLUM product range arranged neatly inside — two tall matte black pump bottles, a round black jar, a small dark dropper bottle, a black silicone scalp tool, and packaged accessories. The box sits on the same dark wet stone surface used throughout. The same single overhead LED provides the only light — it illuminates the lid text clearly and cleanly. The camera is completely locked off — zero movement, zero zoom, zero camera motion of any kind. Hold this perfectly static shot for the full five seconds. Do not animate the box. Do not zoom in on the lid text. Do not add any movement. The bathroom ambient sound fades to near silence beneath the voiceover.</div>
+        <div class="overlay-block">
+          <div class="overlay-label">Text Overlay — Bottom Third of Frame</div>
+          <div class="overlay-text">GET THE PROTOCOL · BYSOLUM.CO.UK</div>
+        </div>
+        <div class="vo-block">
+          <div class="vo-label">Voiceover — Final Line, Same Voice</div>
+          "Get the protocol. Bysolum.co.uk."
+        </div>
+      </div>
+
+    </div>
+
+    <div class="settings">
+      <div class="setting"><span class="setting-key">Duration</span><span class="setting-val">8 seconds</span></div>
+      <div class="setting"><span class="setting-key">Aspect Ratio</span><span class="setting-val">9:16 Vertical</span></div>
+      <div class="setting"><span class="setting-key">Creativity</span><span class="setting-val">Low</span></div>
+      <div class="setting"><span class="setting-key">Motion</span><span class="setting-val">Low</span></div>
+      <div class="setting"><span class="setting-key">Music</span><span class="setting-val">None</span></div>
+      <div class="setting"><span class="setting-key">Start Frame</span><span class="setting-val">Last frame of Clip 1</span></div>
+      <div class="setting"><span class="setting-key">Attach</span><span class="setting-val">Image 2 — SOLUM Box</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="infobox infobox-blue">
+    <div class="infobox-title">Voiceover Direction</div>
+    <div class="infobox-body">
+      <strong>Voice:</strong> Male. British accent preferred but not essential. Age 28–38.<br>
+      <strong>Tone:</strong> Calm, dry, completely factual. Like a GP telling you something straightforward. Not a salesman. Not enthusiastic. No uplift at the end of sentences. Slightly flat delivery is correct.<br>
+      <strong>Pace:</strong> Unhurried. One-take feel. Not over-produced.<br>
+      <strong>Music:</strong> None. The silence is deliberate. Bathroom ambience only.<br><br>
+      <strong>Full script across both clips:</strong><br>
+      <em>"If a light scratch leaves a white mark, your skin barrier is starving. Stop walking around dehydrated. Lock in moisture while your skin is still warm. That's when it absorbs. Get the protocol. Bysolum.co.uk."</em>
+    </div>
+  </div>
+
+</div>
+
+<!-- Hidden copyable text blocks -->
+<textarea id="c1text" style="position:absolute;left:-9999px;top:-9999px;" readonly>SETTING: A real, unremarkable domestic bathroom. Not a spa. Not a hotel. A man's bathroom. Dark grey or near-black wall tiles, slightly wet. A small dark slate or stone shelf is built into the shower wall — it is dark, damp, and slightly reflective. One single overhead bathroom LED panel provides the only light in the room — it is cool white and functional, not atmospheric. There are no candles, no ambient glow, no coloured lights. The bathroom has faint residual steam from a recent shower but is not fog-filled or dramatically hazy. The overall colour palette is near-black backgrounds, cool grey-blue midtones, and real unprocessed skin tones. No warmth. No amber. No colour grade of any kind. This video should look like it was shot on a high-quality phone in a real bathroom — not in a studio.
+
+SUBJECT: A man, mid-30s, athletic build but not a bodybuilder — lean and proportionate. Mixed or medium skin tone. He has just stepped out of the shower. He wears only a white towel around his waist. His skin is freshly showered — slightly damp, not dripping. Skin texture is completely natural and unretouched: pores are visible, slight texture on the shin. No oiled skin. No glowing skin. No airbrushed or artificial enhancement of any kind. He is calm, not posed, not performing for a camera.
+
+CAMERA: Handheld feel throughout — slight natural camera movement as if held by a human, never fully locked off. Tight framing, close to the subject. No wide establishing shots. No sweeping movements. No rack focus pulls for dramatic effect. Depth of field keeps the subject sharp and the background softly blurred.
+
+[0:00 – 0:03] The frame opens on an extreme close-up of the man's lower leg — specifically his shin, filling most of the vertical frame. The skin is damp and natural. Bathroom floor tiles are barely visible and completely blurred in the background. His hand enters frame from the top of the screen. He places two fingertips — index and middle finger — flat against the surface of his shin. In one slow, deliberate downward stroke of approximately 8–10 centimetres, he drags his fingertips across the skin. Where his fingers passed, a faint white chalky line remains on the skin's surface — this is the classic visual sign of a dehydrated skin barrier. The line does not disappear immediately. The camera holds on it for a full beat — approximately one second — before cutting. The white line is the key visual of this scene. It must be clearly visible. TEXT OVERLAY top third: "DO YOU PASS THE SCRATCH TEST?" — white, bold, uppercase. No voiceover. Bathroom ambience only.
+
+[0:03 – 0:08] Cut to a medium close-up. The SOLUM Body Lotion bottle sits on the dark wet slate shelf — match the attached reference image exactly. The bottle is tall and cylindrical, matte black, with a black pump head. The label faces the camera directly and remains sharp and fully readable throughout this scene. The label reads "SOLUM" in uppercase at the top left, "BODY LOTION" at the top right, "PRODUCT · 07" below, a solid blue filled rectangle badge reads "DAILY RITUAL", and large bold text on the right side reads "RESTORE EVERY DAY". Do not blur, stylise, simplify, or alter this label in any way. The man's torso is faintly visible but out of focus behind the bottle. His right hand enters from the right side of frame. He wraps his fingers around the bottle naturally and uses his left hand to stabilise it. He presses the pump head down once with his right palm. A single dose of white lotion — matte in texture, not shiny, slightly thick — dispenses into his other palm. He lifts his lotion-loaded palm slightly toward the camera. The lotion is clearly visible. End on this image — palm raised, lotion loaded, about to apply. VOICEOVER (male, calm, dry, British, direct — not enthusiastic): "If a light scratch leaves a white mark, your skin barrier is starving. Stop walking around dehydrated."
+
+GUARDRAILS: No cinematic colour grading. No slow motion. No lens flares. No dramatic lighting. No rim lights. No music. No film grain. No vignette. No glowing product. Do not alter the bottle label. Do not invent products not described. No luxury aesthetic. No studio lighting.</textarea>
+
+<textarea id="c2text" style="position:absolute;left:-9999px;top:-9999px;" readonly>EXTENSION: This video is a direct extension of Clip 1. Upload the final frame of Clip 1 as the start frame. Begin exactly where Clip 1 ended: the man's open palm, loaded with a single dose of white matte lotion, is raised and hovering just above his shin. The bathroom setting is identical — same dark tiles, same overhead cool white LED light, same slate shelf visible in the background, same colour treatment (none). Do not introduce any new lighting, new locations, or new colour grading. Continue forward from this exact moment without a cut back to the bottle or back to the scratch.
+
+STYLE CONTINUITY: All style rules apply. No cinematic grade, no slow motion, no dramatic lighting, no lens flares, no background music, no film grain, no vignette. Camera is handheld in feel for the first half, then completely locked off and static for the CTA scene. Real bathroom ambience throughout. Skin remains natural and unretouched. No aesthetic shift between clips.
+
+[0:00 – 0:03 of this clip] Starting from the last frame of Clip 1 — palm loaded with lotion raised above the shin — the man lowers his flat palm and presses it firmly and evenly against his shin, directly over the area where the white chalk line appeared. He holds the press for a full second. No rubbing, no massaging — pressing and holding only. He then lifts his palm slightly and moves it lower on the shin, pressing again on the section below. The lotion absorbs cleanly into the skin. The skin does not become shiny, oily, or glossy — it looks calm, even, and natural. The chalk line from the scratch is no longer visible. Shot tight on the shin and hand throughout. No cutaway to the bottle. No wide shots. VOICEOVER (same voice, continuing): "Lock in moisture while your skin is still warm. That's when it absorbs."
+
+[0:03 – 0:08 of this clip] Hard cut to the open SOLUM box — match the attached reference image exactly. The box is a large matte black rigid cardboard box, open flat, with the lid propped fully open and facing the camera directly. The inside of the lid displays large bold uppercase white text: "YOU SHOWER EVERY DAY." and below it in the same scale but steel blue: "YOUR BODY IS STILL DIRTY." Below that in smaller regular weight white text: "Follow the ritual. Actually clean your body." A black and white QR code is visible at the bottom left of the lid. The interior of the box has a matte black foam insert with the full SOLUM product range arranged neatly inside — two tall matte black pump bottles, a round black jar, a small dark dropper bottle, a black silicone scalp tool, and packaged accessories. The box sits on the same dark wet stone surface. The same single overhead LED provides the only light — it illuminates the lid text clearly and cleanly. The camera is completely locked off — zero movement, zero zoom, zero camera motion of any kind. Hold this perfectly static shot for the full five seconds. Do not animate the box. Do not zoom in. The bathroom ambient sound fades to near silence. TEXT OVERLAY bottom third: "GET THE PROTOCOL · BYSOLUM.CO.UK" — white, bold, uppercase. VOICEOVER (final line): "Get the protocol. Bysolum.co.uk."
+
+GUARDRAILS: No cinematic colour grading. No slow motion. No lens flares. No dramatic lighting. No rim lights. No music. No film grain. No vignette. No glowing product. Do not alter the box lid text. Do not add movement to the CTA scene. No luxury aesthetic. No studio lighting.</textarea>
+
+<script>
+  function copyText(id, btn) {
+    const el = document.getElementById(id);
+    el.select();
+    document.execCommand('copy');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }
+</script>
+</body>
+</html>

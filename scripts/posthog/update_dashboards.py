@@ -40,8 +40,9 @@ def ev(event, math="total", math_property=None):
     return n
 
 def funnel(name, steps, desc=None):
+    # NO dateRange — tiles inherit the dashboard's top date filter (single control).
     src = {"kind": "FunnelsQuery", "series": [ev(s) for s in steps],
-           "dateRange": {"date_from": "-30d"}, "properties": PROD,
+           "properties": PROD,
            "funnelsFilter": {"funnelVizType": "steps"}}
     body = {"name": name, "dashboards": [DEEP_FUNNEL],
             "query": {"kind": "InsightVizNode", "source": src}}
@@ -51,8 +52,9 @@ def funnel(name, steps, desc=None):
     print(f"  funnel {name[:50]:<50} -> {r.get('id')}")
 
 def trend(name, series, display="ActionsLineGraph", breakdown=None, desc=None):
+    # NO dateRange — tiles inherit the dashboard's top date filter (single control).
     src = {"kind": "TrendsQuery", "series": series, "interval": "day",
-           "dateRange": {"date_from": "-30d"}, "properties": PROD,
+           "properties": PROD,
            "trendsFilter": {"display": display}}
     if breakdown:
         src["breakdownFilter"] = {"breakdown": breakdown, "breakdown_type": "event"}

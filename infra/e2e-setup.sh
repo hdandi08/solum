@@ -43,7 +43,7 @@ aws ssm put-parameter \
 read -rsp "Enter SolumDB-DEV service role key: " DEV_SERVICE_KEY
 echo ""
 aws ssm put-parameter \
-  --name "/solum/test/supabase-service-role-key" \
+  --name "/solum/test/supabase-svc-key" \
   --value "$DEV_SERVICE_KEY" \
   --type "SecureString" \
   --region $REGION \

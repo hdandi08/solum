@@ -1,0 +1,41 @@
+◇ injected env (4) from .env.test // tip: ◈ encrypted .env [www.dotenvx.com]
+
+Running 29 tests using 3 workers
+
+◇ injected env (0) from .env.test // tip: ◈ encrypted .env [www.dotenvx.com]
+  ✓   1 [setup] › setup/auth.setup.ts:9:6 › global setup — reset DB, seed stock, authenticate (1.5s)
+◇ injected env (0) from .env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env.test // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env.test // tip: ◈ encrypted .env [www.dotenvx.com]
+  ✓   3 [public] › specs/03-ritual-page.spec.ts:14:7 › Ritual Page › page loads with heading and two-tier system (2.4s)
+  ✓   2 [public] › specs/01-homepage.spec.ts:9:7 › Homepage › page loads with all key sections (3.6s)
+  ✓   5 [public] › specs/03-ritual-page.spec.ts:21:7 › Ritual Page › daily ritual selected by default, weekly dimmed (2.1s)
+  ✓   4 [public] › specs/02-navigation.spec.ts:4:7 › Navigation › nav links on /full scroll to correct sections (5.2s)
+  ✓   6 [public] › specs/01-homepage.spec.ts:16:7 › Homepage › kit cards show correct names and prices (3.3s)
+  ✓   7 [public] › specs/03-ritual-page.spec.ts:26:7 › Ritual Page › selecting the weekly pill switches the active ritual (2.6s)
+  ✓   8 [public] › specs/02-navigation.spec.ts:19:7 › Navigation › "The Ritual" nav link goes to /ritual page (2.4s)
+  ✓  10 [public] › specs/03-ritual-page.spec.ts:32:7 › Ritual Page › both ritual pills show titles and a video poster is present (1.8s)
+  ✓   9 [public] › specs/01-homepage.spec.ts:26:7 › Homepage › kit CTA navigates to /buy (3.4s)
+  ✓  11 [public] › specs/02-navigation.spec.ts:25:7 › Navigation › from /ritual — hash nav links go home and scroll (3.5s)
+  ✓  14 [public] › specs/02-navigation.spec.ts:36:7 › Navigation › SOLUM logo on /ritual goes home (1.9s)
+  ✓  13 [public] › specs/01-homepage.spec.ts:35:7 › Homepage › a ritual link navigates to /ritual (2.8s)
+  ✓  12 [public] › specs/04-checkout.spec.ts:31:7 › Checkout — with stock › ritual checkout loads on the details step (4.7s)
+  ✓  15 [public] › specs/02-navigation.spec.ts:42:7 › Navigation › nav CTA on /ritual goes to kits (2.5s)
+◇ injected env (0) from .env.test // tip: ⌘ override existing { override: true }
+  ✓  17 [public] › specs/04-checkout.spec.ts:37:7 › Checkout — with stock › ground checkout loads on the details step (4.4s)
+  ✓  18 [authenticated] › specs/05-account.spec.ts:6:7 › Account — unauthenticated › shows login form without a session (1.2s)
+  ✓  20 [authenticated] › specs/05-account.spec.ts:27:7 › Account — authenticated › dashboard loads with user info (2.4s)
+  ✓  16 [public] › specs/06-stripe-purchase.spec.ts:32:7 › Stripe purchase → inline payment step › ritual checkout reaches a payable inline Stripe element (9.5s)
+  ✓  19 [public] › specs/04-checkout.spec.ts:43:7 › Checkout — with stock › ground shows the RITUAL upgrade nudge (4.9s)
+  ✓  21 [authenticated] › specs/05-account.spec.ts:34:7 › Account — authenticated › subscription panel is visible with active status (2.6s)
+  ✓  23 [authenticated] › specs/05-account.spec.ts:41:7 › Account — authenticated › address panel is visible and Add button opens form (2.6s)
+  ✓  22 [public] › specs/04-checkout.spec.ts:50:7 › Checkout — with stock › ritual shows no upgrade nudge (4.2s)
+  ✓  24 [authenticated] › specs/05-account.spec.ts:50:7 › Account — authenticated › cancel subscription flow shows confirmation (2.4s)
+  ✓  25 [public] › specs/04-checkout.spec.ts:56:7 › Checkout — with stock › empty details submit shows an error (4.3s)
+  ✓  26 [public] › specs/04-checkout.spec.ts:63:7 › Checkout — with stock › ritual — details + delivery reaches the inline Stripe payment step (8.1s)
+  ✓  27 [public] › specs/04-checkout.spec.ts:76:7 › Checkout — GROUND interstitial › ground delivery opens the RITUAL upgrade interstitial (6.0s)
+  ✓  28 [public] › specs/04-checkout.spec.ts:87:7 › Checkout — GROUND interstitial › declining the upgrade offers the mixing bowl add-on (5.8s)
+◇ injected env (0) from .env.test // tip: ⌘ enable debugging { debug: true }
+  ✓  29 [teardown] › setup/teardown.ts:4:9 › global teardown — zero out seeded inventory (128ms)
+
+  29 passed (58.7s)

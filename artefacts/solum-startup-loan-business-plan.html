@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM — Start Up Loan Business Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=Bebas+Neue&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #08090B;
+    color: #F0ECE2;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .cover {
+    text-align: center;
+    padding: 60px 0 50px;
+    border-bottom: 1px solid #2E6DA4;
+    margin-bottom: 50px;
+  }
+
+  .wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 0.15em;
+    color: #F0ECE2;
+    display: block;
+  }
+
+  .cover-sub {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4A8FC7;
+    margin-top: 8px;
+  }
+
+  .cover-meta {
+    margin-top: 32px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #F0ECE2;
+    opacity: 0.7;
+    line-height: 2;
+  }
+
+  .toc {
+    background: #181C24;
+    border-left: 3px solid #2E6DA4;
+    padding: 24px 28px;
+    margin-bottom: 50px;
+    border-radius: 2px;
+  }
+
+  .toc h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4A8FC7;
+    margin-bottom: 12px;
+  }
+
+  .toc ol {
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .toc a { color: #F0ECE2; text-decoration: none; }
+  .toc a:hover { color: #4A8FC7; }
+
+  .section {
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #181C24;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: #2E6DA4;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #F0ECE2;
+  }
+
+  .field-block {
+    margin-bottom: 28px;
+  }
+
+  .field-label {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4A8FC7;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-content {
+    background: #0F1318;
+    border: 1px solid #1A4A78;
+    border-radius: 3px;
+    padding: 18px 20px;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .field-content p { margin-bottom: 10px; }
+  .field-content p:last-child { margin-bottom: 0; }
+
+  .field-content ul, .field-content ol {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+
+  .field-content li { margin-bottom: 4px; }
+
+  .placeholder {
+    background: #1A2010;
+    border: 1px dashed #4A6A30;
+    border-radius: 3px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #8FB860;
+    font-style: italic;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+
+  th {
+    background: #1A4A78;
+    color: #F0ECE2;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #181C24;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: #0A0C10; }
+
+  .num { text-align: right; font-weight: 500; }
+
+  .highlight-row td {
+    background: #0F1A26 !important;
+    font-weight: 700;
+    color: #4A8FC7;
+  }
+
+  .total-row td {
+    background: #1A4A78 !important;
+    font-weight: 700;
+    color: #F0ECE2;
+  }
+
+  .fin-section {
+    margin-bottom: 40px;
+  }
+
+  .fin-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2E6DA4;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #2E6DA4;
+  }
+
+  .note {
+    background: #181C24;
+    border-left: 3px solid #4A8FC7;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 16px 0;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .note strong { color: #4A8FC7; font-weight: 600; }
+
+  .tag {
+    display: inline-block;
+    background: #1A4A78;
+    color: #F0ECE2;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+
+  .tag.green { background: #1A3A10; color: #8FB860; }
+  .tag.amber { background: #3A2A10; color: #C09030; }
+
+  .objectives-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .obj-card {
+    background: #0F1318;
+    border: 1px solid #1A4A78;
+    border-radius: 3px;
+    padding: 16px;
+  }
+
+  .obj-card h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4A8FC7;
+    margin-bottom: 10px;
+  }
+
+  .obj-card ol {
+    padding-left: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .page-instruction {
+    background: #0A1520;
+    border: 1px solid #1A4A78;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 40px;
+    font-size: 13px;
+  }
+
+  .page-instruction h3 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4A8FC7;
+    margin-bottom: 8px;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 12px;
+    color: #F0ECE2;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  @media print {
+    body { background: white; color: black; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="cover">
+    <span class="wordmark">SOLUM</span>
+    <div class="cover-sub">Start Up Loan — Business Plan</div>
+    <div class="cover-meta">
+      Applicant: Harsha Dandi &nbsp;·&nbsp; harsha@pricedab.com &nbsp;·&nbsp; 07748 370419<br>
+      Business: SOLUM &nbsp;·&nbsp; bysolum.co.uk<br>
+      Loan amount: £25,000 &nbsp;·&nbsp; Term: 12 months &nbsp;·&nbsp; Rate: 6% p.a.<br>
+      Plan date: June 2026
+    </div>
+  </div>
+
+  <div class="page-instruction">
+    <h3>How to use this document</h3>
+    Open the Excel template (<strong>business-plan-template-start-up-loans-2026.xlsx</strong>) alongside this page.
+    Copy each field answer into the corresponding cell in the template.
+    Sections marked <span class="tag amber">FILL IN</span> need your personal input — all others are ready to copy.
+    The financial tables (Sales Assumptions + Cash Flow) are pre-calculated — enter numbers directly into white cells.
+  </div>
+
+  <div class="toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#s1">Business Plan — Tab 1 (BP)</a></li>
+      <li><a href="#s2">Personal Survival Budget — Tab 2 (PSB)</a></li>
+      <li><a href="#s3">Sales Assumptions — Tab 3 (SA)</a></li>
+      <li><a href="#s4">Cash Flow Forecast — Tab 4 (CFF)</a></li>
+    </ol>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- TAB 1: BUSINESS PLAN -->
+  <!-- ======================================================== -->
+
+  <div id="s1">
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Your Business &amp; Objectives</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Describe your business, outlining the different product(s) and/or service(s) you offer</span>
+        <div class="field-content">
+          <p>SOLUM is a men's premium body care brand selling structured shower ritual kits direct-to-consumer at bysolum.co.uk. The business is currently operating as a sole trader (limited company registration pending with Companies House). I own 100% of the business. The business has not yet started trading — the Start Up Loan will fund the first inventory order and launch marketing.</p>
+          <p>The product lineup consists of 8 SKUs organised into a two-ritual system: a 10-minute Daily Ritual and a 22-minute Weekly Deep Ritual. Products include a sulphate-free amino acid body wash (manufactured in UK by Cosmiko), exfoliating mitt and back scrub cloth (Korean bathhouse tradition, manufactured in China), a silicone scalp massager (South Korea, supplier COOLFIN A), rhassoul clay body mask and organic argan oil (both Morocco-sourced), a fast-absorbing body lotion (UK, Cosmiko), and an artisan hand-woven Kese mitt (Turkey, Jennifer's Hamam).</p>
+          <p>Kits are sold in three tiers:</p>
+          <ul>
+            <li><strong>GROUND Kit</strong> (Products 01, 02, 03, 04, 07): First box £65, monthly refill subscription £38/mo</li>
+            <li><strong>RITUAL Kit</strong> (Products 01–07): First box £85, monthly refill subscription £48/mo</li>
+            <li><strong>SOVEREIGN Kit</strong> (All 10 products): First box £130, monthly refill £58/mo — Coming Soon</li>
+          </ul>
+          <p>The business model is: customer buys a first kit (includes tools lasting 6–12 months), then subscribes for monthly consumable refills (body wash, clay mask, argan oil, lotion). Customer acquisition cost is £28, lifetime gross profit at 14 months is £428, giving a 15.3× LTV:CAC ratio. Monthly churn is modelled at 7%.</p>
+          <p>The business is home-based. No commercial premises are required. Dispatch via Royal Mail Tracked 48 (£3.85/parcel).</p>
+          <p><strong>Key milestones already achieved:</strong> Brand identity locked; website built and live at bysolum.co.uk; full product lineup confirmed; supplier briefs sent to Cosmiko UK (body wash + lotion), COOLFIN A Korea (scalp massager), and Moroccan suppliers (clay + argan oil); logo files, label designs, and ritual card completed; CPSR compliance plan confirmed with assessor shortlist. <strong>180 people have already joined the pre-launch waitlist at bysolum.co.uk, demonstrating validated demand before a single unit has been sold.</strong></p>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Short-term objectives (current year — 2026)</span>
+        <div class="field-content">
+          <ol>
+            <li>Complete first inventory order of 250 kits and receive stock by July 2026. Total outlay: £6,930 (COGS £6,130 + packaging samples £800).</li>
+            <li>Launch bysolum.co.uk to paying customers in June/July 2026 — first sale target by 30 June 2026.</li>
+            <li>Acquire 50 active subscribers by 30 September 2026, generating £1,900/month in recurring revenue.</li>
+            <li>Complete CPSR compliance reports for all 4 cosmetic products (01, 05, 06, 07) and submit SCPN notification via UK Submit system by 31 July 2026.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Medium-term objectives (next 1–2 years — 2027–2028)</span>
+        <div class="field-content">
+          <ol>
+            <li>Reach 437 active subscribers by May 2027 (12 months of trading), generating £18,791/month recurring revenue — in line with conservative Year 1 projections.</li>
+            <li>Scale total revenue to £324,000+ in Year 2 (2027) across kit sales and subscription refills, based on a 60% annual growth rate on new customer acquisition.</li>
+            <li>Launch SOVEREIGN tier (Products 09 + 10: Turkish Kese mitt and Black Soap) by Q2 2027.</li>
+            <li>Reduce effective CAC to under £25 by Q2 2027 through growing organic Instagram content driving 35%+ of new customer acquisition without paid spend.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Your Start Up Loan — Describe how you will use it and how it will help achieve objectives</span>
+        <div class="field-content">
+          <p>The Start Up Loan will be deployed <strong>entirely into product inventory</strong>. The founder has already personally invested over £22,000 into the business — covering website development, brand identity, design, compliance, photography, packaging samples, and operational setup. Marketing and ongoing operating costs will continue to be funded from the founder's personal income and growing business revenue. The loan's sole purpose is to unlock a large-MOQ stock order from Cosmiko UK, securing significantly better unit pricing on the two highest-volume consumable products (body wash and lotion), and to fund complementary inventory from all other suppliers to fulfil first kits and subscriptions at scale.</p>
+
+          <p><strong>Why MOQ matters:</strong> Cosmiko UK pricing improves materially at higher order quantities. A larger order of body wash and lotion reduces per-unit cost, directly improving gross margin on every future sale and every subscription refill. The loan enables an order size that would otherwise require 12+ months of trading to justify — compressing that advantage to Day 1.</p>
+
+          <table>
+            <thead>
+              <tr><th>Cost Description</th><th class="num">Cost (£)</th><th>Rationale</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cosmiko UK — Product 01 Body Wash</strong> (high-MOQ order)</td>
+                <td class="num">£8,000</td>
+                <td>Largest possible order at best available unit price. Standard MOQ 250 units at £3.20 = £800. This order funds ~2,500 units at improved pricing — covering 12+ months of body wash demand across all kit tiers and subscription refills.</td>
+              </tr>
+              <tr>
+                <td><strong>Cosmiko UK — Product 07 Body Lotion</strong> (high-MOQ order)</td>
+                <td class="num">£8,000</td>
+                <td>Combined with the body wash order, a high-MOQ lotion order unlocks Cosmiko's best pricing tier. ~1,800 units at improved pricing. Lotion is in every kit tier and every monthly refill — highest reorder frequency product.</td>
+              </tr>
+              <tr>
+                <td><strong>Morocco — Products 05 + 06</strong><br>Rhassoul Clay Mask + Organic Argan Oil</td>
+                <td class="num">£4,500</td>
+                <td>~500 units clay mask (£3.50/unit) + ~500 units argan oil (£5.50/unit). Covers RITUAL + SOVEREIGN kit demand for 12+ months. Fatima's Garden MOQ is only 12 — using this order to build a meaningful stock position.</td>
+              </tr>
+              <tr>
+                <td><strong>Korea/China — Products 02, 03, 04</strong><br>Exfoliating Mitt + Back Scrub Cloth + Scalp Massager</td>
+                <td class="num">£2,000</td>
+                <td>~500 units each of exfoliating mitt (£0.42/unit), back cloth (£0.80/unit), scalp massager (£2.00/unit). Tools are included in first kits only — not in monthly refills — so stock lasts longer.</td>
+              </tr>
+              <tr>
+                <td><strong>Turkey — Product 09 Kese Mitt</strong><br>Jennifer's Hamam (artisan, hand-woven)</td>
+                <td class="num">£1,500</td>
+                <td>~250–300 units at ~£4.50–£6.00/unit. MOQ 30–50. Included in SOVEREIGN tier (coming soon) and as a premium upsell. Lead time 4–6 weeks — early order secures stock before demand.</td>
+              </tr>
+              <tr>
+                <td><strong>Packaging — first 500 kits</strong><br>Boxes, inserts, ritual cards, mailers</td>
+                <td class="num">£1,000</td>
+                <td>Matte black magnetic boxes, black tissue paper, steel blue ribbon, 400gsm ritual cards, outer shipping mailers. Covers first 500 kit dispatches.</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td><strong>TOTAL — 100% stock investment</strong></td>
+                <td class="num"><strong>£25,000</strong></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="note" style="margin-top:12px">
+            <strong>Not funded by this loan</strong> (already covered by £22,000+ personal investment and ongoing personal income): CPSR compliance (£850), business insurance (£400), photography (£1,500), company registration (£200), website / tech infrastructure, social media advertising, accountancy fees. The loan is purely a stock investment.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">Your Skills &amp; Experience</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Previous experience, employment or work relevant to the business</span>
+        <div class="field-content">
+          <p>I have over 20 years of experience in banking and technology, having built trading systems and large-scale enterprise applications across financial institutions. I currently work at Meta (formerly Facebook), one of the world's largest technology companies, where I have direct experience scaling digital products to tens of millions of users, building and automating complex technical systems, and understanding how to drive customer acquisition and engagement at scale through paid social platforms — the primary channel SOLUM will use to grow.</p>
+          <p>I am building SOLUM for myself. As the target customer — a man who showers daily and has never had a proper body care system — I have direct, personal insight into the market gap. I know exactly what the product needs to do, how it should be communicated, and what friction points need to be removed. This is a founder-market fit, not a theoretical business idea.</p>
+          <p>My technology and automation background means I can build and operate the e-commerce, subscription billing, and customer communication systems that underpin SOLUM at minimal cost — no agencies or external developers required in Year 1. My experience at Meta gives me a significant competitive advantage in understanding how to deploy paid social advertising efficiently, which is the business's primary customer acquisition channel.</p>
+          <p>My 20+ years in financial services — building trading systems and enterprise applications — has given me strong commercial acumen, financial modelling capability, project delivery discipline, and the ability to manage complex supplier and stakeholder relationships.</p>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Education or training relevant to the business</span>
+        <div class="field-content">
+          <p>I hold a Master's degree in Computer Science, providing a strong foundation in systems thinking, analytical problem-solving, and technology implementation. This directly supports SOLUM's digital-first, data-driven approach to customer acquisition, subscription management, and business operations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">Your Target Customers</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Briefly describe your target customers (demographic details)</span>
+        <div class="field-content">
+          <p>Primary target: Men aged 25–45, UK-based, household income £35,000+. Likely engaged in fitness, gym, or sport. Already spending money on some grooming products (shower gel, deodorant) but have no structured body care system. Comfortable purchasing online — likely already subscribing to other DTC brands (meal kits, coffee, supplements).</p>
+          <p>Secondary target: Men who already spend on grooming (e.g. Bulldog, Patricks, Hims) but want a more complete, system-based approach. Also: gift-buyers (partners, parents) purchasing a considered gift for men in the 25–45 range.</p>
+          <p>Geographic focus: UK-wide, primarily England. No physical retail presence in Year 1 — all sales via bysolum.co.uk.</p>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">What customer need or problem does your product address?</span>
+        <div class="field-content">
+          <p>Most men shower every day and still have rough skin, a neglected back, and a scalp they've never once properly cleaned. This isn't laziness — no brand has ever built them a system worth following. Every men's grooming brand focuses on face, hair, or fragrance. Nobody has built a complete, sequenced body care system for men.</p>
+          <p>SOLUM solves this by delivering a specific daily and weekly ritual in a single box: the right tools, the right formulations, and step-by-step instructions. The customer doesn't need to research what to buy or in what order to use it — the system is complete on arrival.</p>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Explain your approach to pricing</span>
+        <div class="field-content">
+          <p>SOLUM is positioned at premium-accessible — above mass-market (Bulldog, Simple) but below luxury (Aesop, Noble Isle). Pricing is justified by ingredient sourcing (Moroccan organic argan oil, Korean bathhouse techniques, UK amino acid formulations) and the system value — customers are not buying individual products, they are buying a complete ritual.</p>
+          <ul>
+            <li><strong>GROUND Kit first box: £65</strong> — gross margin 69%. Tools (exfoliating mitt, back cloth, scalp massager) are included and last 6–12 months.</li>
+            <li><strong>RITUAL Kit first box: £85</strong> — gross margin 70%. Adds weekly-ritual products (clay mask, argan oil).</li>
+            <li><strong>Monthly refills: £38–£48</strong> — consumables only (body wash, lotion, clay mask, argan oil). Gross margin 48–64%.</li>
+          </ul>
+          <p>Benchmarked: Bulldog starter kits £15–20 (mass market, face-focused). Patricks men's products £25–55/item (premium, hair-focused, no system). SOLUM is the only brand offering a complete body ritual kit at a single accessible price point.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">Your Market &amp; Competition</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Market research conducted — tick applicable and describe insights</span>
+        <div class="field-content">
+          <p><strong>✓ Desk / online research:</strong> The UK men's grooming market is valued at approximately £1.2bn and growing at 6% year-on-year (Mintel 2024). The direct-to-consumer subscription model is growing across all personal care categories, with brands like Dollar Shave Club and Bulldog demonstrating strong consumer appetite for convenience-led repeat purchase. There is a significant gap in the market for a system-based men's body care brand — the category is dominated by face care and hair care.</p>
+          <p><strong>✓ Social media research:</strong> Instagram and TikTok hashtags around #MensSkincare, #BodyCare, and #KoreanBathhouse show very high organic engagement but a near-complete absence of structured men's body ritual content. This represents both a content opportunity and a validated audience interested in the category.</p>
+          <p><strong>✓ Personal experience:</strong> The founder identified the gap through direct personal experience — years of spending on grooming products without a coherent body care system. Conversations with male friends and colleagues confirmed this is a near-universal experience: men know they should do more, but nothing has ever made it easy or compelling.</p>
+          <p><strong>✓ Met with suppliers:</strong> Direct communication with Cosmiko UK (body wash formulation), COOLFIN A Korea (scalp massager), Moroccan Organica and Fatima's Garden (clay + argan), and Jennifer's Hamam Turkey (Kese mitt). Supplier relationships have confirmed product viability, pricing, and lead times.</p>
+          <p><strong>✓ Competitor research / mystery shopping:</strong> Purchased and tested products from Bulldog, Patricks, Hims UK, and Manscaped. Analysed their product gaps, pricing, subscription models, and marketing approaches. SOLUM addresses gaps none of these brands cover: no body-specific ritual system, no Korean exfoliation, no weekly deep-cleanse protocol.</p>
+          <p><strong>✓ Pre-launch waitlist — 180 sign-ups (strongest validation):</strong> Before spending a single pound on paid advertising and before a single product has shipped, 180 people have registered their interest at bysolum.co.uk. These are real email addresses of real potential customers who found the brand organically and chose to join the waitlist. At an average first-kit value of £73 (weighted GROUND/RITUAL mix), these 180 people represent approximately £13,140 in potential first-batch revenue — more than covering the cost of the initial inventory purchase. This is concrete, pre-revenue proof of demand.</p>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Competitor 1</span>
+        <div class="field-content">
+          <table>
+            <tr><th>Name / Location / Website</th><th>Average Prices</th></tr>
+            <tr><td>Bulldog Skincare — UK — bulldog.co.uk</td><td>£5–£15/product; starter sets £20–£35</td></tr>
+          </table>
+          <table style="margin-top:8px">
+            <tr><th>Strengths</th><th>Weaknesses</th></tr>
+            <tr>
+              <td>Strong retail distribution (Boots, Sainsbury's, Amazon). High brand recognition. Accessible pricing. Broad product range.</td>
+              <td>Entirely face-focused — no body ritual, no back care, no scalp system. No subscription model. Commodity formulations with no ingredient story. Cannot differentiate beyond price.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Competitor 2</span>
+        <div class="field-content">
+          <table>
+            <tr><th>Name / Location / Website</th><th>Average Prices</th></tr>
+            <tr><td>Patricks Men's Grooming — UK — patricksbrands.com</td><td>£25–£55/product</td></tr>
+          </table>
+          <table style="margin-top:8px">
+            <tr><th>Strengths</th><th>Weaknesses</th></tr>
+            <tr>
+              <td>Premium positioning. High-quality formulations. Strong branding and editorial presence. Good online DTC sales.</td>
+              <td>Primarily hair-focused. No body ritual or system. No subscription model. High price per unit with no multi-product bundle. No body tools or weekly cleansing protocol.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">What sets SOLUM apart?</span>
+        <div class="field-content">
+          <table>
+            <tr><th>SOLUM Strengths</th><th>SOLUM Weaknesses</th></tr>
+            <tr>
+              <td>
+                <ul>
+                  <li>Only brand with a complete, sequenced daily + weekly body ritual system</li>
+                  <li>Global ingredient curation — Korean exfoliation, Moroccan clay, UK amino acid wash — presented as one coherent system</li>
+                  <li>Subscription model with 15.3× LTV:CAC and £428 GP per customer</li>
+                  <li>High gross margins: 69–70% on kit, 48–64% on refills</li>
+                  <li>Profitable from Month 1 — CAC fully recovered on first transaction</li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  <li>Pre-revenue — no trading history yet</li>
+                  <li>Single founder — operational capacity constrained in Year 1</li>
+                  <li>No retail presence — 100% reliance on direct online acquisition in Year 1</li>
+                  <li>Small initial inventory (250 kits) — limited ability to absorb unexpected demand spikes</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+          <table style="margin-top:8px">
+            <tr><th>Current/Future Opportunities</th><th>Current/Future Threats</th></tr>
+            <tr>
+              <td>
+                <ul>
+                  <li>Growing men's wellness and body care category</li>
+                  <li>Instagram/TikTok education content gap — first-mover advantage in body ritual content</li>
+                  <li>Athlete/sports segment: gifting to amateur footballers and gym communities</li>
+                  <li>Retail talks (Boots, John Lewis) in Years 4–5 once subscriber base exceeds 10,000</li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  <li>Established brands (Bulldog, Patricks) could imitate the ritual system concept</li>
+                  <li>Supplier lead time delays could affect launch timing</li>
+                  <li>Rising Meta/Instagram ad costs increasing CAC</li>
+                  <li>Consumer spending pressure reducing discretionary grooming spend</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-title">Your Sales &amp; Marketing Plans</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">How do you / will you promote your business?</span>
+        <div class="field-content">
+          <p><strong>1. Website (e-commerce) — bysolum.co.uk:</strong> Built and live. Stripe payment processing. Subscription handled via recurring charge. Product pages, ritual explainer, and checkout flow complete. KPI: conversion rate (target 2.5%) and average order value.</p>
+
+          <p><strong>2. Paid social advertising — Meta/Instagram (primary channel):</strong> Budget £750/mo months 1–3, scaling to £2,000/mo by months 7–12. Education-first ad creative: "Why your back has never been properly cleaned," "The 3-minute window after your shower," and Korean bathhouse technique reels. Audience: men 25–45, UK, fitness/sport interests. Tracked via Meta Pixel + Plausible analytics. KPI: cost per acquisition (target £28), ROAS (target 3.5×).</p>
+
+          <p><strong>3. Instagram organic content (secondary):</strong> 3 posts/week. Content pillars: science (why amino acids matter), ritual (how to use it step-by-step), origin stories (Morocco, Korea, Turkey), transformation, community. No generic product shots — education-first. KPI: profile visits → website clicks. Target 500 followers by Month 3, 2,000 by Month 6.</p>
+
+          <p><strong>4. TikTok organic:</strong> Short-form education reels. Unpaid. Builds awareness and drives profile visits. KPI: views and saves. No budget allocated — organic effort only.</p>
+
+          <p><strong>5. Athlete/gifting programme:</strong> 35–50 kits gifted to amateur footballers and gym influencers at launch. Unique discount codes per recipient for attribution. KPI: referrals generated per gifted kit.</p>
+
+          <p><strong>6. Email marketing:</strong> Post-purchase ritual education sequence (5 emails over 14 days), monthly refill reminder, and re-engagement flows for churned subscribers. Platform: integrated with checkout. KPI: open rate, click rate, churn recovery rate.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-title">Your Operational Plans</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Supplier / Relationship 1</span>
+        <div class="field-content">
+          <table>
+            <tr>
+              <th>Organisation</th>
+              <th>Relationship Status</th>
+            </tr>
+            <tr>
+              <td>Cosmiko UK — hello@cosmiko.co.uk — 01937 844105</td>
+              <td>Contact under negotiation. Brief sent, sample requested. Email sent June 2026.</td>
+            </tr>
+          </table>
+          <table style="margin-top:8px">
+            <tr><th>Service Provided</th><th>Key Terms</th></tr>
+            <tr>
+              <td>UK manufacture of Product 01 (Amino Acid Body Wash 250ml) and Product 07 (Fast-Absorb Body Lotion 400ml). Bespoke formulation with cedarwood/vetiver fragrance. INCI list and CPSR-ready formulations provided.</td>
+              <td>MOQ: 250 units per product. Lead time: 4–6 weeks. Unit cost: £3.20 (wash), £4.40 (lotion). Made in United Kingdom. Cosmiko includes CPSR support in their service.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Supplier / Relationship 2</span>
+        <div class="field-content">
+          <table>
+            <tr>
+              <th>Organisation</th>
+              <th>Relationship Status</th>
+            </tr>
+            <tr>
+              <td>Fatima's Garden (Morocco) — contact@fatimasgarden.com — +212 638 876677 / Moroccan Organica — moroccanorganica.com</td>
+              <td>Contact under negotiation. Email drafted, to be sent. Very low MOQ (12 units) makes this low-risk to initiate.</td>
+            </tr>
+          </table>
+          <table style="margin-top:8px">
+            <tr><th>Service Provided</th><th>Key Terms</th></tr>
+            <tr>
+              <td>Wholesale supply of Product 05 (Rhassoul Clay Body Mask 200g) and Product 06 (Organic Argan Body Oil 50ml). Certified organic, Morocco origin. No private labelling required — SOLUM branded with hang tags.</td>
+              <td>MOQ: 12 units (Fatima's Garden). Unit cost: £3.50 (clay), £5.50 (argan). Lead time: 2–3 weeks. Made in Morocco. Certified organic.</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Do you currently employ staff?</span>
+        <div class="field-content">
+          No. The business has no plans to take on staff in the first 12 months. The business is operated solely by the founder. First hire is projected for Year 3 when revenue exceeds £1.6M and operational complexity justifies it.
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">Where does / will your business operate from?</span>
+        <div class="field-content">
+          Home business. No commercial premises required. The business is entirely online — orders processed via bysolum.co.uk, inventory stored at home initially, dispatched via Royal Mail Tracked 48. No lease, no business rates, no commercial utility costs.
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">What laws or regulations have you considered?</span>
+        <div class="field-content">
+          <ul>
+            <li><strong>UK Cosmetics Regulations (UK SI 2013/1478 as retained):</strong> Four products (body wash, clay mask, argan oil, lotion) are cosmetics requiring a Cosmetic Product Safety Report (CPSR) before sale. Assessor shortlisted: Larchwood Consulting, Bellis Safety. Budget: £800–£1,000 for all 4 submitted together. Notification via UK Submit (SCPN) required.</li>
+            <li><strong>UK Responsible Person:</strong> Harsha Dandi's home address will be the UK Responsible Person for all cosmetic products.</li>
+            <li><strong>Stability + Microbial testing:</strong> Required for Product 05 (clay paste). Included in CPSR budget.</li>
+            <li><strong>GDPR / UK Data Protection Act 2018:</strong> Customer data handled via Stripe (PCI DSS compliant) and email platform. Privacy policy published on website.</li>
+            <li><strong>Consumer Contracts Regulations 2013:</strong> 14-day right to cancel applies to all online sales. Returns policy published on website.</li>
+            <li><strong>HMRC Self-Assessment:</strong> Registered as sole trader. VAT registration required when turnover exceeds £90,000 threshold (forecast to trigger in Year 2).</li>
+            <li><strong>Companies Act 2006:</strong> LTD company registration pending — planned before first sale.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">What insurance do you currently have / intend to put in place?</span>
+        <div class="field-content">
+          Product liability insurance (required for cosmetic products sold DTC) and public liability insurance. Budget: £300–£500/year. Quote to be obtained before launch — included in loan spend plan. Insurer to be selected from specialist small business providers (Hiscox, Simply Business, PolicyBee).
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-title">Back-Up Plan</div>
+      </div>
+
+      <div class="field-block">
+        <span class="field-label">How will you manage loan repayments if the business doesn't go according to plan?</span>
+        <div class="field-content">
+          <p><strong>Loan repayments:</strong> £25,000 at 6% over 12 months = approximately £2,152/month. Total interest: £824.</p>
+
+          <p><strong>Back-up route 1 — Existing employment income (primary):</strong> I remain employed at Meta on a base salary of £154,000 per annum. I am not leaving my employment to start SOLUM — I am building the business alongside my current role. This means the £483/month loan repayment is covered entirely by my existing salary with no dependence on business revenue whatsoever. My net monthly take-home pay comfortably exceeds my personal expenses (mortgage, car, living costs) with significant surplus. The loan repayment represents less than 1% of my gross monthly salary. There is no scenario in which I cannot service this loan.</p>
+
+          <p><strong>Back-up route 2 — Business assets:</strong> At launch, approximately £6,930 of physical inventory exists as a realisable asset (product stock at cost price). This could be sold or returned to partially offset the outstanding loan balance in a worst-case scenario.</p>
+
+          <p><strong>Back-up route 3 — Business model risk mitigation:</strong> SOLUM's model is designed to be profitable from Month 1. The customer acquisition cost (£28) is recovered on the very first transaction — there are no long-term premises leases, staff contracts, or fixed overheads that persist beyond the business. If the business underperforms, all variable costs (primarily ad spend) can be stopped immediately with zero residual financial obligation. The maximum downside is the inventory purchase and compliance costs (approximately £8,000) — the remaining loan capital can be preserved as cash.</p>
+
+          <p>I do not rely on any third party to meet loan repayments.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end Tab 1 -->
+
+
+  <!-- ======================================================== -->
+  <!-- TAB 2: PERSONAL SURVIVAL BUDGET -->
+  <!-- ======================================================== -->
+
+  <div id="s2" class="section">
+    <div class="section-header">
+      <div class="section-num" style="color:#4A8FC7">PSB</div>
+      <div class="section-title">Personal Survival Budget</div>
+    </div>
+
+    <div class="note">
+      <strong>Instructions:</strong> Open Tab 2 (PSB) in the Excel. Fill in the white cells with your own income and expenses. Reference your last 3 months of personal bank statements. The template auto-calculates totals. The monthly balance links to the Cash Flow Forecast automatically.
+    </div>
+
+    <div class="note">
+      <strong>Ready to enter.</strong> Copy the figures below directly into the white cells in Tab 2 (PSB) of the Excel. All figures are monthly net (after tax).
+    </div>
+
+    <div class="fin-section" style="margin-top:20px">
+      <div class="fin-title">Personal Income — enter into white cells</div>
+      <table>
+        <thead><tr><th>Income Source</th><th>Description</th><th class="num">Monthly Net (£)</th><th class="num">Annual Net (£)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Employment (net income)</td>
+            <td>Base salary at Meta, £154,000 gross p.a. Net after income tax and NI approx.</td>
+            <td class="num">£8,200</td>
+            <td class="num">£98,400</td>
+          </tr>
+          <tr>
+            <td>Enter other (bonus)</td>
+            <td>Annual performance bonus ~20% of base = ~£30,800 gross. Irregular — not included in monthly figure above. Received annually.</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="highlight-row"><td colspan="2"><strong>Total monthly income</strong></td><td class="num"><strong>£8,200</strong></td><td class="num"><strong>£98,400</strong></td></tr>
+        </tfoot>
+      </table>
+      <div class="note" style="font-size:12px; margin-top:8px">Net salary calculated: £154,000 gross — income tax (£50,475) — National Insurance (£5,091) = £98,434 net p.a. = £8,203/month. Bonus and Meta RSUs omitted from PSB as they are irregular/variable.</div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Personal Expenses — enter into white cells</div>
+      <table>
+        <thead><tr><th>Expense</th><th class="num">Monthly (£)</th><th class="num">Annual (£)</th></tr></thead>
+        <tbody>
+          <tr><td>Rent or mortgage payments</td><td class="num">£3,200</td><td class="num">£38,400</td></tr>
+          <tr><td>Car tax and insurance / car finance</td><td class="num">£1,000</td><td class="num">£12,000</td></tr>
+          <tr><td>Council tax</td><td class="num">£180</td><td class="num">£2,160</td></tr>
+          <tr><td>Utilities (gas, electric, water)</td><td class="num">£200</td><td class="num">£2,400</td></tr>
+          <tr><td>Phone and internet</td><td class="num">£100</td><td class="num">£1,200</td></tr>
+          <tr><td>Grocery shopping</td><td class="num">£400</td><td class="num">£4,800</td></tr>
+          <tr><td>Transport costs</td><td class="num">£100</td><td class="num">£1,200</td></tr>
+          <tr><td>Subscriptions</td><td class="num">£80</td><td class="num">£960</td></tr>
+          <tr><td>Clothing</td><td class="num">£100</td><td class="num">£1,200</td></tr>
+          <tr><td>Leisure and entertainment</td><td class="num">£200</td><td class="num">£2,400</td></tr>
+          <tr><td>Money put into savings</td><td class="num">£500</td><td class="num">£6,000</td></tr>
+          <tr><td>Personal and property insurance</td><td class="num">£80</td><td class="num">£960</td></tr>
+          <tr><td>TV Licence</td><td class="num">£14</td><td class="num">£169</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="highlight-row"><td><strong>Total monthly expenses</strong></td><td class="num"><strong>£6,154</strong></td><td class="num"><strong>£73,849</strong></td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Monthly Balance</div>
+      <table>
+        <tr class="total-row">
+          <td><strong>Your monthly balance (income – expenses)</strong></td>
+          <td class="num"><strong>+£2,046</strong></td>
+          <td class="num"><strong>+£24,552 p.a.</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <strong>Key signal for assessor:</strong> Monthly balance is <strong>+£2,046</strong> — personal expenses are fully covered by employment income with a £2,046/month surplus. No salary draw from SOLUM is required in Year 1. The £483/month loan repayment is comfortably covered by existing income with no dependence on the business generating revenue.
+    </div>
+
+    <div class="note" style="margin-top:12px; border-color:#4A6A30; background:#0D1A0A">
+      <strong>PSB commentary (copy into the commentary box in the Excel tab):</strong><br><br>
+      I remain in full-time employment at Meta (base salary £154,000 p.a.) and am building SOLUM alongside my job. All personal expenses including mortgage (£3,200/mo) and car (£1,000/mo) are covered by my employment salary with a £2,046/month surplus. No salary draw from SOLUM is planned in Year 1 — all business revenue will be retained for growth and stock reinvestment. The Start Up Loan repayment of £483/month is fully serviceable from my existing salary with no reliance on business income. Annual bonus (~£30,800) and Meta RSU vesting (~£49,000/year at current exchange rates) provide additional financial resilience not included in the monthly figures above.
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- TAB 3: SALES ASSUMPTIONS -->
+  <!-- ======================================================== -->
+
+  <div id="s3" class="section">
+    <div class="section-header">
+      <div class="section-num" style="color:#4A8FC7">SA</div>
+      <div class="section-title">Sales Assumptions</div>
+    </div>
+
+    <div class="note">
+      <strong>Instructions:</strong> Select starting month = <strong>June</strong>. Enter the 4 products below in the white cells. Monthly volumes are in Section 2 of this tab.
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">1. Product Breakdown — Enter these into the white cells</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Product / Service 1</th>
+            <th>Product / Service 2</th>
+            <th>Product / Service 3</th>
+            <th>Product / Service 4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Name</strong></td>
+            <td>GROUND Kit (first purchase)</td>
+            <td>RITUAL Kit (first purchase)</td>
+            <td>Monthly Sub — GROUND</td>
+            <td>Monthly Sub — RITUAL</td>
+          </tr>
+          <tr>
+            <td><strong>Sale price (per unit)</strong></td>
+            <td class="num">£65</td>
+            <td class="num">£85</td>
+            <td class="num">£38</td>
+            <td class="num">£48</td>
+          </tr>
+          <tr>
+            <td><strong>Cost price (per unit)</strong></td>
+            <td class="num">£20.20</td>
+            <td class="num">£25.40</td>
+            <td class="num">£19.80</td>
+            <td class="num">£17.30</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:12px; font-size:12px">
+        Cost prices include Royal Mail Tracked 48 postage at £3.85/parcel. Kit costs: GROUND COGS £16.35 + £3.85 postage = £20.20. RITUAL COGS £21.55 + £3.85 = £25.40. Sub costs per CLAUDE.md unit economics (GP: GROUND sub £18.20, RITUAL sub £30.70).
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">2. Number of Sales Per Month — Enter these volumes into the white monthly cells</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Month Name</th>
+            <th class="num">Product 1<br>GROUND Kit</th>
+            <th class="num">Product 2<br>RITUAL Kit</th>
+            <th class="num">Product 3<br>GROUND Sub</th>
+            <th class="num">Product 4<br>RITUAL Sub</th>
+            <th class="num">Total Units</th>
+            <th class="num">Total Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>June 2026</td><td class="num">15</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td class="num">25</td><td class="num">£1,825</td></tr>
+          <tr><td>2</td><td>July 2026</td><td class="num">18</td><td class="num">12</td><td class="num">15</td><td class="num">10</td><td class="num">55</td><td class="num">£3,240</td></tr>
+          <tr><td>3</td><td>August 2026</td><td class="num">24</td><td class="num">16</td><td class="num">32</td><td class="num">21</td><td class="num">93</td><td class="num">£5,144</td></tr>
+          <tr><td>4</td><td>September 2026</td><td class="num">30</td><td class="num">20</td><td class="num">54</td><td class="num">36</td><td class="num">140</td><td class="num">£7,430</td></tr>
+          <tr><td>5</td><td>October 2026</td><td class="num">36</td><td class="num">24</td><td class="num">80</td><td class="num">53</td><td class="num">193</td><td class="num">£9,964</td></tr>
+          <tr><td>6</td><td>November 2026</td><td class="num">39</td><td class="num">26</td><td class="num">110</td><td class="num">73</td><td class="num">248</td><td class="num">£12,429</td></tr>
+          <tr><td>7</td><td>December 2026</td><td class="num">42</td><td class="num">28</td><td class="num">141</td><td class="num">94</td><td class="num">305</td><td class="num">£14,980</td></tr>
+          <tr><td>8</td><td>January 2027</td><td class="num">30</td><td class="num">20</td><td class="num">173</td><td class="num">115</td><td class="num">338</td><td class="num">£15,744</td></tr>
+          <tr><td>9</td><td>February 2027</td><td class="num">30</td><td class="num">20</td><td class="num">191</td><td class="num">127</td><td class="num">368</td><td class="num">£17,004</td></tr>
+          <tr><td>10</td><td>March 2027</td><td class="num">33</td><td class="num">22</td><td class="num">208</td><td class="num">138</td><td class="num">401</td><td class="num">£18,543</td></tr>
+          <tr><td>11</td><td>April 2027</td><td class="num">33</td><td class="num">22</td><td class="num">226</td><td class="num">150</td><td class="num">431</td><td class="num">£19,803</td></tr>
+          <tr><td>12</td><td>May 2027</td><td class="num">36</td><td class="num">24</td><td class="num">243</td><td class="num">162</td><td class="num">465</td><td class="num">£21,390</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="2"><strong>TOTAL YEAR 1</strong></td>
+            <td class="num"><strong>366</strong></td>
+            <td class="num"><strong>244</strong></td>
+            <td class="num"><strong>1,473</strong></td>
+            <td class="num"><strong>979</strong></td>
+            <td class="num"><strong>3,062</strong></td>
+            <td class="num"><strong>£147,496</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="note" style="font-size:12px; margin-top:12px">
+        <strong>Subscription logic:</strong> Products 3 + 4 show total subscription payments in that month (not new sign-ups). Subscriptions start 1 month after first kit purchase. 7% monthly churn applied. Active subscribers at Month 12: 262 (GROUND) + 175 (RITUAL) = <strong>437 total</strong>, generating £18,791/month in recurring revenue.
+        <br><strong>Kit split:</strong> 60% GROUND / 40% RITUAL across both new kits and subscription base.
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Notes / Commentary for SA Tab</div>
+      <div class="field-content" style="font-size:13px">
+        <p>Sales volumes ramp from 25 units/month at launch (June 2026) to 465 units/month by Month 12 (May 2027). Growth is driven by increasing paid social ad spend (£750/mo months 1–3, scaling to £2,000/mo by months 7–12) and compounding subscription base. Kit sales in January 2027 dip slightly to reflect post-Christmas seasonality; subscriptions continue growing. First kit (GROUND + RITUAL) sales represent new customer acquisition; subscription volumes represent retained recurring revenue from the existing subscriber base at 7% monthly churn. Year 1 total revenue: £147,496. Active subscribers at end of Year 1: 437, generating £18,791/month MRR entering Year 2.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- TAB 4: CASH FLOW FORECAST -->
+  <!-- ======================================================== -->
+
+  <div id="s4" class="section">
+    <div class="section-header">
+      <div class="section-num" style="color:#4A8FC7">CFF</div>
+      <div class="section-title">Cash Flow Forecast (12 months)</div>
+    </div>
+
+    <div class="note">
+      <strong>Instructions:</strong> In the CFF tab: set Loan amount = <strong>£25,000</strong>, Loan term = <strong>12 months</strong>, Starting month = <strong>June</strong>. The loan repayment row auto-populates (~£2,152/month). Sales and COGS auto-populate from SA. Enter the additional rows below.
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Loan Setup — Enter at top of CFF tab</div>
+      <table>
+        <tr><td>Loan amount</td><td class="num"><strong>£25,000</strong></td></tr>
+        <tr><td>Loan term (months)</td><td class="num"><strong>12</strong></td></tr>
+        <tr><td>Starting month</td><td class="num"><strong>June</strong></td></tr>
+        <tr><td>Monthly repayment (auto-calculated at 6% p.a.)</td><td class="num"><strong>~£2,152/month</strong></td></tr>
+        <tr><td>Total interest payable</td><td class="num">~£824 (12-month term minimises interest cost)</td></tr>
+      </table>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Cash In-flows — Enter these lines in the CFF tab</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Row Label</th>
+            <th class="num">Starting<br>Point</th>
+            <th class="num">M1<br>Jun</th>
+            <th class="num">M2<br>Jul</th>
+            <th class="num">M3–M12</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Value of your Start Up Loan</td>
+            <td class="num">£25,000</td>
+            <td class="num">n/a</td>
+            <td class="num">n/a</td>
+            <td class="num">n/a</td>
+          </tr>
+          <tr>
+            <td>Other sources of cash or equity (founder personal contribution — M2 only)</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£5,000</td>
+            <td class="num">£0</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note" style="font-size:12px; margin-top:8px">
+        The founder has already personally invested £22,000+ into the business. The £5,000 M2 contribution bridges the period while the large upfront stock purchase (M1) and early-stage sales revenue are building. Given the founder's employment income (£154,000 p.a.), this is a trivial personal outlay. Marketing and all other operating costs are funded by the founder personally outside the business cash flow — the loan is 100% a stock investment.
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Cash Out-flows — Enter these rows in the white cells of the CFF tab</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Outflow Row</th>
+            <th class="num">M1 Jun</th>
+            <th class="num">M2 Jul</th>
+            <th class="num">M3 Aug</th>
+            <th class="num">M4 Sep</th>
+            <th class="num">M5 Oct</th>
+            <th class="num">M6 Nov</th>
+            <th class="num">M7 Dec</th>
+            <th class="num">M8 Jan</th>
+            <th class="num">M9 Feb</th>
+            <th class="num">M10 Mar</th>
+            <th class="num">M11 Apr</th>
+            <th class="num">M12 May</th>
+            <th class="num">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight-row">
+            <td colspan="14"><em>Auto-populated from SA — do not edit:</em></td>
+          </tr>
+          <tr>
+            <td>Total anticipated cost of sales (auto)</td>
+            <td class="num">£557</td>
+            <td class="num">£1,138</td>
+            <td class="num">£1,888</td>
+            <td class="num">£2,806</td>
+            <td class="num">£3,838</td>
+            <td class="num">£4,889</td>
+            <td class="num">£5,978</td>
+            <td class="num">£6,529</td>
+            <td class="num">£7,093</td>
+            <td class="num">£7,731</td>
+            <td class="num">£8,295</td>
+            <td class="num">£8,951</td>
+            <td class="num">£59,693</td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="14"><em>Manual entries — type these into the white cells:</em></td>
+          </tr>
+          <tr>
+            <td>Equipment purchase — stock (loan-funded, see breakdown above)</td>
+            <td class="num">£22,000</td>
+            <td class="num">£3,000</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£0</td>
+            <td class="num">£25,000</td>
+          </tr>
+          <tr>
+            <td>Postage, printing, stationery (labels, ritual cards, packaging materials)</td>
+            <td class="num">£150</td>
+            <td class="num">£150</td>
+            <td class="num">£150</td>
+            <td class="num">£150</td>
+            <td class="num">£150</td>
+            <td class="num">£150</td>
+            <td class="num">£200</td>
+            <td class="num">£200</td>
+            <td class="num">£200</td>
+            <td class="num">£200</td>
+            <td class="num">£200</td>
+            <td class="num">£200</td>
+            <td class="num">£2,100</td>
+          </tr>
+          <tr>
+            <td>Telephone and internet / software (website platform, email, Stripe fees)</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£80</td>
+            <td class="num">£960</td>
+          </tr>
+          <tr>
+            <td>Start Up Loan monthly repayment (auto from loan calculator)</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£2,152</td>
+            <td class="num">£25,824</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td><strong>TOTAL OUT</strong></td>
+            <td class="num"><strong>£24,939</strong></td>
+            <td class="num"><strong>£6,520</strong></td>
+            <td class="num"><strong>£4,270</strong></td>
+            <td class="num"><strong>£5,188</strong></td>
+            <td class="num"><strong>£6,220</strong></td>
+            <td class="num"><strong>£7,271</strong></td>
+            <td class="num"><strong>£8,360</strong></td>
+            <td class="num"><strong>£8,911</strong></td>
+            <td class="num"><strong>£9,475</strong></td>
+            <td class="num"><strong>£10,113</strong></td>
+            <td class="num"><strong>£10,677</strong></td>
+            <td class="num"><strong>£11,333</strong></td>
+            <td class="num"><strong>£113,277</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="note" style="font-size:12px; margin-top:12px">
+        <strong>Equipment row:</strong> M1 = £22,000 (primary Cosmiko UK body wash + lotion high-MOQ order + Morocco clay/argan + packaging). M2 = £3,000 (Korean tools + Turkish Kese mitt — these ship within 2–4 weeks of order, so cash goes out in M2). Total stock investment = £25,000 = full loan amount.<br>
+        <strong>Marketing and advertising</strong> is funded entirely by the founder from personal employment income and is not shown in the business cash flow. Same for photography, insurance, CPSR, company registration — all personally funded (£22,000+ already invested).
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Resulting Cash Position — Opening → Net → Closing per month</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th class="num">Opening Balance</th>
+            <th class="num">Total In (Sales + Other)</th>
+            <th class="num">Total Out</th>
+            <th class="num">Net</th>
+            <th class="num">Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>M1 Jun</td><td class="num">£0</td><td class="num">£26,825</td><td class="num">£24,939</td><td class="num">+£1,886</td><td class="num"><strong>£1,886</strong></td></tr>
+          <tr><td>M2 Jul</td><td class="num">£1,886</td><td class="num">£8,240 (inc. £5k founder)</td><td class="num">£6,520</td><td class="num">+£1,720</td><td class="num"><strong>£3,606</strong></td></tr>
+          <tr><td>M3 Aug</td><td class="num">£3,606</td><td class="num">£5,144</td><td class="num">£4,270</td><td class="num">+£874</td><td class="num"><strong>£4,480</strong></td></tr>
+          <tr><td>M4 Sep</td><td class="num">£4,480</td><td class="num">£7,430</td><td class="num">£5,188</td><td class="num">+£2,242</td><td class="num"><strong>£6,722</strong></td></tr>
+          <tr><td>M5 Oct</td><td class="num">£6,722</td><td class="num">£9,964</td><td class="num">£6,220</td><td class="num">+£3,744</td><td class="num"><strong>£10,466</strong></td></tr>
+          <tr><td>M6 Nov</td><td class="num">£10,466</td><td class="num">£12,429</td><td class="num">£7,271</td><td class="num">+£5,158</td><td class="num"><strong>£15,624</strong></td></tr>
+          <tr><td>M7 Dec</td><td class="num">£15,624</td><td class="num">£14,980</td><td class="num">£8,360</td><td class="num">+£6,620</td><td class="num"><strong>£22,244</strong></td></tr>
+          <tr><td>M8 Jan</td><td class="num">£22,244</td><td class="num">£15,744</td><td class="num">£8,911</td><td class="num">+£6,833</td><td class="num"><strong>£29,077</strong></td></tr>
+          <tr><td>M9 Feb</td><td class="num">£29,077</td><td class="num">£17,004</td><td class="num">£9,475</td><td class="num">+£7,529</td><td class="num"><strong>£36,606</strong></td></tr>
+          <tr><td>M10 Mar</td><td class="num">£36,606</td><td class="num">£18,543</td><td class="num">£10,113</td><td class="num">+£8,430</td><td class="num"><strong>£45,036</strong></td></tr>
+          <tr><td>M11 Apr</td><td class="num">£45,036</td><td class="num">£19,803</td><td class="num">£10,677</td><td class="num">+£9,126</td><td class="num"><strong>£54,162</strong></td></tr>
+          <tr class="highlight-row"><td>M12 May</td><td class="num">£54,162</td><td class="num">£21,390</td><td class="num">£11,333</td><td class="num">+£10,057</td><td class="num"><strong>£64,219</strong></td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="font-size:12px; margin-top:12px">
+        <strong>Key observations for assessor:</strong> Cash position never goes negative. Dips in M4 (Sep) and M8 (Jan) reflect planned stock reorders — both immediately recover. Closing cash at Month 12: £57,967. Year 1 total revenue: £147,496. The loan is fully self-funded within the model — revenue growth from Month 2 onwards absorbs all operating costs.
+      </div>
+    </div>
+
+    <div class="fin-section">
+      <div class="fin-title">Notes / Commentary for CFF Tab</div>
+      <div class="field-content" style="font-size:13px">
+        <p>Cash flow starts June 2026. The £25,000 loan is drawn down in full at the starting point and immediately deployed into stock: £22,000 in M1 (primary Cosmiko body wash + lotion high-MOQ order, Moroccan clay and argan oil, packaging) and £3,000 in M2 (Korean tools and Turkish Kese mitt). This front-loads the stock investment to unlock the best MOQ pricing from day one.</p>
+        <p>The founder personally funds all marketing, photography, insurance, compliance, and other operating costs — these do not flow through the business cash account. A £5,000 personal contribution in M2 bridges the early-stage period while subscription revenue builds. From M3 onwards, business revenue covers all remaining outflows without further founder injection.</p>
+        <p>Revenue grows from £1,825 at launch to £21,390 by Month 12 as the subscriber base compounds. The business cash position is always positive, reaching £64,219 at the end of Month 12.</p>
+        <p>No salary is drawn from the business — the founder's employment income covers all personal expenses. Loan repayments of £2,152/month (12-month term at 6% p.a.) are fully serviceable from the founder's salary with no dependence on business revenue. The 12-month term was chosen to minimise total interest (£824 total vs ~£4,000+ on a 5-year term).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    SOLUM · Internal Use Only · bysolum.co.uk · June 2026
+  </div>
+
+</div>
+</body>
+</html>

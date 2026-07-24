@@ -1,0 +1,19 @@
+SOLUM — Launch Blast Send Commands
+====================================
+Run each batch, wait 2-3 mins, then run the next.
+Check the response for "sent" count and any "errors".
+
+-- BATCH 1 (leads 1-30) --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-launch-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":0,"limit":30}'
+
+-- BATCH 2 (leads 31-60) — wait 2-3 mins after batch 1 --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-launch-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":30,"limit":30}'
+
+-- BATCH 3 (leads 61-90) — wait 2-3 mins after batch 2 --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-launch-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":60,"limit":30}'
+
+-- BATCH 4 (leads 91-120) — wait 2-3 mins after batch 3 --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-launch-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":90,"limit":30}'
+
+-- BATCH 5 (leads 121-150) — wait 2-3 mins after batch 4 --
+curl -s -X POST "https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/send-launch-blast" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2ZnB0bWpsdXhwbmdmamVuZGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDE3OTgsImV4cCI6MjA4OTYxNzc5OH0.xX_CPYgSLF-xl_Gm8v8ahSVhpb9l3RJPMGs8egZ1fAo" -H "Content-Type: application/json" -d '{"offset":120,"limit":30}'

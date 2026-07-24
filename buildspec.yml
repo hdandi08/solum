@@ -33,20 +33,28 @@ phases:
       - |
         REPORT_DATE=$(date +%Y-%m-%d)
         REPORT_KEY="reports/$REPORT_DATE/index.html"
-        aws s3 sync web/playwright-report \
-          s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet
         REPORT_URL="https://$REPORT_BUCKET.s3.eu-west-2.amazonaws.com/$REPORT_KEY"
+        if [ -d web/playwright-report ]; then
+          if aws s3 sync web/playwright-report \
+            s3://$REPORT_BUCKET/reports/$REPORT_DATE/ --delete --quiet; then
+            REPORT_NOTE=$(printf 'Open the e2e report:\n%s' "$REPORT_URL")
+          else
+            REPORT_NOTE='Playwright produced a report, but publishing it to S3 failed.'
+          fi
+        else
+          REPORT_NOTE='No e2e report was generated because the build failed before Playwright ran.'
+        fi
         echo "Report: $REPORT_URL"
         if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then
-          MSG=$(printf 'SOLUM tests FAILED on dev (%s) — unit and/or e2e.\n\nOpen the e2e report:\n%s\n\nBuild ID: %s' \
-            "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
+          MSG=$(printf 'SOLUM tests FAILED on dev (%s) — unit and/or e2e.\n\n%s\n\nBuild ID: %s' \
+            "$REPORT_DATE" "$REPORT_NOTE" "$CODEBUILD_BUILD_ID")
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
             --subject "SOLUM Tests FAILED — $REPORT_DATE" \
             --message "$MSG"
         else
-          MSG=$(printf 'SOLUM tests passed on dev (%s) — unit + e2e.\n\nFull e2e report:\n%s\n\nBuild ID: %s' \
-            "$REPORT_DATE" "$REPORT_URL" "$CODEBUILD_BUILD_ID")
+          MSG=$(printf 'SOLUM tests passed on dev (%s) — unit + e2e.\n\n%s\n\nBuild ID: %s' \
+            "$REPORT_DATE" "$REPORT_NOTE" "$CODEBUILD_BUILD_ID")
           aws sns publish \
             --topic-arn $SNS_TOPIC_ARN \
             --subject "SOLUM Tests passed — $REPORT_DATE" \

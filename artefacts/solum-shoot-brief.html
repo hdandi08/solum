@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLUM Content Shoot Brief</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #08090B;
+  --char: #181C24;
+  --mid: #1C2030;
+  --panel: #232838;
+  --bone: #F0ECE2;
+  --mist: rgba(240,236,226,0.6);
+  --stone: #6A7380;
+  --blue: #2E6DA4;
+  --blit: #4A8FC7;
+  --bdim: #1A4A78;
+  --gold: #C9A84C;
+  --golddim: rgba(201,168,76,0.12);
+  --bluedim: rgba(46,109,164,0.12);
+  --line: rgba(240,236,226,0.07);
+  --lineb: rgba(46,109,164,0.2);
+  --lineg: rgba(201,168,76,0.2);
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--bone); font-family: 'Barlow Condensed', sans-serif; overflow-x: hidden; }
+
+/* TABS */
+.tab-nav { position: sticky; top: 0; z-index: 100; background: var(--char); border-bottom: 1px solid var(--line); display: flex; gap: 0; overflow-x: auto; }
+.tab-nav::-webkit-scrollbar { height: 2px; }
+.tab-nav::-webkit-scrollbar-thumb { background: var(--blue); }
+.tab-btn { flex-shrink: 0; padding: 16px 24px; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 0.12em; color: var(--stone); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+.tab-btn:hover { color: var(--bone); }
+.tab-btn.active { color: var(--bone); border-bottom-color: var(--blue); }
+.tab-btn.active.gold-tab { border-bottom-color: var(--gold); color: var(--bone); }
+
+.panel { display: none; padding: 48px; max-width: 1100px; margin: 0 auto; }
+.panel.active { display: block; }
+@media (max-width: 768px) { .panel { padding: 24px 20px; } }
+
+/* TYPOGRAPHY */
+.page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 80px); letter-spacing: 0.06em; line-height: 1; margin-bottom: 8px; }
+.page-title em { color: var(--blue); font-style: normal; }
+.page-title.gold em { color: var(--gold); }
+.eyebrow { font-size: 9px; letter-spacing: 6px; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+.eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--blue); }
+.eyebrow.gold { color: var(--gold); }
+.eyebrow.gold::before { background: var(--gold); }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 0.1em; color: var(--bone); margin-bottom: 16px; margin-top: 40px; }
+.section-title:first-of-type { margin-top: 0; }
+.body-text { font-size: 14px; font-weight: 300; color: var(--mist); line-height: 1.75; max-width: 680px; }
+.body-text strong { color: var(--bone); font-weight: 600; }
+.rule { height: 1px; background: var(--line); margin: 36px 0; }
+
+/* CARDS */
+.card { background: var(--char); border: 1px solid var(--line); padding: 28px 32px; margin-bottom: 16px; }
+.card.blue-border { border-left: 3px solid var(--blue); }
+.card.gold-border { border-left: 3px solid var(--gold); }
+.card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.1em; margin-bottom: 10px; }
+.card-title.blue { color: var(--blue); }
+.card-title.gold { color: var(--gold); }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+th { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--lineb); }
+td { font-size: 13px; font-weight: 300; color: var(--mist); padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td strong { color: var(--bone); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+
+/* CREW TABLE */
+.crew-table th { color: var(--stone); }
+
+/* ASCII DIAGRAMS */
+.diagram { background: var(--mid); border: 1px solid var(--line); padding: 24px 28px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 12px; color: var(--mist); line-height: 1.6; overflow-x: auto; }
+.diagram .highlight { color: var(--bone); }
+.diagram .blue-text { color: var(--blit); }
+.diagram .gold-text { color: var(--gold); }
+
+/* STEP CARDS */
+.step-block { display: grid; grid-template-columns: 56px 1fr; gap: 0; margin-bottom: 24px; border: 1px solid var(--line); }
+.step-num { background: var(--blue); color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; padding: 20px 0; }
+.step-num.gold-bg { background: var(--gold); color: var(--black); }
+.step-body { padding: 20px 24px; }
+.step-label { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); margin-bottom: 4px; }
+.step-label.gold { color: var(--gold); }
+.step-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; color: var(--bone); margin-bottom: 10px; }
+.step-time { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--stone); margin-bottom: 12px; }
+.step-desc { font-size: 13px; font-weight: 300; color: var(--mist); line-height: 1.7; }
+.step-desc strong { color: var(--bone); font-weight: 600; }
+
+/* PILL TAGS */
+.tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.tag { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 14px; border: 1px solid var(--lineb); color: var(--blue); }
+.tag.gold { border-color: var(--lineg); color: var(--gold); }
+.tag.neutral { border-color: var(--line); color: var(--stone); }
+
+/* ACT FLOW */
+.act-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); margin: 24px 0; }
+.act-block { background: var(--char); padding: 20px 22px; }
+.act-label { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; }
+.act-label.blue { color: var(--blue); }
+.act-label.gold { color: var(--gold); }
+.act-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; color: var(--bone); margin-bottom: 4px; }
+.act-time { font-size: 10px; color: var(--stone); letter-spacing: 2px; margin-bottom: 10px; }
+.act-lines { font-size: 12px; font-weight: 300; color: var(--mist); line-height: 1.6; }
+
+/* SHOT GRID */
+.shot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+.shot-box { background: var(--mid); border: 1px solid var(--line); padding: 14px; }
+.shot-frame { font-family: 'Courier New', monospace; font-size: 11px; color: var(--stone); line-height: 1.4; margin-bottom: 8px; }
+.shot-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); }
+.shot-label.gold { color: var(--gold); }
+.shot-desc { font-size: 11px; font-weight: 300; color: var(--mist); margin-top: 4px; line-height: 1.5; }
+@media (max-width: 600px) { .shot-grid { grid-template-columns: 1fr; } .act-flow { grid-template-columns: 1fr; } }
+
+/* DELIVERABLE ROW */
+.deliverable-list { display: flex; flex-direction: column; gap: 0; }
+.deliverable-row { display: grid; grid-template-columns: 32px 1fr auto; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.deliverable-row:last-child { border-bottom: none; }
+.del-num { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--blue); }
+.del-name { font-size: 13px; color: var(--bone); font-weight: 600; }
+.del-sub { font-size: 11px; font-weight: 300; color: var(--stone); margin-top: 2px; }
+.del-tag { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--stone); white-space: nowrap; }
+
+/* RULE BLOCK */
+.rule-block { background: rgba(255,60,60,0.05); border: 1px solid rgba(255,60,60,0.15); border-left: 3px solid rgba(255,60,60,0.4); padding: 18px 22px; margin: 20px 0; }
+.rule-block-title { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,120,120,0.8); margin-bottom: 10px; }
+.rule-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.rule-list li { font-size: 13px; font-weight: 300; color: var(--mist); padding-left: 16px; position: relative; }
+.rule-list li::before { content: 'X'; position: absolute; left: 0; color: rgba(255,100,100,0.6); font-weight: 700; font-size: 10px; top: 2px; }
+
+/* CONCEPT CARDS */
+.concept-card { border: 1px solid var(--line); margin-bottom: 16px; }
+.concept-header { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; padding: 16px 20px; background: var(--char); border-bottom: 1px solid var(--line); }
+.concept-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--blue); line-height: 1; }
+.concept-title-wrap {}
+.concept-tag-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 2px; }
+.concept-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 0.08em; color: var(--bone); }
+.concept-dur { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--stone); text-align: right; }
+.concept-body { padding: 18px 20px; }
+.concept-row { display: grid; grid-template-columns: 80px 1fr; gap: 12px; margin-bottom: 8px; font-size: 12px; }
+.concept-key { color: var(--stone); letter-spacing: 1px; text-transform: uppercase; font-size: 10px; padding-top: 1px; }
+.concept-val { color: var(--mist); font-weight: 300; line-height: 1.6; }
+.concept-val strong { color: var(--bone); }
+
+/* LIGHTING DIAGRAM */
+.lighting-diagram { background: var(--mid); border: 1px solid var(--line); padding: 28px; margin: 20px 0; }
+.ld-title { font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.ld-art { font-family: 'Courier New', monospace; font-size: 12px; color: var(--stone); line-height: 1.7; }
+.ld-art .hl { color: var(--bone); }
+.ld-art .hl-blue { color: var(--blit); }
+.ld-art .hl-gold { color: var(--gold); }
+
+/* UNBOXING FLOW */
+.unbox-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); margin: 20px 0; }
+.unbox-step { background: var(--char); padding: 16px 14px; text-align: center; }
+.unbox-icon { font-family: 'Courier New', monospace; font-size: 11px; color: var(--stone); line-height: 1.4; margin-bottom: 8px; }
+.unbox-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--blue); }
+.unbox-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--mist); margin-top: 4px; }
+@media (max-width: 600px) { .unbox-flow { grid-template-columns: repeat(2, 1fr); } }
+
+/* PRINT HINT */
+@media print { .tab-nav { display: none; } .panel { display: block !important; page-break-before: always; } }
+</style>
+</head>
+<body>
+
+<!-- TAB NAV -->
+<div class="tab-nav" id="tabs">
+  <button class="tab-btn active" onclick="show('overview')">01 Overview</button>
+  <button class="tab-btn" onclick="show('daily')">02 Daily Ritual Video</button>
+  <button class="tab-btn gold-tab" onclick="show('weekly')">03 Weekly Ritual Video</button>
+  <button class="tab-btn" onclick="show('unboxing')">04 Unboxing</button>
+  <button class="tab-btn" onclick="show('lifestyle')">05 Lifestyle Videos</button>
+  <button class="tab-btn" onclick="show('backstage')">06 Backstage</button>
+  <button class="tab-btn" onclick="show('photo')">07 Photo Shoot</button>
+</div>
+
+
+<!-- ═══════════ TAB 1: OVERVIEW ═══════════ -->
+<div class="panel active" id="panel-overview">
+
+  <div class="eyebrow">SOLUM Content Shoot · 2026</div>
+  <div class="page-title">Production <em>Overview</em></div>
+  <p class="body-text" style="margin-top:16px; margin-bottom:32px;">One shoot day. Seven deliverable types. Everything should feel like it belongs to the same world: dark, intentional, unhurried. This document is the single source of truth for the entire shoot.</p>
+
+  <div class="section-title">The Crew</div>
+  <table class="crew-table">
+    <thead>
+      <tr><th>Role</th><th>Name</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Creative Director</strong></td><td>Marta</td><td>Leads all creative decisions on set</td></tr>
+      <tr><td><strong>DOP / Videographer</strong></td><td>TBC</td><td>Owns all camera work, movement, framing</td></tr>
+      <tr><td><strong>Gaffer</strong></td><td>TBC</td><td>Owns lighting setup for every scene</td></tr>
+      <tr><td><strong>Photographer</strong></td><td>TBC</td><td>Stills only, Tab 07</td></tr>
+      <tr><td><strong>Makeup and Hair</strong></td><td>TBC</td><td>All models, consistent look throughout</td></tr>
+      <tr><td><strong>Male Model A</strong></td><td>TBC</td><td>Shower ritual videos, lifestyle secondary</td></tr>
+      <tr><td><strong>Male Model B</strong></td><td>TBC</td><td>Photo shoot primary, lifestyle secondary</td></tr>
+      <tr><td><strong>Female Model</strong></td><td>TBC</td><td>Lifestyle videos only</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule"></div>
+
+  <div class="section-title">All Deliverables</div>
+  <div class="deliverable-list">
+    <div class="deliverable-row">
+      <div class="del-num">01</div>
+      <div><div class="del-name">Daily Ritual Video</div><div class="del-sub">90 seconds to 2 minutes · 16:9 + 9:16 edit</div></div>
+      <div class="del-tag">Tab 02</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">02</div>
+      <div><div class="del-name">Weekly Ritual Video</div><div class="del-sub">90 seconds to 2 minutes · 16:9 + 9:16 edit</div></div>
+      <div class="del-tag">Tab 03</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">03</div>
+      <div><div class="del-name">Unboxing Hero Cut</div><div class="del-sub">60 seconds · for website and YouTube</div></div>
+      <div class="del-tag">Tab 04</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">04</div>
+      <div><div class="del-name">Unboxing Reel Cut</div><div class="del-sub">15 seconds · for Instagram and TikTok</div></div>
+      <div class="del-tag">Tab 04</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">05</div>
+      <div><div class="del-name">Unboxing Website Loop</div><div class="del-sub">10 seconds · silent · homepage background</div></div>
+      <div class="del-tag">Tab 04</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">06</div>
+      <div><div class="del-name">Lifestyle Videos x6 to 8</div><div class="del-sub">15 to 30 seconds each · UGC style</div></div>
+      <div class="del-tag">Tab 05</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">07</div>
+      <div><div class="del-name">Backstage Footage</div><div class="del-sub">Raw dump · used for stories and launch week</div></div>
+      <div class="del-tag">Tab 06</div>
+    </div>
+    <div class="deliverable-row">
+      <div class="del-num">08</div>
+      <div><div class="del-name">Photo Shoot Stills</div><div class="del-sub">Product stills + lifestyle stills · 30+ total</div></div>
+      <div class="del-tag">Tab 07</div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="section-title">The Feeling We Are After</div>
+  <div class="card blue-border">
+    <p class="body-text">Not clean like a hospital. <strong>Clean like you have earned it.</strong></p>
+    <p class="body-text" style="margin-top:12px;">The man in this shoot does not smile for the camera. He does not perform. He moves through his routine with the quiet certainty of someone who knows exactly what they are doing. After the ritual, he looks different. Not glowing. Not styled. Just <strong>settled</strong>. Ready. That is the feeling every video and photo should land on.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Brand Colour Reference</div>
+  <div class="diagram">
+<span class="highlight">SOLUM COLOUR PALETTE</span>
+
+  ████████  #08090B   SOLUM Black     Primary background
+  ████████  #181C24   Charcoal        Card surfaces
+  ████████  #2E6DA4   Steel Blue      Daily ritual accent, borders, tags
+  ████████  #4A8FC7   Sky Blue        Highlights, links
+  ████████  #C9A84C   Gold            Weekly ritual accent only
+  ████████  #F0ECE2   Bone            Primary text
+
+<span class="blue-text">Blue tones = Daily Ritual</span>
+<span class="gold-text">Gold tones = Weekly Deep Ritual</span>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Rules That Cannot Be Broken</div>
+  <div class="rule-block">
+    <div class="rule-block-title">Never on this shoot</div>
+    <ul class="rule-list">
+      <li>No orange, amber, yellow, or green anywhere in frame. Check props, backgrounds, and wardrobe.</li>
+      <li>No bright clinical whites. Dark surfaces only. Off-white towels acceptable.</li>
+      <li>No ring lights. They destroy the mood we are building.</li>
+      <li>No influencer energy. No enthusiasm, no thumbs up, no "guys".</li>
+      <li>No word "soap" in any caption or spoken content.</li>
+      <li>No figure from the neck up for unboxing. Hands only.</li>
+    </ul>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Products in the Shoot</div>
+  <table>
+    <thead><tr><th>#</th><th>Product</th><th>Used in</th><th>Key visual</th></tr></thead>
+    <tbody>
+      <tr><td><strong>01</strong></td><td>Amino Acid Body Wash 250ml</td><td>Daily video, lifestyle</td><td>Low foam on mitt. Not bubbly.</td></tr>
+      <tr><td><strong>02</strong></td><td>Exfoliating Mitt (Italy Towel)</td><td>Daily video, lifestyle</td><td>Mitt on skin, long strokes.</td></tr>
+      <tr><td><strong>03</strong></td><td>Back Scrub Cloth 70cm</td><td>Daily + Weekly video</td><td>Draped over shoulder, sawing motion.</td></tr>
+      <tr><td><strong>04</strong></td><td>Silicone Scalp Massager</td><td>Daily + Weekly video</td><td>Pins on wet hair, close-up.</td></tr>
+      <tr><td><strong>05</strong></td><td>Rhassoul Clay Body Mask 200g</td><td>Weekly video</td><td>Grey clay on dark skin. Striking contrast.</td></tr>
+      <tr><td><strong>06</strong></td><td>Organic Argan Body Oil 50ml</td><td>Weekly video</td><td>Oil catching light. Pressed into skin.</td></tr>
+      <tr><td><strong>07</strong></td><td>Fast-Absorb Body Lotion 400ml</td><td>Daily video, lifestyle</td><td>Two pumps. Pressed in. Not rubbed.</td></tr>
+      <tr><td><strong>08</strong></td><td>Artisan Kese Mitt</td><td>Weekly video</td><td>Dead skin rolling off. Do not cut away from this.</td></tr>
+    </tbody>
+  </table>
+
+</div><!-- /overview -->
+
+
+<!-- ═══════════ TAB 2: DAILY RITUAL VIDEO ═══════════ -->
+<div class="panel" id="panel-daily">
+
+  <div class="eyebrow">Video 01 · Male Model A</div>
+  <div class="page-title">Daily <em>Ritual</em></div>
+
+  <div class="tags">
+    <span class="tag">90 to 120 seconds</span>
+    <span class="tag">16:9 + 9:16 edit</span>
+    <span class="tag">Male Model A</span>
+    <span class="tag neutral">Blue tones</span>
+    <span class="tag neutral">Dark and moody</span>
+  </div>
+
+  <p class="body-text">This video is not an instruction manual. It is the ritual itself. The viewer should feel what it is like to do this, not just understand how. The sequence moves through three acts: entering, the ritual, and after.</p>
+
+  <div class="section-title">The Story in Three Acts</div>
+  <div class="act-flow">
+    <div class="act-block">
+      <div class="act-label blue">Act 1 · 0:00 to 0:10</div>
+      <div class="act-name">Entering</div>
+      <div class="act-time">10 seconds</div>
+      <div class="act-lines">Steam rises. He steps in. The world outside switches off. No words.</div>
+    </div>
+    <div class="act-block">
+      <div class="act-label blue">Act 2 · 0:10 to 1:30</div>
+      <div class="act-name">The Ritual</div>
+      <div class="act-time">80 seconds</div>
+      <div class="act-lines">Five steps. Intentional. Quiet. Each product lands with purpose, not performance.</div>
+    </div>
+    <div class="act-block">
+      <div class="act-label blue">Act 3 · 1:30 to 2:00</div>
+      <div class="act-name">After</div>
+      <div class="act-time">30 seconds</div>
+      <div class="act-lines">He steps out. Applies lotion. Looks in the mirror. Exhales. That is it.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Lighting Direction</div>
+  <div class="lighting-diagram">
+    <div class="ld-title">Bathroom Set · Bird's Eye View</div>
+    <div class="ld-art">
+
+                      SHOWER HEAD
+                           |
+              [  S T E A M  |  S T E A M  ]
+                           |
+                    [   MODEL   ]
+                           |
+                           |
+    <span class="hl-blue">KEY LIGHT --------&gt;</span>  |
+    Low, side-mounted.     |
+    Steel blue gel.        |
+    Hard edge preferred.   |
+
+    <span class="hl">GAFFER NOTES</span>
+    One primary source only. No fill from the opposite side.
+    We want one half of his body lit, the other in shadow.
+    Steam should be lit from below or behind so it glows.
+    No overhead bathroom lighting. Kill it entirely.
+    The bathroom should feel private, not staged.
+    </div>
+  </div>
+
+  <div class="section-title">Act 1: Entering (0:00 to 0:10)</div>
+  <div class="card blue-border">
+    <p class="body-text">He steps into the bathroom. Shower already running. Steam filling the space. Light catches the water. No words. No looking at camera. He is beginning something he has done before.</p>
+    <p class="body-text" style="margin-top:10px;"><strong>Shots to capture:</strong> Steam filling frame with silhouette behind it. Hand adjusting shower temperature. Water hitting the floor with light catching it from the side.</p>
+  </div>
+
+  <div class="section-title">Act 2: The Five Steps</div>
+
+  <!-- STEP 1 -->
+  <div class="step-block">
+    <div class="step-num">01</div>
+    <div class="step-body">
+      <div class="step-label">Product 04 · Scalp Massager</div>
+      <div class="step-name">Scalp Massage</div>
+      <div class="step-time">2 to 3 minutes in real ritual · 15 to 20 seconds on screen</div>
+      <p class="step-desc">Wet hair. Massager placed flat on scalp. Small firm circles from the front hairline to the nape of the neck. He works slowly. Eyes forward.</p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|          |
+|  SIDE-ON |
+|  MODEL   |
+|  IN      |
+|  SHOWER  |
++----------+</div>
+      <div class="shot-label">Shot A</div>
+      <div class="shot-desc">Wide. Establishes he is in the shower. Steam visible.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| O  O  O  |
+| MASSAGER |
+| PINS ON  |
+| WET HAIR |
+| CLOSE UP |
++----------+</div>
+      <div class="shot-label">Shot B · Hero</div>
+      <div class="shot-desc">Extreme close-up of massager pins working through hair. Steam around the hand. This is the money shot for this step.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  STEAM   |
+|    +     |
+|  HAND    |
+|    +     |
+|  SCALP   |
++----------+</div>
+      <div class="shot-label">Shot C · Artistic</div>
+      <div class="shot-desc">Abstract. Steam, hand, and hair. More mood than information.</div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num">02</div>
+    <div class="step-body">
+      <div class="step-label">Product 01 · Body Wash</div>
+      <div class="step-name">Amino Acid Body Wash</div>
+      <div class="step-time">1 minute in real ritual · 10 seconds on screen</div>
+      <p class="step-desc">3 to 4 pumps onto the wet exfoliating mitt. Low foam. Apply chest down. <strong>This does not look like a Lynx ad.</strong> Low foam is the point. It signals quality, not a strip wash.</p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  BOTTLE  |
+|   ---    |
+|   |v|    |
+|  PUMP    |
+| CLOSE UP |
++----------+</div>
+      <div class="shot-label">Shot A</div>
+      <div class="shot-desc">Close-up of pump action. Gel dispensing onto mitt.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  MITT    |
+|  WITH    |
+|  LOW     |
+|  LATHER  |
+|  DETAIL  |
++----------+</div>
+      <div class="shot-label">Shot B</div>
+      <div class="shot-desc">Close-up of the mitt surface. Low foam visible. Understated.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  CHEST   |
+|  FIRST   |
+|  APPLIC- |
+|  ATION   |
+|  WIDE    |
++----------+</div>
+      <div class="shot-label">Shot C</div>
+      <div class="shot-desc">Wider shot of first application on chest. Deliberate movement downward.</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num">03</div>
+    <div class="step-body">
+      <div class="step-label">Product 02 · Exfoliating Mitt · Korean Technique</div>
+      <div class="step-name">Exfoliating Mitt</div>
+      <div class="step-time">3 minutes in real ritual · 20 seconds on screen</div>
+      <p class="step-desc">Long circular strokes. Arms first (wrist to shoulder), then chest and stomach, then legs (ankle to thigh). Medium pressure. The motion is deliberate and long, not scrubbing.</p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|    ARM   |
+|  WRIST   |
+|    UP    |
+| --------&gt;|
+| SHOULDER |
++----------+</div>
+      <div class="shot-label">Shot A · Arms</div>
+      <div class="shot-desc">Long upward stroke from wrist to shoulder. Rotate the arm to show all sides.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  CHEST   |
+| CIRCULAR |
+|   ( )    |
+| STROKES  |
+|  WIDE    |
++----------+</div>
+      <div class="shot-label">Shot B · Chest</div>
+      <div class="shot-desc">Wide circular strokes across chest and stomach. Medium pressure.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  MITT    |
+|  ON SKIN |
+|  EXTREME |
+|  CLOSE   |
+|  SLOW MO |
++----------+</div>
+      <div class="shot-label">Shot C · Hero</div>
+      <div class="shot-desc">Extreme close-up of mitt texture on skin. Slow motion if possible. This is the most tactile image in the daily video.</div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num">04</div>
+    <div class="step-body">
+      <div class="step-label">Product 03 · Back Scrub Cloth</div>
+      <div class="step-name">Back Scrub Cloth</div>
+      <div class="step-time">2 minutes in real ritual · 20 seconds on screen</div>
+      <p class="step-desc">One handle in each hand. Cloth draped over shoulder flat against the back. Sawing motion: one handle pulled, then the other. Three zones: upper back, mid back, lower back. <strong>Marta: give this step more screen time than anything else in the daily video. Nobody has seen this in body care before. It is the scroll-stopper.</strong></p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  CLOTH   |
+|  DRAPED  |
+|    /     |
+| SHOULDER |
+|  SETUP   |
++----------+</div>
+      <div class="shot-label">Shot A · Setup</div>
+      <div class="shot-desc">He throws the cloth over his shoulder. Both handles visible. The setup moment.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  &lt;------ |
+| SAW      |
+| MOTION   |
+| --------&gt;|
+|  BACK    |
++----------+</div>
+      <div class="shot-label">Shot B · The Motion</div>
+      <div class="shot-desc">Wide shot showing both arms and the sawing motion clearly. This is the most important shot in the daily video.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  BACK    |
+|  CLOSE   |
+|  CLOTH   |
+|  ON SKIN |
+|  DETAIL  |
++----------+</div>
+      <div class="shot-label">Shot C · Close</div>
+      <div class="shot-desc">Close-up of the cloth against the back skin. Texture of the cloth. Deliberate.</div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num">05</div>
+    <div class="step-body">
+      <div class="step-label">Product 07 · Body Lotion · After the shower</div>
+      <div class="step-name">Body Lotion: The 3-Minute Window</div>
+      <div class="step-time">2 minutes in real ritual · 15 seconds on screen</div>
+      <p class="step-desc">He steps out. Towels off lightly. Skin still warm and slightly damp. Two pumps into palm. Press into skin, do not rub. Start at calves, work upward. <strong>The 3-minute window is real: warm damp skin absorbs 70% more than dry skin.</strong></p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  STEAM   |
+|  STILL   |
+| RISING   |
+|  TOWEL   |
+| DRYING   |
++----------+</div>
+      <div class="shot-label">Shot A · Transition</div>
+      <div class="shot-desc">He steps out. Steam still behind him. Light dab with towel. Do not dry off completely.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| LOTION   |
+| PUMPED   |
+|   ||     |
+|  INTO    |
+|  PALM    |
++----------+</div>
+      <div class="shot-label">Shot B</div>
+      <div class="shot-desc">Two pumps into palm. The lotion itself visible, fast-absorbing texture.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| PALMS    |
+| PRESSED  |
+|  FLAT    |
+|  INTO    |
+|  SKIN    |
++----------+</div>
+      <div class="shot-label">Shot C · Technique</div>
+      <div class="shot-desc">Both palms flat on skin. Press, hold, release, move up. Not rubbing. Pressing.</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:40px;">Act 3: After (1:30 to 2:00)</div>
+  <div class="card blue-border">
+    <p class="body-text"><strong>This is the most important 30 seconds of the video.</strong></p>
+    <p class="body-text" style="margin-top:10px;">He is out of the shower. In a towel, or dressed. He looks at himself in the mirror. Not admiringly. Just looking. A single breath. Then he moves. He is ready. The ritual is complete.</p>
+  </div>
+  <div class="lighting-diagram">
+    <div class="ld-title">Final Shot Composition</div>
+    <div class="ld-art">
+
+  +---------------------------------------------+
+  |                                             |
+  |      MIRROR REFLECTION                      |
+  |                                             |
+  |      [  FACE IN FRAME  ]                   |
+  |                                             |
+  |      Steam still behind him.                |
+  |      One light source. Side only.           |
+  |      He exhales.                            |
+  |                                             |
+  |      CUT TO BLACK.                          |
+  |                                             |
+  +---------------------------------------------+
+
+  <span class="hl">DO NOT</span> have him smile here.
+  <span class="hl">DO NOT</span> have him look at the camera with any kind of "ta-da" energy.
+  The moment should feel <span class="hl-blue">earned</span>, not performed.
+    </div>
+  </div>
+
+  <div class="section-title">Technical Specs</div>
+  <table>
+    <thead><tr><th>Spec</th><th>Requirement</th></tr></thead>
+    <tbody>
+      <tr><td>Format</td><td>16:9 hero + 9:16 Reel edit from same footage</td></tr>
+      <tr><td>Resolution</td><td>4K preferred · 1080p minimum</td></tr>
+      <tr><td>Frame rate</td><td>24fps for cinematic feel · 120fps for slow motion inserts</td></tr>
+      <tr><td>Audio</td><td>Record clean ambient only · music added in post</td></tr>
+      <tr><td>Delivery</td><td>Raw ungraded .mov or .mp4 · no captions burned in</td></tr>
+      <tr><td>Grading direction</td><td>Dark. Steel blue shadows. Bone highlights. Not warm.</td></tr>
+    </tbody>
+  </table>
+
+</div><!-- /daily -->
+
+
+<!-- ═══════════ TAB 3: WEEKLY RITUAL VIDEO ═══════════ -->
+<div class="panel" id="panel-weekly">
+
+  <div class="eyebrow gold">Video 02 · Male Model A · Gold Tones</div>
+  <div class="page-title gold">Weekly Deep <em>Ritual</em></div>
+
+  <div class="tags">
+    <span class="tag gold">90 to 120 seconds</span>
+    <span class="tag gold">16:9 + 9:16 edit</span>
+    <span class="tag gold">Male Model A</span>
+    <span class="tag neutral">Gold tones</span>
+    <span class="tag neutral">Slower and deeper than daily</span>
+  </div>
+
+  <p class="body-text">The weekly ritual is a different thing entirely. Where the daily is sharp and efficient, this is earned time. The pace slows down. The steps are fewer but bigger. The transformation is more visible. The lighting should shift: same darkness, but where the daily is cold blue, the weekly has warmer edges. Think deep amber at the periphery of the frame, not orange, but the gold of something ancient.</p>
+
+  <div class="section-title">Key Differences From the Daily Video</div>
+  <div class="card gold-border">
+    <table style="margin:0;">
+      <thead><tr><th>Daily</th><th>Weekly</th></tr></thead>
+      <tbody>
+        <tr><td>5 steps</td><td>4 steps</td></tr>
+        <tr><td>Sharp, efficient pace</td><td>Slower, more deliberate</td></tr>
+        <tr><td>Steel blue lighting</td><td>Same dark base, gold warmth at edges</td></tr>
+        <tr><td>Lotion to finish</td><td>Argan oil to finish. No lotion.</td></tr>
+        <tr><td>10 minutes total</td><td>22 minutes total</td></tr>
+        <tr><td>Body wash as base</td><td>Clay mask as the centrepiece</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">The Story in Three Acts</div>
+  <div class="act-flow">
+    <div class="act-block">
+      <div class="act-label gold">Act 1 · Pre-shower</div>
+      <div class="act-name">Preparation</div>
+      <div class="act-time">0:00 to 0:15</div>
+      <div class="act-lines">He mixes the clay before the shower starts. A small bowl. Warm water added slowly. A ritual begins before the water runs.</div>
+    </div>
+    <div class="act-block">
+      <div class="act-label gold">Act 2 · In the shower</div>
+      <div class="act-name">The Deep Ritual</div>
+      <div class="act-time">0:15 to 1:35</div>
+      <div class="act-lines">Four steps. The clay sits on his skin for 10 minutes. The camera holds on him. He waits. This is not passive. It is the work.</div>
+    </div>
+    <div class="act-block">
+      <div class="act-label gold">Act 3 · After</div>
+      <div class="act-name">Oil, Not Lotion</div>
+      <div class="act-time">1:35 to 2:00</div>
+      <div class="act-lines">He presses argan oil into skin that has just been completely renewed. No lotion today. Just the oil. The difference is visible.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Pre-Ritual: Mixing the Clay (before the shower)</div>
+  <div class="card gold-border">
+    <p class="step-desc">He is in the bathroom but the shower is not yet running. He scoops clay from the jar. Adds warm water, slowly. Stirs. The consistency builds to something like thick yoghurt. This is a quiet, alchemist moment. It should feel considered.</p>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  JAR OF  |
+|  CLAY    |
+|  ON DARK |
+| SURFACE  |
+|  CLOSE   |
++----------+</div>
+      <div class="shot-label gold">Shot A</div>
+      <div class="shot-desc">The clay jar close-up. Powder visible inside. Dark surface beneath it.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  WATER   |
+|  ADDED   |
+|   |||    |
+|  TO BOWL |
+|  SLOW    |
++----------+</div>
+      <div class="shot-label gold">Shot B</div>
+      <div class="shot-desc">Water being added slowly. Thin stream. Stir between pours.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  SPOON   |
+|  LIFTS   |
+|  THICK   |
+|  GREY    |
+|  PASTE   |
++----------+</div>
+      <div class="shot-label gold">Shot C · Hero</div>
+      <div class="shot-desc">Spoon lifting the mixed clay. Thick, holds its shape. This texture is the proof of preparation.</div>
+    </div>
+  </div>
+
+  <!-- WEEKLY STEP 1 -->
+  <div class="section-title" style="margin-top:36px;">The Four Steps</div>
+  <div class="step-block">
+    <div class="step-num gold-bg">01</div>
+    <div class="step-body">
+      <div class="step-label gold">Product 04 · Scalp Massager · Weekly Deep</div>
+      <div class="step-name">Deep Scalp Massage</div>
+      <div class="step-time">5 minutes in real ritual · 15 seconds on screen</div>
+      <p class="step-desc">Same massager, twice the time, more pressure. Five zones: front hairline, crown, left side, right side, nape. 60 seconds each. He closes his eyes briefly during this step. This is not rushed. <strong>Set a timer. He should genuinely hold each zone for 60 seconds.</strong></p>
+    </div>
+  </div>
+
+  <!-- WEEKLY STEP 2 -->
+  <div class="step-block">
+    <div class="step-num gold-bg">02</div>
+    <div class="step-body">
+      <div class="step-label gold">Product 05 · Rhassoul Clay Mask · Weekly Deep</div>
+      <div class="step-name">Rhassoul Clay Body Mask</div>
+      <div class="step-time">8 to 10 minutes on skin · 25 to 30 seconds on screen</div>
+      <p class="step-desc">This is the centrepiece of the entire video. The grey clay goes on. He waits. The camera does not cut away. <strong>Marta: use the 10-minute wait creatively. A slow pan up his body while the clay sets. The clay tightening is visible. This is not a problem to solve in editing. It is the story.</strong></p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  HANDS   |
+| SPREADING|
+|   GREY   |
+|   CLAY   |
+|  ON CHEST|
++----------+</div>
+      <div class="shot-label gold">Shot A · Application</div>
+      <div class="shot-desc">Hands applying clay from neck downward. The grey contrast against skin.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  CLAY    |
+|  ON BODY |
+|  SETTING |
+|  SLIGHT  |
+|  TIGHTEN |
++----------+</div>
+      <div class="shot-label gold">Shot B · Waiting</div>
+      <div class="shot-desc">The clay sits on his body. He stands still. Steam around him. The clay is visibly setting. Hold this shot longer than feels comfortable.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  EXTREME |
+|  CLOSE   |
+|  CLAY    |
+|  TEXTURE |
+|  ON SKIN |
++----------+</div>
+      <div class="shot-label gold">Shot C · Detail</div>
+      <div class="shot-desc">Macro close-up of the clay surface. Texture. The slight cracking as it sets. Atlas Mountain clay.</div>
+    </div>
+  </div>
+
+  <!-- WEEKLY STEP 3 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num gold-bg">03</div>
+    <div class="step-body">
+      <div class="step-label gold">Products 08 and 03 · Kese Mitt and Back Cloth · Weekly Deep</div>
+      <div class="step-name">Full Body Exfoliation</div>
+      <div class="step-time">5 minutes in real ritual · 25 seconds on screen</div>
+      <p class="step-desc">Immediately after rinsing the clay. Skin is fully prepped: pores open, dead layer ready to release. The Kese Mitt is rougher than the daily mitt. Long, slow, firm strokes. The Back Cloth works simultaneously. <strong>You may see grey rolls of dead skin forming on the skin surface. Do not cut away from this. It is the proof. It is the whole point of this ritual.</strong></p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  GREY    |
+|  ROLLS   |
+|  FORMING |
+|  ON ARM  |
+|  EXTREME |
++----------+</div>
+      <div class="shot-label gold">Shot A · Hero</div>
+      <div class="shot-desc">Extreme close-up of dead skin rolling off the arm as the Kese moves. This is the most striking image in either video.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| KESE MIT |
+|  FRONT   |
+|    +     |
+|  CLOTH   |
+|  BACK    |
++----------+</div>
+      <div class="shot-label gold">Shot B · Wide</div>
+      <div class="shot-desc">Wide shot showing both the Kese Mitt on the front and the Back Cloth sawing behind. Both tools working simultaneously.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  SLOW    |
+|  STROKE  |
+|  TOP TO  |
+|  BOTTOM  |
+|  KESE    |
++----------+</div>
+      <div class="shot-label gold">Shot C</div>
+      <div class="shot-desc">Slow deliberate stroke from shoulder to hip. Long pass. No rushing.</div>
+    </div>
+  </div>
+
+  <!-- WEEKLY STEP 4 -->
+  <div class="step-block" style="margin-top:28px;">
+    <div class="step-num gold-bg">04</div>
+    <div class="step-body">
+      <div class="step-label gold">Product 06 · Argan Body Oil · After the shower</div>
+      <div class="step-name">Argan Body Oil: Press, Do Not Rub</div>
+      <div class="step-time">2 minutes in real ritual · 20 seconds on screen</div>
+      <p class="step-desc">He steps out. Towels off lightly. Stays damp. 10 to 15 drops into the palm. Warms it between both hands for 5 seconds. Presses flat into skin. Holds. Releases. Moves up. Does not rub. <strong>No body lotion today. The argan oil is the complete finish. This is communicated through his actions, not words.</strong></p>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  OIL IN  |
+|  BOTTLE  |
+|  CATCHING|
+|   LIGHT  |
+|  GOLDEN  |
++----------+</div>
+      <div class="shot-label gold">Shot A</div>
+      <div class="shot-desc">The argan oil bottle with light behind it. The amber-gold of the oil catching the light. This is one of the most beautiful shots of either video.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+|  DROPS   |
+|  IN PALM |
+| WARMING  |
+| BETWEEN  |
+|  HANDS   |
++----------+</div>
+      <div class="shot-label gold">Shot B</div>
+      <div class="shot-desc">10-15 drops pooled in palm. He warms the oil between both hands before applying.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| FOREARM  |
+|   OIL    |
+| ABSORBED |
+|  SKIN    |
+|  ALIVE   |
++----------+</div>
+      <div class="shot-label gold">Shot C · Final</div>
+      <div class="shot-desc">His forearm after the oil has absorbed. Skin that looks fed, not moisturised. This is the final shot of the weekly video.</div>
+    </div>
+  </div>
+
+</div><!-- /weekly -->
+
+
+<!-- ═══════════ TAB 4: UNBOXING ═══════════ -->
+<div class="panel" id="panel-unboxing">
+
+  <div class="eyebrow">Videos 03 to 05 · Hands Only · No Face</div>
+  <div class="page-title">Unboxing <em>Videos</em></div>
+
+  <div class="tags">
+    <span class="tag">3 cuts from one shoot</span>
+    <span class="tag neutral">Hands only, no face</span>
+    <span class="tag neutral">Dark matte surface</span>
+  </div>
+
+  <p class="body-text">One unboxing setup produces three different cuts for different placements. Shoot the full sequence once, beautifully, with hands only. Every cut is edited from the same footage in post.</p>
+
+  <div class="section-title">The Unboxing Sequence</div>
+  <div class="unbox-flow">
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  BOX   |
+| PLACED |
++--------+</div>
+      <div class="unbox-num">01</div>
+      <div class="unbox-name">Box on surface</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  ( )   |
+| RIBBON |
+|  PULL  |
++--------+</div>
+      <div class="unbox-num">02</div>
+      <div class="unbox-name">Ribbon pulled</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  ---   |
+| LID UP |
+|  ^^^   |
++--------+</div>
+      <div class="unbox-num">03</div>
+      <div class="unbox-name">Lid lifts</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  CARD  |
+| [SOLUM]|
+| LIFTED |
++--------+</div>
+      <div class="unbox-num">04</div>
+      <div class="unbox-name">Ritual card</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  ALL   |
+| INSIDE |
+|  VIEW  |
++--------+</div>
+      <div class="unbox-num">05</div>
+      <div class="unbox-name">First look inside</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  ONE   |
+|   BY   |
+|  ONE   |
++--------+</div>
+      <div class="unbox-num">06</div>
+      <div class="unbox-name">Products removed</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+| HELD   |
+|   UP   |
+|  LIGHT |
++--------+</div>
+      <div class="unbox-num">07</div>
+      <div class="unbox-name">Each held to light</div>
+    </div>
+    <div class="unbox-step">
+      <div class="unbox-icon">+--------+
+|  ALL   |
+|  LAID  |
+|  OUT   |
++--------+</div>
+      <div class="unbox-num">08</div>
+      <div class="unbox-name">Full spread</div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Three Cuts</div>
+
+  <div class="card blue-border" style="margin-bottom:12px;">
+    <div class="card-title blue">Cut 1: Hero Unboxing · 60 seconds</div>
+    <p class="step-desc">The full sequence above, slow and deliberate. Every product gets a moment. Ritual card briefly shown. Music underneath. <strong>Used for: website homepage, YouTube.</strong></p>
+  </div>
+
+  <div class="card blue-border" style="margin-bottom:12px;">
+    <div class="card-title blue">Cut 2: Reel Unboxing · 15 seconds</div>
+    <p class="step-desc">Box arrives on surface. Ribbon pulled. Lid lifts. Products visible. Cut to black. Fast, impactful. <strong>Used for: Instagram Reels, TikTok.</strong></p>
+  </div>
+
+  <div class="card blue-border" style="margin-bottom:24px;">
+    <div class="card-title blue">Cut 3: Website Loop · 10 seconds, silent</div>
+    <p class="step-desc">Ribbon pull and lid opening only. Looped seamlessly. No audio. <strong>Used for: website homepage background element, auto-play section.</strong></p>
+  </div>
+
+  <div class="section-title">Product Reveal Order</div>
+  <table>
+    <thead><tr><th>Order</th><th>Product</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>First seen</td><td>Ritual Card</td><td>Lying on top. Lifted and held first.</td></tr>
+      <tr><td>1</td><td>Body Wash 01</td><td>Front left. Largest bottle.</td></tr>
+      <tr><td>2</td><td>Body Lotion 07</td><td>Front right. Large bottle.</td></tr>
+      <tr><td>3</td><td>Exfoliating Mitt 02</td><td>Lifted and shown flat.</td></tr>
+      <tr><td>4</td><td>Back Scrub Cloth 03</td><td>Unfolded to show the handles.</td></tr>
+      <tr><td>5</td><td>Scalp Massager 04</td><td>Held up, pins visible.</td></tr>
+      <tr><td>6</td><td>Rhassoul Clay 05</td><td>Jar opened briefly, texture visible.</td></tr>
+      <tr><td>7</td><td>Argan Oil 06</td><td>Held to the light. Oil colour visible inside bottle.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Set and Surface</div>
+  <div class="card">
+    <p class="step-desc"><strong>Surface:</strong> Dark matte slate or deep charcoal. No bright whites. No wood grain. Nothing that competes with the products.</p>
+    <p class="step-desc" style="margin-top:8px;"><strong>Hands:</strong> Manicured. Neutral. No nail polish. No jewellery. The hands are part of the product experience.</p>
+    <p class="step-desc" style="margin-top:8px;"><strong>Lighting:</strong> One key light from above and slightly to the side. Products should cast a small shadow. The box interior should feel like it glows faintly when the lid is lifted.</p>
+  </div>
+
+</div><!-- /unboxing -->
+
+
+<!-- ═══════════ TAB 5: LIFESTYLE VIDEOS ═══════════ -->
+<div class="panel" id="panel-lifestyle">
+
+  <div class="eyebrow">Videos 06 onwards · UGC Style</div>
+  <div class="page-title">Lifestyle <em>Videos</em></div>
+
+  <div class="tags">
+    <span class="tag">6 to 8 videos</span>
+    <span class="tag">15 to 30 seconds each</span>
+    <span class="tag neutral">UGC style</span>
+    <span class="tag neutral">Male A · Male B · Female</span>
+  </div>
+
+  <p class="body-text">UGC style does not mean low quality. It means the content should feel discovered, not staged. The camera is never too steady. The framing is never too perfect. But it is always intentional underneath.</p>
+
+  <div class="rule"></div>
+
+  <!-- CONCEPT 1 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">01</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">After the ritual</div>
+        <div class="concept-name">The Morning After</div>
+      </div>
+      <div class="concept-dur">20 to 30 sec<br>Male Model A</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Bedroom, kitchen, or front door. Post-shower, heading out.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">The ritual is done. He moves through his morning. Calm. Unhurried. He does not check himself in the mirror obsessively. Something has been completed and you can see it in how he moves.</div></div>
+      <div class="concept-row"><div class="concept-key">Camera</div><div class="concept-val">Follows him naturally. Slightly handheld. Not staged walking. He just moves.</div></div>
+      <div class="concept-row"><div class="concept-key">Final shot</div><div class="concept-val">Front door closes. Or keys picked up. Or jacket on. The day begins.</div></div>
+      <div class="concept-row"><div class="concept-key">Caption idea</div><div class="concept-val">"10 minutes. Every morning. That is it."</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 2 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">02</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">Sport + ritual</div>
+        <div class="concept-name">Post Training</div>
+      </div>
+      <div class="concept-dur">20 to 30 sec<br>Male Model A or B</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Locker room or home bathroom after gym. Gym bag visible but not centre frame.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">After training he uses the ritual. The clay pulls out what the workout put in. No performance. Just the routine that follows a workout the way a workout follows sleep.</div></div>
+      <div class="concept-row"><div class="concept-key">Products</div><div class="concept-val">Body wash and exfoliating mitt as minimum. Clay if it fits the cut.</div></div>
+      <div class="concept-row"><div class="concept-key">Feeling</div><div class="concept-val">This is not a recovery ad. It is just what he does after training. Normal. Consistent.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 3 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">03</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">She notices · Most delicate video</div>
+        <div class="concept-name">She Notices</div>
+      </div>
+      <div class="concept-dur">15 to 20 sec<br>Male A + Female</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Casual domestic. Sofa, kitchen, passing in a corridor.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">She touches his arm, or his shoulder. She pauses. Looks. Something is different about his skin. He does not explain. She does not ask. She just notices.</div></div>
+      <div class="concept-row"><div class="concept-key">Warning</div><div class="concept-val"><strong>This cannot tip into romance.</strong> The moment is purely tactile, not romantic. If it becomes a couple's ad it loses everything. Marta has full creative discretion on tone here.</div></div>
+      <div class="concept-row"><div class="concept-key">Products</div><div class="concept-val">No products in frame. This is about the result, not the tools.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 4 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">04</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">The proof</div>
+        <div class="concept-name">Skin Close-Ups</div>
+      </div>
+      <div class="concept-dur">15 sec<br>Male A or B</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Bathroom or neutral dark background.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">Extreme close-ups of skin only. Arms. Back. Neck. No products in frame. No caption needed. The skin speaks. This is before-and-after energy without the text.</div></div>
+      <div class="concept-row"><div class="concept-key">Camera</div><div class="concept-val">Macro lens if possible. Slow drift across the surface of the skin. The light should catch texture.</div></div>
+      <div class="concept-row"><div class="concept-key">Usage</div><div class="concept-val">Can be used as insert footage in other videos or as a standalone post.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 5 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">05</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">Face to camera · UGC talking head</div>
+        <div class="concept-name">The Discovery</div>
+      </div>
+      <div class="concept-dur">25 to 30 sec<br>Male Model B</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Bathroom or plain wall. Phone-height camera. Natural light.</div></div>
+      <div class="concept-row"><div class="concept-key">Tone</div><div class="concept-val">One man talking to another. Not selling. Telling. Genuine discovery energy. Slightly surprised by what he found.</div></div>
+      <div class="concept-row"><div class="concept-key">Script</div><div class="concept-val">"I started using a back cloth. Sounds strange. But try reaching your own back right now. You cannot. Nobody can. There is a cloth with handles. I use it every morning. It is genuinely the thing I did not know I was missing."</div></div>
+      <div class="concept-row"><div class="concept-key">Delivery</div><div class="concept-val">He should improvise around the script, not deliver it. The words are a guide, not a teleprompter.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 6 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">06</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">Weekly ritual · Slow content</div>
+        <div class="concept-name">Sunday Deep</div>
+      </div>
+      <div class="concept-dur">30 sec<br>Male Model A</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Bathroom. Sunday morning feel. No rush. No gym bag. No going anywhere.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">This is the weekly ritual. He has time. Clay goes on. He stands. Waits. The steam rises. This video is slow on purpose. It should feel like rest, not effort.</div></div>
+      <div class="concept-row"><div class="concept-key">Caption idea</div><div class="concept-val">"22 minutes, once a week. The rest takes care of itself."</div></div>
+      <div class="concept-row"><div class="concept-key">Products</div><div class="concept-val">Clay mask (05) is the centrepiece. Kese Mitt (08) visible.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 7 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">07</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">No models needed</div>
+        <div class="concept-name">The Products</div>
+      </div>
+      <div class="concept-dur">15 to 20 sec<br>No models</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Dark surface. Moody single-source lighting. Products arranged naturally, not in a line.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">Camera drifts slowly across the products. Close-ups of labels. Clay texture. Oil in bottle. Mitt texture. No hands. No faces. Purely visual.</div></div>
+      <div class="concept-row"><div class="concept-key">Usage</div><div class="concept-val">Social media posts, website background, ad creative. The most versatile asset from the shoot.</div></div>
+      <div class="concept-row"><div class="concept-key">Note</div><div class="concept-val">Marta: treat this as a still life film. There is no wrong way to do it if the lighting is right.</div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPT 8 -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-num">08</div>
+      <div class="concept-title-wrap">
+        <div class="concept-tag-label">Gifting angle</div>
+        <div class="concept-name">The Gift</div>
+      </div>
+      <div class="concept-dur">20 to 25 sec<br>Female + Male B</div>
+    </div>
+    <div class="concept-body">
+      <div class="concept-row"><div class="concept-key">Setting</div><div class="concept-val">Living room or casual domestic space.</div></div>
+      <div class="concept-row"><div class="concept-key">Story</div><div class="concept-val">She places the box in front of him or he receives it. He opens it. His reaction is not over the top. It is interest. Curiosity. Then understanding. He lifts out one product and looks at it.</div></div>
+      <div class="concept-row"><div class="concept-key">Usage</div><div class="concept-val">Gifting season. "Buy for him" targeting. Father's Day and Christmas angles.</div></div>
+      <div class="concept-row"><div class="concept-key">Tone</div><div class="concept-val">Warm but not sentimental. The gift is practical and considered, not indulgent.</div></div>
+    </div>
+  </div>
+
+</div><!-- /lifestyle -->
+
+
+<!-- ═══════════ TAB 6: BACKSTAGE ═══════════ -->
+<div class="panel" id="panel-backstage">
+
+  <div class="eyebrow">Behind the Shoot</div>
+  <div class="page-title">Backstage <em>Footage</em></div>
+
+  <div class="tags">
+    <span class="tag">Raw dump</span>
+    <span class="tag neutral">Phone or second camera</span>
+    <span class="tag neutral">Stories and launch week</span>
+  </div>
+
+  <p class="body-text">Backstage content is not planned. But it is directed. The person capturing it should know exactly what we need so they make decisions on the fly.</p>
+
+  <div class="rule"></div>
+
+  <div class="section-title">What to Capture</div>
+
+  <div class="diagram">
+CREW MOMENTS                MODELS                      PRODUCTS
+------------------          ------------------          ------------------
+
+Marta directing             Getting makeup done         Clay being mixed
+
+Lighting being set up       Models checking their       Products laid out
+                            appearance between          on the dark surface
+                            takes
+The DOP composing                                       Box being assembled
+a shot                      Laughing between
+                            takes                       Ritual card being
+The gaffer rigging                                      held and read
+lights                      Any natural unscripted
+                            moments                     Oil bottle catching
+                                                        light
+Any moment where the
+team clearly cares                                      The Kese mitt
+about what they are                                     texture close up
+making
+  </div>
+
+  <div class="section-title">Tone for Backstage</div>
+  <div class="card blue-border">
+    <p class="body-text">Warm but still on brand. Behind SOLUM is a real founder, a real team, a real story. The backstage should feel human but not sloppy. The brand does not disappear on set day. If something looks cheap or wrong, do not film it.</p>
+  </div>
+
+  <div class="section-title">Where It Gets Used</div>
+  <table>
+    <thead><tr><th>Format</th><th>Where</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Short clips, 5 to 15 sec</td><td>Instagram Stories</td><td>Day-of content. Launch week build-up.</td></tr>
+      <tr><td>Longer raw clips, 30 to 60 sec</td><td>Founder content</td><td>The story behind the shoot.</td></tr>
+      <tr><td>Any candid moments</td><td>TikTok or Reels insert</td><td>Real behind-the-scenes energy.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Technical</div>
+  <p class="body-text">Phone is fine for backstage. Vertical format preferred. Raw files, no filters applied on device. The more the better: you cannot go back for more after the day ends.</p>
+
+</div><!-- /backstage -->
+
+
+<!-- ═══════════ TAB 7: PHOTO SHOOT ═══════════ -->
+<div class="panel" id="panel-photo">
+
+  <div class="eyebrow">Stills · Photographer TBC</div>
+  <div class="page-title">Photo <em>Shoot</em></div>
+
+  <div class="tags">
+    <span class="tag">30+ stills minimum</span>
+    <span class="tag neutral">Product stills + lifestyle stills</span>
+    <span class="tag neutral">Male Model B primary</span>
+  </div>
+
+  <p class="body-text">The photo shoot runs alongside or after the video shoot. The world is the same: dark, editorial, intentional. The photographer has full creative latitude within the brand colour palette and no-bright-colours rule.</p>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Product Stills</div>
+  <p class="body-text" style="margin-bottom:20px;">For each product: 3 shot types minimum.</p>
+
+  <div class="shot-grid">
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| PRODUCT  |
+|  ALONE   |
+|  ON DARK |
+| SURFACE  |
+|          |
++----------+</div>
+      <div class="shot-label">Type A · Hero Shot</div>
+      <div class="shot-desc">Product alone. Clean. Used for website product pages and ads.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| PRODUCT  |
+|   WITH   |
+| TEXTURE  |
+|    OR    |
+| CONTEXT  |
++----------+</div>
+      <div class="shot-label">Type B · In Context</div>
+      <div class="shot-desc">Product with related element. Clay with a small bowl. Oil with skin. Mitt with water drops.</div>
+    </div>
+    <div class="shot-box">
+      <div class="shot-frame">
++----------+
+| PRODUCT  |
+| DETAIL / |
+|  LABEL   |
+|  CLOSE   |
+|   UP     |
++----------+</div>
+      <div class="shot-label">Type C · Detail</div>
+      <div class="shot-desc">Label, texture, cap, or ingredient close-up. Used for website detail sections.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Products That Need Special Attention</div>
+  <table>
+    <thead><tr><th>Product</th><th>Why it matters</th><th>Shot to prioritise</th></tr></thead>
+    <tbody>
+      <tr><td><strong>05 · Rhassoul Clay</strong></td><td>The grey against a dark surface is visually striking and unlike anything in men's grooming.</td><td>Clay paste on a dark slate surface. The texture clearly visible. A spoon or hand lifting some.</td></tr>
+      <tr><td><strong>06 · Argan Oil</strong></td><td>The amber-gold of the oil is one of the most beautiful assets on the shoot.</td><td>Bottle held to a light source. The oil colour glowing inside. Also: a few drops on dark skin.</td></tr>
+      <tr><td><strong>02 · Exfoliating Mitt</strong></td><td>The texture is the product's whole story.</td><td>Macro close-up of the mitt surface. Also on skin in motion.</td></tr>
+      <tr><td><strong>04 · Scalp Massager</strong></td><td>The pins are architectural and tactile. Easy to photograph interestingly.</td><td>Pins facing camera on dark surface. Slight shadow from the pins.</td></tr>
+      <tr><td><strong>The full kit</strong></td><td>All products together show the system, not just individual items.</td><td>All products arranged naturally on a dark surface. Not in a line. Grouped by ritual type.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule"></div>
+
+  <div class="section-title">Lifestyle Stills</div>
+  <p class="body-text" style="margin-bottom:20px;">12 to 16 stills minimum. Mix of the following:</p>
+
+  <div class="diagram">
+MAN POST-SHOWER              PRODUCTS IN USE              ENVIRONMENTS
+-------------------          -------------------          -------------------
+
+Face shot: neutral           Mitt on arm, stroke          Bathroom surface with
+expression. Steam            in motion. Blur              products arranged
+still behind him.            on movement.                 naturally.
+
+Torso shot: after            Back cloth in use.           The box open on a
+lotion applied.              Both handles visible.        dark surface.
+Skin quality visible.
+
+Profile: looking             Scalp massager on            Products on the edge
+forward, not at              wet hair, close up.          of a bath or shelf.
+camera.
+
+Forearm after oil:           Clay on skin,                A single product on a
+the skin texture             setting. Grey on             windowsill with
+the whole story.             the chest.                   directional light.
+  </div>
+
+  <div class="section-title">Delivery and Usage</div>
+  <table>
+    <thead><tr><th>Photo Type</th><th>Used For</th><th>Minimum Count</th></tr></thead>
+    <tbody>
+      <tr><td>Product hero stills</td><td>Website product pages, ads, email</td><td>3 per product = 24 total</td></tr>
+      <tr><td>Lifestyle stills with model</td><td>Social media posts, homepage</td><td>12 minimum</td></tr>
+      <tr><td>Texture and detail close-ups</td><td>Website background sections, ads</td><td>10 minimum</td></tr>
+      <tr><td>Box and packaging stills</td><td>Checkout page, gift ads, email</td><td>5 minimum</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">File Delivery</div>
+  <div class="card">
+    <p class="step-desc"><strong>Raw files:</strong> Full resolution RAW from camera. Unedited dump delivered first.</p>
+    <p class="step-desc" style="margin-top:8px;"><strong>Edited selects:</strong> Top 30 to 40 images, colour graded to match SOLUM palette. Dark. Bone highlights. Not warm.</p>
+    <p class="step-desc" style="margin-top:8px;"><strong>Web-ready exports:</strong> JPEG at 2000px on the long edge, sRGB, compressed. Ready to drop into website and socials immediately.</p>
+  </div>
+
+</div><!-- /photo -->
+
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); [[ -z \"$file\" ]] && exit 0; echo \"$file\" | grep -qE '\\.(jsx|tsx|css|html)$' || exit 0; bad=$(grep -oE 'font-size:[[:space:]]*[0-9]+px' \"$file\" 2>/dev/null | sed 's/font-size:[[:space:]]*//' | sed 's/px//' | awk '{if ($1+0 < 11 && $1+0 > 0) print $1}' | tr '\\n' ' '); [[ -z \"$bad\" ]] && exit 0; echo \"{\\\"systemMessage\\\": \\\"LEGIBILITY WARNING: font-size below 11px in $(basename $file): ${bad}px. Min: 11px labels, 13px body, 15px readable content.\\\"}\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
