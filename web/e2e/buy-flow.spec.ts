@@ -223,9 +223,15 @@ test.describe('Checkout flow', () => {
     await expect(page.locator('.co-payment-element-wrap')).toBeVisible({ timeout: 15_000 });
 
     await fillStripeCard(page);
-    await page.getByRole('checkbox', {
+    const terms = page.getByRole('checkbox', {
       name: 'I agree to the Terms & Conditions and Privacy Policy',
-    }).check();
+    });
+    // The payment element can finish an asynchronous controlled-input update
+    // after the click. Wait for the buyer-visible state rather than relying on
+    // Playwright's immediate post-click check assertion.
+    await terms.click();
+    await expect(terms).toBeChecked();
+    await expect(page.getByTestId('pay-btn')).toBeEnabled();
     await page.getByTestId('pay-btn').click();
     await page.waitForURL(/\/success/, { timeout: 30_000 });
 
