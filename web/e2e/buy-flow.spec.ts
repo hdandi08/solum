@@ -15,6 +15,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { getAdminClient } from './helpers/supabase-admin';
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ async function fillStep1(page: Page, overrides: Record<string, string> = {}) {
   await page.getByPlaceholder('Smith', { exact: true }).fill(values.last_name);
   await page.getByPlaceholder('james@example.com').fill(values.email);
   await page.getByPlaceholder('+44 7700 900000').fill(values.phone);
+  return values;
 }
 
 /** Fill Step 2 (Delivery) fields only. Does NOT submit. */
@@ -53,13 +55,14 @@ async function fillStep2(page: Page, overrides: Record<string, string> = {}) {
  * Does NOT click the Step 2 submit button — caller handles that.
  */
 async function fillForm(page: Page, overrides: Record<string, string> = {}) {
-  await fillStep1(page, overrides);
+  const buyer = await fillStep1(page, overrides);
   // Abort the email-domain DNS check so the form always advances past step 1.
   // The catch block in handleDetailsNext allows execution to continue on network error.
   await page.route('https://cloudflare-dns.com/**', route => route.abort());
   await page.getByTestId('continue-btn').click();
   await page.getByTestId('delivery-form').waitFor({ state: 'visible', timeout: 10_000 });
   await fillStep2(page, overrides);
+  return buyer;
 }
 
 /** Fill Stripe's embedded card fields (renders inside an iframe in test mode). */
@@ -211,25 +214,72 @@ test.describe('Checkout flow', () => {
     await expect(page.locator('.co-order-pill-kit')).toContainText(/one.?time kit/i);
   });
 
-  // REQUIRES: Stripe Link disabled on the test account.
-  // Stripe shows an optional Link/Onelink registration prompt after card entry
-  // in test mode, which blocks confirmPayment from resolving. To enable this test:
-  //   Stripe Dashboard → Settings → Payment Methods → Link → disable for this account
-  // Until then, test 11 above confirms the API integration and PaymentElement mount work.
-  test.skip('full purchase: test card goes through and redirects to /success', async ({ page }) => {
-    await page.goto('/buy?kit=ground');
-    await fillForm(page);
-    await page.getByTestId('delivery-btn').click();
+  test('full purchase: test card creates a paid order, deducts inventory, and redirects to /success', async ({ page }) => {
+    test.setTimeout(90_000); // Stripe webhook delivery and persistence are asynchronous.
 
+    await page.goto('/buy?kit=ground');
+    const buyer = await fillForm(page);
+    await page.getByTestId('delivery-btn').click();
     await expect(page.locator('.co-payment-element-wrap')).toBeVisible({ timeout: 15_000 });
 
     await fillStripeCard(page);
+    await page.getByRole('checkbox', {
+      name: 'I agree to the Terms & Conditions and Privacy Policy',
+    }).check();
     await page.getByTestId('pay-btn').click();
-
     await page.waitForURL(/\/success/, { timeout: 30_000 });
-    expect(page.url()).toContain('source=first_batch');
-    expect(page.url()).toContain('kit=ground');
+
+    const successUrl = new URL(page.url());
+    expect(successUrl.searchParams.get('kit')).toBe('ground');
+    expect(successUrl.searchParams.get('source')).toBe('first_batch');
+    const paymentIntentId = successUrl.searchParams.get('ref');
+    expect(paymentIntentId).toMatch(/^pi_/);
     await expect(page.getByText(/order confirmed/i)).toBeVisible();
+
+    const db = getAdminClient();
+    await expect.poll(async () => {
+      const { data, error } = await db
+        .from('orders')
+        .select('id')
+        .eq('stripe_payment_id', paymentIntentId!)
+        .maybeSingle();
+      if (error) throw new Error(`order lookup failed: ${error.message}`);
+      return data?.id ?? null;
+    }, { timeout: 60_000, intervals: [1_000, 2_000, 5_000] }).not.toBeNull();
+
+    const { data: order, error: orderError } = await db
+      .from('orders')
+      .select('customer_id, stripe_payment_id, kit_id, order_type, amount_pence, status, source, inventory_kit_deducted')
+      .eq('stripe_payment_id', paymentIntentId!)
+      .single();
+    expect(orderError).toBeNull();
+    expect(order).toMatchObject({
+      stripe_payment_id: paymentIntentId,
+      kit_id: 'ground',
+      order_type: 'first_box',
+      amount_pence: 6500,
+      status: 'paid',
+      source: 'first_batch',
+      inventory_kit_deducted: true,
+    });
+
+    const { data: customer, error: customerError } = await db
+      .from('customers')
+      .select('email')
+      .eq('id', order!.customer_id)
+      .single();
+    expect(customerError).toBeNull();
+    expect(customer?.email).toBe(buyer.email.toLowerCase());
+
+    await expect.poll(async () => {
+      const { data, error } = await db
+        .from('kit_inventory')
+        .select('available_count')
+        .eq('kit_id', 'ground')
+        .single();
+      if (error) throw new Error(`inventory lookup failed: ${error.message}`);
+      return data?.available_count;
+    }, { timeout: 30_000, intervals: [1_000, 2_000, 5_000] }).toBe(249);
   });
 });
 
@@ -394,6 +444,22 @@ test.describe('Page copy — /success', () => {
 // These tests hit the SuccessPage directly (no purchase needed).
 
 test.describe('SuccessPage shows correct copy by purchase type', () => {
+  test('failed one-time payment shows a retry that resumes the selected kit', async ({ page }) => {
+    await page.goto('/success?kit=ground&source=first_batch&redirect_status=failed');
+    await expect(page.getByText('Payment failed', { exact: true })).toBeVisible();
+    await expect(page.getByText('Not processed.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Try Again →' }))
+      .toHaveAttribute('href', '/buy?kit=ground&resume=1');
+  });
+
+  test('cancelled one-time payment shows a retry that resumes the selected kit', async ({ page }) => {
+    await page.goto('/success?kit=ground&source=first_batch&redirect_status=canceled');
+    await expect(page.getByText('Payment cancelled', { exact: true })).toBeVisible();
+    await expect(page.getByText('No charge made.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Try Again →' }))
+      .toHaveAttribute('href', '/buy?kit=ground&resume=1');
+  });
+
   test('first_batch buyer sees "check in at two weeks" — not subscription copy', async ({ page }) => {
     await page.goto('/success?kit=ground&source=first_batch&ref=pi_test_ABCD1234');
     await expect(page.getByText(/we.ll check in at two weeks/i)).toBeVisible();

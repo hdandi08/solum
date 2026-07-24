@@ -57,15 +57,16 @@ export default async function globalSetup() {
   if (invErr) throw new Error(`[e2e setup] inventory seed failed: ${invErr.message}`);
 
   // ── 2. Clean up test data from previous runs ────────────────────────────
-  // Test runs use emails matching e2e+*@bysolum.com. Delete leads so upserts
-  // don't collide and orders/customers don't accumulate noise.
-  await db.from('leads').delete().like('email', 'e2e+%@bysolum.com');
+  // Test runs use e2e+ addresses. Delete them so upserts don't collide and
+  // orders/customers don't accumulate noise, regardless of valid test domain.
+  const testEmailPattern = 'e2e+%@%';
+  await db.from('leads').delete().like('email', testEmailPattern);
 
   // Clean customers created by test runs (orders cascade from customers)
   const { data: testCustomers } = await db
     .from('customers')
     .select('id')
-    .like('email', 'e2e+%@bysolum.com');
+    .like('email', testEmailPattern);
 
   if (testCustomers?.length) {
     const ids = testCustomers.map(c => c.id);
