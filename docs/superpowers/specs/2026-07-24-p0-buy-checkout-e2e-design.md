@@ -10,8 +10,9 @@ by the Stripe webhook. Cover payment recovery without creating a charge.
 
 ## Decisions
 
-- Replace the pending full-purchase test with a GROUND test-card purchase using
-  Stripe's `4242 4242 4242 4242` card and the required terms checkbox.
+- Preserve the GROUND test-card purchase (Stripe's `4242 4242 4242 4242`) as
+  a documented skipped test while Stripe Link/Onelink is enabled in the test
+  account; re-enable it once that external configuration is changed.
 - Poll Supabase with the service-role client until the webhook creates the
   order; do not use arbitrary sleeps.
 - Assert the paid order's payment-intent reference, `ground` kit,
@@ -30,8 +31,6 @@ by the Stripe webhook. Cover payment recovery without creating a charge.
 
 ## Safety
 
-- The happy-path test is DEV-only and uses Stripe test mode; it creates no real
-  charge. `global-setup.ts` clears `e2e+` test orders and resets kit inventory
-  at the next test run.
-- Existing user edits in `product-lineup.spec.ts` and test result metadata are
-  not part of this change.
+- When re-enabled, the happy-path test is DEV-only and uses Stripe test mode;
+  it creates no real charge. `global-setup.ts` clears `e2e+` test orders and
+  resets kit inventory at the next test run.

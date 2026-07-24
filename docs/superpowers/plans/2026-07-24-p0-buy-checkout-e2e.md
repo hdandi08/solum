@@ -26,10 +26,10 @@ remain route-level UI tests.
 - Modify: `web/e2e/buy-flow.spec.ts`
 
 1. Make form helpers return the generated email for later database correlation.
-2. Replace the skipped purchase test with the full two-step flow, test card,
-   terms acknowledgement, and success redirect checks.
-3. Poll for the webhook-created order and assert its immutable purchase
-   contract and the seeded inventory decrement.
+2. Preserve the full two-step test-card flow as a documented skipped test until
+   Stripe Link/Onelink is disabled in the Stripe test account.
+3. When re-enabled, poll for the webhook-created order and assert its immutable
+   purchase contract and the seeded inventory decrement.
 
 ### Task 3: Add payment recovery contracts
 
