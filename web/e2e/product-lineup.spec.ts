@@ -47,7 +47,10 @@ test('mid-scroll ritual CTA band renders after the ritual section', async ({ pag
   await page.goto('/');
   const band = page.locator('#ritual-cta');
   await expect(band).toBeVisible();
-  await expect(band.locator('.btn-primary')).toContainText('Start the ritual');
+  const ritualBuy = band.getByRole('button', { name: /Buy RITUAL/ });
+  await expect(ritualBuy).toHaveAttribute('data-buy-cta', '/buy?kit=ritual');
+  const groundBuy = band.getByRole('button', { name: /Start with GROUND/ });
+  await expect(groundBuy).toHaveAttribute('data-buy-cta', '/buy?kit=ground');
   const order = await page.evaluate(() => {
     const ritual = document.querySelector('#ritual');
     const band = document.querySelector('#ritual-cta');
