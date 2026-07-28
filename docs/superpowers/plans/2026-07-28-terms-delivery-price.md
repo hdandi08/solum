@@ -83,7 +83,7 @@ Run: `npm --prefix web run test:unit && npm --prefix web run build`
 
 Expected: Vitest completes with no failures and Vite exits successfully.
 
-- [ ] **Step 6: Commit the implementation**
+- [x] **Step 6: Commit the implementation**
 
 ```bash
 git add web/src/pages/TermsPage.jsx web/src/pages/TermsPage.test.js docs/superpowers/plans/2026-07-28-terms-delivery-price.md
