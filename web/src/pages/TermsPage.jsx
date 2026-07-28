@@ -339,7 +339,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Delivery</span>
-                  <span className="terms-info-value">£3.85 per box (Royal Mail Tracked 48)</span>
+                  <span className="terms-info-value">£5.95 per box (Royal Mail Tracked 48)</span>
                 </div>
               </div>
 
@@ -417,7 +417,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Cost</span>
-                  <span className="terms-info-value">£3.85 per box</span>
+                  <span className="terms-info-value">£5.95 per box</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Estimated Time</span>
