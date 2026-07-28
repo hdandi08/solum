@@ -7,3 +7,4 @@ artefacts/social/**/*.jpg
 artefacts/social/**/*.png
 .env.posthog
 .superpowers/
+.worktrees/
