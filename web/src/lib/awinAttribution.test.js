@@ -3,6 +3,7 @@ import {
   ATTRIBUTION_TTL_MS,
   normalizeCheckoutSource,
   resolveAwinAttribution,
+  toAwinPaymentIntentMetadata,
 } from './awinAttribution.js';
 
 describe('normalizeCheckoutSource', () => {
@@ -54,5 +55,14 @@ describe('resolveAwinAttribution', () => {
       legacyAwc: 'must_not_be_used',
       now,
     })).toEqual({});
+  });
+});
+
+describe('toAwinPaymentIntentMetadata', () => {
+  it('returns only Stripe-safe Awin metadata for a valid attribution record', () => {
+    expect(toAwinPaymentIntentMetadata({ awc: '129171_click', channel: 'display' }))
+      .toEqual({ awc: '129171_click', awin_channel: 'display' });
+    expect(toAwinPaymentIntentMetadata({ awc: '129171_click' }))
+      .toEqual({ awc: '129171_click' });
   });
 });

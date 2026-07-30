@@ -122,3 +122,10 @@ export function captureAwinAttribution() {
     ? { ...(attribution.awc ? { awc: attribution.awc } : {}), ...(attribution.channel ? { channel: attribution.channel } : {}) }
     : {};
 }
+
+export function toAwinPaymentIntentMetadata(attribution = {}) {
+  return {
+    ...(typeof attribution.awc === 'string' && attribution.awc ? { awc: attribution.awc } : {}),
+    ...(VALID_CHANNELS.has(attribution.channel) ? { awin_channel: attribution.channel } : {}),
+  };
+}
