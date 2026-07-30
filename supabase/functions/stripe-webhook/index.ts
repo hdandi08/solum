@@ -623,8 +623,8 @@ async function handleOneTimeOrderFromPI(
     order = newOrder;
 
     if (kit_id) {
-      await deductInventory(supabase, kit_id, 'first_box', order.id);
-      await deductKitInventory(supabase, order.id, kit_id);
+      await deductInventory(supabase, kit_id, 'first_box', newOrder.id);
+      await deductKitInventory(supabase, newOrder.id, kit_id);
     }
 
     await supabase.from('leads')
