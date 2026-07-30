@@ -1,6 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
+import { normalizeAwinChannel, normalizeOrderSource } from '../_shared/awin.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -31,7 +32,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id = body.kit_id;
     email  = body.email?.trim().toLowerCase();
-    const { first_name, last_name, source, phone, site_host, line1, line2, city, postcode, ttclid, ttp, awc } = body;
+    const { first_name, last_name, source, phone, site_host, line1, line2, city, postcode, ttclid, ttp, awc, awin_channel } = body;
 
     if (!KIT_PENCE[kit_id!]) {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), {
@@ -52,7 +53,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const effectiveSource = source ?? 'first_batch';
+    const effectiveSource = normalizeOrderSource(source);
+    const effectiveAwinChannel = normalizeAwinChannel(awin_channel);
     const amount = KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
@@ -95,7 +97,8 @@ Deno.serve(async (req) => {
         site_host:    site_host ?? '',
         ttclid:       ttclid ?? '',
         ttp:          ttp ?? '',
-        awc:          awc ?? '',
+        ...(typeof awc === 'string' && awc.trim() !== '' ? { awc } : {}),
+        ...(effectiveAwinChannel ? { awin_channel: effectiveAwinChannel } : {}),
         dispatch_date: fmtDay(dispatch),
         arrival_date:  fmtDay(arrival),
       },

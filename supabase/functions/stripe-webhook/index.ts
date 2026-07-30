@@ -1,6 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
+import { buildAwinS2sUrl, type AwinS2sInput } from '../_shared/awin.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -396,27 +397,13 @@ async function sendMetaPurchaseEvent(opts: {
 }
 
 // Awin server-to-server conversion — fired from the webhook so it survives ad
-// blockers / ITP that can drop the browser conversion pixel. Only fires for
-// LIVE payments that arrived via an Awin affiliate click (awc present): organic
-// sales carry no awc, and test-mode (dev) payments have livemode=false, so the
-// merchant only ever sees genuine affiliate-referred transactions. Awin dedupes
-// this against the /success client pixel by order ref.
-async function sendAwinPurchaseEvent(opts: { amountPence: number; orderRef: string; awc?: string; live: boolean }) {
-  if (!opts.live || !opts.awc) return;
+// blockers / ITP that can drop browser-side tracking. The shared builder
+// fails closed unless the paid PaymentIntent carries live, valid attribution.
+async function sendAwinPurchaseEvent(opts: AwinS2sInput) {
+  const url = buildAwinS2sUrl(opts);
+  if (!url) return;
   try {
-    const amount = (opts.amountPence / 100).toFixed(2);
-    const params = new URLSearchParams({
-      tt: 'ss',
-      tv: '2',
-      merchant: '129171',
-      amount,
-      ch: 'aw',
-      parts: `DEFAULT:${amount}`,
-      cr: 'GBP',
-      ref: opts.orderRef,
-      cks: opts.awc,
-    });
-    const res = await fetch(`https://www.awin1.com/sread.php?${params.toString()}`);
+    const res = await fetch(url);
     console.log('awin_s2s', res.status, opts.orderRef);
   } catch (err) {
     console.error('awin_s2s_throw', err.message);
@@ -427,7 +414,7 @@ async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc, awin_channel } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -491,7 +478,7 @@ async function handleOneTimeOrderFromPI(
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
-    await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, live: pi.livemode });
+    await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
   }
 
   // Store shipping address from pi.shipping
