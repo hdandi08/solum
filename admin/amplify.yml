@@ -3,10 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm install --include=dev
+        - npm ci --include=dev
     build:
       commands:
+        - npm test
         - npm run build
+        - npm run verify:artifact -- "$VITE_ADMIN_ENV"
   artifacts:
     baseDirectory: dist
     files:

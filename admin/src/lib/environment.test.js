@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveAdminEnvironment } from './environment'
+import { resolveAdminEnvironment } from './environmentValidation'
 
 const productionEnv = {
   VITE_ADMIN_ENV: 'production',

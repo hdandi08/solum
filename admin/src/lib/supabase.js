@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import { resolveAdminEnvironment } from './environment'
+import { adminEnvironment } from './environment'
 
-export const adminEnvironment = resolveAdminEnvironment(import.meta.env)
+export { adminEnvironment }
 
 export const supabase = createClient(
   adminEnvironment.supabaseUrl,

@@ -13,6 +13,7 @@ import DashboardPage from './pages/DashboardPage'
 import EventsPage from './pages/EventsPage'
 import LoginPage from './pages/LoginPage'
 import OrdersPage from './pages/OrdersPage'
+import './index.css'
 import './admin.css'
 
 function LoadingPage() {
