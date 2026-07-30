@@ -5,6 +5,8 @@ import { PRODUCTS } from '../data/products.js';
 import { videoFor } from '../data/productMedia.js';
 
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MEDIA_PRELOAD_MARGIN = '600px 0px';
+const CAROUSEL_MEDIA_MARGIN = '0px 160px';
 
 // Composition mirrors the canonical ritual in ritualVideo.js (RITUALS).
 // Daily: 04, 01, 03, 08, 07.  Weekly: 05, 02, 06.
@@ -96,6 +98,8 @@ const chevron = (dir) => (
 export default function RitualInAction() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [userSelected, setUserSelected] = useState(false);
+  const [mediaActivated, setMediaActivated] = useState(false);
+  const [loadedMedia, setLoadedMedia] = useState(() => new Set());
 
   const carouselRef = useRef(null);
   const cardRefs = useRef([]);
@@ -109,13 +113,21 @@ export default function RitualInAction() {
   const sectionRef = useRef(null);
   const activeIdxRef = useRef(0);
   const inView = useRef(false);
+  const mediaActivatedRef = useRef(false);
   const settleTimer = useRef(0);
   const draggedRef = useRef(false);
+
+  const loadMedia = useCallback((idx) => {
+    setLoadedMedia((previous) => (
+      previous.has(idx) ? previous : new Set(previous).add(idx)
+    ));
+  }, []);
 
   // Play the SETTLED card (only while the section is on screen); pause the rest.
   // The first settle on load is passive (no intent); later settles are deliberate.
   const settle = useCallback((i) => {
     activeIdxRef.current = i;
+    if (mediaActivatedRef.current) loadMedia(i);
     progressFired.current = new Set();
     vidRefs.current.forEach((v, idx) => {
       if (!v) return;
@@ -124,7 +136,7 @@ export default function RitualInAction() {
     if (firstSettle.current) { firstSettle.current = false; return; }
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
-  }, []);
+  }, [loadMedia]);
 
   // Nearest-centre card is active (visual, live). Playback + selection fire only
   // once scroll SETTLES, so flicking past cards never emits intent for each one.
@@ -171,6 +183,49 @@ export default function RitualInAction() {
     return () => io.disconnect();
   }, []);
 
+  // Start creating media only once the section is close enough to be reached soon.
+  // This is deliberately separate from the in-view playback observer above.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        setMediaActivated(true);
+        io.disconnect();
+      }
+    }, { rootMargin: MEDIA_PRELOAD_MARGIN, threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Keep nearby media mounted after it first becomes eligible, so a swipe never
+  // has to recreate an already viewed card.
+  useEffect(() => {
+    if (!mediaActivated) return;
+    mediaActivatedRef.current = true;
+    loadMedia(activeIdxRef.current);
+  }, [mediaActivated, loadMedia]);
+
+  useEffect(() => {
+    if (!mediaActivated) return;
+    const car = carouselRef.current;
+    if (!car) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) loadMedia(Number(entry.target.dataset.idx));
+      });
+    }, { root: car, rootMargin: CAROUSEL_MEDIA_MARGIN, threshold: 0 });
+    cardRefs.current.forEach((card) => { if (card) io.observe(card); });
+    return () => io.disconnect();
+  }, [mediaActivated, loadMedia]);
+
+  // The in-view observer can run before a deferred video has been created.
+  // Retry active-video playback once the eligible media is mounted.
+  useEffect(() => {
+    if (!mediaActivated || REDUCE_MOTION || !inView.current) return;
+    vidRefs.current[activeIdxRef.current]?.play().catch(() => {});
+  }, [mediaActivated, loadedMedia]);
+
   // Desktop: click-and-drag to scroll the gallery (mirrors mobile swipe). Arrows still work.
   useEffect(() => {
     const car = carouselRef.current;
@@ -206,6 +261,7 @@ export default function RitualInAction() {
 
   const goTo = (i) => {
     const idx = Math.max(0, Math.min(STEPS.length - 1, i));
+    if (mediaActivatedRef.current) loadMedia(idx);
     cardRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   };
 
@@ -213,13 +269,14 @@ export default function RitualInAction() {
   // detector never re-runs. Register the deliberate selection directly in that case.
   const promote = useCallback((i) => {
     activeIdxRef.current = i;
+    if (mediaActivatedRef.current) loadMedia(i);
     progressFired.current = new Set();
     const v = vidRefs.current[i];
     if (v && !REDUCE_MOTION && inView.current) { try { v.currentTime = 0; v.play().catch(() => {}); } catch { /* ignore */ } }
     firstSettle.current = false;
     setUserSelected(true);
     capture('ritual_selected', { product: STEPS[i].slug, source: 'ritual_in_action' });
-  }, []);
+  }, [loadMedia]);
 
   const onCardActivate = (i) => {
     if (draggedRef.current) { draggedRef.current = false; return; }
@@ -266,6 +323,7 @@ export default function RitualInAction() {
               const f = videoFor(s.slug);
               const vid = !!f && !REDUCE_MOTION;
               const pos = (f && f.poster) || posterFor(s.num);
+              const mediaReady = mediaActivated && loadedMedia.has(i);
               return (
                 <div
                   className={`ria-card${i === activeIdx ? ' active' : ''}`}
@@ -279,7 +337,7 @@ export default function RitualInAction() {
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCardActivate(i); } }}
                 >
                   <div className="ria-card-media">
-                    {vid ? (
+                    {mediaReady && vid ? (
                       <video
                         ref={(el) => { vidRefs.current[i] = el; }}
                         className="ria-media"
@@ -293,8 +351,10 @@ export default function RitualInAction() {
                         <source src={f.webm} type="video/webm" />
                         <source src={f.mp4} type="video/mp4" />
                       </video>
-                    ) : (
+                    ) : mediaReady ? (
                       <img className="ria-media" src={pos} alt={`${s.name} in use`} loading="lazy" />
+                    ) : (
+                      <div className="ria-media" aria-hidden="true" />
                     )}
                     <div className="ria-scrim" />
                     {vid && i !== activeIdx && <span className="ria-card-cue">{PLAY}</span>}
