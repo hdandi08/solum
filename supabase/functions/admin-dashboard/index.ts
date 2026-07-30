@@ -1,136 +1,155 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno'
+import {
+  AdminHttpError,
+  authorizeAdminRequest,
+  handleAdminPreflight,
+  jsonError,
+  jsonOk,
+  type AdminContext,
+} from '../_shared/adminAuth.ts'
+import { buildAdminDashboard } from '../_shared/adminDashboard.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+function internalError(context?: AdminContext) {
+  return new AdminHttpError(
+    500,
+    'INTERNAL_ERROR',
+    'Admin dashboard could not be loaded.',
+    context,
+  )
 }
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com']
-
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  const preflight = handleAdminPreflight(req)
+  if (preflight) return preflight
+
+  let context: AdminContext | undefined
 
   try {
-    // Auth — verify caller is an admin
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
-
-    const userClient = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    )
-    const { data: { user }, error: authError } = await userClient.auth.getUser()
-    if (authError || !user || !ADMIN_EMAILS.includes(user.email!)) {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders })
+    context = await authorizeAdminRequest(req)
+    if (req.method !== 'POST') {
+      throw new AdminHttpError(
+        405,
+        'METHOD_NOT_ALLOWED',
+        'This admin operation requires POST.',
+        context,
+      )
     }
 
-    // Service role client for all data access
     const db = createClient(
       Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
-    // 1. Active subscriber counts by kit
-    const { data: subCounts } = await db
-      .from('subscriptions')
-      .select('kit_id')
-      .eq('status', 'active')
+    const [
+      subscriptionsResult,
+      kitProductsResult,
+      productsResult,
+      pendingOrdersResult,
+      paymentIssuesResult,
+      recentOrdersResult,
+      recentEventsResult,
+    ] = await Promise.all([
+      db
+        .from('subscriptions')
+        .select('kit_id')
+        .eq('status', 'active'),
+      db
+        .from('kit_products')
+        .select('kit_id, product_id, refill_qty, products(shipment_cycle_days)'),
+      db
+        .from('products')
+        .select('id, name, current_stock, is_active, restock_lead_days')
+        .order('id'),
+      db
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('dispatch_status', 'pending'),
+      db
+        .from('payment_issues')
+        .select('id', { count: 'exact', head: true })
+        .eq('resolved', false),
+      db
+        .from('orders')
+        .select(`
+          id,
+          created_at,
+          kit_id,
+          order_type,
+          amount_pence,
+          dispatch_status,
+          customers(first_name, last_name, email)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(6),
+      db
+        .from('inventory_transactions')
+        .select(`
+          id,
+          product_id,
+          transaction_type,
+          quantity,
+          reference_type,
+          reference_id,
+          notes,
+          created_at,
+          products(name)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(8),
+    ])
 
-    const subscribersByKit: Record<string, number> = { ground: 0, ritual: 0, sovereign: 0 }
-    for (const s of subCounts ?? []) {
-      if (s.kit_id in subscribersByKit) subscribersByKit[s.kit_id]++
-    }
-    const totalSubscribers = Object.values(subscribersByKit).reduce((a, b) => a + b, 0)
+    const results = [
+      subscriptionsResult,
+      kitProductsResult,
+      productsResult,
+      pendingOrdersResult,
+      paymentIssuesResult,
+      recentOrdersResult,
+      recentEventsResult,
+    ]
+    const failed = results.find((result) => result.error)
+    if (failed?.error) throw new Error(failed.error.message)
 
-    // 2. Kit composition + shipment cycle per product
-    const { data: kitProducts } = await db
-      .from('kit_products')
-      .select('kit_id, product_id, refill_qty, products(shipment_cycle_days)')
-
-    // 3. Monthly burn — adjusted for shipment frequency
-    // e.g. back scrub (90-day cycle) = 0.33 units/sub/month; scalp massager (365-day) = 0.082/sub/month
-    const monthlyBurn: Record<string, number> = {}
-    for (const kp of kitProducts ?? []) {
-      if (kp.refill_qty === 0) continue
-      if (!monthlyBurn[kp.product_id]) monthlyBurn[kp.product_id] = 0
-      const cycleDays = (kp.products as any)?.shipment_cycle_days || 30
-      const unitsPerSubPerMonth = kp.refill_qty * (30 / cycleDays)
-      monthlyBurn[kp.product_id] += unitsPerSubPerMonth * (subscribersByKit[kp.kit_id] ?? 0)
-    }
-
-    // 4. All products with calculated runway
-    const { data: products } = await db
-      .from('products')
-      .select('*')
-      .order('id')
-
-    const productsWithMetrics = (products ?? []).map((p) => {
-      const burn = monthlyBurn[p.id] ?? 0
-      const daysRunway = burn > 0 ? (p.current_stock / burn) * 30 : null
-      const weeksRunway = daysRunway != null ? daysRunway / 7 : null
-      // restock_lead_days = how long it takes to get new stock from supplier
-      // If runway < restock_lead_days, we need to reorder now
-      const restockDays = p.restock_lead_days ?? 60
-
-      let riskLevel: string
-      if (p.current_stock === 0) {
-        riskLevel = 'out_of_stock'
-      } else if (daysRunway === null) {
-        riskLevel = 'no_data'
-      } else if (daysRunway < restockDays / 2) {
-        riskLevel = 'critical'
-      } else if (daysRunway < restockDays) {
-        riskLevel = 'low'
-      } else {
-        riskLevel = 'ok'
-      }
-
+    const kitProducts = (kitProductsResult.data ?? []).map((row) => {
+      const related = row.products as {
+        shipment_cycle_days?: number
+      } | null
       return {
-        ...p,
-        monthly_burn: burn,
-        days_runway: daysRunway ? Math.round(daysRunway) : null,
-        weeks_runway: weeksRunway ? Math.round(weeksRunway * 10) / 10 : null,
-        risk_level: riskLevel,
+        kit_id: row.kit_id,
+        product_id: row.product_id,
+        refill_qty: row.refill_qty,
+        shipment_cycle_days: related?.shipment_cycle_days ?? 30,
       }
     })
 
-    // 5. Pending supplier orders
-    const { data: pendingOrders } = await db
-      .from('supplier_orders')
-      .select('*, products(name, sku)')
-      .in('status', ['pending', 'in_transit'])
-      .order('expected_delivery_date', { ascending: true })
-
-    // 6. Recent inventory transactions (last 10)
-    const { data: recentTransactions } = await db
-      .from('inventory_transactions')
-      .select('*, products(name, sku)')
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    // 7. Products at risk count
-    const atRisk = productsWithMetrics.filter(
-      (p) => p.is_active && ['critical', 'out_of_stock', 'low'].includes(p.risk_level)
-    ).length
-
-    return new Response(JSON.stringify({
-      subscribers: { by_kit: subscribersByKit, total: totalSubscribers },
-      products: productsWithMetrics,
-      pending_orders: pendingOrders ?? [],
-      recent_transactions: recentTransactions ?? [],
-      summary: {
-        total_products: (products ?? []).filter((p) => p.is_active).length,
-        products_at_risk: atRisk,
-        pending_deliveries: (pendingOrders ?? []).length,
-      },
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const recentInventoryEvents = (recentEventsResult.data ?? []).map((row) => {
+      const related = row.products as { name?: string } | null
+      const { products: _products, ...event } = row
+      return {
+        ...event,
+        product_name: related?.name ?? row.product_id,
+      }
     })
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+
+    return jsonOk(
+      buildAdminDashboard({
+        subscriptions: subscriptionsResult.data ?? [],
+        kitProducts,
+        products: productsResult.data ?? [],
+        pendingOrderCount: pendingOrdersResult.count ?? 0,
+        unresolvedPaymentIssueCount: paymentIssuesResult.count ?? 0,
+        recentOrders: recentOrdersResult.data ?? [],
+        recentInventoryEvents,
+      }),
+      context,
+    )
+  } catch (error) {
+    if (error instanceof AdminHttpError) return jsonError(error, context)
+
+    console.error('ADMIN_DASHBOARD_ERROR', {
+      request_id: context?.requestId,
+      message: error instanceof Error ? error.message : String(error),
     })
+    return jsonError(internalError(context), context)
   }
 })
