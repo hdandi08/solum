@@ -304,6 +304,7 @@ function paymentIntentClaimData(
   stripeEventId: string,
   token: string,
   awinAttempted = false,
+  revision = 1,
 ) {
   return {
     state: 'processing',
@@ -312,7 +313,14 @@ function paymentIntentClaimData(
     claim_token: token,
     claimed_at: new Date().toISOString(),
     awin_attempted: awinAttempted,
+    revision,
   };
+}
+
+function paymentIntentClaimRevision(data: Record<string, unknown>) {
+  return typeof data.revision === 'number' && Number.isSafeInteger(data.revision) && data.revision >= 1
+    ? data.revision
+    : undefined;
 }
 
 function paymentIntentClaimIsStale(data: Record<string, unknown>) {
@@ -351,15 +359,24 @@ async function claimPaymentIntent(
 
   const previousClaimedAt = existingData.claimed_at;
   if (typeof previousClaimedAt !== 'string') return { state: 'processing' };
-  const reclaimedData = paymentIntentClaimData(pi.id, event.id, token, existingData.awin_attempted === true);
-  const { data: reclaimed, error: reclaimError } = await supabase
+  const previousRevision = paymentIntentClaimRevision(existingData);
+  const reclaimedData = paymentIntentClaimData(
+    pi.id,
+    event.id,
+    token,
+    existingData.awin_attempted === true,
+    (previousRevision ?? 0) + 1,
+  );
+  let reclaimQuery = supabase
     .from('events')
     .update({ data: reclaimedData })
     .eq('stripe_event_id', key)
     .eq('data->>state', 'processing')
-    .eq('data->>claimed_at', previousClaimedAt)
-    .select('id')
-    .maybeSingle();
+    .eq('data->>claimed_at', previousClaimedAt);
+  reclaimQuery = previousRevision !== undefined
+    ? reclaimQuery.eq('data->>revision', String(previousRevision))
+    : reclaimQuery.eq('data->>awin_attempted', existingData.awin_attempted === true ? 'true' : 'false');
+  const { data: reclaimed, error: reclaimError } = await reclaimQuery.select('id').maybeSingle();
   if (reclaimError) throw new Error(`payment_intent_claim_reclaim_failed: ${reclaimError.message}`);
   return reclaimed
     ? { state: 'claimed', claim: { key, token, data: reclaimedData } }
@@ -372,15 +389,20 @@ async function updatePaymentIntentClaim(
   data: Record<string, unknown>,
   action: string,
 ) {
-  const { data: updated, error } = await supabase
+  const previousRevision = paymentIntentClaimRevision(claim.data);
+  const nextData = { ...data, revision: (previousRevision ?? 0) + 1 };
+  let updateQuery = supabase
     .from('events')
-    .update({ data })
+    .update({ data: nextData })
     .eq('stripe_event_id', claim.key)
     .eq('data->>state', 'processing')
-    .eq('data->>claim_token', claim.token)
-    .select('id')
-    .maybeSingle();
+    .eq('data->>claim_token', claim.token);
+  updateQuery = previousRevision !== undefined
+    ? updateQuery.eq('data->>revision', String(previousRevision))
+    : updateQuery.eq('data->>claimed_at', String(claim.data.claimed_at));
+  const { data: updated, error } = await updateQuery.select('id').maybeSingle();
   if (error || !updated) throw new Error(`payment_intent_claim_${action}_failed: ${error?.message ?? 'claim lost'}`);
+  return nextData;
 }
 
 async function markPaymentIntentAwinAttempted(
@@ -388,8 +410,7 @@ async function markPaymentIntentAwinAttempted(
   claim: PaymentIntentClaim,
 ) {
   const data = { ...claim.data, awin_attempted: true };
-  await updatePaymentIntentClaim(supabase, claim, data, 'awin_attempt');
-  claim.data = data;
+  claim.data = await updatePaymentIntentClaim(supabase, claim, data, 'awin_attempt');
 }
 
 async function completePaymentIntentClaim(
@@ -407,14 +428,17 @@ async function releasePaymentIntentClaim(
   supabase: ReturnType<typeof createClient>,
   claim: PaymentIntentClaim,
 ) {
-  const { data: released, error } = await supabase
+  const previousRevision = paymentIntentClaimRevision(claim.data);
+  let releaseQuery = supabase
     .from('events')
     .delete()
     .eq('stripe_event_id', claim.key)
     .eq('data->>state', 'processing')
-    .eq('data->>claim_token', claim.token)
-    .select('id')
-    .maybeSingle();
+    .eq('data->>claim_token', claim.token);
+  releaseQuery = previousRevision !== undefined
+    ? releaseQuery.eq('data->>revision', String(previousRevision))
+    : releaseQuery.eq('data->>claimed_at', String(claim.data.claimed_at));
+  const { data: released, error } = await releaseQuery.select('id').maybeSingle();
   if (error || !released) throw new Error(`payment_intent_claim_release_failed: ${error?.message ?? 'claim lost'}`);
 }
 
