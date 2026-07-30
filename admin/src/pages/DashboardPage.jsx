@@ -1,285 +1,254 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useEnv } from '../context/EnvContext'
+import { useCallback, useEffect, useState } from 'react'
+import RiskBadge from '../components/RiskBadge'
+import { normalizeDashboardPayload } from '../features/dashboard/model'
+import { adminApi } from '../lib/adminClient'
 
-const KIT_MONTHLY_PENCE = { ground: 3800, ritual: 4800, sovereign: 5800 }
-const CADENCE_MONTHS = { monthly: 1, quarterly: 3, biannual: 6, first_box_only: null }
-
-function fmt(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+function formatDate(value) {
+  if (!value) return '—'
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
-function pence(p) {
-  return `£${((p || 0) / 100).toFixed(0)}`
+function formatMoney(pence) {
+  return `£${((pence ?? 0) / 100).toFixed(2)}`
 }
 
-function PaymentStatusBadge({ status }) {
-  const map = {
-    active:   { cls: 'ok',       label: 'Active' },
-    past_due: { cls: 'low',      label: 'Past Due' },
-    unpaid:   { cls: 'critical', label: 'Unpaid' },
-    cancelled:{ cls: 'no-data',  label: 'Cancelled' },
+function Risk({ level }) {
+  if (level === 'no_data') {
+    return <span style={{ color: 'var(--bone-muted)', fontSize: 12 }}>No data</span>
   }
-  const { cls, label } = map[status] || { cls: 'no-data', label: status }
-  return <span className={`risk-badge ${cls}`}>{label}</span>
+  return <RiskBadge level={level} />
 }
 
 export default function DashboardPage() {
-  const { config } = useEnv()
+  const [dashboard, setDashboard] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
-  const [stats, setStats] = useState({ activeSubs: 0, pendingOrders: 0, openIssues: 0, mrr: 0 })
-  const [inventory, setInventory] = useState({ ground: 0, ritual: 0 })
-  const [inventoryInputs, setInventoryInputs] = useState({ ground: 0, ritual: 0 })
-  const [savingKit, setSavingKit] = useState(null)
-  const [stockHealth, setStockHealth] = useState([])
-  const [recentOrders, setRecentOrders] = useState([])
 
   const load = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const [
-        { count: activeSubs },
-        { count: pendingOrders },
-        { count: openIssues },
-        { data: subsByKit },
-        { data: kitInv },
-        { data: products },
-        { data: kitProducts },
-        { data: orders },
-      ] = await Promise.all([
-        config.client.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-        config.client.from('orders').select('*', { count: 'exact', head: true }).eq('dispatch_status', 'pending'),
-        config.client.from('payment_issues').select('*', { count: 'exact', head: true }).eq('resolved', false),
-        config.client.from('subscriptions').select('kit_id').eq('status', 'active'),
-        config.client.from('kit_inventory').select('*'),
-        config.client.from('products').select('id, name, current_stock').like('id', 'product-%').order('id'),
-        config.client.from('kit_products').select('kit_id, product_id, refill_qty, refill_cadence').in('kit_id', ['ground', 'ritual']),
-        config.client.from('orders').select('*, customers(first_name, last_name, email)').order('created_at', { ascending: false }).limit(6),
-      ])
-
-      const mrr = (subsByKit || []).reduce((s, sub) => s + (KIT_MONTHLY_PENCE[sub.kit_id] || 0), 0)
-      setStats({ activeSubs: activeSubs || 0, pendingOrders: pendingOrders || 0, openIssues: openIssues || 0, mrr })
-
-      const inv = { ground: 0, ritual: 0 }
-      for (const row of kitInv || []) { inv[row.kit_id] = row.available_count }
-      setInventory(inv)
-      setInventoryInputs({ ...inv })
-
-      // Stock health: for each kit, find min runway across products
-      const stockMap = Object.fromEntries((products || []).map(p => [p.id, p]))
-      const subCountByKit = (subsByKit || []).reduce((acc, s) => { acc[s.kit_id] = (acc[s.kit_id] || 0) + 1; return acc }, {})
-
-      const health = ['ground', 'ritual'].map(kitId => {
-        const subs = subCountByKit[kitId] || 0
-        const kps = (kitProducts || []).filter(kp => kp.kit_id === kitId && kp.refill_qty > 0)
-        const rows = kps.map(kp => {
-          const product = stockMap[kp.product_id]
-          if (!product) return null
-          const cadenceMonths = CADENCE_MONTHS[kp.refill_cadence]
-          if (!cadenceMonths) return null
-          const monthlyBurn = (kp.refill_qty * subs) / cadenceMonths
-          const runwayWeeks = monthlyBurn > 0 ? Math.floor((product.current_stock / monthlyBurn) * 4.33) : null
-          return { name: product.name, stock: product.current_stock, monthlyBurn: Math.ceil(monthlyBurn), runwayWeeks }
-        }).filter(Boolean)
-
-        const minRunway = rows.reduce((min, r) => r.runwayWeeks !== null ? Math.min(min, r.runwayWeeks) : min, Infinity)
-        return { kitId, subs, rows, minRunway: minRunway === Infinity ? null : minRunway }
+      const payload = await adminApi.request('admin-dashboard', {
+        body: {},
       })
-
-      setStockHealth(health)
-      setRecentOrders(orders || [])
-    } catch (err) {
-      setError(err.message)
+      setDashboard(normalizeDashboardPayload(payload))
+    } catch (caught) {
+      setError(caught.message || 'Dashboard could not be loaded.')
     } finally {
       setLoading(false)
     }
-  }, [config])
+  }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+  }, [load])
 
-  async function saveKit(kitId) {
-    setSavingKit(kitId)
-    try {
-      const { error: err } = await config.client
-        .from('kit_inventory')
-        .update({ available_count: Number(inventoryInputs[kitId]), updated_at: new Date().toISOString() })
-        .eq('kit_id', kitId)
-      if (err) throw err
-      setInventory(p => ({ ...p, [kitId]: Number(inventoryInputs[kitId]) }))
-    } catch (err) {
-      alert(err.message)
-    } finally {
-      setSavingKit(null)
-    }
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <div className="loading-spinner" />
+        Loading dashboard...
+      </div>
+    )
   }
 
-  if (loading) return <div className="loading-state"><div className="loading-spinner" />Loading...</div>
-  if (error) return <div className="error-state">{error} <button className="btn btn-secondary btn-sm" style={{ marginLeft: 12 }} onClick={load}>Retry</button></div>
+  if (error) {
+    return (
+      <div>
+        <h1 className="page-title">Dashboard</h1>
+        <div className="error-state">{error}</div>
+        <button
+          className="btn btn-secondary"
+          style={{ marginTop: 16 }}
+          onClick={load}
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
 
-  const runwayColor = (w) => w === null ? 'var(--bone-muted)' : w < 4 ? 'var(--critical)' : w < 10 ? 'var(--low)' : 'var(--ok)'
+  const {
+    summary,
+    subscribers_by_kit: subscribers,
+    products,
+    recent_orders: recentOrders,
+    recent_inventory_events: recentEvents,
+  } = dashboard
 
   return (
     <div>
       <h1 className="page-title">Dashboard</h1>
 
-      {/* Stats */}
-      <div className="stat-cards" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 32 }}>
+      <div className="stat-cards">
         <div className="stat-card">
-          <div className="stat-value">{stats.activeSubs}</div>
+          <div className="stat-value">{summary.active_subscribers}</div>
           <div className="stat-label">Active Subscribers</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ color: 'var(--sky-blue)' }}>£{((stats.mrr) / 100).toFixed(0)}</div>
-          <div className="stat-label">MRR</div>
+          <div className="stat-value">{summary.pending_orders}</div>
+          <div className="stat-label">Pending Orders</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ color: stats.pendingOrders > 0 ? 'var(--low)' : 'var(--bone)' }}>{stats.pendingOrders}</div>
-          <div className="stat-label">Pending Dispatch</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value" style={{ color: stats.openIssues > 0 ? 'var(--critical)' : 'var(--bone)' }}>{stats.openIssues}</div>
+          <div
+            className="stat-value"
+            style={{
+              color: summary.unresolved_payment_issues > 0
+                ? 'var(--critical)'
+                : 'var(--bone)',
+            }}
+          >
+            {summary.unresolved_payment_issues}
+          </div>
           <div className="stat-label">Payment Issues</div>
         </div>
+        <div className="stat-card">
+          <div
+            className="stat-value"
+            style={{
+              color: summary.products_at_risk > 0
+                ? 'var(--critical)'
+                : 'var(--ok)',
+            }}
+          >
+            {summary.products_at_risk}
+          </div>
+          <div className="stat-label">Products at Risk</div>
+        </div>
       </div>
 
-      {/* Kit Availability */}
-      <div className="section-title">Kit Availability</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
-        {['ground', 'ritual'].map(kitId => {
-          const health = stockHealth.find(h => h.kitId === kitId)
-          const minRunway = health?.minRunway
-          return (
-            <div key={kitId} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-                <div>
-                  <div style={{ fontFamily: 'Bebas Neue', fontSize: 22, letterSpacing: '0.1em', color: 'var(--bone)' }}>
-                    {kitId.toUpperCase()}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--bone-muted)', marginTop: 2 }}>
-                    {health?.subs || 0} active subscribers
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 11, color: 'var(--bone-muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Stock advisory</div>
-                  <div style={{ fontSize: 18, fontFamily: 'Bebas Neue', color: runwayColor(minRunway) }}>
-                    {minRunway !== null ? `${minRunway} wks` : '—'}
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: 'var(--bone-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                    Available boxes
-                  </div>
-                  <input
-                    type="number"
-                    min={0}
-                    className="input"
-                    value={inventoryInputs[kitId]}
-                    onChange={e => setInventoryInputs(p => ({ ...p, [kitId]: e.target.value }))}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-                <button
-                  className="btn btn-primary"
-                  style={{ marginTop: 21, flexShrink: 0 }}
-                  onClick={() => saveKit(kitId)}
-                  disabled={savingKit === kitId || Number(inventoryInputs[kitId]) === inventory[kitId]}
-                >
-                  {savingKit === kitId ? '...' : 'Save'}
-                </button>
-              </div>
-              {inventory[kitId] === 0 && (
-                <div style={{ marginTop: 10, fontSize: 12, color: 'var(--critical)', fontWeight: 600 }}>
-                  ⚠ Checkout blocked — set available boxes to open sales
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Stock Health Detail */}
-      <div className="section-title">Stock Health by Kit</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
-        {stockHealth.map(({ kitId, rows }) => (
-          <div key={kitId} className="card" style={{ padding: 0 }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)' }}>
-              {kitId} · consumable products
-            </div>
-            <table className="table" style={{ fontSize: 13 }}>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Stock</th>
-                  <th>Burn/mo</th>
-                  <th>Runway</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 ? (
-                  <tr><td colSpan={4} className="no-data" style={{ padding: 20 }}>No data — set subscriber count first</td></tr>
-                ) : rows.map(r => (
-                  <tr key={r.name}>
-                    <td style={{ fontWeight: 500 }}>{r.name}</td>
-                    <td>{r.stock}</td>
-                    <td style={{ color: 'var(--bone-muted)' }}>{r.monthlyBurn || '—'}</td>
-                    <td style={{ color: runwayColor(r.runwayWeeks), fontWeight: 600 }}>
-                      {r.runwayWeeks !== null ? `${r.runwayWeeks}w` : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="section-title">Subscribers by Kit</div>
+      <div className="stat-cards">
+        {['ground', 'ritual', 'sovereign'].map((kit) => (
+          <div className="stat-card" key={kit}>
+            <div className="stat-value">{subscribers[kit]}</div>
+            <div className="stat-label">{kit}</div>
           </div>
         ))}
       </div>
 
-      {/* Recent Orders */}
-      <div className="section-title">Recent Orders</div>
-      <div className="card" style={{ padding: 0 }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Kit</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Dispatch</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentOrders.length === 0 ? (
-              <tr><td colSpan={6} className="no-data">No orders yet.</td></tr>
-            ) : recentOrders.map(o => (
-              <tr key={o.id}>
-                <td style={{ fontSize: 13, color: 'var(--bone-muted)', whiteSpace: 'nowrap' }}>{fmt(o.created_at)}</td>
-                <td>
-                  <div style={{ fontWeight: 500 }}>
-                    {[o.customers?.first_name, o.customers?.last_name].filter(Boolean).join(' ') || '—'}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{o.customers?.email}</div>
-                </td>
-                <td style={{ textTransform: 'uppercase', fontSize: 13, letterSpacing: '0.05em' }}>{o.kit_id}</td>
-                <td>
-                  <span className={`type-badge ${o.order_type === 'first_box' ? 'inbound' : 'outbound_order'}`}>
-                    {o.order_type === 'first_box' ? 'First Box' : 'Refill'}
-                  </span>
-                </td>
-                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{pence(o.amount_pence)}</td>
-                <td>
-                  <span className={`risk-badge ${o.dispatch_status === 'pending' ? 'low' : 'ok'}`}>
-                    {o.dispatch_status}
-                  </span>
-                </td>
+      <div className="section-title">Stock Health</div>
+      <div className="card" style={{ padding: 0, marginBottom: 32 }}>
+        <div className="table-wrapper">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Stock</th>
+                <th>Monthly Burn</th>
+                <th>Runway</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="no-data">No products found.</td>
+                </tr>
+              ) : products.map((product) => (
+                <tr key={product.id}>
+                  <td style={{ fontWeight: 500 }}>{product.name}</td>
+                  <td>{product.current_stock.toLocaleString()}</td>
+                  <td>
+                    {product.monthly_burn === 0
+                      ? '—'
+                      : product.monthly_burn.toLocaleString()}
+                  </td>
+                  <td>
+                    {product.weeks_runway === null
+                      ? '—'
+                      : `${product.weeks_runway} wks`}
+                  </td>
+                  <td><Risk level={product.risk_level} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="section-title">Recent Orders</div>
+      <div className="card" style={{ padding: 0, marginBottom: 32 }}>
+        <div className="table-wrapper">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Kit</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Dispatch</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="no-data">No orders yet.</td>
+                </tr>
+              ) : recentOrders.map((order) => {
+                const customer = order.customers
+                const name = [
+                  customer?.first_name,
+                  customer?.last_name,
+                ].filter(Boolean).join(' ')
+                return (
+                  <tr key={order.id}>
+                    <td>{formatDate(order.created_at)}</td>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{name || '—'}</div>
+                      <div style={{ color: 'var(--bone-muted)', fontSize: 12 }}>
+                        {customer?.email || '—'}
+                      </div>
+                    </td>
+                    <td style={{ textTransform: 'uppercase' }}>
+                      {order.kit_id || '—'}
+                    </td>
+                    <td>{order.order_type?.replace(/_/g, ' ') || '—'}</td>
+                    <td>{formatMoney(order.amount_pence)}</td>
+                    <td>{order.dispatch_status || '—'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="section-title">Recent Inventory Events</div>
+      <div className="card" style={{ padding: 0 }}>
+        <div className="table-wrapper">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="no-data">No inventory events.</td>
+                </tr>
+              ) : recentEvents.map((event) => (
+                <tr key={event.id}>
+                  <td>{formatDate(event.created_at)}</td>
+                  <td>{event.product_name}</td>
+                  <td>{event.transaction_type?.replace(/_/g, ' ')}</td>
+                  <td>{event.quantity}</td>
+                  <td>{event.reference_id || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

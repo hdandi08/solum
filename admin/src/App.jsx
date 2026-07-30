@@ -1,45 +1,140 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { EnvProvider, useEnv } from './context/EnvContext'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom'
 import Layout from './components/Layout'
+import MfaGate from './components/MfaGate'
+import { resolveAdminAuthStep } from './lib/authState'
+import { supabase } from './lib/supabase'
 import DashboardPage from './pages/DashboardPage'
-import OrdersPage from './pages/OrdersPage'
-import StockPage from './pages/StockPage'
-import PaymentsPage from './pages/PaymentsPage'
-import BookkeepingPage from './pages/BookkeepingPage'
-import SubscribersPage from './pages/SubscribersPage'
-import CustomersPage from './pages/CustomersPage'
-import CreatorsPage from './pages/CreatorsPage'
+import EventsPage from './pages/EventsPage'
 import LoginPage from './pages/LoginPage'
+import OrdersPage from './pages/OrdersPage'
+import './index.css'
 import './admin.css'
 
-const ADMIN_EMAILS = ['harsha@pricedab.com', 'harsha@bysolum.com', 'hdandibrwz@gmail.com']
+function LoadingPage() {
+  return (
+    <div className="login-page">
+      <div className="loading-state">
+        <div className="loading-spinner" />
+        Verifying secure access...
+      </div>
+    </div>
+  )
+}
 
-function AppInner() {
-  const { env, config } = useEnv()
+export default function App() {
   const [session, setSession] = useState(undefined)
+  const [aal, setAal] = useState(undefined)
+  const [factors, setFactors] = useState(undefined)
+  const [authError, setAuthError] = useState('')
+  const refreshSequence = useRef(0)
+
+  const refreshAuth = useCallback(async (knownSession) => {
+    const sequence = ++refreshSequence.current
+    setAuthError('')
+
+    let resolvedSession = knownSession
+    if (knownSession === undefined) {
+      const sessionResult = await supabase.auth.getSession()
+      if (sequence !== refreshSequence.current) return
+      if (sessionResult.error) {
+        setAuthError('The administrator session could not be loaded.')
+        return
+      }
+      resolvedSession = sessionResult.data.session
+    }
+
+    setSession(resolvedSession)
+    if (!resolvedSession) {
+      setAal(null)
+      setFactors([])
+      return
+    }
+    if (resolvedSession.user?.app_metadata?.role !== 'admin') {
+      setAal(null)
+      setFactors([])
+      return
+    }
+
+    setAal(undefined)
+    setFactors(undefined)
+    const [factorResult, assuranceResult] = await Promise.all([
+      supabase.auth.mfa.listFactors(),
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    ])
+    if (sequence !== refreshSequence.current) return
+    if (
+      factorResult.error
+      || assuranceResult.error
+      || !factorResult.data
+      || !assuranceResult.data
+    ) {
+      setAuthError('MFA status could not be verified.')
+      return
+    }
+
+    setFactors(factorResult.data.all)
+    setAal(assuranceResult.data.currentLevel)
+  }, [])
 
   useEffect(() => {
-    setSession(undefined)
-    config.authClient.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = config.authClient.auth.onAuthStateChange((event, session) => {
-      if (event !== 'INITIAL_SESSION') setSession(session)
-    })
+    refreshAuth()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, nextSession) => {
+        queueMicrotask(() => refreshAuth(nextSession))
+      },
+    )
     return () => subscription.unsubscribe()
-  }, [env, config.authClient])
+  }, [refreshAuth])
 
-  if (session === undefined) return null
+  const step = resolveAdminAuthStep({ session, aal, factors })
 
-  const isAdmin = session && ADMIN_EMAILS.includes(session.user?.email)
-
-  if (!isAdmin) {
+  if (authError) {
+    return (
+      <div className="access-denied">
+        <h1>Access check failed</h1>
+        <p>{authError}</p>
+        <button className="btn btn-secondary" onClick={() => refreshAuth()}>
+          Retry
+        </button>
+      </div>
+    )
+  }
+  if (step === 'loading') return <LoadingPage />
+  if (step === 'signed_out') {
     return (
       <BrowserRouter>
+        <Navigate to="/login" replace />
         <Routes>
-          <Route path="*" element={<LoginPage unauthorisedEmail={session?.user?.email} />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
     )
+  }
+  if (step === 'forbidden') {
+    return (
+      <div className="access-denied">
+        <h1>Administrator role required</h1>
+        <p>
+          {session.user.email || 'This account'} does not have the protected
+          administrator role.
+        </p>
+        <button
+          className="btn btn-secondary"
+          onClick={() => supabase.auth.signOut()}
+        >
+          Sign Out
+        </button>
+      </div>
+    )
+  }
+  if (step === 'enrol_mfa' || step === 'challenge_mfa') {
+    return <MfaGate mode={step} onVerified={refreshAuth} />
   }
 
   return (
@@ -48,23 +143,10 @@ function AppInner() {
         <Route path="/" element={<Layout session={session} />}>
           <Route index element={<DashboardPage />} />
           <Route path="orders" element={<OrdersPage />} />
-          <Route path="payments" element={<PaymentsPage />} />
-          <Route path="stock" element={<StockPage />} />
-          <Route path="bookkeeping" element={<BookkeepingPage />} />
-          <Route path="subscribers" element={<SubscribersPage />} />
-          <Route path="customers" element={<CustomersPage />} />
-          <Route path="creators" element={<CreatorsPage />} />
+          <Route path="events" element={<EventsPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  )
-}
-
-export default function App() {
-  return (
-    <EnvProvider>
-      <AppInner />
-    </EnvProvider>
   )
 }
