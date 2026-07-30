@@ -39,7 +39,8 @@ body,
 body {
   background: var(--black);
   color: var(--bone);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 300;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -191,7 +192,7 @@ textarea {
   padding: 10px 16px;
   border: none;
   border-bottom: 1px solid var(--border);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -202,6 +203,14 @@ textarea {
 
 .env-pill:hover {
   background: var(--surface-hover);
+}
+
+.env-pill-static {
+  cursor: default;
+}
+
+.env-pill-static:hover {
+  background: transparent;
 }
 
 .layout-env-prod .env-pill {
@@ -538,7 +547,7 @@ textarea {
 /* ─── Buttons ─── */
 .btn {
   padding: 8px 18px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.05em;
@@ -890,7 +899,7 @@ textarea {
   flex: 1;
   padding: 8px 12px;
   border-radius: 4px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -943,6 +952,89 @@ textarea {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--bone-dim);
+  text-align: center;
+}
+
+.login-environment {
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 8px 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.login-environment-production {
+  background: var(--env-prod-bg);
+  border-color: var(--env-prod-border);
+  color: var(--env-prod-color);
+}
+
+.login-environment-development {
+  background: var(--env-dev-bg);
+  border-color: var(--env-dev-border);
+  color: var(--env-dev-color);
+}
+
+.login-restricted {
+  color: var(--bone-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.mfa-box {
+  max-width: 430px;
+}
+
+.mfa-copy {
+  color: var(--bone-dim);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.mfa-enrollment {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mfa-qr {
+  background: var(--bone);
+  border-radius: 4px;
+  height: 210px;
+  padding: 10px;
+  width: 210px;
+}
+
+.mfa-secret-label {
+  color: var(--bone-muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mfa-secret {
+  color: var(--sky-blue);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.mfa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mfa-code {
+  font-family: monospace;
+  font-size: 22px;
+  letter-spacing: 0.35em;
   text-align: center;
 }
 

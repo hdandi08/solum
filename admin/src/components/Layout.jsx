@@ -1,50 +1,29 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { useState } from 'react'
-import { useEnv } from '../context/EnvContext'
+import { adminEnvironment, supabase } from '../lib/supabase'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/orders', label: 'Orders' },
-  { to: '/payments', label: 'Payments' },
-  { to: '/customers', label: 'Customers' },
-  { to: '/creators', label: 'Creators' },
-  { to: '/subscribers', label: 'Subscribers' },
-  { to: '/stock', label: 'Stock' },
-  { to: '/bookkeeping', label: 'Bookkeeping' },
+  { to: '/events', label: 'Events' },
 ]
 
 export default function Layout({ session }) {
-  const email = session?.user?.email
-  const { env, config, switchEnv } = useEnv()
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [confirmInput, setConfirmInput] = useState('')
-
-  const handleSignOut = async () => {
-    await config.authClient.auth.signOut()
-  }
-
-  const isProd = env === 'prod'
-  const targetEnv = isProd ? 'dev' : 'prod'
-  const needsTypedConfirm = !isProd
-
-  const openConfirm = () => { setConfirmInput(''); setConfirmOpen(true) }
-  const closeConfirm = () => { setConfirmInput(''); setConfirmOpen(false) }
-  const doSwitch = () => { switchEnv(targetEnv); closeConfirm() }
-  const canConfirm = needsTypedConfirm ? confirmInput.trim().toLowerCase() === 'prod' : true
+  const production = adminEnvironment.isProduction
+  const environmentClass = production ? 'prod' : 'dev'
+  const environmentLabel = production ? 'PRODUCTION' : 'DEVELOPMENT'
 
   return (
-    <div className={`layout layout-env-${env}`}>
+    <div className={`layout layout-env-${environmentClass}`}>
       <aside className="sidebar">
         <div className="sidebar-top">
           <span className="sidebar-wordmark">SOLUM</span>
           <span className="sidebar-ops-label">OPS</span>
         </div>
 
-        <button className="env-pill" onClick={openConfirm}>
+        <div className="env-pill env-pill-static">
           <span className="env-dot" />
-          <span className="env-label">{isProd ? 'PROD' : 'DEV'}</span>
-          <span className="env-switch-hint">switch</span>
-        </button>
+          <span className="env-label">{environmentLabel}</span>
+        </div>
 
         <nav className="sidebar-nav">
           {NAV_ITEMS.map(({ to, label, end }) => (
@@ -52,7 +31,8 @@ export default function Layout({ session }) {
               key={to}
               to={to}
               end={end}
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              className={({ isActive }) =>
+                `nav-link${isActive ? ' active' : ''}`}
             >
               {label}
             </NavLink>
@@ -60,8 +40,11 @@ export default function Layout({ session }) {
         </nav>
 
         <div className="sidebar-footer">
-          <span className="sidebar-email">{email}</span>
-          <button className="btn btn-secondary btn-sm" onClick={handleSignOut}>
+          <span className="sidebar-email">{session.user.email}</span>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => supabase.auth.signOut()}
+          >
             Sign Out
           </button>
         </div>
@@ -70,62 +53,15 @@ export default function Layout({ session }) {
       <div className="main-column">
         <div className="env-banner">
           <span className="env-banner-dot" />
-          {isProd
+          {production
             ? 'PRODUCTION — changes affect live customer data'
             : 'DEVELOPMENT — test data only · not visible to customers'}
-          <button className="env-banner-switch" onClick={openConfirm}>
-            switch to {targetEnv}
-          </button>
         </div>
 
         <main className="main-content">
           <Outlet />
         </main>
       </div>
-
-      {confirmOpen && (
-        <div className="modal-backdrop" onClick={closeConfirm}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-title">
-              Switch to {targetEnv === 'prod' ? 'Production' : 'Development'}?
-            </div>
-
-            {needsTypedConfirm ? (
-              <>
-                <p className="modal-body">
-                  You are switching to <strong style={{ color: 'var(--env-prod-color)' }}>PRODUCTION</strong> — all changes affect real, live customer data.
-                  <br /><br />
-                  Type <strong>prod</strong> to confirm.
-                </p>
-                <input
-                  className="input"
-                  placeholder="Type prod to confirm"
-                  value={confirmInput}
-                  onChange={e => setConfirmInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && canConfirm && doSwitch()}
-                  autoFocus
-                  style={{ marginBottom: '20px' }}
-                />
-              </>
-            ) : (
-              <p className="modal-body">
-                You will switch back to <strong style={{ color: 'var(--env-dev-color)' }}>DEV</strong>. Changes will only affect test data.
-              </p>
-            )}
-
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={closeConfirm}>Cancel</button>
-              <button
-                className={`btn ${needsTypedConfirm ? 'btn-danger' : 'btn-warning'}`}
-                onClick={doSwitch}
-                disabled={!canConfirm}
-              >
-                Switch to {targetEnv.toUpperCase()}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

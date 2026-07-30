@@ -38,10 +38,11 @@ FUNCTIONS = \
 	update-customer
 
 ADMIN_FUNCTIONS = \
-	admin-adjust-stock \
-	admin-confirm-delivery \
 	admin-dashboard \
-	admin-supplier-order
+	admin-events \
+	admin-orders \
+	cancel-order \
+	create-sendcloud-parcel
 
 functions-deploy-prod:
 	@echo "→ Deploying functions to PROD ($(PROD_PROJECT_REF))"
