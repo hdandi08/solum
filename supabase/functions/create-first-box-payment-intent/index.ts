@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
 
     const effectiveSource = normalizeOrderSource(source);
     const effectiveAwinChannel = normalizeAwinChannel(awin_channel);
+    const effectiveAwc = typeof awc === 'string' ? awc.trim() : '';
     const amount = KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
@@ -97,7 +98,7 @@ Deno.serve(async (req) => {
         site_host:    site_host ?? '',
         ttclid:       ttclid ?? '',
         ttp:          ttp ?? '',
-        ...(typeof awc === 'string' && awc.trim() !== '' ? { awc } : {}),
+        ...(effectiveAwc && effectiveAwc.length <= 500 ? { awc: effectiveAwc } : {}),
         ...(effectiveAwinChannel ? { awin_channel: effectiveAwinChannel } : {}),
         dispatch_date: fmtDay(dispatch),
         arrival_date:  fmtDay(arrival),

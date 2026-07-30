@@ -286,6 +286,29 @@ async function logEvent(
   await supabase.from('events').insert({ stripe_event_id, event_type, customer_id, data });
 }
 
+async function claimStripeEvent(
+  supabase: ReturnType<typeof createClient>,
+  event: Stripe.Event,
+) {
+  const { error } = await supabase.from('events').insert({
+    stripe_event_id: event.id,
+    event_type: event.type,
+    customer_id: null,
+    data: { payment_intent_id: event.data.object.id },
+  });
+  if (!error) return true;
+  if (error.code === '23505') return false;
+  throw new Error(`stripe_event_claim_failed: ${error.message}`);
+}
+
+async function releaseStripeEventClaim(
+  supabase: ReturnType<typeof createClient>,
+  stripeEventId: string,
+) {
+  const { error } = await supabase.from('events').delete().eq('stripe_event_id', stripeEventId);
+  if (error) console.error('stripe_event_claim_release_failed', error.message, stripeEventId);
+}
+
 async function sha256hex(value: string): Promise<string> {
   const data = new TextEncoder().encode(value.trim().toLowerCase());
   const buf = await crypto.subtle.digest('SHA-256', data);
@@ -402,11 +425,15 @@ async function sendMetaPurchaseEvent(opts: {
 async function sendAwinPurchaseEvent(opts: AwinS2sInput) {
   const url = buildAwinS2sUrl(opts);
   if (!url) return;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
     console.log('awin_s2s', res.status, opts.orderRef);
   } catch (err) {
-    console.error('awin_s2s_throw', err.message);
+    console.error('awin_s2s_throw', err instanceof Error ? err.message : String(err), opts.orderRef);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -470,21 +497,10 @@ async function handleOneTimeOrderFromPI(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', pi.id);
 
-  // Send confirmation email + admin notification + TikTok server-side event
-  if (email && order) {
-    const orderRef = pi.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
-    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
-    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
-    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
-    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
-    await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
-  }
-
-  // Store shipping address from pi.shipping
+  // Store shipping address from pi.shipping before non-critical delivery events.
   const sh = pi.shipping;
   if (sh?.address && customer) {
-    await supabase.from('addresses').upsert({
+    const { error: addressErr } = await supabase.from('addresses').upsert({
       customer_id: customer.id,
       stripe_session_id: pi.id,
       name: sh.name ?? '',
@@ -497,6 +513,20 @@ async function handleOneTimeOrderFromPI(
       is_current: true,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'stripe_session_id' });
+    if (addressErr) throw new Error(`one_time_pi_address_upsert_failed: ${addressErr.message}`);
+  }
+
+  // Awin attribution is independent of optional email and analytics events.
+  await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
+
+  // Send confirmation email + admin notification + TikTok server-side event
+  if (email && order) {
+    const orderRef = pi.id.slice(-8).toUpperCase();
+    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
+    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
+    await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
+    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+    await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
   }
 }
 
@@ -807,7 +837,14 @@ Deno.serve(async (req) => {
         // One-time order (first_batch / gift / tiktok_shop) — no subscription
         const oneTimeSources = ['first_batch', 'gift', 'tiktok_shop'];
         if (pi.metadata?.source && oneTimeSources.includes(pi.metadata.source)) {
-          await handleOneTimeOrderFromPI(pi, supabase);
+          const claimed = await claimStripeEvent(supabase, event);
+          if (!claimed) break;
+          try {
+            await handleOneTimeOrderFromPI(pi, supabase);
+          } catch (err) {
+            await releaseStripeEventClaim(supabase, event.id);
+            throw err;
+          }
           break;
         }
 
