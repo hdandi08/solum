@@ -378,6 +378,28 @@ aws amplify list-jobs \
 
 Stop after a bounded result; do not poll continuously.
 
+### Development deployment record — 30 July 2026
+
+- Amplify app: `solum-admin`
+- App ID: `d1ohm9syp99eop`
+- Repository: none (manual deployment)
+- Default branch URL: `https://dev.d1ohm9syp99eop.amplifyapp.com`
+- Development deployment job: `1` — `SUCCEED`
+- Branch: `dev` — `DEVELOPMENT`, auto-build disabled, basic auth enabled
+- Basic-auth credential: stored in the local macOS Keychain under
+  `solum-admin-dev-basic-auth`
+- Artifact scan: passed for `development`
+- Default URL: `401` without basic auth and `200` with basic auth
+- Security headers: CSP, `Cache-Control: no-store`, HSTS, `nosniff`,
+  `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options` verified
+- Storefront association: `AVAILABLE`; apex and `www` still map to
+  `solum-web/master`
+- Custom domain: blocked before DNS change because
+  `sourceri-dev-console` lacks `route53:ListHostedZones`
+
+Production remains blocked until `admin-dev.bysolum.co.uk` is available and
+development acceptance is complete.
+
 ## 8. Promote the backend and frontend to production
 
 Only after development acceptance:
