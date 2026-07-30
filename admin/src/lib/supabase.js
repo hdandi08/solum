@@ -1,13 +1,17 @@
-// web/src/lib/supabase.js
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
+import { resolveAdminEnvironment } from './environment'
+
+export const adminEnvironment = resolveAdminEnvironment(import.meta.env)
 
 export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  adminEnvironment.supabaseUrl,
+  adminEnvironment.anonKey,
   {
     auth: {
-      flowType: 'implicit',
+      flowType: 'pkce',
       detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true,
     },
-  },
-);
+  }
+)
