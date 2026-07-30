@@ -1,5 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { assertSafeE2ETarget } from '../../../scripts/e2e-safety.mjs';
+import {
+  assertSafeE2ETarget,
+  isCIEnvironment,
+} from '../../../scripts/e2e-safety.mjs';
 import { loadE2EEnvironment } from './load-e2e-environment';
 
 const TEST_EMAIL_PATTERN = 'e2e+%@%';
@@ -7,7 +10,7 @@ const TEST_EMAIL_PATTERN = 'e2e+%@%';
 export function createSafeE2EAdminClient() {
   loadE2EEnvironment();
 
-  const isCI = !!process.env.CI;
+  const isCI = isCIEnvironment();
   const baseURL = process.env.DEV_BASE_URL ?? 'http://localhost:5173';
   const supabaseURL =
     process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
