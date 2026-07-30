@@ -83,6 +83,21 @@ supabase functions deploy create-sendcloud-parcel \
   --project-ref rodvvmfzkyjsqbufkjbc
 ```
 
+Retire the three unreferenced legacy mutation functions from development:
+
+```bash
+supabase functions delete admin-adjust-stock \
+  --project-ref rodvvmfzkyjsqbufkjbc
+supabase functions delete admin-confirm-delivery \
+  --project-ref rodvvmfzkyjsqbufkjbc
+supabase functions delete admin-supplier-order \
+  --project-ref rodvvmfzkyjsqbufkjbc
+```
+
+Confirm with `supabase functions list --project-ref rodvvmfzkyjsqbufkjbc`
+that the five canonical functions are active and the three retired functions
+are absent.
+
 Confirm that server-only secrets remain in Supabase Edge Function secrets.
 Do not copy them to AWS.
 
@@ -266,6 +281,23 @@ supabase functions deploy cancel-order \
 supabase functions deploy create-sendcloud-parcel \
   --project-ref gvfptmjluxpngfjendbi
 ```
+
+Retire the same unreferenced legacy mutation/test functions from production:
+
+```bash
+supabase functions delete admin-adjust-stock \
+  --project-ref gvfptmjluxpngfjendbi
+supabase functions delete admin-confirm-delivery \
+  --project-ref gvfptmjluxpngfjendbi
+supabase functions delete admin-supplier-order \
+  --project-ref gvfptmjluxpngfjendbi
+supabase functions delete set-test-stock \
+  --project-ref gvfptmjluxpngfjendbi
+```
+
+Confirm with `supabase functions list --project-ref gvfptmjluxpngfjendbi`
+that the five canonical functions are active and the four retired functions
+are absent.
 
 In production Supabase Auth:
 
