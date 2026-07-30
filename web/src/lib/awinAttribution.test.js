@@ -48,6 +48,15 @@ describe('resolveAwinAttribution', () => {
     })).toEqual({ awc: '129171_click', channel: 'aw', expiresAt });
   });
 
+  it('does not recreate expired attribution from an Awin cookie on a plain revisit', () => {
+    expect(resolveAwinAttribution({
+      href: 'https://bysolum.co.uk/',
+      existing: { awc: 'expired', channel: 'aw', expiresAt: now - 1 },
+      cookieAwc: 'expired',
+      now,
+    })).toEqual({});
+  });
+
   it('drops expired state and never reads the legacy awc local-storage key', () => {
     expect(resolveAwinAttribution({
       href: 'https://bysolum.co.uk/',
@@ -64,5 +73,33 @@ describe('toAwinPaymentIntentMetadata', () => {
       .toEqual({ awc: '129171_click', awin_channel: 'display' });
     expect(toAwinPaymentIntentMetadata({ awc: '129171_click' }))
       .toEqual({ awc: '129171_click' });
+  });
+
+  it('trims AWC and omits blank or oversized values from metadata', () => {
+    expect(toAwinPaymentIntentMetadata({ awc: '  129171_click  ', channel: 'aw' }))
+      .toEqual({ awc: '129171_click', awin_channel: 'aw' });
+    expect(toAwinPaymentIntentMetadata({ awc: '   ', channel: 'aw' }))
+      .toEqual({ awin_channel: 'aw' });
+    expect(toAwinPaymentIntentMetadata({ awc: 'a'.repeat(500), channel: 'aw' }))
+      .toEqual({ awc: 'a'.repeat(500), awin_channel: 'aw' });
+    expect(toAwinPaymentIntentMetadata({ awc: 'a'.repeat(501), channel: 'aw' }))
+      .toEqual({ awin_channel: 'aw' });
+  });
+
+  it('prevents oversized URL or stored AWC values from reaching metadata', () => {
+    const now = Date.UTC(2026, 6, 30, 12, 0, 0);
+    const oversizedAwc = 'a'.repeat(501);
+    const fromUrl = resolveAwinAttribution({
+      href: `https://bysolum.co.uk/?source=aw&awc=${oversizedAwc}`,
+      now,
+    });
+    const fromStorage = resolveAwinAttribution({
+      href: 'https://bysolum.co.uk/',
+      existing: { awc: oversizedAwc, channel: 'aw', expiresAt: now + ATTRIBUTION_TTL_MS },
+      now,
+    });
+
+    expect(toAwinPaymentIntentMetadata(fromUrl)).toEqual({ awin_channel: 'aw' });
+    expect(toAwinPaymentIntentMetadata(fromStorage)).toEqual({ awin_channel: 'aw' });
   });
 });

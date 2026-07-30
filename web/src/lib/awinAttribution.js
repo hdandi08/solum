@@ -1,6 +1,7 @@
 export const ATTRIBUTION_STORAGE_KEY = 'solum_awin_attribution';
 export const ATTRIBUTION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
+const MAX_AWC_LENGTH = 500;
 const VALID_ORDER_SOURCES = new Set(['first_batch', 'gift', 'tiktok_shop']);
 const VALID_CHANNELS = new Set(['aw', 'display', 'ppc', 'email']);
 const SEARCH_SIGNALS = new Set(['google', 'bing', 'cpc', 'ppc', 'paid_search']);
@@ -11,6 +12,12 @@ const PAID_SOCIAL_SIGNALS = new Set([
 export function normalizeCheckoutSource(rawSource) {
   if (rawSource === 'tiktok') return 'tiktok_shop';
   return VALID_ORDER_SOURCES.has(rawSource) ? rawSource : 'first_batch';
+}
+
+function normalizeAwc(value) {
+  if (typeof value !== 'string') return undefined;
+  const awc = value.trim();
+  return awc && awc.length <= MAX_AWC_LENGTH ? awc : undefined;
 }
 
 function validExistingAttribution(existing, now) {
@@ -24,7 +31,8 @@ function validExistingAttribution(existing, now) {
   }
 
   const result = { channel: existing.channel, expiresAt: existing.expiresAt };
-  if (typeof existing.awc === 'string' && existing.awc) result.awc = existing.awc;
+  const awc = normalizeAwc(existing.awc);
+  if (awc) result.awc = awc;
   return result;
 }
 
@@ -50,8 +58,9 @@ export function resolveAwinAttribution({ href, existing, cookieAwc, now = Date.n
   }
 
   const retained = validExistingAttribution(existing, now);
-  const urlAwc = url.searchParams.get('awc');
-  const awc = urlAwc || retained?.awc || (!retained ? cookieAwc : undefined);
+  const urlAwc = normalizeAwc(url.searchParams.get('awc'));
+  const sourceIsAwin = url.searchParams.get('source') === 'aw';
+  const awc = urlAwc || (sourceIsAwin ? normalizeAwc(cookieAwc) : undefined) || retained?.awc;
   const channel = paidChannel(url);
 
   if (channel) {
@@ -62,7 +71,7 @@ export function resolveAwinAttribution({ href, existing, cookieAwc, now = Date.n
     };
   }
 
-  if (urlAwc || url.searchParams.get('source') === 'aw' || (!retained && cookieAwc)) {
+  if (urlAwc || sourceIsAwin) {
     return {
       ...(awc ? { awc } : {}),
       channel: 'aw',
@@ -86,7 +95,7 @@ function readAwcCookie(cookie) {
   return cookie.split(';').map((part) => part.trim()).reduce((awc, part) => {
     if (awc || !part.startsWith('awc=')) return awc;
     try {
-      return decodeURIComponent(part.slice(4));
+      return normalizeAwc(decodeURIComponent(part.slice(4)));
     } catch {
       return undefined;
     }
@@ -124,8 +133,9 @@ export function captureAwinAttribution() {
 }
 
 export function toAwinPaymentIntentMetadata(attribution = {}) {
+  const awc = normalizeAwc(attribution.awc);
   return {
-    ...(typeof attribution.awc === 'string' && attribution.awc ? { awc: attribution.awc } : {}),
+    ...(awc ? { awc } : {}),
     ...(VALID_CHANNELS.has(attribution.channel) ? { awin_channel: attribution.channel } : {}),
   };
 }
