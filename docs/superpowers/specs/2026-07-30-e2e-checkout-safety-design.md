@@ -128,6 +128,13 @@ Browser analytics must be disabled when `navigator.webdriver === true`. The disa
 - Meta browser pixel and CAPI relay helpers
 - TikTok browser helpers
 - Google Ads conversion helpers
+- The early-hit beacon and delayed advertising scripts in `web/index.html`
+- The Awin MasterTag
+
+The Awin MasterTag is currently an unconditional script tag. It will be replaced
+with a small loader that runs only for the exact SOLUM production hostname and
+only when `navigator.webdriver !== true`. Development and automated browsers
+must not request the MasterTag.
 
 Normal browsers retain current behavior.
 
@@ -192,6 +199,7 @@ The test keeps its extended timeout because Stripe webhook delivery is asynchron
 - A local `pk_live_` key is rejected.
 - The external-side-effect helper returns false for test mode and true for live mode.
 - Automated browser analytics detection returns disabled for WebDriver and enabled for a normal browser.
+- Development and WebDriver page loads do not request PostHog, Meta, TikTok, Google Ads or Awin scripts.
 
 ### Integration verification
 
