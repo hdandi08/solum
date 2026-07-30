@@ -2,6 +2,7 @@ import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
 import { buildAwinS2sUrl, type AwinS2sInput } from '../_shared/awin.ts';
+import { shouldSendExternalPurchaseSideEffects } from '../_shared/purchaseSafety.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -653,7 +654,7 @@ async function handleOneTimeOrderFromPI(
   }
 
   // New-order side effects must not repeat when finalisation resumes.
-  if (isNewOrder && email) {
+  if (isNewOrder && email && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
@@ -664,7 +665,7 @@ async function handleOneTimeOrderFromPI(
 
   // This is the final handler action: mark the one permitted Awin attempt
   // before the bounded, caught fetch, so a stale-claim recovery never resends it.
-  if (claim.data.awin_attempted !== true) {
+  if (claim.data.awin_attempted !== true && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
     await markPaymentIntentAwinAttempted(supabase, claim);
     await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
   }
@@ -733,7 +734,7 @@ async function handleOneTimeOrder(
     .eq('stripe_session_id', session.id);
 
   // Send confirmation email + admin notification + TikTok server-side event
-  if (email && order) {
+  if (email && order && shouldSendExternalPurchaseSideEffects(session.livemode)) {
     const orderRef = session.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
@@ -933,7 +934,7 @@ Deno.serve(async (req) => {
           .eq('stripe_session_id', session.id);
 
         // Send confirmation email + admin notification + TikTok server-side event — only on first processing
-        if (email && !existingOrder) {
+        if (email && !existingOrder && shouldSendExternalPurchaseSideEffects(session.livemode)) {
           const orderRef = session.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
@@ -1117,7 +1118,7 @@ Deno.serve(async (req) => {
           .eq('stripe_customer_id', stripe_customer_id);
 
         // Send confirmation email + admin notification + TikTok server-side event
-        if (!existingOrder) {
+        if (!existingOrder && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
           const orderRef = pi.id.slice(-8).toUpperCase();
           await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
           await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
