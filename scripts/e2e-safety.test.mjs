@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { assertSafeE2ETarget } from './e2e-safety.mjs';
+import * as e2eSafety from './e2e-safety.mjs';
+
+const { assertSafeE2ETarget } = e2eSafety;
 
 const dev = {
   target: 'dev',
@@ -23,6 +25,15 @@ test('accepts localhost only with a Stripe test key', () => {
     localServer: true,
     stripePublishableKey: 'pk_test_example',
   }).baseURL, 'http://localhost:5173');
+});
+
+test('treats an AWS CodeBuild runner as CI', () => {
+  assert.equal(
+    e2eSafety.isCIEnvironment?.({
+      CODEBUILD_BUILD_ID: 'solum-e2e:example',
+    }),
+    true,
+  );
 });
 
 const unsafeCases = [

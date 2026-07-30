@@ -1,9 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
-import { assertSafeE2ETarget } from '../scripts/e2e-safety.mjs';
+import {
+  assertSafeE2ETarget,
+  isCIEnvironment,
+} from '../scripts/e2e-safety.mjs';
 import { loadE2EEnvironment } from './e2e/support/load-e2e-environment';
 
 loadE2EEnvironment();
-const isCI    = !!process.env.CI;
+const isCI    = isCIEnvironment();
 const baseURL = process.env.DEV_BASE_URL ?? 'http://localhost:5173';
 const supabaseURL = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
 

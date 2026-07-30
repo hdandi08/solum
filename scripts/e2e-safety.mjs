@@ -6,6 +6,10 @@ const SAFE_BASE_URLS = new Set([
 
 const SAFE_SUPABASE_URL = 'https://rodvvmfzkyjsqbufkjbc.supabase.co';
 
+export function isCIEnvironment(env = process.env) {
+  return Boolean(env.CI || env.CODEBUILD_BUILD_ID);
+}
+
 function origin(name, value) {
   try {
     return new URL(value).origin;
