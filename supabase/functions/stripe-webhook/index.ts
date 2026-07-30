@@ -286,27 +286,136 @@ async function logEvent(
   await supabase.from('events').insert({ stripe_event_id, event_type, customer_id, data });
 }
 
-async function claimStripeEvent(
-  supabase: ReturnType<typeof createClient>,
-  event: Stripe.Event,
+const PAYMENT_INTENT_CLAIM_STALE_MS = 10 * 60 * 1000;
+
+type PaymentIntentClaim = {
+  key: string;
+  token: string;
+  data: Record<string, unknown>;
+};
+
+type PaymentIntentClaimResult =
+  | { state: 'claimed'; claim: PaymentIntentClaim }
+  | { state: 'completed' }
+  | { state: 'processing' };
+
+function paymentIntentClaimData(
+  paymentIntentId: string,
+  stripeEventId: string,
+  token: string,
+  awinAttempted = false,
 ) {
-  const { error } = await supabase.from('events').insert({
-    stripe_event_id: event.id,
-    event_type: event.type,
-    customer_id: null,
-    data: { payment_intent_id: event.data.object.id },
-  });
-  if (!error) return true;
-  if (error.code === '23505') return false;
-  throw new Error(`stripe_event_claim_failed: ${error.message}`);
+  return {
+    state: 'processing',
+    payment_intent_id: paymentIntentId,
+    stripe_event_id: stripeEventId,
+    claim_token: token,
+    claimed_at: new Date().toISOString(),
+    awin_attempted: awinAttempted,
+  };
 }
 
-async function releaseStripeEventClaim(
+function paymentIntentClaimIsStale(data: Record<string, unknown>) {
+  const claimedAt = typeof data.claimed_at === 'string' ? Date.parse(data.claimed_at) : NaN;
+  return Number.isFinite(claimedAt) && Date.now() - claimedAt >= PAYMENT_INTENT_CLAIM_STALE_MS;
+}
+
+async function claimPaymentIntent(
   supabase: ReturnType<typeof createClient>,
-  stripeEventId: string,
+  event: Stripe.Event,
+  pi: Stripe.PaymentIntent,
+): Promise<PaymentIntentClaimResult> {
+  const key = `payment_intent.succeeded:${pi.id}`;
+  const token = crypto.randomUUID();
+  const data = paymentIntentClaimData(pi.id, event.id, token);
+  const { error: insertError } = await supabase.from('events').insert({
+    stripe_event_id: key,
+    event_type: event.type,
+    customer_id: null,
+    data,
+  });
+  if (!insertError) return { state: 'claimed', claim: { key, token, data } };
+  if (insertError.code !== '23505') throw new Error(`payment_intent_claim_failed: ${insertError.message}`);
+
+  const { data: existingClaim, error: readError } = await supabase
+    .from('events')
+    .select('data')
+    .eq('stripe_event_id', key)
+    .maybeSingle();
+  if (readError || !existingClaim) throw new Error(`payment_intent_claim_read_failed: ${readError?.message ?? 'missing claim'}`);
+
+  const existingData = existingClaim.data as Record<string, unknown>;
+  if (existingData.state === 'completed') return { state: 'completed' };
+  if (existingData.state !== 'processing') throw new Error('payment_intent_claim_invalid_state');
+  if (!paymentIntentClaimIsStale(existingData)) return { state: 'processing' };
+
+  const previousClaimedAt = existingData.claimed_at;
+  if (typeof previousClaimedAt !== 'string') return { state: 'processing' };
+  const reclaimedData = paymentIntentClaimData(pi.id, event.id, token, existingData.awin_attempted === true);
+  const { data: reclaimed, error: reclaimError } = await supabase
+    .from('events')
+    .update({ data: reclaimedData })
+    .eq('stripe_event_id', key)
+    .eq('data->>state', 'processing')
+    .eq('data->>claimed_at', previousClaimedAt)
+    .select('id')
+    .maybeSingle();
+  if (reclaimError) throw new Error(`payment_intent_claim_reclaim_failed: ${reclaimError.message}`);
+  return reclaimed
+    ? { state: 'claimed', claim: { key, token, data: reclaimedData } }
+    : { state: 'processing' };
+}
+
+async function updatePaymentIntentClaim(
+  supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
+  data: Record<string, unknown>,
+  action: string,
 ) {
-  const { error } = await supabase.from('events').delete().eq('stripe_event_id', stripeEventId);
-  if (error) console.error('stripe_event_claim_release_failed', error.message, stripeEventId);
+  const { data: updated, error } = await supabase
+    .from('events')
+    .update({ data })
+    .eq('stripe_event_id', claim.key)
+    .eq('data->>state', 'processing')
+    .eq('data->>claim_token', claim.token)
+    .select('id')
+    .maybeSingle();
+  if (error || !updated) throw new Error(`payment_intent_claim_${action}_failed: ${error?.message ?? 'claim lost'}`);
+}
+
+async function markPaymentIntentAwinAttempted(
+  supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
+) {
+  const data = { ...claim.data, awin_attempted: true };
+  await updatePaymentIntentClaim(supabase, claim, data, 'awin_attempt');
+  claim.data = data;
+}
+
+async function completePaymentIntentClaim(
+  supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
+) {
+  await updatePaymentIntentClaim(supabase, claim, {
+    ...claim.data,
+    state: 'completed',
+    completed_at: new Date().toISOString(),
+  }, 'complete');
+}
+
+async function releasePaymentIntentClaim(
+  supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
+) {
+  const { data: released, error } = await supabase
+    .from('events')
+    .delete()
+    .eq('stripe_event_id', claim.key)
+    .eq('data->>state', 'processing')
+    .eq('data->>claim_token', claim.token)
+    .select('id')
+    .maybeSingle();
+  if (error || !released) throw new Error(`payment_intent_claim_release_failed: ${error?.message ?? 'claim lost'}`);
 }
 
 async function sha256hex(value: string): Promise<string> {
@@ -430,8 +539,8 @@ async function sendAwinPurchaseEvent(opts: AwinS2sInput) {
   try {
     const res = await fetch(url, { signal: controller.signal });
     console.log('awin_s2s', res.status, opts.orderRef);
-  } catch (err) {
-    console.error('awin_s2s_throw', err instanceof Error ? err.message : String(err), opts.orderRef);
+  } catch {
+    console.error('awin_s2s_network_or_timeout', opts.orderRef);
   } finally {
     clearTimeout(timeout);
   }
@@ -440,6 +549,7 @@ async function sendAwinPurchaseEvent(opts: AwinS2sInput) {
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
 ) {
   const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc, awin_channel } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
@@ -447,61 +557,63 @@ async function handleOneTimeOrderFromPI(
 
   if (!pi.id) throw new Error('one_time_order_from_pi_missing_id');
 
-  // Idempotency: skip if already processed
-  const { data: existingOrder } = await supabase
+  // Existing orders resume only the idempotent address/Awin finalisation below.
+  const { data: existingOrder, error: existingOrderError } = await supabase
     .from('orders')
-    .select('id')
+    .select('id, customer_id')
     .eq('stripe_payment_id', pi.id)
     .eq('order_type', 'first_box')
     .maybeSingle();
-  if (existingOrder) return;
+  if (existingOrderError) throw new Error(`one_time_pi_order_lookup_failed: ${existingOrderError.message}`);
 
-  // Upsert customer
-  const { data: customer, error: customerErr } = await supabase
-    .from('customers')
-    .upsert({
-      email,
-      first_name,
-      last_name: last_name || null,
-      stripe_customer_id,
+  let order = existingOrder;
+  let customerId = existingOrder?.customer_id;
+  const isNewOrder = !existingOrder;
+  if (!order) {
+    const { data: customer, error: customerErr } = await supabase
+      .from('customers')
+      .upsert({
+        email,
+        first_name,
+        last_name: last_name || null,
+        stripe_customer_id,
+        kit_id,
+      }, { onConflict: 'email' })
+      .select()
+      .single();
+    if (!customer) throw new Error(`one_time_pi_customer_upsert_failed: ${customerErr?.message}`);
+    customerId = customer.id;
+
+    const { data: newOrder, error: orderErr } = await supabase.from('orders').insert({
+      customer_id: customer.id,
+      subscription_id: null,
+      stripe_payment_id: pi.id,
       kit_id,
-    }, { onConflict: 'email' })
-    .select()
-    .single();
+      order_type: 'first_box',
+      box_number: null,
+      amount_pence: pi.amount,
+      status: 'paid',
+      source,
+    }).select('id, customer_id').single();
+    if (orderErr || !newOrder) throw new Error(`one_time_pi_order_insert_failed: ${orderErr?.message ?? 'missing order'}`);
+    order = newOrder;
 
-  if (!customer) throw new Error(`one_time_pi_customer_upsert_failed: ${customerErr?.message}`);
+    if (kit_id) {
+      await deductInventory(supabase, kit_id, 'first_box', order.id);
+      await deductKitInventory(supabase, order.id, kit_id);
+    }
 
-  // Insert order
-  const { data: order, error: orderErr } = await supabase.from('orders').insert({
-    customer_id: customer.id,
-    subscription_id: null,
-    stripe_payment_id: pi.id,
-    kit_id,
-    order_type: 'first_box',
-    box_number: null,
-    amount_pence: pi.amount,
-    status: 'paid',
-    source,
-  }).select('id').single();
-
-  if (orderErr) throw new Error(`one_time_pi_order_insert_failed: ${orderErr.message}`);
-
-  // Deduct inventory
-  if (kit_id && order?.id) {
-    await deductInventory(supabase, kit_id, 'first_box', order.id);
-    await deductKitInventory(supabase, order.id, kit_id);
+    await supabase.from('leads')
+      .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
+      .eq('stripe_session_id', pi.id);
   }
-
-  // Mark lead completed
-  await supabase.from('leads')
-    .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
-    .eq('stripe_session_id', pi.id);
+  if (!customerId) throw new Error('one_time_pi_order_missing_customer');
 
   // Store shipping address from pi.shipping before non-critical delivery events.
   const sh = pi.shipping;
-  if (sh?.address && customer) {
+  if (sh?.address) {
     const { error: addressErr } = await supabase.from('addresses').upsert({
-      customer_id: customer.id,
+      customer_id: customerId,
       stripe_session_id: pi.id,
       name: sh.name ?? '',
       line1: sh.address.line1 ?? '',
@@ -516,17 +628,21 @@ async function handleOneTimeOrderFromPI(
     if (addressErr) throw new Error(`one_time_pi_address_upsert_failed: ${addressErr.message}`);
   }
 
-  // Awin attribution is independent of optional email and analytics events.
-  await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
-
-  // Send confirmation email + admin notification + TikTok server-side event
-  if (email && order) {
+  // New-order side effects must not repeat when finalisation resumes.
+  if (isNewOrder && email) {
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
+  }
+
+  // This is the final handler action: mark the one permitted Awin attempt
+  // before the bounded, caught fetch, so a stale-claim recovery never resends it.
+  if (claim.data.awin_attempted !== true) {
+    await markPaymentIntentAwinAttempted(supabase, claim);
+    await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
   }
 }
 
@@ -837,14 +953,21 @@ Deno.serve(async (req) => {
         // One-time order (first_batch / gift / tiktok_shop) — no subscription
         const oneTimeSources = ['first_batch', 'gift', 'tiktok_shop'];
         if (pi.metadata?.source && oneTimeSources.includes(pi.metadata.source)) {
-          const claimed = await claimStripeEvent(supabase, event);
-          if (!claimed) break;
+          const claimResult = await claimPaymentIntent(supabase, event, pi);
+          if (claimResult.state === 'completed') break;
+          if (claimResult.state === 'processing') throw new Error('payment_intent_claim_processing');
+          const claim = claimResult.claim;
           try {
-            await handleOneTimeOrderFromPI(pi, supabase);
+            await handleOneTimeOrderFromPI(pi, supabase, claim);
           } catch (err) {
-            await releaseStripeEventClaim(supabase, event.id);
+            try {
+              await releasePaymentIntentClaim(supabase, claim);
+            } catch (releaseErr) {
+              throw new Error(`payment_intent_handler_failed: ${err instanceof Error ? err.message : String(err)}; ${releaseErr instanceof Error ? releaseErr.message : String(releaseErr)}`);
+            }
             throw err;
           }
+          await completePaymentIntentClaim(supabase, claim);
           break;
         }
 
