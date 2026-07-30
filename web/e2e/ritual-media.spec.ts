@@ -4,6 +4,21 @@ test.describe('Ritual carousel media', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test('defers media until the section is near the mobile viewport', async ({ page }) => {
+    const trackingRequests: string[] = [];
+    const trackingHosts = [
+      'posthog.com',
+      'facebook.net',
+      'googletagmanager.com',
+      'tiktok.com',
+      'dwin1.com',
+    ];
+    page.on('request', (request) => {
+      const hostname = new URL(request.url()).hostname;
+      if (trackingHosts.some((host) => hostname.endsWith(host))) {
+        trackingRequests.push(hostname);
+      }
+    });
+
     await page.goto('/');
 
     const ritual = page.locator('#ritual');
@@ -18,5 +33,6 @@ test.describe('Ritual carousel media', () => {
     await bodyWash.press('Enter');
     await expect(bodyWash).toHaveClass(/active/);
     await expect(bodyWash.locator('video')).toHaveAttribute('poster', '/products/01/poster.jpg');
+    expect(trackingRequests).toEqual([]);
   });
 });

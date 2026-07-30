@@ -6,7 +6,7 @@
          visitors who abandon before the app bundle boots (early_hit vs $pageview).
          Deliberately person-agnostic: random id, no cookies. Spec 2026-07-07. -->
     <script>
-      if(location.hostname.includes('bysolum')){
+      if(/^(www\.)?bysolum\.co\.uk$/.test(location.hostname) && navigator.webdriver !== true){
         try{
           var q=new URLSearchParams(location.search);
           var payload=JSON.stringify({
@@ -109,7 +109,7 @@
          heavy external scripts load after the window load event so they never
          compete with first paint (server-side CAPI covers Purchase anyway). -->
     <script>
-      if(location.hostname.includes('bysolum')){
+      if(/^(www\.)?bysolum\.co\.uk$/.test(location.hostname) && navigator.webdriver !== true){
         // Meta stub + queued init/PageView
         !function(f){
           if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -153,7 +153,14 @@
   <body style="background:#08090b">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <!-- Awin MasterTag — affiliate click capture + conversion processing (advertiser 129171) -->
-    <script src="https://www.dwin1.com/129171.js" type="text/javascript" defer="defer"></script>
+    <!-- Awin MasterTag — production visitors only; never development or WebDriver. -->
+    <script>
+      if(/^(www\.)?bysolum\.co\.uk$/.test(location.hostname) && navigator.webdriver !== true){
+        var awin=document.createElement('script');
+        awin.src='https://www.dwin1.com/129171.js';
+        awin.defer=true;
+        document.body.appendChild(awin);
+      }
+    </script>
   </body>
 </html>

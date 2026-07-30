@@ -1,12 +1,14 @@
 import posthog from 'posthog-js';
 import { detectInAppBrowser } from './inAppBrowser';
 import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
+import { isAutomatedBrowser } from './analyticsEnvironment.js';
 
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
 const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
+const ANALYTICS_DISABLED = isAutomatedBrowser();
 
 export function initAnalytics() {
-  if (!KEY) return;
+  if (!KEY || ANALYTICS_DISABLED) return;
 
   // Session continuity across an in-app-browser break-out: if we were reopened
   // in the system browser with a forwarded distinct_id, bootstrap PostHog with
@@ -71,19 +73,20 @@ export function initAnalytics() {
 }
 
 export function capture(event, props = {}) {
-  if (posthog.__loaded) {
+  if (!ANALYTICS_DISABLED && posthog.__loaded) {
     posthog.capture(event, props);
   }
 }
 
 // Call after a user signs in or is identified (checkout, account page)
 export function identify(userId, traits = {}) {
-  if (posthog.__loaded) {
+  if (!ANALYTICS_DISABLED && posthog.__loaded) {
     posthog.identify(userId, traits);
   }
 }
 
-const IS_PROD = /^(www\.)?bysolum\.(com|co\.uk)\.?$/.test(window.location.hostname);
+const IS_PROD = !ANALYTICS_DISABLED &&
+  /^(www\.)?bysolum\.(com|co\.uk)\.?$/.test(window.location.hostname);
 
 function fbq(...args) {
   if (IS_PROD && window.fbq) window.fbq(...args);
