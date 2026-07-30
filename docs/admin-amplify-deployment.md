@@ -14,17 +14,17 @@ marketing trackers.
 AWS account: `798470762256`
 AWS region: `eu-west-2`
 
-The initial GitHub App connection must be completed in the Amplify console.
-AWS documents this as the supported authorization path for a new GitHub-backed
-app:
-<https://docs.aws.amazon.com/amplify/latest/userguide/setting-up-GitHub-access.html>.
+`solum-admin` is a manually deployed static Amplify application. It is not
+connected to GitHub. This avoids the repository-root marketing build spec and
+keeps the existing storefront application unchanged:
+<https://docs.aws.amazon.com/amplify/latest/userguide/manual-deploys.html>.
 
 ## Non-negotiable controls
 
 - Never add a Supabase service-role key, Stripe secret, SendCloud secret, or
   other privileged credential to Amplify.
-- The only frontend variables are `VITE_ADMIN_ENV`, `VITE_SUPABASE_URL`, and
-  `VITE_SUPABASE_ANON_KEY`.
+- `VITE_ADMIN_ENV`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY` are
+  local build inputs only. They are not stored in Amplify.
 - The `dev` build must contain only the development project reference.
 - The `master` build must contain only the production project reference.
 - Deploy and accept development before production.
@@ -111,56 +111,126 @@ In Supabase Auth:
 The first successful administrator login enrolls a TOTP factor. Subsequent
 sessions must complete a TOTP challenge and reach `aal2`.
 
-## 3. Create the separate Amplify app
+## 3. Create the separate manual Amplify app
 
-In AWS Amplify, region `eu-west-2`:
+Confirm that no app with the same name exists, then create it once:
 
-1. Choose **Create new app → Host web app → GitHub**.
-2. Authorize/install the AWS Amplify GitHub App if prompted.
-3. Select repository `hdandi08/solum`.
-4. Select branch `dev`.
-5. Select **My app is a monorepo** and enter app root `admin`.
-6. Name the app `solum-admin`.
-7. Confirm Amplify sets `AMPLIFY_MONOREPO_APP_ROOT=admin`.
-8. Confirm the build settings match `admin/amplify.yml`.
-9. Enable branch password protection as defence in depth.
+```bash
+aws amplify list-apps \
+  --region eu-west-2 \
+  --query 'apps[?name==`solum-admin`].{id:appId,name:name,repo:repository}'
 
-Amplify's current monorepo guidance requires the app root and
-`AMPLIFY_MONOREPO_APP_ROOT` to match:
-<https://docs.aws.amazon.com/amplify/latest/userguide/monorepo-configuration.html>.
+aws amplify create-app \
+  --region eu-west-2 \
+  --name solum-admin \
+  --description "Isolated SOLUM administrator application" \
+  --platform WEB \
+  --no-enable-branch-auto-build \
+  --no-enable-auto-branch-creation
 
-This repository also contains the existing marketing app's root
-`amplify.yml`. Before saving the new app, inspect the generated build preview.
-It must run `npm ci`, tests, the Vite build, and the artifact verifier from
-`admin/`. If the preview or build log shows `npm --prefix web`, writes a
-`web/.env`, or publishes `web/dist`, stop the deployment. Do not modify or
-redeploy `solum-web` to work around an incorrect new-app build root.
-
-## 4. Configure branch variables
-
-Set these variables on the `dev` branch:
-
-```text
-VITE_ADMIN_ENV=development
-VITE_SUPABASE_URL=https://rodvvmfzkyjsqbufkjbc.supabase.co
-VITE_SUPABASE_ANON_KEY=<development anon key>
+admin_app_id=$(aws amplify list-apps \
+  --region eu-west-2 \
+  --query 'apps[?name==`solum-admin`].appId | [0]' \
+  --output text)
+test -n "$admin_app_id"
+test "$admin_app_id" != "None"
 ```
 
-Add the `master` branch only after development acceptance, then set:
+The app's repository field must be empty. Never copy the existing `solum-web`
+app ID.
 
-```text
-VITE_ADMIN_ENV=production
-VITE_SUPABASE_URL=https://gvfptmjluxpngfjendbi.supabase.co
-VITE_SUPABASE_ANON_KEY=<production anon key>
+Create a password-protected development branch. The generated password is
+saved to the macOS Keychain and is never printed:
+
+```bash
+admin_basic_user=solum-admin
+admin_basic_password=$(openssl rand -base64 24 | tr -d '\n')
+security add-generic-password \
+  -U \
+  -a "$USER" \
+  -s solum-admin-dev-basic-auth \
+  -w "$admin_basic_password"
+admin_basic_credentials=$(printf '%s:%s' \
+  "$admin_basic_user" "$admin_basic_password" | base64 | tr -d '\n')
+
+aws amplify create-branch \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name dev \
+  --stage DEVELOPMENT \
+  --no-enable-auto-build \
+  --enable-basic-auth \
+  --basic-auth-credentials "$admin_basic_credentials"
 ```
 
-Anon keys are public client identifiers, but keep environment values scoped to
-the correct branch. Never define any variable containing `SERVICE_ROLE`.
+## 4. Build and deploy a development artifact
+
+Load the existing local public client configuration without printing it, then
+build and scan exactly the development environment:
+
+```bash
+set -a
+source admin/.env
+set +a
+test "$VITE_SUPABASE_URL_DEV" = \
+  "https://rodvvmfzkyjsqbufkjbc.supabase.co"
+
+VITE_ADMIN_ENV=development \
+VITE_SUPABASE_URL="$VITE_SUPABASE_URL_DEV" \
+VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY_DEV" \
+npm --prefix admin run build
+npm --prefix admin run verify:artifact -- development
+```
+
+Create an archive whose root contains `index.html` and `assets/`:
+
+```bash
+admin_artifact_dir=$(mktemp -d)
+admin_artifact_zip="$admin_artifact_dir/solum-admin-development.zip"
+(
+  cd admin/dist
+  zip -qr "$admin_artifact_zip" .
+)
+unzip -l "$admin_artifact_zip" | sed -n '1,30p'
+```
+
+Create the manual deployment, upload only to its short-lived URL, and start the
+job:
+
+```bash
+deployment_json=$(aws amplify create-deployment \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name dev)
+deployment_job_id=$(printf '%s' "$deployment_json" | jq -er '.jobId')
+deployment_upload_url=$(printf '%s' "$deployment_json" | jq -er '.zipUploadUrl')
+
+curl --fail-with-body --silent --show-error \
+  --request PUT \
+  --upload-file "$admin_artifact_zip" \
+  "$deployment_upload_url"
+
+aws amplify start-deployment \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name dev \
+  --job-id "$deployment_job_id"
+
+aws amplify get-job \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name dev \
+  --job-id "$deployment_job_id" \
+  --query 'job.summary.{id:jobId,status:status,start:startTime,end:endTime}'
+```
+
+If the first result is not terminal, make at most two further bounded checks.
+Do not run a polling loop. No Vite variable or upload URL is saved in Amplify
+or committed.
 
 ## 5. Configure SPA rewriting
 
-In the new `solum-admin` app only, add this `200` rewrite after static asset
-rules:
+In the new `solum-admin` app only, set this one `200` rewrite:
 
 ```text
 Source:
@@ -176,11 +246,21 @@ Status:
 This lets `/orders`, `/events`, and `/login` load directly. Do not copy the
 marketing app's `.well-known` or tracking-related rules.
 
+```bash
+admin_custom_rules='[
+  {
+    "source":"</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>",
+    "target":"/index.html",
+    "status":"200"
+  }
+]'
+```
+
 ## 6. Configure admin-only security headers
 
-Set custom headers in the new Amplify app under
-**Hosting → Custom headers**. Do not add a repository-root `customHttp.yml`,
-because that file would also affect the existing marketing app.
+Set custom headers on the new Amplify app only. Do not add a repository-root
+`customHttp.yml`, because that file would also affect the existing marketing
+app.
 
 AWS's current custom-header procedure is documented here:
 <https://docs.aws.amazon.com/amplify/latest/userguide/setting-custom-headers.html>.
@@ -215,12 +295,49 @@ customHeaders:
         value: DENY
 ```
 
-Redeploy the admin app after saving headers.
+Apply the rewrite and the same header policy through the CLI:
+
+```bash
+admin_custom_headers=$(printf '%s\n' \
+  'customHeaders:' \
+  "  - pattern: '**'" \
+  '    headers:' \
+  '      - key: Cache-Control' \
+  '        value: no-store' \
+  '      - key: Content-Security-Policy' \
+  "        value: default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://rodvvmfzkyjsqbufkjbc.supabase.co wss://rodvvmfzkyjsqbufkjbc.supabase.co https://gvfptmjluxpngfjendbi.supabase.co wss://gvfptmjluxpngfjendbi.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests" \
+  '      - key: Strict-Transport-Security' \
+  '        value: max-age=31536000; includeSubDomains' \
+  '      - key: X-Content-Type-Options' \
+  '        value: nosniff' \
+  '      - key: Referrer-Policy' \
+  '        value: no-referrer' \
+  '      - key: Permissions-Policy' \
+  '        value: camera=(), geolocation=(), microphone=(), payment=()' \
+  '      - key: X-Frame-Options' \
+  '        value: DENY')
+
+aws amplify update-app \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --custom-rules "$admin_custom_rules" \
+  --custom-headers "$admin_custom_headers"
+```
 
 ## 7. Map development domain and accept
 
-Map `admin-dev.bysolum.co.uk` to the `dev` branch in the new app. Amplify
-manages the Route 53 record and TLS certificate.
+Attempt to map only `admin-dev.bysolum.co.uk` to the `dev` branch:
+
+```bash
+aws amplify create-domain-association \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --domain-name bysolum.co.uk \
+  --sub-domain-settings prefix=admin-dev,branchName=dev
+```
+
+If AWS reports that `bysolum.co.uk` is already associated with `solum-web`,
+stop. Do not delete, update, or detach that existing association.
 
 Development acceptance:
 
@@ -246,15 +363,15 @@ aws amplify list-apps \
   --query 'apps[?name==`solum-admin`].{id:appId,name:name,repo:repository}'
 aws amplify get-app \
   --region eu-west-2 \
-  --app-id <ADMIN_APP_ID> \
+  --app-id "$admin_app_id" \
   --query 'app.{name:name,defaultDomain:defaultDomain,repo:repository}'
 aws amplify list-branches \
   --region eu-west-2 \
-  --app-id <ADMIN_APP_ID> \
+  --app-id "$admin_app_id" \
   --query 'branches[].{name:branchName,stage:stage,auto:enableAutoBuild}'
 aws amplify list-jobs \
   --region eu-west-2 \
-  --app-id <ADMIN_APP_ID> \
+  --app-id "$admin_app_id" \
   --branch-name dev \
   --max-results 5
 ```
@@ -305,8 +422,74 @@ In production Supabase Auth:
 2. Add `https://admin.bysolum.co.uk` to allowed redirect URLs.
 3. Confirm TOTP MFA is enabled.
 
-Connect the Amplify `master` branch with the production-only variables, deploy
-that saved commit, and map `admin.bysolum.co.uk` to `master`.
+Build and scan the production artifact locally. Do not reuse the development
+archive:
+
+```bash
+set -a
+source admin/.env
+set +a
+test "$VITE_SUPABASE_URL_PROD" = \
+  "https://gvfptmjluxpngfjendbi.supabase.co"
+
+VITE_ADMIN_ENV=production \
+VITE_SUPABASE_URL="$VITE_SUPABASE_URL_PROD" \
+VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY_PROD" \
+npm --prefix admin run build
+npm --prefix admin run verify:artifact -- production
+
+production_artifact_dir=$(mktemp -d)
+production_artifact_zip="$production_artifact_dir/solum-admin-production.zip"
+(
+  cd admin/dist
+  zip -qr "$production_artifact_zip" .
+)
+```
+
+Create `master` only after development acceptance, protect it with a separate
+generated password, and deploy the production archive through a new
+short-lived upload URL:
+
+```bash
+production_basic_password=$(openssl rand -base64 24 | tr -d '\n')
+security add-generic-password \
+  -U \
+  -a "$USER" \
+  -s solum-admin-production-basic-auth \
+  -w "$production_basic_password"
+production_basic_credentials=$(printf '%s:%s' \
+  solum-admin "$production_basic_password" | base64 | tr -d '\n')
+
+aws amplify create-branch \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name master \
+  --stage PRODUCTION \
+  --no-enable-auto-build \
+  --enable-basic-auth \
+  --basic-auth-credentials "$production_basic_credentials"
+
+production_deployment_json=$(aws amplify create-deployment \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name master)
+production_job_id=$(printf '%s' "$production_deployment_json" | jq -er '.jobId')
+production_upload_url=$(printf '%s' "$production_deployment_json" | jq -er '.zipUploadUrl')
+
+curl --fail-with-body --silent --show-error \
+  --request PUT \
+  --upload-file "$production_artifact_zip" \
+  "$production_upload_url"
+
+aws amplify start-deployment \
+  --region eu-west-2 \
+  --app-id "$admin_app_id" \
+  --branch-name master \
+  --job-id "$production_job_id"
+```
+
+Map `admin.bysolum.co.uk` only after the production deployment reaches
+`SUCCEED`.
 
 Production acceptance is read-only:
 
@@ -322,10 +505,11 @@ Production acceptance is read-only:
 
 Frontend rollback:
 
-1. In the `solum-admin` branch history, select the prior successful deployment.
-2. Choose **Redeploy this version**.
-3. Verify the prior commit and artifact scan in the bounded job result.
-4. If access must be stopped immediately, enable branch access control or
+1. Rebuild the last accepted source commit for the affected environment.
+2. Run the environment-specific artifact verifier.
+3. Create a new manual deployment, upload the verified archive, and start it.
+4. Verify the bounded job result.
+5. If access must be stopped immediately, enable branch access control or
    remove the admin custom-domain association. Do not alter apex/`www`.
 
 Edge Function rollback:
@@ -343,14 +527,14 @@ drop `admin_audit_events` or weaken its append-only guard as a rollback.
 ```bash
 aws amplify get-domain-association \
   --region eu-west-2 \
-  --app-id <ADMIN_APP_ID> \
+  --app-id "$admin_app_id" \
   --domain-name bysolum.co.uk
 aws amplify list-jobs \
   --region eu-west-2 \
-  --app-id <ADMIN_APP_ID> \
+  --app-id "$admin_app_id" \
   --branch-name master \
   --max-results 5
 ```
 
-Record the app ID and accepted `dev`/`master` commit SHAs. Do not start a
-recurring production monitor.
+Record the app ID, accepted `dev`/`master` source commit SHAs, and manual
+deployment job IDs. Do not start a recurring production monitor.
