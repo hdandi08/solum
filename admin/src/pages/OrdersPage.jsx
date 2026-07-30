@@ -1,19 +1,45 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useEnv } from '../context/EnvContext'
-import CustomerPanel from '../components/CustomerPanel'
-
-const PAGE_SIZE = 25
+import { useCallback, useEffect, useState } from 'react'
+import { adminApi } from '../lib/adminClient'
+import {
+  buildOrderMutation,
+  normalizeOrdersPayload,
+  PAGE_SIZE,
+  serializeOrderFilters,
+} from '../features/orders/model'
 
 const CARRIERS = [
-  { value: 'royal-mail',  label: 'Royal Mail',   url: t => `https://www.royalmail.com/track-your-item#/tracking-results/${t}` },
-  { value: 'evri',        label: 'Evri',          url: t => `https://www.evri.com/track-a-parcel/results?trackingNumber=${t}` },
-  { value: 'dpd',         label: 'DPD',           url: t => `https://www.dpd.co.uk/service/parcel-tracking/?parcelNumber=${t}` },
-  { value: 'dhl',         label: 'DHL',           url: t => `https://www.dhl.com/en/express/tracking.html?AWB=${t}` },
-  { value: 'parcelforce', label: 'ParcelForce',   url: t => `https://www.parcelforce.com/track-trace?trackNum=${t}` },
-  { value: 'other',       label: 'Other',         url: null },
+  {
+    value: 'royal-mail',
+    label: 'Royal Mail',
+    url: tracking =>
+      `https://www.royalmail.com/track-your-item#/tracking-results/${tracking}`,
+  },
+  {
+    value: 'evri',
+    label: 'Evri',
+    url: tracking =>
+      `https://www.evri.com/track-a-parcel/results?trackingNumber=${tracking}`,
+  },
+  {
+    value: 'dpd',
+    label: 'DPD',
+    url: tracking =>
+      `https://www.dpd.co.uk/service/parcel-tracking/?parcelNumber=${tracking}`,
+  },
+  {
+    value: 'dhl',
+    label: 'DHL',
+    url: tracking =>
+      `https://www.dhl.com/en/express/tracking.html?AWB=${tracking}`,
+  },
+  {
+    value: 'parcelforce',
+    label: 'ParcelForce',
+    url: tracking =>
+      `https://www.parcelforce.com/track-trace?trackNum=${tracking}`,
+  },
+  { value: 'other', label: 'Other', url: null },
 ]
-
-// ── Box code system ────────────────────────────────────────────────────────
 
 const PRODUCT_NAMES = {
   '01': 'Body Wash',
@@ -28,100 +54,241 @@ const PRODUCT_NAMES = {
 }
 
 const BOX_MANIFESTS = {
-  GS:  { label: 'GROUND Starter',            products: ['01','02','03','04','05','07','08'] },
-  RS:  { label: 'RITUAL Starter',             products: ['01','02','03','04','05','06','07','08','11'] },
-  GR:  { label: 'GROUND Refill',              products: ['01','02','05','07','08'] },
-  RR:  { label: 'RITUAL Refill',              products: ['01','02','05','06','07','08'] },
-  GR3: { label: 'GROUND Refill + Back Cloth', products: ['01','02','03','05','07','08'] },
-  RR3: { label: 'RITUAL Refill + Back Cloth', products: ['01','02','03','05','06','07','08'] },
-  GR6: { label: 'GROUND Refill + Scalp',      products: ['01','02','04','05','07','08'] },
-  RR6: { label: 'RITUAL Refill + Scalp',      products: ['01','02','04','05','06','07','08'] },
+  GS: {
+    label: 'GROUND Starter',
+    products: ['01', '02', '03', '04', '05', '07', '08'],
+  },
+  RS: {
+    label: 'RITUAL Starter',
+    products: ['01', '02', '03', '04', '05', '06', '07', '08', '11'],
+  },
+  GR: {
+    label: 'GROUND Refill',
+    products: ['01', '02', '05', '07', '08'],
+  },
+  RR: {
+    label: 'RITUAL Refill',
+    products: ['01', '02', '05', '06', '07', '08'],
+  },
+  GR3: {
+    label: 'GROUND Refill + Back Cloth',
+    products: ['01', '02', '03', '05', '07', '08'],
+  },
+  RR3: {
+    label: 'RITUAL Refill + Back Cloth',
+    products: ['01', '02', '03', '05', '06', '07', '08'],
+  },
+  GR6: {
+    label: 'GROUND Refill + Scalp',
+    products: ['01', '02', '04', '05', '07', '08'],
+  },
+  RR6: {
+    label: 'RITUAL Refill + Scalp',
+    products: ['01', '02', '04', '05', '06', '07', '08'],
+  },
 }
 
 function getBoxCode(order) {
   const kit = order.kit_id === 'ritual' ? 'R' : 'G'
   if (order.order_type === 'first_box') return `${kit}S`
-  const box = order.box_number ?? 1
-  if (box === 3) return `${kit}R3`
-  if (box === 6) return `${kit}R6`
+  if (order.box_number === 3) return `${kit}R3`
+  if (order.box_number === 6) return `${kit}R6`
   return `${kit}R`
 }
 
-// ── Dispatch window ────────────────────────────────────────────────────────
-// Thu (cutoff Wed 12pm) · Mon (cutoff Sun 12pm)
-
-function getDispatchWindow(fromDate) {
-  const d = new Date(fromDate)
-  const day = d.getDay()
-  const isBeforeNoon = d.getHours() < 12
-  const result = new Date(d)
-  result.setHours(0, 0, 0, 0)
+function getDispatchDate(createdAt) {
+  const date = new Date(createdAt)
+  const day = date.getUTCDay()
+  const beforeNoon = date.getUTCHours() < 12
   const daysToAdd = { 1: 3, 2: 2, 4: 4, 5: 3, 6: 2 }
-  if (day in daysToAdd) {
-    result.setDate(result.getDate() + daysToAdd[day])
-  } else if (day === 3) {
-    result.setDate(result.getDate() + (isBeforeNoon ? 1 : 5))
-  } else {
-    result.setDate(result.getDate() + (isBeforeNoon ? 1 : 4))
-  }
-  return result
+  const add = day === 3
+    ? beforeNoon ? 1 : 5
+    : day === 0
+      ? beforeNoon ? 1 : 4
+      : daysToAdd[day]
+
+  date.setUTCDate(date.getUTCDate() + add)
+  return date.toISOString().slice(0, 10)
 }
 
-function fmtDispatch(date) {
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+function formatDate(value) {
+  if (!value) return '—'
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
-function fmt(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+function formatDispatchDate(date) {
+  return new Date(`${date}T00:00:00Z`).toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  })
 }
 
-function getCarrier(value) { return CARRIERS.find(c => c.value === value) || CARRIERS[0] }
+function getCarrier(value) {
+  return CARRIERS.find(carrier => carrier.value === value) ?? CARRIERS[0]
+}
 
 function TrackingLink({ carrier, tracking }) {
-  const c = getCarrier(carrier)
-  const url = c.url ? c.url(tracking) : null
-  return url
-    ? <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: 'var(--sky-blue)', fontFamily: 'monospace' }}>{tracking}</a>
-    : <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--bone-muted)' }}>{tracking}</span>
+  const selected = getCarrier(carrier)
+  const url = selected.url?.(tracking)
+  return url ? (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: 'var(--sky-blue)',
+        fontFamily: 'monospace',
+        fontSize: 12,
+      }}
+    >
+      {tracking}
+    </a>
+  ) : (
+    <span
+      style={{
+        color: 'var(--bone-muted)',
+        fontFamily: 'monospace',
+        fontSize: 12,
+      }}
+    >
+      {tracking}
+    </span>
+  )
 }
 
 function AddressBlock({ address }) {
-  if (!address) return <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>No address on file</span>
+  if (!address) {
+    return (
+      <span style={{ color: 'var(--bone-muted)', fontSize: 12 }}>
+        No address on file
+      </span>
+    )
+  }
+
   return (
     <div style={{ fontSize: 13, lineHeight: 1.7 }}>
       <div style={{ fontWeight: 500 }}>{address.name}</div>
-      <div style={{ color: 'var(--bone-dim)' }}>{address.line1}{address.line2 ? `, ${address.line2}` : ''}</div>
-      <div style={{ color: 'var(--bone-dim)' }}>{address.city}, {address.postcode}</div>
-      {address.phone && <div style={{ color: 'var(--sky-blue)', fontSize: 12, marginTop: 2 }}>{address.phone}</div>}
+      <div style={{ color: 'var(--bone-dim)' }}>
+        {address.line1}{address.line2 ? `, ${address.line2}` : ''}
+      </div>
+      <div style={{ color: 'var(--bone-dim)' }}>
+        {address.city}, {address.postcode}
+      </div>
+      {address.phone && (
+        <div
+          style={{
+            color: 'var(--sky-blue)',
+            fontSize: 12,
+            marginTop: 2,
+          }}
+        >
+          {address.phone}
+        </div>
+      )}
     </div>
   )
 }
 
 function BatchSummary({ batches }) {
   if (!batches.length) return null
-  const now = new Date()
+  const today = new Date().toISOString().slice(0, 10)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        marginBottom: 28,
+      }}
+    >
       {batches.map(batch => {
-        const isOverdue = new Date(batch.dateKey) < now
+        const overdue = batch.date < today
         return (
-          <div key={batch.dateKey} className="card" style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+          <div
+            key={batch.date}
+            className="card"
+            style={{
+              alignItems: 'center',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 28,
+              padding: '14px 20px',
+            }}
+          >
             <div style={{ minWidth: 100 }}>
-              {isOverdue && <div style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--critical)', marginBottom: 2 }}>Overdue</div>}
-              <div style={{ fontWeight: 600, fontSize: 15, color: isOverdue ? 'var(--critical)' : 'var(--bone)' }}>{batch.dateLabel}</div>
+              {overdue && (
+                <div
+                  style={{
+                    color: 'var(--critical)',
+                    fontSize: 10,
+                    letterSpacing: '0.15em',
+                    marginBottom: 2,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Overdue
+                </div>
+              )}
+              <div
+                style={{
+                  color: overdue ? 'var(--critical)' : 'var(--bone)',
+                  fontSize: 15,
+                  fontWeight: 600,
+                }}
+              >
+                {formatDispatchDate(batch.date)}
+              </div>
             </div>
             <div style={{ minWidth: 60 }}>
-              <div style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 2 }}>Boxes</div>
-              <div style={{ fontWeight: 700, fontSize: 18, color: 'var(--sky-blue)' }}>{batch.total}</div>
+              <div
+                style={{
+                  color: 'var(--bone-muted)',
+                  fontSize: 11,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Boxes
+              </div>
+              <div
+                style={{
+                  color: 'var(--sky-blue)',
+                  fontSize: 18,
+                  fontWeight: 700,
+                }}
+              >
+                {batch.total}
+              </div>
             </div>
-            <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+            <div
+              style={{
+                alignItems: 'center',
+                display: 'flex',
+                flex: 1,
+                flexWrap: 'wrap',
+                gap: 8,
+              }}
+            >
               {Object.entries(batch.codes).sort().map(([code, count]) => (
-                <span key={code} style={{
-                  fontSize: 13, fontFamily: 'monospace', fontWeight: 600,
-                  background: 'rgba(74,143,199,0.1)', border: '1px solid rgba(74,143,199,0.25)',
-                  padding: '3px 10px', color: 'var(--sky-blue)',
-                }}>
+                <span
+                  key={code}
+                  style={{
+                    background: 'rgba(74,143,199,0.1)',
+                    border: '1px solid rgba(74,143,199,0.25)',
+                    color: 'var(--sky-blue)',
+                    fontFamily: 'monospace',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    padding: '3px 10px',
+                  }}
+                >
                   {count}× {code}
                 </span>
               ))}
@@ -133,221 +300,149 @@ function BatchSummary({ batches }) {
   )
 }
 
-export default function OrdersPage() {
-  const { config } = useEnv()
-  const [orders, setOrders]             = useState([])
-  const [batches, setBatches]           = useState([])
-  const [loading, setLoading]           = useState(true)
-  const [error, setError]               = useState('')
-  const [page, setPage]                 = useState(0)
-  const [total, setTotal]               = useState(0)
-  const [typeFilter, setTypeFilter]     = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [expanded, setExpanded]         = useState({})
-  const [inputs, setInputs]             = useState({})
-  const [saving, setSaving]             = useState(null)
-  const [saveError, setSaveError]       = useState('')
-  const [selectedCustomerId, setSelectedCustomerId] = useState(null)
-  const [lastLabel, setLastLabel]       = useState(null)
+function downloadLabel(pdfBase64) {
+  const bytes = Uint8Array.from(atob(pdfBase64), character =>
+    character.charCodeAt(0))
+  const url = URL.createObjectURL(new Blob([bytes], {
+    type: 'application/pdf',
+  }))
+  window.open(url, '_blank', 'noopener,noreferrer')
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+}
 
-  const fetchBatches = useCallback(async () => {
-    try {
-      const { data } = await config.client
-        .from('orders')
-        .select('kit_id, order_type, box_number, created_at')
-        .eq('dispatch_status', 'pending')
-      if (!data) return
-      const map = {}
-      for (const o of data) {
-        const code = getBoxCode(o)
-        const win  = getDispatchWindow(o.created_at)
-        const key  = win.toISOString().slice(0, 10)
-        if (!map[key]) map[key] = { dateKey: key, dateLabel: fmtDispatch(win), total: 0, codes: {} }
-        map[key].total++
-        map[key].codes[code] = (map[key].codes[code] || 0) + 1
-      }
-      setBatches(Object.values(map).sort((a, b) => a.dateKey.localeCompare(b.dateKey)))
-    } catch { /* non-critical */ }
-  }, [config])
+export default function OrdersPage() {
+  const [orders, setOrders] = useState([])
+  const [batches, setBatches] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [page, setPage] = useState(0)
+  const [total, setTotal] = useState(0)
+  const [typeFilter, setTypeFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [search, setSearch] = useState('')
+  const [expanded, setExpanded] = useState({})
+  const [inputs, setInputs] = useState({})
+  const [saving, setSaving] = useState(null)
+  const [saveError, setSaveError] = useState('')
+  const [lastLabel, setLastLabel] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      let q = config.client
-        .from('orders')
-        .select(`
-          *,
-          customers(first_name, last_name, email, addresses(name, line1, line2, city, postcode, phone, is_current))
-        `, { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-      if (typeFilter) q = q.eq('order_type', typeFilter)
-      if (statusFilter === 'cancelled') {
-        q = q.eq('status', 'cancelled')
-      } else if (statusFilter) {
-        q = q.eq('dispatch_status', statusFilter)
-      }
-      const { data, count, error: err } = await q
-      if (err) throw err
-      const rows = (data || []).map(o => ({
-        ...o,
-        address:    (o.customers?.addresses || []).find(a => a.is_current) || o.customers?.addresses?.[0] || null,
-        boxCode:    getBoxCode(o),
-        dispatchBy: getDispatchWindow(o.created_at),
-      }))
-      setOrders(rows)
-      setTotal(count || 0)
-    } catch (err) {
-      setError(err.message)
+      const payload = await adminApi.request('admin-orders', {
+        body: serializeOrderFilters({
+          page,
+          typeFilter,
+          statusFilter,
+          search,
+        }),
+      })
+      const normalized = normalizeOrdersPayload(payload)
+      setOrders(normalized.rows)
+      setBatches(normalized.dispatch_batches)
+      setTotal(normalized.total_count)
+    } catch (requestError) {
+      setError(requestError.message)
     } finally {
       setLoading(false)
     }
-  }, [page, typeFilter, statusFilter, config])
+  }, [page, search, statusFilter, typeFilter])
 
-  useEffect(() => { fetchBatches() }, [fetchBatches])
-  useEffect(() => { fetchOrders() }, [fetchOrders])
+  useEffect(() => {
+    fetchOrders()
+  }, [fetchOrders])
 
-  function getInput(id) { return inputs[id] || { tracking: '', carrier: 'royal-mail' } }
-  function setInput(id, key, val) { setInputs(p => ({ ...p, [id]: { ...getInput(id), [key]: val } })) }
-  function toggleExpand(id) { setExpanded(p => ({ ...p, [id]: !p[id] })) }
+  function getInput(id) {
+    return inputs[id] ?? { tracking: '', carrier: 'royal-mail' }
+  }
 
-  async function handleDispatch(order) {
-    if (!window.confirm('Mark this order dispatched with the entered carrier and tracking number?')) return
-    const { tracking, carrier } = getInput(order.id)
-    setSaving(order.id)
+  function setInput(id, key, value) {
+    setInputs(current => ({
+      ...current,
+      [id]: {
+        ...getInput(id),
+        [key]: value,
+      },
+    }))
+  }
+
+  async function mutateOrder(action, orderId, input = {}) {
+    setSaving(orderId)
     setSaveError('')
     try {
-      const { error: err } = await config.client.from('orders').update({
-        dispatch_status: 'dispatched',
-        tracking_number: tracking.trim() || null,
-        carrier,
-        dispatched_at:   new Date().toISOString(),
-      }).eq('id', order.id)
-      if (err) throw err
-      await Promise.all([fetchOrders(), fetchBatches()])
-    } catch (err) {
-      setSaveError(err.message)
+      await adminApi.request('admin-orders', {
+        method: 'PATCH',
+        body: buildOrderMutation(action, orderId, input),
+      })
+      await fetchOrders()
+    } catch (requestError) {
+      setSaveError(requestError.message)
     } finally {
       setSaving(null)
     }
+  }
+
+  async function handleDispatch(order) {
+    if (!window.confirm(
+      'Mark this order dispatched with the entered carrier and tracking number?',
+    )) return
+    await mutateOrder('dispatch', order.id, getInput(order.id))
   }
 
   async function handleMarkDelivered(orderId) {
     if (!window.confirm('Mark this order as delivered?')) return
-    setSaving(orderId)
-    setSaveError('')
-    try {
-      const { error: err } = await config.client.from('orders').update({ dispatch_status: 'delivered' }).eq('id', orderId)
-      if (err) throw err
-      await fetchOrders()
-    } catch (err) {
-      setSaveError(err.message)
-    } finally {
-      setSaving(null)
-    }
-  }
-
-  async function handleListShippingOptions() {
-    try {
-      const { data: { session } } = await config.authClient.auth.getSession()
-      const res = await fetch(
-        `${config.url}/functions/v1/create-sendcloud-parcel`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': config.anonKey,
-          },
-          body: JSON.stringify({ list_options: true }),
-        }
-      )
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
-      console.log('SendCloud shipping options:', data.options)
-      alert(data.options.map(o => `${o.code}  —  ${o.name} (${o.carrier})`).join('\n'))
-    } catch (err) {
-      setSaveError(err.message)
-    }
+    await mutateOrder('deliver', orderId)
   }
 
   async function handleResetToPending(orderId) {
-    if (!window.confirm('Reset this order to pending? This clears its tracking number, carrier, and SendCloud parcel link — it will NOT cancel any existing SendCloud parcel or DPD/Royal Mail shipment, only this record.')) return
-    setSaving(orderId)
-    setSaveError('')
-    try {
-      const { error: err } = await config.client.from('orders').update({
-        dispatch_status:     'pending',
-        tracking_number:     null,
-        dispatched_at:       null,
-        sendcloud_parcel_id: null,
-      }).eq('id', orderId)
-      if (err) throw err
-      await Promise.all([fetchOrders(), fetchBatches()])
-    } catch (err) {
-      setSaveError(err.message)
-    } finally {
-      setSaving(null)
-    }
+    if (!window.confirm(
+      'Reset this order to pending? This clears its dispatch tracking fields. It does not cancel any carrier shipment or existing label.',
+    )) return
+    await mutateOrder('reset_pending', orderId)
   }
 
   async function handleCancel(orderId) {
-    if (!window.confirm('Cancel this order and issue a full refund? This cannot be undone.')) return
+    if (!window.confirm(
+      'Cancel this order and issue a full refund? This cannot be undone.',
+    )) return
     setSaving(orderId)
     setSaveError('')
     try {
-      const { data: { session } } = await config.authClient.auth.getSession()
-      const res = await fetch(
-        `${config.url}/functions/v1/cancel-order`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': config.anonKey,
-          },
-          body: JSON.stringify({ order_id: orderId }),
-        }
-      )
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
-      if (data.cancel_notes) {
-        alert(`Refund issued (${data.refund_id}). Note: ${data.cancel_notes}`)
+      const result = await adminApi.request('cancel-order', {
+        body: { order_id: orderId },
+      })
+      if (result.cancel_notes) {
+        window.alert(
+          `Refund issued (${result.refund_id}). Note: ${result.cancel_notes}`,
+        )
       }
-      await Promise.all([fetchOrders(), fetchBatches()])
-    } catch (err) {
-      setSaveError(err.message)
+      await fetchOrders()
+    } catch (requestError) {
+      setSaveError(requestError.message)
     } finally {
       setSaving(null)
     }
   }
 
   async function handleCreateLabel(orderId) {
-    if (!window.confirm('Create a real SendCloud label for this order? This creates an actual shipment and cannot be undone from here.')) return
+    if (!window.confirm(
+      'Create a real SendCloud label for this order? This creates an actual shipment.',
+    )) return
     setSaving(orderId)
     setSaveError('')
     setLastLabel(null)
     try {
-      const { data: { session } } = await config.authClient.auth.getSession()
-      const res = await fetch(
-        `${config.url}/functions/v1/create-sendcloud-parcel`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': config.anonKey,
-          },
-          body: JSON.stringify({ order_id: orderId }),
-        }
-      )
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
-      setLastLabel({ orderId, tracking_number: data.tracking_number })
-      await Promise.all([fetchOrders(), fetchBatches()])
-    } catch (err) {
-      setSaveError(err.message)
+      const result = await adminApi.request('create-sendcloud-parcel', {
+        body: { order_id: orderId },
+      })
+      setLastLabel({
+        orderId,
+        trackingNumber: result.tracking_number,
+      })
+      await fetchOrders()
+    } catch (requestError) {
+      setSaveError(requestError.message)
     } finally {
       setSaving(null)
     }
@@ -356,32 +451,17 @@ export default function OrdersPage() {
   async function handleViewLabel(orderId) {
     setSaveError('')
     try {
-      const { data: { session } } = await config.authClient.auth.getSession()
-      const res = await fetch(
-        `${config.url}/functions/v1/create-sendcloud-parcel`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': config.anonKey,
-          },
-          body: JSON.stringify({ order_id: orderId, get_label: true }),
-        }
-      )
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
-      const byteChars = atob(data.pdf_base64)
-      const byteNumbers = new Array(byteChars.length)
-      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i)
-      const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'application/pdf' })
-      window.open(URL.createObjectURL(blob), '_blank')
-    } catch (err) {
-      setSaveError(err.message)
+      const result = await adminApi.request('create-sendcloud-parcel', {
+        body: { order_id: orderId, get_label: true },
+      })
+      downloadLabel(result.pdf_base64)
+    } catch (requestError) {
+      setSaveError(requestError.message)
     }
   }
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
+  const today = new Date().toISOString().slice(0, 10)
 
   return (
     <div>
@@ -391,8 +471,27 @@ export default function OrdersPage() {
 
       <div className="filters-bar" style={{ marginBottom: 24 }}>
         <div className="form-group">
+          <label className="form-label">Search</label>
+          <input
+            className="input"
+            placeholder="Name or email"
+            value={search}
+            onChange={event => {
+              setSearch(event.target.value)
+              setPage(0)
+            }}
+          />
+        </div>
+        <div className="form-group">
           <label className="form-label">Type</label>
-          <select className="select" value={typeFilter} onChange={e => { setTypeFilter(e.target.value); setPage(0) }}>
+          <select
+            className="select"
+            value={typeFilter}
+            onChange={event => {
+              setTypeFilter(event.target.value)
+              setPage(0)
+            }}
+          >
             <option value="">All Types</option>
             <option value="first_box">First Box</option>
             <option value="refill">Refill</option>
@@ -400,7 +499,14 @@ export default function OrdersPage() {
         </div>
         <div className="form-group">
           <label className="form-label">Dispatch Status</label>
-          <select className="select" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(0) }}>
+          <select
+            className="select"
+            value={statusFilter}
+            onChange={event => {
+              setStatusFilter(event.target.value)
+              setPage(0)
+            }}
+          >
             <option value="">All</option>
             <option value="pending">Pending</option>
             <option value="dispatched">Dispatched</option>
@@ -408,23 +514,43 @@ export default function OrdersPage() {
             <option value="cancelled">Cancelled</option>
           </select>
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-          <button className="btn btn-secondary" onClick={() => { setTypeFilter(''); setStatusFilter(''); setPage(0) }}>Clear</button>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-          <button className="btn btn-secondary btn-sm" onClick={handleListShippingOptions} title="Debug — lists SendCloud shipping option codes, creates nothing">
-            List Shipping Options (debug)
+        <div style={{ alignItems: 'flex-end', display: 'flex' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              setSearch('')
+              setTypeFilter('')
+              setStatusFilter('')
+              setPage(0)
+            }}
+          >
+            Clear
           </button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', marginLeft: 'auto', fontSize: 13, color: 'var(--bone-muted)' }}>
+        <div
+          style={{
+            alignItems: 'flex-end',
+            color: 'var(--bone-muted)',
+            display: 'flex',
+            fontSize: 13,
+            marginLeft: 'auto',
+          }}
+        >
           {total} orders
         </div>
       </div>
 
-      {saveError && <div className="error-state" style={{ marginBottom: 16 }}>{saveError}</div>}
+      {saveError && (
+        <div className="error-state" style={{ marginBottom: 16 }}>
+          {saveError}
+        </div>
+      )}
 
       {loading ? (
-        <div className="loading-state"><div className="loading-spinner" />Loading orders...</div>
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          Loading orders...
+        </div>
       ) : error ? (
         <div className="error-state">{error}</div>
       ) : (
@@ -446,109 +572,292 @@ export default function OrdersPage() {
                 </thead>
                 <tbody>
                   {orders.length === 0 ? (
-                    <tr><td colSpan={8} className="no-data">No orders found.</td></tr>
-                  ) : orders.map(order => {
-                    const inp        = getInput(order.id)
-                    const isExpanded = expanded[order.id]
-                    const manifest   = BOX_MANIFESTS[order.boxCode]
-                    const isOverdue  = order.dispatch_status === 'pending' && order.dispatchBy < new Date()
-                    return [
-                      <tr key={order.id} style={{ cursor: 'pointer' }} onClick={() => toggleExpand(order.id)}>
-                        <td style={{ fontSize: 13, color: 'var(--bone-muted)', whiteSpace: 'nowrap' }}>{fmt(order.created_at)}</td>
+                    <tr>
+                      <td colSpan={8} className="no-data">No orders found.</td>
+                    </tr>
+                  ) : orders.flatMap(order => {
+                    const input = getInput(order.id)
+                    const boxCode = getBoxCode(order)
+                    const manifest = BOX_MANIFESTS[boxCode]
+                    const dispatchDate = getDispatchDate(order.created_at)
+                    const overdue = order.dispatch_status === 'pending'
+                      && dispatchDate < today
+                    const customerName = [
+                      order.customer.first_name,
+                      order.customer.last_name,
+                    ].filter(Boolean).join(' ') || '—'
+
+                    const rows = [
+                      <tr
+                        key={order.id}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setExpanded(current => ({
+                          ...current,
+                          [order.id]: !current[order.id],
+                        }))}
+                      >
+                        <td
+                          style={{
+                            color: 'var(--bone-muted)',
+                            fontSize: 13,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {formatDate(order.created_at)}
+                        </td>
                         <td>
-                          <button className="customer-link" onClick={e => { e.stopPropagation(); setSelectedCustomerId(order.customer_id) }}>
-                            <div className="customer-link-name" style={{ fontWeight: 500 }}>
-                              {[order.customers?.first_name, order.customers?.last_name].filter(Boolean).join(' ') || '—'}
-                            </div>
-                            <div style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{order.customers?.email}</div>
-                          </button>
+                          <div style={{ fontWeight: 500 }}>{customerName}</div>
+                          <div
+                            style={{
+                              color: 'var(--bone-muted)',
+                              fontSize: 12,
+                            }}
+                          >
+                            {order.customer.email}
+                          </div>
                         </td>
                         <td>
                           <span
-                            title={manifest ? `${manifest.label} · ${manifest.products.map(n => PRODUCT_NAMES[n]).join(', ')}` : order.boxCode}
-                            style={{ fontFamily: 'monospace', fontSize: 13, fontWeight: 700, color: 'var(--sky-blue)', letterSpacing: '0.05em', cursor: 'help', borderBottom: '1px dashed rgba(74,143,199,0.4)', paddingBottom: 1 }}
+                            title={manifest
+                              ? `${manifest.label} · ${
+                                manifest.products.map(number =>
+                                  PRODUCT_NAMES[number]).join(', ')
+                              }`
+                              : boxCode}
+                            style={{
+                              borderBottom:
+                                '1px dashed rgba(74,143,199,0.4)',
+                              color: 'var(--sky-blue)',
+                              cursor: 'help',
+                              fontFamily: 'monospace',
+                              fontSize: 13,
+                              fontWeight: 700,
+                              letterSpacing: '0.05em',
+                            }}
                           >
-                            {order.boxCode}
+                            {boxCode}
                           </span>
                         </td>
                         <td style={{ whiteSpace: 'nowrap' }}>
                           {order.dispatch_status === 'pending' ? (
-                            <span style={{ fontSize: 13, fontWeight: 500, color: isOverdue ? 'var(--critical)' : 'var(--bone)' }}>
-                              {isOverdue && '⚠ '}{fmtDispatch(order.dispatchBy)}
+                            <span
+                              style={{
+                                color: overdue
+                                  ? 'var(--critical)'
+                                  : 'var(--bone)',
+                                fontSize: 13,
+                                fontWeight: 500,
+                              }}
+                            >
+                              {overdue && '⚠ '}
+                              {formatDispatchDate(dispatchDate)}
                             </span>
                           ) : (
-                            <span style={{ fontSize: 13, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
+                            <span
+                              style={{
+                                color: 'var(--bone-muted)',
+                                fontSize: 13,
+                              }}
+                            >
+                              {formatDate(order.dispatched_at)}
+                            </span>
                           )}
                         </td>
-                        <td style={{ fontVariantNumeric: 'tabular-nums' }}>£{((order.amount_pence || 0) / 100).toFixed(2)}</td>
+                        <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                          £{((order.amount_pence || 0) / 100).toFixed(2)}
+                        </td>
                         <td>
-                          <span className={`risk-badge ${
-                            order.status === 'cancelled'        ? 'critical' :
-                            order.dispatch_status === 'pending' ? (isOverdue ? 'critical' : 'low') : 'ok'
-                          }`}>
-                            {order.status === 'cancelled' ? 'cancelled' : order.dispatch_status}
+                          <span
+                            className={`risk-badge ${
+                              order.status === 'cancelled'
+                                ? 'critical'
+                                : order.dispatch_status === 'pending'
+                                  ? overdue ? 'critical' : 'low'
+                                  : 'ok'
+                            }`}
+                          >
+                            {order.status === 'cancelled'
+                              ? 'cancelled'
+                              : order.dispatch_status}
                           </span>
                         </td>
-                        <td onClick={e => e.stopPropagation()}>
+                        <td onClick={event => event.stopPropagation()}>
                           {order.dispatch_status === 'pending' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                              <select className="select" style={{ fontSize: 12, padding: '5px 8px' }} value={inp.carrier} onChange={e => setInput(order.id, 'carrier', e.target.value)}>
-                                {CARRIERS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 6,
+                              }}
+                            >
+                              <select
+                                className="select"
+                                style={{ fontSize: 12, padding: '5px 8px' }}
+                                value={input.carrier}
+                                onChange={event =>
+                                  setInput(
+                                    order.id,
+                                    'carrier',
+                                    event.target.value,
+                                  )}
+                              >
+                                {CARRIERS.map(carrier => (
+                                  <option
+                                    key={carrier.value}
+                                    value={carrier.value}
+                                  >
+                                    {carrier.label}
+                                  </option>
+                                ))}
                               </select>
-                              <input className="input" style={{ fontSize: 12, padding: '5px 8px', width: 140 }} placeholder="Tracking number..." value={inp.tracking} onChange={e => setInput(order.id, 'tracking', e.target.value)} />
+                              <input
+                                className="input"
+                                style={{
+                                  fontSize: 12,
+                                  padding: '5px 8px',
+                                  width: 140,
+                                }}
+                                placeholder="Tracking number..."
+                                value={input.tracking}
+                                onChange={event =>
+                                  setInput(
+                                    order.id,
+                                    'tracking',
+                                    event.target.value,
+                                  )}
+                              />
                             </div>
                           ) : order.tracking_number ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                              <span style={{ fontSize: 11, color: 'var(--bone-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{getCarrier(order.carrier).label}</span>
-                              <TrackingLink carrier={order.carrier} tracking={order.tracking_number} />
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color: 'var(--bone-muted)',
+                                  fontSize: 11,
+                                  letterSpacing: '0.05em',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {getCarrier(order.carrier).label}
+                              </span>
+                              <TrackingLink
+                                carrier={order.carrier}
+                                tracking={order.tracking_number}
+                              />
                             </div>
                           ) : (
-                            <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>No tracking</span>
+                            <span
+                              style={{
+                                color: 'var(--bone-muted)',
+                                fontSize: 12,
+                              }}
+                            >
+                              No tracking
+                            </span>
                           )}
                           {lastLabel?.orderId === order.id && (
-                            <div style={{ marginTop: 6, fontSize: 11, color: 'var(--sky-blue)' }}>
-                              ✓ Label created — {lastLabel.tracking_number}
+                            <div
+                              style={{
+                                color: 'var(--sky-blue)',
+                                fontSize: 11,
+                                marginTop: 6,
+                              }}
+                            >
+                              ✓ Label created — {lastLabel.trackingNumber}
                             </div>
                           )}
                           {order.sendcloud_parcel_id && (
                             <button
                               className="btn btn-sm btn-secondary"
-                              style={{ marginTop: 6, fontSize: 11, padding: '3px 8px' }}
+                              style={{
+                                fontSize: 11,
+                                marginTop: 6,
+                                padding: '3px 8px',
+                              }}
                               onClick={() => handleViewLabel(order.id)}
                             >
                               View Label
                             </button>
                           )}
                         </td>
-                        <td style={{ whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                        <td
+                          style={{ whiteSpace: 'nowrap' }}
+                          onClick={event => event.stopPropagation()}
+                        >
+                          <div
+                            style={{
+                              alignItems: 'center',
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              gap: 6,
+                            }}
+                          >
                             {order.dispatch_status === 'pending' && (
                               <>
-                                <button className="btn btn-sm btn-primary" onClick={() => handleCreateLabel(order.id)} disabled={saving === order.id}>
-                                  {saving === order.id ? '...' : 'Create Label'}
+                                <button
+                                  className="btn btn-sm btn-primary"
+                                  onClick={() => handleCreateLabel(order.id)}
+                                  disabled={saving === order.id}
+                                >
+                                  {saving === order.id
+                                    ? '...'
+                                    : 'Create Label'}
                                 </button>
-                                <button className="btn btn-sm btn-secondary" onClick={() => handleDispatch(order)} disabled={saving === order.id}>
+                                <button
+                                  className="btn btn-sm btn-secondary"
+                                  onClick={() => handleDispatch(order)}
+                                  disabled={saving === order.id}
+                                >
                                   {saving === order.id ? '...' : 'Dispatch'}
                                 </button>
                               </>
                             )}
                             {order.dispatch_status === 'dispatched' && (
                               <>
-                                <button className="btn btn-sm btn-secondary" onClick={() => handleMarkDelivered(order.id)} disabled={saving === order.id}>
+                                <button
+                                  className="btn btn-sm btn-secondary"
+                                  onClick={() =>
+                                    handleMarkDelivered(order.id)}
+                                  disabled={saving === order.id}
+                                >
                                   {saving === order.id ? '...' : 'Delivered'}
                                 </button>
-                                <button className="btn btn-sm btn-secondary" onClick={() => handleResetToPending(order.id)} disabled={saving === order.id} title="Clears tracking/parcel link on this record only — does not cancel the carrier shipment">
-                                  {saving === order.id ? '...' : 'Reset to Pending'}
+                                <button
+                                  className="btn btn-sm btn-secondary"
+                                  onClick={() =>
+                                    handleResetToPending(order.id)}
+                                  disabled={saving === order.id}
+                                  title="Does not cancel an external shipment"
+                                >
+                                  {saving === order.id
+                                    ? '...'
+                                    : 'Reset to Pending'}
                                 </button>
                               </>
                             )}
                             {order.dispatch_status === 'delivered' && (
-                              <span style={{ fontSize: 12, color: 'var(--bone-muted)' }}>{fmt(order.dispatched_at)}</span>
+                              <span
+                                style={{
+                                  color: 'var(--bone-muted)',
+                                  fontSize: 12,
+                                }}
+                              >
+                                {formatDate(order.dispatched_at)}
+                              </span>
                             )}
                             {order.status !== 'cancelled' && (
                               <button
                                 className="btn btn-sm"
-                                style={{ background: 'rgba(224,92,92,0.12)', color: '#e05c5c', border: '1px solid rgba(224,92,92,0.3)' }}
+                                style={{
+                                  background: 'rgba(224,92,92,0.12)',
+                                  border: '1px solid rgba(224,92,92,0.3)',
+                                  color: '#e05c5c',
+                                }}
                                 onClick={() => handleCancel(order.id)}
                                 disabled={saving === order.id}
                               >
@@ -558,42 +867,142 @@ export default function OrdersPage() {
                           </div>
                         </td>
                       </tr>,
-                      isExpanded && (
-                        <tr key={`${order.id}-detail`} style={{ background: 'var(--surface-hover)' }}>
-                          <td colSpan={8} style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
+                    ]
+
+                    if (expanded[order.id]) {
+                      rows.push(
+                        <tr
+                          key={`${order.id}-detail`}
+                          style={{ background: 'var(--surface-hover)' }}
+                        >
+                          <td
+                            colSpan={8}
+                            style={{
+                              borderBottom: '1px solid var(--border)',
+                              padding: '16px 20px',
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 48,
+                              }}
+                            >
                               <div>
-                                <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Ship To</div>
+                                <div
+                                  style={{
+                                    color: 'var(--bone-muted)',
+                                    fontSize: 11,
+                                    letterSpacing: '0.15em',
+                                    marginBottom: 8,
+                                    textTransform: 'uppercase',
+                                  }}
+                                >
+                                  Ship To
+                                </div>
                                 <AddressBlock address={order.address} />
                               </div>
                               <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>
-                                  Box Contents · <span style={{ color: 'var(--sky-blue)' }}>{order.boxCode}</span>
+                                <div
+                                  style={{
+                                    color: 'var(--bone-muted)',
+                                    fontSize: 11,
+                                    letterSpacing: '0.15em',
+                                    marginBottom: 8,
+                                    textTransform: 'uppercase',
+                                  }}
+                                >
+                                  Box Contents ·{' '}
+                                  <span style={{ color: 'var(--sky-blue)' }}>
+                                    {boxCode}
+                                  </span>
                                 </div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 16px' }}>
-                                  {(manifest?.products || []).map(num => (
-                                    <span key={num} style={{ fontSize: 13, color: 'var(--bone-dim)' }}>
-                                      <span style={{ color: 'var(--sky-blue)', fontFamily: 'monospace', fontWeight: 600, marginRight: 5 }}>{num}</span>
-                                      {PRODUCT_NAMES[num] || num}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '6px 16px',
+                                  }}
+                                >
+                                  {(manifest?.products ?? []).map(number => (
+                                    <span
+                                      key={number}
+                                      style={{
+                                        color: 'var(--bone-dim)',
+                                        fontSize: 13,
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          color: 'var(--sky-blue)',
+                                          fontFamily: 'monospace',
+                                          fontWeight: 600,
+                                          marginRight: 5,
+                                        }}
+                                      >
+                                        {number}
+                                      </span>
+                                      {PRODUCT_NAMES[number] ?? number}
                                     </span>
                                   ))}
                                 </div>
                               </div>
                               <div>
-                                <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--bone-muted)', marginBottom: 8 }}>Order ID</div>
-                                <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--bone-muted)' }}>{order.id.slice(0, 8)}</span>
+                                <div
+                                  style={{
+                                    color: 'var(--bone-muted)',
+                                    fontSize: 11,
+                                    letterSpacing: '0.15em',
+                                    marginBottom: 8,
+                                    textTransform: 'uppercase',
+                                  }}
+                                >
+                                  Order ID
+                                </div>
+                                <span
+                                  style={{
+                                    color: 'var(--bone-muted)',
+                                    fontFamily: 'monospace',
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  {order.id.slice(0, 8)}
+                                </span>
                                 {order.status === 'cancelled' && (
                                   <div style={{ marginTop: 8 }}>
-                                    <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#e05c5c', fontWeight: 600 }}>
+                                    <span
+                                      style={{
+                                        color: '#e05c5c',
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        letterSpacing: '0.1em',
+                                        textTransform: 'uppercase',
+                                      }}
+                                    >
                                       Refunded
                                     </span>
                                     {order.refund_id && (
-                                      <span style={{ fontSize: 12, color: 'var(--bone-muted)', marginLeft: 8, fontFamily: 'monospace' }}>
+                                      <span
+                                        style={{
+                                          color: 'var(--bone-muted)',
+                                          fontFamily: 'monospace',
+                                          fontSize: 12,
+                                          marginLeft: 8,
+                                        }}
+                                      >
                                         {order.refund_id}
                                       </span>
                                     )}
                                     {order.cancel_notes && (
-                                      <div style={{ fontSize: 12, color: '#e05c5c', marginTop: 4, lineHeight: 1.5 }}>
+                                      <div
+                                        style={{
+                                          color: '#e05c5c',
+                                          fontSize: 12,
+                                          lineHeight: 1.5,
+                                          marginTop: 4,
+                                        }}
+                                      >
                                         ⚠ {order.cancel_notes}
                                       </div>
                                     )}
@@ -602,9 +1011,10 @@ export default function OrdersPage() {
                               </div>
                             </div>
                           </td>
-                        </tr>
-                      ),
-                    ]
+                        </tr>,
+                      )
+                    }
+                    return rows
                   })}
                 </tbody>
               </table>
@@ -613,16 +1023,28 @@ export default function OrdersPage() {
 
           {totalPages > 1 && (
             <div className="pagination">
-              <span className="pagination-info">Page {page + 1} of {totalPages} ({total} orders)</span>
-              <button className="btn btn-secondary btn-sm" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>Prev</button>
-              <button className="btn btn-secondary btn-sm" onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>Next</button>
+              <span className="pagination-info">
+                Page {page + 1} of {totalPages} ({total} orders)
+              </span>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => setPage(current => Math.max(0, current - 1))}
+                disabled={page === 0}
+              >
+                Prev
+              </button>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() =>
+                  setPage(current =>
+                    Math.min(totalPages - 1, current + 1))}
+                disabled={page >= totalPages - 1}
+              >
+                Next
+              </button>
             </div>
           )}
         </>
-      )}
-
-      {selectedCustomerId && (
-        <CustomerPanel customerId={selectedCustomerId} onClose={() => setSelectedCustomerId(null)} />
       )}
     </div>
   )
