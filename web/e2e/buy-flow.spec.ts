@@ -214,15 +214,21 @@ test.describe('Checkout flow', () => {
     await expect(page.locator('.co-order-pill-kit')).toContainText(/one.?time kit/i);
   });
 
-  // Stripe Link/Onelink currently prevents Playwright's headless Chromium from
-  // toggling this buyer-controlled checkbox. Keep the full DEV test ready to
-  // re-enable if Link is disabled for the Stripe test account.
-  test.skip('full purchase: test card creates a paid order, deducts inventory, and redirects to /success', async ({ page }) => {
+  test('full purchase: test card creates a paid order, deducts inventory, and redirects to /success', async ({ page }) => {
     test.setTimeout(90_000); // Stripe webhook delivery and persistence are asynchronous.
 
     await page.goto('/buy?kit=ground');
+    await expect(page.locator('.by-express-wrap')).toHaveCount(0);
     const buyer = await fillForm(page);
+    const intentResponsePromise = page.waitForResponse(response =>
+      response.url().includes('/functions/v1/create-first-box-payment-intent') &&
+      response.request().method() === 'POST'
+    );
     await page.getByTestId('delivery-btn').click();
+    const intentResponse = await intentResponsePromise;
+    expect(intentResponse.ok()).toBe(true);
+    const intent = await intentResponse.json();
+    expect(intent.livemode).toBe(false);
     await expect(page.locator('.co-payment-element-wrap')).toBeVisible({ timeout: 15_000 });
 
     await fillStripeCard(page);
@@ -249,12 +255,12 @@ test.describe('Checkout flow', () => {
     await expect.poll(async () => {
       const { data, error } = await db
         .from('orders')
-        .select('id')
+        .select('id, inventory_kit_deducted')
         .eq('stripe_payment_id', paymentIntentId!)
         .maybeSingle();
       if (error) throw new Error(`order lookup failed: ${error.message}`);
-      return data?.id ?? null;
-    }, { timeout: 60_000, intervals: [1_000, 2_000, 5_000] }).not.toBeNull();
+      return data?.inventory_kit_deducted === true;
+    }, { timeout: 60_000, intervals: [1_000, 2_000, 5_000] }).toBe(true);
 
     const { data: order, error: orderError } = await db
       .from('orders')

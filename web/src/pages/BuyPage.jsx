@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
@@ -12,9 +12,6 @@ import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
-import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
-import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
-import { shouldShowIabGate } from '../lib/inAppBrowser.js';
 import { videoFor } from '../data/productMedia.js';
 import './checkout/checkout.css';
 import { jumpTop } from '../lib/scroll.js';
@@ -71,9 +68,6 @@ const CSS = `
 .by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
 @media(max-width:768px){.by-intro-head{font-size:22px;}}
 .by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
-.by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
-.by-express-skel{height:48px;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
-@keyframes byShimmer{to{background-position:-200% 0;}}
 .by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
 .by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
@@ -98,11 +92,6 @@ const CSS = `
 .by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}
 .by-demo-head{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:var(--bone);margin-bottom:6px;}
 .by-demo-caption{font-size:14px;font-weight:300;color:var(--mist);line-height:1.5;}
-.by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
-.by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
-.by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
-.by-express-consent a{color:var(--blit);text-decoration:none;}
-.by-express-consent a:hover{text-decoration:underline;}
 .by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:32px;}
 @media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
 .by-kit{background:var(--black);padding:24px 20px;cursor:pointer;transition:background .15s;}
@@ -633,134 +622,8 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
   );
 }
 
-// ── Express Checkout (Apple Pay / Google Pay / Link) ──────────────────────────
-// Deferred PaymentIntent flow: wallet supplies email + shipping address, then we
-// create the PI server-side (existing function) and confirm. One tap, no form.
-
 // Truncate error text for analytics payloads — PostHog properties, not logs.
 const errText = (m) => String(m ?? '').slice(0, 200);
-
-function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailability }) {
-  const stripe = useStripe();
-  const elements = useElements();
-
-  async function onConfirm(event) {
-    if (!stripe || !elements) return;
-    onError('');
-    const { error: submitError } = await elements.submit();
-    if (submitError) {
-      capture('express_error', { kit: kitId, source, stage: 'submit', message: errText(submitError.message) });
-      onError(submitError.message ?? 'Could not start payment.'); return;
-    }
-
-    const ship   = event.shippingAddress ?? {};
-    const addr    = ship.address ?? {};
-    const billing = event.billingDetails ?? {};
-    const fullName = (ship.name || billing.name || '').trim();
-    const [first_name, ...rest] = fullName.split(/\s+/);
-    const last_name = rest.join(' ') || null;
-    const email = (billing.email || '').trim().toLowerCase();
-
-    try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
-        method: 'POST',
-        headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          kit_id:     kitId,
-          email,
-          first_name: first_name || (fullName || 'Customer'),
-          last_name,
-          phone:      billing.phone || null,
-          source,
-          site_host:  window.location.hostname,
-          ...getTikTokIds(),
-          ...toAwinPaymentIntentMetadata(captureAwinAttribution()),
-          line1:      addr.line1 || '',
-          line2:      addr.line2 || null,
-          city:       addr.city || '',
-          county:     addr.state || null,
-          postcode:   addr.postal_code || '',
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        capture('express_error', { kit: kitId, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
-        onError(data.message ?? data.error ?? 'Something went wrong. Please try again.'); return;
-      }
-
-      identify(email, { first_name: first_name || '', kit: kitId, source });
-      // expressPaymentType distinguishes the wallet used: 'apple_pay' | 'google_pay' | 'link' | 'paypal'
-      capture('checkout_initiated', { kit: kitId, source, price, method: 'express', wallet: event.expressPaymentType });
-      fbInitiateCheckout(kitId, price, { email });
-      try { sessionStorage.setItem('solum_buyer_email', email); } catch {}
-
-      const successParams = new URLSearchParams({
-        kit: kitId, source,
-        dispatch: data.dispatch_date ?? '', arrival: data.arrival_date ?? '',
-        amount: String(data.amount_pence),
-      });
-
-      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        clientSecret: data.client_secret,
-        confirmParams: { return_url: `${window.location.origin}/success?${successParams.toString()}` },
-        redirect: 'if_required',
-      });
-
-      if (confirmError) {
-        capture('express_error', { kit: kitId, source, stage: 'confirm', message: errText(confirmError.message) });
-        onError(confirmError.message ?? 'Payment failed. Please try again.'); return;
-      }
-      if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
-        successParams.set('ref', paymentIntent.id);
-        window.location.href = `/success?${successParams.toString()}`;
-      }
-    } catch {
-      capture('express_error', { kit: kitId, source, stage: 'network', message: '' });
-      onError('Network error. Please try again.');
-    }
-  }
-
-  return (
-    <ExpressCheckoutElement
-      options={{
-        buttonHeight: 48,
-        paymentMethods: {
-          applePay: 'auto', googlePay: 'auto', link: 'auto',
-          amazonPay: 'never', klarna: 'never', paypal: 'auto', // paypal approved by Stripe 2026-07-08
-        },
-      }}
-      onReady={({ availablePaymentMethods }) => {
-        // Which wallets Stripe actually rendered — measurable per browser in
-        // PostHog (Meta in-app browser has no Apple/Google Pay; recordings
-        // can't see into the Stripe iframe, so this event is the only signal).
-        const w = availablePaymentMethods ?? {};
-        capture('express_availability', {
-          available:  !!availablePaymentMethods,
-          apple_pay:  !!w.applePay,
-          google_pay: !!w.googlePay,
-          link:       !!w.link,
-          paypal:     !!w.paypal,
-          kit: kitId, source,
-        });
-        onAvailability(!!availablePaymentMethods);
-      }}
-      onClick={(event) => {
-        // The only signal that a wallet button was tapped at all — the sheet,
-        // like everything else inside the Stripe iframe, is invisible to replays.
-        capture('express_clicked', { kit: kitId, source, wallet: event.expressPaymentType });
-        event.resolve({
-          emailRequired: true,
-          shippingAddressRequired: true,
-          phoneNumberRequired: false,
-          allowedShippingCountries: ['GB'],
-        });
-      }}
-      onConfirm={onConfirm}
-      onCancel={() => capture('express_cancelled', { kit: kitId, source })}
-    />
-  );
-}
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -770,8 +633,8 @@ function ExpressCheckout({ kitId, price, source, authHeaders, onError, onAvailab
 function MittDemo() {
   const v = videoFor('02-italy-towel-mitt');
   const wrapRef = useRef(null);
-  // The film is 0.8-1.9 MB; loading it on page-open competes with Stripe for
-  // bandwidth at the exact moment the wallets render. Mount the <video> only
+  // The film is 0.8-1.9 MB; loading it on page-open competes with Stripe and
+  // checkout assets. Mount the <video> only
   // when the section approaches the viewport; until then show the poster.
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -833,7 +696,7 @@ export default function BuyPage() {
   // kit re-decision UI stays collapsed behind "Change kit".
   const isWarmArrival = !isDirectLanding && !!preselect;
 
-  // Kit CTAs and the sticky bar scroll here (express wallets + form).
+  // Kit CTAs and the sticky bar scroll to the details form.
   const formStartRef = useRef(null);
   const scrollToForm = () => formStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -846,33 +709,11 @@ export default function BuyPage() {
   const [clientSecret, setClientSecret] = useState(null);
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
-  const [expressAvailable, setExpressAvailable] = useState(false);
-  const [expressReady, setExpressReady]         = useState(false);
   const [kitPickerOpen, setKitPickerOpen]       = useState(!isWarmArrival);
-
-  // In-app-browser gate: block the payment area until the visitor either
-  // breaks out to their real browser or knowingly continues in-app.
-  const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
-  const [iabContinued, setIabContinued] = useState(() => {
-    try { return sessionStorage.getItem(IAB_CONTINUE_KEY) === '1'; } catch { return false; }
-  });
-  const iabGate = !iabContinued && shouldShowIabGate(undefined, window.location.search);
-  const continueInApp = () => {
-    try { sessionStorage.setItem(IAB_CONTINUE_KEY, '1'); } catch { /* no-op */ }
-    setIabContinued(true);
-  };
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
 
-  // Stripe's wallet iframe takes 1.5–4s to render (measured via
-  // express_availability); a skeleton fills the gap. Failsafe: stop showing
-  // it after 6s even if onReady never fires (blocked scripts).
-  useEffect(() => {
-    const t = setTimeout(() => setExpressReady(true), 6000);
-    return () => clearTimeout(t);
-  }, []);
-
-  // Restore state after a failed redirect-based payment (Revolut Pay etc.)
+  // Restore state after a failed redirect-based card payment.
   useEffect(() => {
     if (params.get('resume') !== '1') return;
     try {
@@ -1060,7 +901,6 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
-        <InAppBrowserBanner />
         <div className="by-soldout-page">
           {/* Left — apology */}
           <div className="by-soldout-left">
@@ -1135,7 +975,6 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
-        <InAppBrowserBanner />
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
           <div className="co-page">
             <div className="co-left">
@@ -1167,7 +1006,6 @@ export default function BuyPage() {
     <>
       <style>{CSS}</style>
       <BuyCheckoutNav />
-      {step !== 'details' && <InAppBrowserBanner />}
       <div className="co-page">
         <div className="co-left">
           <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} hideUntilScroll={step === 'details'} />
@@ -1178,10 +1016,8 @@ export default function BuyPage() {
           )}
 
           <>
-              {/* Progress bar sits at top only for the delivery step (which has
-                  no express option). On the details step it moves below the wallet
-                  buttons — see further down — so Apple Pay / Link users aren't
-                  shown an irrelevant 1-2-3 journey they never take. */}
+              {/* The details step progress bar sits after the kit choice and trust
+                  strip; delivery starts with its progress marker. */}
               {step === 'delivery' && <ProgressBar step="delivery" />}
 
               {/* Step-1 intro. Cold landings get the orientation pitch; warm
@@ -1284,7 +1120,7 @@ export default function BuyPage() {
               )}
 
               {/* Demo loop: for cold visitors it sits right after the kit choice;
-                  warm arrivals get it below the form so wallets stay at the fold */}
+                  warm arrivals get it below the details form. */}
               {step === 'details' && kitPickerOpen && <MittDemo />}
 
               {/* Trust strip just before the payment decision — Baymard: surprise
@@ -1300,51 +1136,11 @@ export default function BuyPage() {
                 </div>
               )}
 
-              {/* Express checkout — one-tap wallets, above the manual form. For in-app
-                  browsers the blocking gate takes this slot until the visitor chooses. */}
-              {step === 'details' && (
-                <div className="by-express-wrap" ref={formStartRef}>
-                  {iabGate ? (
-                    <IabCheckoutGate key={selectedKit} kit={selectedKit} source={source} onContinue={continueInApp} />
-                  ) : (
-                    <>
-                      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
-                      <Elements
-                        key={selectedKit}
-                        stripe={stripePromise}
-                        options={{ mode: 'payment', amount: price * 100, currency: 'gbp', appearance: stripeAppearance }}
-                      >
-                        <ExpressCheckout
-                          kitId={selectedKit}
-                          price={price}
-                          source={source}
-                          authHeaders={authHeaders}
-                          onError={setError}
-                          onAvailability={(a) => { setExpressAvailable(a); setExpressReady(true); }}
-                        />
-                      </Elements>
-                      {expressAvailable && (
-                        <>
-                          <div className="by-express-consent">
-                            By continuing with Apple Pay or Link, you agree to our{' '}
-                            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
-                            {' '}and{' '}
-                            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-                          </div>
-                          <div className="by-express-or"><span>or pay by card</span></div>
-                        </>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Progress bar — card path only; express payers skip these steps */}
-              {step === 'details' && !iabGate && <ProgressBar step="details" />}
+              {step === 'details' && <ProgressBar step="details" />}
 
               {/* Step 1: Details */}
-              {step === 'details' && !iabGate && (
-                <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
+              {step === 'details' && (
+                <form ref={formStartRef} onSubmit={handleDetailsNext} noValidate data-testid="details-form">
                   <div className="co-step-heading">Your Details.</div>
                   <div className="co-step-subhead">Takes 60 seconds. We only ask what we need.</div>
 

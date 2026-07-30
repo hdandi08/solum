@@ -76,6 +76,7 @@ Deno.serve(async (req) => {
     const pi = await stripe.paymentIntents.create({
       amount,
       currency: 'gbp',
+      payment_method_types: ['card'],
       customer: customer.id,
       shipping: {
         name: [first_name, last_name].filter(Boolean).join(' '),
@@ -122,6 +123,7 @@ Deno.serve(async (req) => {
       dispatch_date:  fmtDay(dispatch),
       arrival_date:   fmtDay(arrival),
       amount_pence:   amount,
+      livemode:       pi.livemode,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
