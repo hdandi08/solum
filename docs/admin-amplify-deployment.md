@@ -394,11 +394,14 @@ Stop after a bounded result; do not poll continuously.
   `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options` verified
 - Storefront association: `AVAILABLE`; apex and `www` still map to
   `solum-web/master`
-- Custom domain: blocked before DNS change because
-  `sourceri-dev-console` lacks `route53:ListHostedZones`
+- Custom domain: `https://admin-dev.bysolum.co.uk`
+- Domain association: `AVAILABLE`; `admin-dev` is verified and maps to `dev`
+- Protected role: `harsha@bysolum.com` has `app_metadata.role=admin`
+- Manual browser acceptance: pending TOTP enrolment and administrator checks
 
-Production remains blocked until `admin-dev.bysolum.co.uk` is available and
-development acceptance is complete.
+Production was subsequently deployed at the owner's explicit direction before
+manual browser acceptance. The production rollout remained non-mutating and
+manual acceptance is still required.
 
 ## 8. Promote the backend and frontend to production
 
@@ -522,6 +525,40 @@ Production acceptance is read-only:
 5. Confirm security headers and the artifact scan in build logs.
 6. Do not run production E2E, checkout, synthetic orders, refunds, dispatch
    mutations, or label creation.
+
+### Production deployment record — 30 July 2026
+
+- Source: `master` commit
+  `43da4816be7b8b8d915ada19ef63c0c376b68c5d`
+- Tests on merged source: 55 admin, 46 shared Deno, and 113 web unit tests
+  passed; no E2E test was run
+- Production migrations:
+  `20260730000001_secure_admin_audit.sql` and
+  `20260730000002_secure_admin_order_mutation.sql` applied
+- Canonical functions: `admin-dashboard`, `admin-orders`, `admin-events`,
+  `cancel-order`, and `create-sendcloud-parcel` active
+- Retired functions: `admin-adjust-stock`, `admin-confirm-delivery`,
+  `admin-supplier-order`, and `set-test-stock` absent
+- Protected role: `harsha@bysolum.com` has `app_metadata.role=admin`
+- TOTP: not yet enrolled; the application still requires `aal2`
+- Artifact scan: passed for `production`
+- Amplify branch: `master` — `PRODUCTION`, auto-build disabled, basic auth
+  enabled
+- Production deployment job: `1` — `SUCCEED`
+- Basic-auth credential: stored separately in the local macOS Keychain under
+  `solum-admin-production-basic-auth`
+- Default URL: `401` without basic auth and `200` with basic auth
+- Custom URL: `https://admin.bysolum.co.uk` resolves over HTTPS, returns `401`
+  without basic auth and `200` with basic auth
+- Domain association: `AVAILABLE` / `UPDATE_COMPLETE`; `admin` maps to
+  `master` and `admin-dev` remains mapped to `dev`
+- Security headers: CSP, `Cache-Control: no-store`, HSTS, `nosniff`,
+  `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options` verified
+- Storefront association: `AVAILABLE`; apex and `www` remain on
+  `solum-web/master`
+- Manual browser acceptance: pending administrator sign-in, TOTP enrolment,
+  read-only Dashboard/Orders/Events checks, and tracker inspection
+- Production mutation checks: intentionally not run
 
 ## 9. Rollback
 
