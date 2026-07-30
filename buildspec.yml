@@ -1,6 +1,8 @@
 version: 0.2
 
 env:
+  variables:
+    E2E_TARGET: dev
   parameter-store:
     SUPABASE_URL:              /solum/test/supabase-url
     SUPABASE_SERVICE_ROLE_KEY: /solum/test/supabase-svc-key

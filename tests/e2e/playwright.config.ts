@@ -2,10 +2,20 @@ import { defineConfig, devices } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { assertSafeE2ETarget } from '../../scripts/e2e-safety.mjs';
 
 // Load .env.test if present (local dev only — CI gets vars from SSM/env)
 const envTestPath = path.join(__dirname, '.env.test');
 if (fs.existsSync(envTestPath)) dotenv.config({ path: envTestPath });
+
+const baseURL = process.env.DEV_BASE_URL || 'https://dev.d3pa095gzazg3c.amplifyapp.com';
+
+assertSafeE2ETarget({
+  target: process.env.E2E_TARGET,
+  baseURL,
+  supabaseURL: process.env.SUPABASE_URL,
+  localServer: false,
+});
 
 export default defineConfig({
   testDir: './specs',
@@ -18,7 +28,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.DEV_BASE_URL || 'https://dev.d3pa095gzazg3c.amplifyapp.com',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',

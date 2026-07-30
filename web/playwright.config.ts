@@ -1,7 +1,17 @@
 import { defineConfig, devices } from '@playwright/test';
+import { assertSafeE2ETarget } from '../scripts/e2e-safety.mjs';
 
 const isCI    = !!process.env.CI;
 const baseURL = process.env.DEV_BASE_URL ?? 'http://localhost:5173';
+const supabaseURL = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
+
+assertSafeE2ETarget({
+  target: process.env.E2E_TARGET,
+  baseURL,
+  supabaseURL,
+  stripePublishableKey: process.env.VITE_STRIPE_PUBLISHABLE_KEY,
+  localServer: !isCI,
+});
 
 export default defineConfig({
   testDir: './e2e',
