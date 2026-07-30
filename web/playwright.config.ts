@@ -24,6 +24,7 @@ export default defineConfig({
   // Local: needs web/.env.test with SUPABASE_SERVICE_ROLE_KEY (see .env.test.example).
   // CI: keys come from SSM via buildspec env vars — no .env.test needed.
   globalSetup: './e2e/global-setup.ts',
+  globalTeardown: './e2e/global-teardown.ts',
 
   // Retry once on CI to absorb transient network blips.
   retries: isCI ? 1 : 0,
