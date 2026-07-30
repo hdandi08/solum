@@ -301,8 +301,11 @@ function BatchSummary({ batches }) {
 }
 
 function downloadLabel(pdfBase64) {
-  const bytes = Uint8Array.from(atob(pdfBase64), character =>
-    character.charCodeAt(0))
+  const binary = atob(pdfBase64)
+  const bytes = new Uint8Array(binary.length)
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index)
+  }
   const url = URL.createObjectURL(new Blob([bytes], {
     type: 'application/pdf',
   }))

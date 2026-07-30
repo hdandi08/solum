@@ -1,78 +1,79 @@
 import { useState } from 'react'
-import { useEnv } from '../context/EnvContext'
+import { adminEnvironment, supabase } from '../lib/supabase'
 
-export default function LoginPage({ unauthorisedEmail } = {}) {
-  const { config, env, switchEnv } = useEnv()
-  const [email, setEmail]       = useState('')
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  async function handleSubmit(event) {
+    event.preventDefault()
     setLoading(true)
     setError('')
 
-    const { error: authError } = await config.authClient.auth.signInWithPassword({
+    const { error: authError } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     })
 
     setLoading(false)
-    if (authError) setError(authError.message || 'Invalid email or password.')
+    if (authError) {
+      setError('Sign-in failed. Check your credentials and try again.')
+    }
   }
 
-  const isProd = env === 'prod'
+  const production = adminEnvironment.isProduction
+  const environmentLabel = production ? 'Production' : 'Development'
 
   return (
     <div className="login-page">
       <div className="login-box">
         <div style={{ textAlign: 'center' }}>
-          <div className="login-wordmark" style={{ color: isProd ? 'var(--env-prod-color)' : 'var(--env-dev-color)' }}>
+          <div
+            className="login-wordmark"
+            style={{
+              color: production
+                ? 'var(--env-prod-color)'
+                : 'var(--env-dev-color)',
+            }}
+          >
             SOLUM
           </div>
           <div className="login-subtitle">Admin Panel</div>
         </div>
 
         <div className="login-card">
-          <div className="login-env-switcher">
-            <button
-              className={`login-env-btn ${isProd ? 'login-env-btn-active-prod' : 'login-env-btn-prod'}`}
-              onClick={() => switchEnv('prod')}
-              type="button"
-            >
-              ⬤ PROD
-            </button>
-            <button
-              className={`login-env-btn ${!isProd ? 'login-env-btn-active-dev' : 'login-env-btn-dev'}`}
-              onClick={() => switchEnv('dev')}
-              type="button"
-            >
-              ⚠ DEV
-            </button>
+          <div
+            className={`login-environment ${
+              production
+                ? 'login-environment-production'
+                : 'login-environment-development'
+            }`}
+          >
+            {environmentLabel} environment
           </div>
+          <div className="login-card-title">Administrator sign in</div>
 
-          <div className="login-card-title">
-            Sign in to {isProd ? 'Production' : 'Development'}
-          </div>
-
-          {unauthorisedEmail && (
-            <div className="login-error">
-              {unauthorisedEmail} is not authorised. Add this email to ADMIN_EMAILS in App.jsx.
-            </div>
-          )}
           {error && <div className="login-error">{error}</div>}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+            }}
+          >
             <div className="form-group">
               <label className="form-label" htmlFor="email">Email</label>
               <input
                 id="email"
                 type="email"
                 className="input"
-                placeholder="harsha@bysolum.com"
+                autoComplete="username"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={event => setEmail(event.target.value)}
                 required
                 autoFocus
               />
@@ -84,26 +85,32 @@ export default function LoginPage({ unauthorisedEmail } = {}) {
                 id="password"
                 type="password"
                 className="input"
-                placeholder="••••••••"
+                autoComplete="current-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={event => setPassword(event.target.value)}
                 required
               />
             </div>
 
             <button
               type="submit"
-              className={`btn ${isProd ? 'btn-login-prod' : 'btn-login-dev'}`}
+              className={`btn ${
+                production ? 'btn-login-prod' : 'btn-login-dev'
+              }`}
               disabled={loading}
-              style={{ width: '100%', justifyContent: 'center', padding: '11px 18px' }}
+              style={{
+                justifyContent: 'center',
+                padding: '11px 18px',
+                width: '100%',
+              }}
             >
-              {loading ? 'Signing in...' : `Sign In to ${isProd ? 'PROD' : 'DEV'}`}
+              {loading ? 'Signing in...' : `Sign in to ${environmentLabel}`}
             </button>
           </form>
         </div>
 
-        <div style={{ fontSize: '11px', color: 'var(--bone-muted)', letterSpacing: '0.08em', textAlign: 'center' }}>
-          Access restricted to authorised personnel only.
+        <div className="login-restricted">
+          Administrator role and authenticator verification are required.
         </div>
       </div>
     </div>

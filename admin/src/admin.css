@@ -204,6 +204,14 @@ textarea {
   background: var(--surface-hover);
 }
 
+.env-pill-static {
+  cursor: default;
+}
+
+.env-pill-static:hover {
+  background: transparent;
+}
+
 .layout-env-prod .env-pill {
   color: var(--env-prod-color);
   background: var(--env-prod-bg);
@@ -943,6 +951,89 @@ textarea {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--bone-dim);
+  text-align: center;
+}
+
+.login-environment {
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 8px 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.login-environment-production {
+  background: var(--env-prod-bg);
+  border-color: var(--env-prod-border);
+  color: var(--env-prod-color);
+}
+
+.login-environment-development {
+  background: var(--env-dev-bg);
+  border-color: var(--env-dev-border);
+  color: var(--env-dev-color);
+}
+
+.login-restricted {
+  color: var(--bone-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.mfa-box {
+  max-width: 430px;
+}
+
+.mfa-copy {
+  color: var(--bone-dim);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.mfa-enrollment {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mfa-qr {
+  background: var(--bone);
+  border-radius: 4px;
+  height: 210px;
+  padding: 10px;
+  width: 210px;
+}
+
+.mfa-secret-label {
+  color: var(--bone-muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mfa-secret {
+  color: var(--sky-blue);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.mfa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mfa-code {
+  font-family: monospace;
+  font-size: 22px;
+  letter-spacing: 0.35em;
   text-align: center;
 }
 
