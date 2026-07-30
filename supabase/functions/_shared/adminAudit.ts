@@ -133,7 +133,7 @@ type SupabaseAuditClient = {
   from: (table: string) => {
     insert: (row: Record<string, unknown>) => {
       select: (columns: string) => {
-        single: () => Promise<{
+        single: () => PromiseLike<{
           data: { id: string } | null
           error: { message: string } | null
         }>
@@ -143,7 +143,7 @@ type SupabaseAuditClient = {
       eq: (
         column: string,
         value: string,
-      ) => Promise<{ error: { message: string } | null }>
+      ) => PromiseLike<{ error: { message: string } | null }>
     }
   }
 }
