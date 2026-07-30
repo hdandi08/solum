@@ -6,7 +6,11 @@ if (name !== 'production' && name !== 'development') {
 }
 
 export const adminEnvironment = resolveExactEnvironment(
-  import.meta.env,
+  {
+    VITE_ADMIN_ENV: name,
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  },
   name,
   {
     projectRef: __ADMIN_PROJECT_REF__,

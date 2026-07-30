@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { readFile } from 'node:fs/promises'
 import { resolveAdminEnvironment } from './environmentValidation'
 
 const productionEnv = {
@@ -71,5 +72,24 @@ describe('resolveAdminEnvironment', () => {
       ...developmentEnv,
       VITE_SUPABASE_URL: 'not-a-url',
     })).toThrow(/valid HTTPS URL/i)
+  })
+
+  it('allowlists only the three public runtime Vite variables', async () => {
+    const source = await readFile(
+      new URL('./environment.js', import.meta.url),
+      'utf8',
+    )
+    const referencedVariables = [
+      ...source.matchAll(/import\.meta\.env\.([A-Z0-9_]+)/g),
+    ].map(match => match[1]).sort()
+
+    expect(source).not.toMatch(
+      /resolveExactEnvironment\(\s*import\.meta\.env/,
+    )
+    expect(referencedVariables).toEqual([
+      'VITE_ADMIN_ENV',
+      'VITE_SUPABASE_ANON_KEY',
+      'VITE_SUPABASE_URL',
+    ])
   })
 })
