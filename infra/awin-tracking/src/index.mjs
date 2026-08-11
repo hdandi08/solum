@@ -1,4 +1,4 @@
-import { createCipheriv, createHash, randomBytes } from 'node:crypto'
+import { createCipheriv, createHash, randomBytes as cryptoRandomBytes } from 'node:crypto'
 
 const COOKIE_MAX_AGE_SECONDS = 2_592_000
 const TOKEN_TTL_SECONDS = 300
@@ -52,7 +52,7 @@ function readAwcCookie(cookies) {
   return undefined
 }
 
-function encryptToken(awc, secret, now) {
+function encryptToken(awc, secret, now, randomBytes) {
   const exp = Math.floor(now() / 1000) + TOKEN_TTL_SECONDS
   const payload = { v: 1, awc, exp }
   const key = createHash('sha256').update(secret).digest()
@@ -63,7 +63,13 @@ function encryptToken(awc, secret, now) {
   return { token, expires_at: new Date(exp * 1000).toISOString() }
 }
 
-export function createHandler({ allowedOrigins, cookieDomain, secret, now = Date.now }) {
+export function createHandler({
+  allowedOrigins,
+  cookieDomain,
+  secret,
+  now = Date.now,
+  randomBytes = cryptoRandomBytes,
+}) {
   const origins = new Set(allowedOrigins)
 
   return async function handler(event) {
@@ -102,7 +108,7 @@ export function createHandler({ allowedOrigins, cookieDomain, secret, now = Date
       if (typeof secret !== 'string' || secret.length === 0) {
         return response(500, { error: 'Service unavailable' }, headers)
       }
-      return response(200, encryptToken(awc, secret, now), headers)
+      return response(200, encryptToken(awc, secret, now, randomBytes), headers)
     }
 
     return response(404, { error: 'Not found' }, headers)

@@ -1,0 +1,9 @@
+{
+  "secret": "development-secret-development-secret",
+  "now": "2026-08-11T12:00:00.000Z",
+  "awc": "129171_node_vector",
+  "channel": "email",
+  "iv_base64url": "AAECAwQFBgcICQoL",
+  "token": "AAECAwQFBgcICQoLpw-EnBGjcWCb_Ieoav4xPu7NVY-p7CHjoOeH4t6FouvHh_5RDnF0isYxT5C1vN8qyYyFD7xhoZSYkuxiMc8CKJnbLA",
+  "expires_at": "2026-08-11T12:05:00.000Z"
+}

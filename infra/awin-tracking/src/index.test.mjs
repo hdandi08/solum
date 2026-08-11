@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDecipheriv, createHash } from 'node:crypto'
+import { readFile } from 'node:fs/promises'
 import { createHandler } from './index.mjs'
 
 const NOW_ISO = '2026-08-11T12:00:00.000Z'
@@ -107,6 +108,28 @@ test('resolves the HttpOnly cookie to an opaque token expiring in exactly five m
   })
 })
 
+test('locks the Node token format to the shared deterministic AES-GCM vector', async () => {
+  const vector = JSON.parse(await readFile(
+    new URL('../test-vectors/node-aes-gcm.json', import.meta.url),
+    'utf8',
+  ))
+  const response = await createHandler({
+    allowedOrigins: env.allowedOrigins,
+    cookieDomain: env.cookieDomain,
+    secret: vector.secret,
+    now: () => Date.parse(vector.now),
+    randomBytes: (size) => {
+      assert.equal(size, 12)
+      return Buffer.from(vector.iv_base64url, 'base64url')
+    },
+  })(event('/awin/resolve', { cookies: [`awc=${vector.awc}`] }))
+
+  assert.deepEqual(JSON.parse(response.body), {
+    token: vector.token,
+    expires_at: vector.expires_at,
+  })
+})
+
 test('returns token null for a missing or invalid cookie', async () => {
   for (const cookies of [undefined, ['awc='], ['awc=unsafe%20value'], ['awc=%E0%A4%A']]) {
     const response = await createHandler(env)(event('/awin/resolve', { cookies }))
@@ -123,4 +146,12 @@ test('supports preflight only for approved origins', async () => {
   assert.equal(approved.headers['access-control-allow-origin'], 'https://www.bysolum.co.uk')
   assert.equal(approved.headers['access-control-allow-methods'], 'POST,OPTIONS')
   assert.equal(rejected.statusCode, 403)
+})
+
+test('requires deployers to provide environment-specific allowed origins', async () => {
+  const template = await readFile(new URL('../template.yaml', import.meta.url), 'utf8')
+  const allowedOrigins = template.match(/  AllowedOrigins:\n([\s\S]*?)(?=\n  CookieDomain:)/)?.[1]
+
+  assert.ok(allowedOrigins, 'AllowedOrigins parameter block must exist')
+  assert.doesNotMatch(allowedOrigins, /^\s+Default:/m)
 })

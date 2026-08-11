@@ -19,7 +19,6 @@ Parameters:
     Description: ARN of the Secrets Manager secret containing the attribution encryption secret
   AllowedOrigins:
     Type: String
-    Default: https://bysolum.co.uk,https://www.bysolum.co.uk
     Description: Comma-separated exact storefront origins allowed to make credentialed requests
   CookieDomain:
     Type: String

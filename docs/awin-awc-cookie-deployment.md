@@ -82,7 +82,8 @@ The stack is defined at `infra/awin-tracking/template.yaml`. Its parameters are:
   hostname.
 - `AwinAttributionSecretArn`: the Secrets Manager ARN whose plaintext value is
   injected into the Lambda through a dynamic reference.
-- `AllowedOrigins`: a comma-separated list of exact origins. Production must
+- `AllowedOrigins`: a required comma-separated list of exact origins with no
+  stack default. Production must
   use `https://bysolum.co.uk,https://www.bysolum.co.uk`; development must use
   only the approved development storefront origin.
 - `CookieDomain`: `.bysolum.co.uk`.
@@ -112,17 +113,25 @@ hostname so the cookie remains first-party.
 
 On a landing URL containing `awc`, the browser keeps the existing bounded
 local attribution record and also sends the value once to `/awin/click` using
-`credentials: include`. Failure to reach the cookie service does not block the
-storefront and is not logged.
+`credentials: include`. A module-level once guard prevents React StrictMode
+effect replay from sending a duplicate request. Failure to reach the cookie
+service does not block the storefront and is not logged.
 
 At checkout, a valid direct `awc` remains preferred and no resolve request is
 made. Only when a direct checksum is unavailable does the browser call
 `/awin/resolve`; the resulting opaque token is sent as
-`awin_attribution_token`. The PaymentIntent function decrypts it, rejects it at
-expiry or if it claims a lifetime beyond 300 seconds, and stores only the
-validated checksum and one of `aw`, `display`, `ppc`, or `email` in Stripe
-metadata. The opaque token is not stored in Stripe, orders, analytics, or admin
-data.
+`awin_attribution_token`. That lookup has a 500 ms deadline enforced with
+`AbortController`; timeout, network, HTTP, and JSON failures return no token and
+checkout proceeds immediately without AWIN metadata. The PaymentIntent function
+decrypts a returned token, rejects it at expiry or if it claims a lifetime
+beyond 300 seconds, and stores only the validated checksum and one of `aw`,
+`display`, `ppc`, or `email` in Stripe metadata. The opaque token is not stored
+in Stripe, orders, analytics, or admin data.
+
+Node and Deno compatibility is locked by
+`infra/awin-tracking/test-vectors/node-aes-gcm.json`. The Lambda test produces
+that exact token with a fixed test-only IV, while the Deno test consumes the
+same token and verifies both pre-expiry success and expiry-boundary rejection.
 
 ## Development acceptance
 

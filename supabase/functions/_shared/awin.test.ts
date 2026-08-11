@@ -1,4 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import nodeTokenVector from '../../../infra/awin-tracking/test-vectors/node-aes-gcm.json' with { type: 'json' };
 import { buildAwinS2sUrl, normalizeOrderSource, resolveAwinCheckoutAttribution } from './awin.ts';
 
 const SECRET = 'development-secret-development-secret';
@@ -102,6 +103,21 @@ Deno.test('decrypts a valid five-minute fallback token', async () => {
     secret: SECRET,
     now: () => NOW,
   }), { awc: '129171_cookie', channel: 'aw' });
+});
+
+Deno.test('decrypts the locked token emitted by the Node implementation', async () => {
+  assertEquals(await resolveAwinCheckoutAttribution({
+    token: nodeTokenVector.token,
+    channel: nodeTokenVector.channel,
+    secret: nodeTokenVector.secret,
+    now: () => Date.parse(nodeTokenVector.now),
+  }), { awc: nodeTokenVector.awc, channel: 'email' });
+  assertEquals(await resolveAwinCheckoutAttribution({
+    token: nodeTokenVector.token,
+    channel: nodeTokenVector.channel,
+    secret: nodeTokenVector.secret,
+    now: () => Date.parse(nodeTokenVector.expires_at),
+  }), {});
 });
 
 Deno.test('fails closed for expired, overlong, malformed, or tampered tokens', async () => {

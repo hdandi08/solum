@@ -7,9 +7,10 @@ import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
 import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
-import { captureAwinAttribution, normalizeCheckoutSource, resolveAwinPaymentIntentMetadata } from '../lib/awinAttribution.js';
+import { captureAwinAttribution, normalizeCheckoutSource } from '../lib/awinAttribution.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
+import { buildFirstBoxPaymentIntentBody } from '../lib/firstBoxPaymentIntent.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import { videoFor } from '../data/productMedia.js';
@@ -837,26 +838,18 @@ export default function BuyPage() {
 
     setLoading(true);
     try {
-      const awinMetadata = await resolveAwinPaymentIntentMetadata(captureAwinAttribution());
+      const requestBody = await buildFirstBoxPaymentIntentBody({
+        kitId: selectedKit,
+        form,
+        source,
+        siteHost: window.location.hostname,
+        tikTokIds: getTikTokIds(),
+        attribution: captureAwinAttribution(),
+      });
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          kit_id:     selectedKit,
-          email:      form.email.trim().toLowerCase(),
-          first_name: form.first_name.trim(),
-          last_name:  form.last_name.trim() || null,
-          phone:      form.phone.trim() || null,
-          source,
-          site_host:  window.location.hostname,
-          ...getTikTokIds(),
-          ...awinMetadata,
-          line1:      form.line1.trim(),
-          line2:      form.line2.trim() || null,
-          city:       form.city.trim(),
-          county:     form.county.trim() || null,
-          postcode:   form.postcode.trim(),
-        }),
+        body: JSON.stringify(requestBody),
       });
       const data = await res.json();
       if (!res.ok) {
