@@ -1,43 +1,40 @@
 ========================================
 SOLUM — AWIN ADVERTISER PROFILE COPY
 ========================================
-Prepared 2026-07-22. No dashes used. Live kits only: GROUND £65, RITUAL £85.
+Prepared 2026-08-11. Live kits only: GROUND £65, RITUAL £85.
 
 
 ----------------------------------------
-FIELD 1 — SHORT SUMMARY  (directory, max 255 characters)
-Recommended (224 chars):
+FIELD 1 — SHORT SUMMARY (directory, max 255 characters)
 ----------------------------------------
 
-The only guided body care system for men. While every brand chases the face, SOLUM owns the body and tells men exactly what to use and when. One-time kits, £65 to £85 baskets, free UK delivery, 5% commission.
+Recommended:
+The only guided body care system for men. SOLUM turns daily body care into a clear ritual with one-time GROUND and RITUAL kits, £65 to £85 baskets, free UK delivery and 5% commission.
 
-
-Alternate — leads with the market gap (210 chars):
-
-No one makes a body care kit for men. SOLUM is the first: a guided system that tells men exactly what to use and when, sold as one-time kits. £65 to £85 baskets, free UK delivery, 5% commission.
+Alternate:
+SOLUM is the guided body care system for men: one-time GROUND and RITUAL kits tell customers what to use, when and how. £65 to £85 baskets, free UK delivery and 5% commission.
 
 
 ----------------------------------------
-FIELD 2 — FULL DESCRIPTION  (max 2000 characters; this version is 1998)
+FIELD 2 — FULL DESCRIPTION (max 2,000 characters)
 ----------------------------------------
 
 SOLUM. The men's body care system nobody else has built.
 
-Every men's grooming brand is fixated on the face and hair. Nobody has built a proper system for the rest of the body, the part every other brand ignores and most men are left to guess at. SOLUM is the first. No other kit on the market focuses on the body the way we do.
+Most men's grooming brands focus on face and hair. SOLUM focuses on the rest of the body, with a clear system for the areas men are usually left to guess at.
 
-And we don't just sell products and leave men to work it out. SOLUM is a guided system. Every product has an order, a place and a purpose, set out as a precise daily and weekly ritual. We tell men exactly what to use, when and how. That guidance turns a box of products into real results, and keeps customers coming back.
+SOLUM is not a random box of products. Every item has an order, a place and a purpose in a daily or weekly ritual. Customers know what to use, when to use it and how to get the result.
 
-Inside each kit: amino acid body wash, Korean bathhouse exfoliation, Moroccan clay and organic argan oil, scalp care and fast-absorbing lotion, sourced from specialist makers in the UK, Korea, Morocco and Turkey. Two one-time kits are available: GROUND (£65) and RITUAL (£85).
+GROUND is the daily body-care ritual. RITUAL adds the weekly clay-mask and argan-body-oil ritual. Both are complete, one-time kits with body wash, exfoliation, back and scalp care, and fast-absorbing lotion as appropriate to the kit. The range draws on UK and Moroccan makers and Korean bathhouse tradition.
 
 Why promote SOLUM
 
-• Nothing else like it. The only guided body care system for men, so you promote something genuinely new, with content angles competitors cannot touch.
-• High order values. First orders run £65 to £85, well above the typical grooming basket.
-• Clear product offer. Two one-time kits make the launch offer simple for audiences to understand and buy.
-• Built to convert. Premium positioning, a fast site and a clear, benefit-led story men actually trust.
-• Creative ready to go. Professional photography, video and copy blocks on request.
+• Distinctive offer. A guided body care system for men with practical content angles.
+• Strong baskets. First orders are £65 to £85.
+• Clear conversion. One-time kits make the launch offer easy to explain and buy.
+• Creative support. Photography, video and copy blocks are available on request.
 
-Program terms
+Programme terms
 
 • Commission: 5% standard commission on valid sales, with selected partner-specific arrangements agreed individually.
 • Attribution period: 30 days.
@@ -45,9 +42,9 @@ Program terms
 • Delivery: free standard UK delivery while the current launch promotion is active.
 • Subscriptions: planned for a later release and not currently available.
 • Coupon: no coupon code is required for the free-delivery promotion.
-• Payment: managed securely through Awin.
+• Payments: customers pay SOLUM through Stripe; Awin tracks affiliate attribution and commission.
 • Territory: United Kingdom.
 
-We review applications personally and work closely with grooming, fitness and lifestyle publishers, creators and cashback and loyalty sites. SOLUM is early, so there is room to grow with us. If you reach men who want to look after themselves properly, we'd like to hear from you.
+We review applications personally and work with grooming, fitness, lifestyle, cashback and loyalty partners. If your audience wants a better body-care routine, we'd like to hear from you.
 
 bysolum.co.uk

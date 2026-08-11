@@ -11,6 +11,37 @@ Task 3 replaces it with an isolated tracking-subdomain service. This document
 is the deployment handoff for that service; it does not authorise a production
 deployment.
 
+## Amplify clean-feed route
+
+Amplify serves `solum-web` (`d3pa095gzazg3c`) from app-level custom rules.
+`amplify.yml` does not update those app-level rules, so it must not be treated
+as a deployment mechanism for the clean feed route. The approved rule artifact
+is [`artefacts/solum-web-amplify-custom-rules.json`](../artefacts/solum-web-amplify-custom-rules.json).
+Its required order is:
+
+1. `/.well-known/<*>` passthrough.
+2. `/feeds/awin.csv` proxy to the fixed production `awin-feed` Edge Function.
+3. The existing SPA fallback, including its complete static-extension allow-list.
+
+Verify the committed artifact without contacting AWS:
+
+```bash
+node scripts/awin/verify-amplify-custom-rules.mjs
+```
+
+Only after separate explicit production-deployment approval, apply that exact
+artifact from the repository root:
+
+```bash
+aws amplify update-app \
+  --region eu-west-2 \
+  --app-id d3pa095gzazg3c \
+  --custom-rules file://artefacts/solum-web-amplify-custom-rules.json
+```
+
+This command changes the live Amplify app and is intentionally not run by any
+local test or verification script.
+
 ## Target architecture
 
 - Production endpoint: `https://track.bysolum.co.uk/awin/click`
@@ -62,5 +93,23 @@ remains the development browser fallback.
 Do not deploy, alter DNS, issue certificates, or run checkout/conversion tests
 against production without separate explicit approval. After an approved
 deployment, use read-only checks only: inspect the public endpoint response
-headers, deployed stack configuration, and CloudWatch error counts. Real
-customer activity is the only source of production conversion events.
+headers, deployed stack configuration, Amplify app rules, and CloudWatch error
+counts. Verify `/feeds/awin.csv` returns a successful CSV response and that
+ordinary storefront routes still use the SPA fallback.
+
+```bash
+aws amplify get-app \
+  --region eu-west-2 \
+  --app-id d3pa095gzazg3c \
+  --query 'app.customRules' \
+  --output json
+
+curl -sS -D - -o /dev/null https://bysolum.co.uk/feeds/awin.csv
+```
+
+For Awin platform acceptance, wait for naturally occurring, completed real
+customer transactions. In Awin diagnostics, confirm the resolved `cks` /
+attribution outcome is present for those transactions. Do not create synthetic
+production conversions, replay customer orders, or copy raw `awc`/`cks` values
+into logs, tickets, analytics, or documentation. Record only the diagnostic
+outcome and aggregate counts.
