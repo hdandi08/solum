@@ -18,6 +18,8 @@
 - Do not log raw `awc`, API keys, request bodies, customer email, or Stripe client secrets.
 - Do not send `awc` to PostHog, Meta, TikTok, or the admin client.
 - Stripe/orders remain the financial source of truth.
+- AWIN receives the product amount actually paid after discounts, excluding actual VAT only from the confirmed VAT effective date and excluding separately charged delivery. Never deduct internal fulfilment cost or invent a delivery amount for free/bundled delivery.
+- Persist customer-paid, discount, separately charged delivery, VAT, voucher, and commissionable values separately; `amount_pence` in the AWIN outbox is the immutable commissionable value, not accounting revenue.
 - Development uses fixture/stub provider responses.
 - Production verification is read-only; never run production checkout E2E or synthetic AWIN conversions.
 - Do not deploy production during plan execution without a separate explicit deployment instruction.
@@ -429,19 +431,70 @@ git commit -m "feat: add first-party AWIN attribution service"
 
 **Files:**
 - Create: `supabase/migrations/20260811000001_awin_conversion_outbox.sql`
+- Create: `supabase/functions/_shared/awinCommission.ts`
+- Create: `supabase/functions/_shared/awinCommission.test.ts`
 - Create: `supabase/functions/_shared/awinOutbox.ts`
 - Create: `supabase/functions/_shared/awinOutbox.test.ts`
 
 **Interfaces:**
 - Produces database RPCs `claim_awin_conversion_batch(p_limit integer, p_worker_id uuid, p_lease_seconds integer)`, `complete_awin_conversion(p_id uuid, p_worker_id uuid, p_http_status integer, p_batch_id text, p_provider_transaction_id text)`, and `retry_awin_conversion(p_id uuid, p_worker_id uuid, p_state text, p_next_attempt_at timestamptz, p_http_status integer, p_error_code text)`.
+- Produces `calculateAwinCommissionableAmount(input): { customerPaidPence: number; discountPence: number; deliveryPence: number; vatPence: number; commissionablePence: number }`. `customerPaidPence` is already after discounts, so discounts are recorded but never subtracted twice.
 - Produces `encryptAwc(awc, secret): Promise<string>`, `decryptAwc(ciphertext, secret): Promise<string>`, and `hashAwc(awc): Promise<string>`.
 - State enum: `pending | processing | sent | retry | dead_letter | suppressed`.
 
-- [ ] **Step 1: Write failing crypto and retry tests**
+- [ ] **Step 1: Write failing commission-base, crypto, and retry tests**
 
 ```ts
 import { assertEquals, assertNotEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { calculateAwinCommissionableAmount } from './awinCommission.ts'
 import { decryptAwc, encryptAwc, retryDecision } from './awinOutbox.ts'
+
+Deno.test('does not deduct VAT before the configured effective date', () => {
+  assertEquals(calculateAwinCommissionableAmount({
+    customerPaidPence: 6500,
+    discountPence: 0,
+    deliveryPence: 0,
+    paidAt: '2026-08-11T12:00:00Z',
+    vatEffectiveAt: '2026-10-01T00:00:00Z',
+    vatRateBps: 2000,
+  }), {
+    customerPaidPence: 6500,
+    discountPence: 0,
+    deliveryPence: 0,
+    vatPence: 0,
+    commissionablePence: 6500,
+  })
+})
+
+Deno.test('deducts actual VAT and separately charged delivery after the effective date', () => {
+  assertEquals(calculateAwinCommissionableAmount({
+    customerPaidPence: 7095,
+    discountPence: 500,
+    deliveryPence: 595,
+    paidAt: '2026-10-01T00:00:00Z',
+    vatEffectiveAt: '2026-10-01T00:00:00Z',
+    vatRateBps: 2000,
+  }), {
+    customerPaidPence: 7095,
+    discountPence: 500,
+    deliveryPence: 595,
+    vatPence: 1083,
+    commissionablePence: 5417,
+  })
+})
+
+Deno.test('free delivery never creates a notional fulfilment-cost deduction', () => {
+  const result = calculateAwinCommissionableAmount({
+    customerPaidPence: 8500,
+    discountPence: 0,
+    deliveryPence: 0,
+    paidAt: '2026-10-02T00:00:00Z',
+    vatEffectiveAt: '2026-10-01T00:00:00Z',
+    vatRateBps: 2000,
+  })
+  assertEquals(result.vatPence, 1417)
+  assertEquals(result.commissionablePence, 7083)
+})
 
 Deno.test('AWC encryption round-trips without plaintext output', async () => {
   const encrypted = await encryptAwc('129171_example', 'development-secret-development-secret')
@@ -459,11 +512,13 @@ Deno.test('retry decision separates transient and permanent responses', () => {
 
 - [ ] **Step 2: Run the tests and verify failure**
 
-Run: `deno test supabase/functions/_shared/awinOutbox.test.ts`
+Run: `deno test supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinOutbox.test.ts`
 
-Expected: FAIL because `awinOutbox.ts` is missing.
+Expected: FAIL because `awinCommission.ts` and `awinOutbox.ts` are missing.
 
-- [ ] **Step 3: Implement encryption and bounded retry decisions**
+- [ ] **Step 3: Implement the versioned financial policy, encryption, and bounded retry decisions**
+
+`calculateAwinCommissionableAmount` validates integer pence inputs. It first removes only `deliveryPence` actually charged to the customer. Before `vatEffectiveAt`, or when no effective date is configured, `vatPence` is zero. At or after the effective date, require a valid positive `vatRateBps` and calculate VAT-inclusive net pence as `Math.round(productGrossPence * 10000 / (10000 + vatRateBps))`; `vatPence` is the difference. `discountPence` is reporting metadata because `customerPaidPence` already reflects it.
 
 Use AES-256-GCM and return a versioned base64url envelope `v1.<iv>.<ciphertext>`. Define `MAX_ATTEMPTS = 8`. Retry `408`, `425`, `429`, and `500..599`; calculate `nextAttemptMs = min(900000, 15000 * 2 ** (attempt - 1)) + deterministic jitter injected in tests`.
 
@@ -479,8 +534,19 @@ constraint awin_conversion_outbox_channel_check
 constraint awin_conversion_outbox_group_check
   check (commission_group in ('DEFAULT','NEW','EXISTING')),
 constraint awin_conversion_outbox_amount_check check (amount_pence > 0),
+constraint awin_conversion_outbox_financial_values_check check (
+  customer_paid_pence > 0
+  and discount_pence >= 0
+  and delivery_pence >= 0
+  and vat_pence >= 0
+  and amount_pence = customer_paid_pence - delivery_pence - vat_pence
+),
+constraint awin_conversion_outbox_voucher_check
+  check (voucher_code is null or char_length(voucher_code) between 1 and 100),
 constraint awin_conversion_outbox_currency_check check (currency = 'GBP')
 ```
+
+The table stores `customer_paid_pence`, `discount_pence`, `delivery_pence`, `vat_pence`, nullable `voucher_code`, and `financial_basis_version text not null default 'solum-commission-v1'` alongside immutable `amount_pence`.
 
 Enable RLS, revoke all from `public`, `anon`, and `authenticated`, and grant only `service_role`. The claim RPC uses `FOR UPDATE SKIP LOCKED`, sets `lease_expires_at`, increments `attempt_count`, and returns at most `p_limit` rows. Completion and retry RPCs require matching `worker_id` and a live lease.
 
@@ -489,7 +555,7 @@ Enable RLS, revoke all from `public`, `anon`, and `authenticated`, and grant onl
 Run:
 
 ```bash
-deno test supabase/functions/_shared/awinOutbox.test.ts
+deno test supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinOutbox.test.ts
 supabase db lint --linked
 supabase db push --dry-run
 ```
@@ -499,7 +565,7 @@ Expected: tests pass; database lint and dry run report no destructive change. Ap
 - [ ] **Step 6: Commit outbox persistence**
 
 ```bash
-git add supabase/migrations/20260811000001_awin_conversion_outbox.sql supabase/functions/_shared/awinOutbox.ts supabase/functions/_shared/awinOutbox.test.ts
+git add supabase/migrations/20260811000001_awin_conversion_outbox.sql supabase/functions/_shared/awinCommission.ts supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinOutbox.ts supabase/functions/_shared/awinOutbox.test.ts
 git commit -m "feat: add AWIN conversion outbox"
 ```
 
@@ -525,12 +591,13 @@ git commit -m "feat: add AWIN conversion outbox"
 ```ts
 Deno.test('builds the authenticated AWIN order payload', () => {
   assertEquals(buildConversionOrder({
-    orderRef: 'pi_123', amountPence: 8500, currency: 'GBP', channel: 'aw',
-    awc: '129171_click', commissionGroup: 'DEFAULT', customerAcquisition: 'NEW',
+    orderRef: 'pi_123', amountPence: 7083, currency: 'GBP', channel: 'aw',
+    awc: '129171_click', commissionGroup: 'DEFAULT', customerAcquisition: 'NEW', voucherCode: 'RITUAL10',
   }), {
-    orderReference: 'pi_123', amount: 85, channel: 'aw', currency: 'GBP',
+    orderReference: 'pi_123', amount: 70.83, channel: 'aw', currency: 'GBP',
     awc: '129171_click', customerAcquisition: 'NEW',
-    commissionGroups: [{ code: 'DEFAULT', amount: 85 }],
+    voucher: 'RITUAL10',
+    commissionGroups: [{ code: 'DEFAULT', amount: 70.83 }],
     custom: { '1': 'solum-outbox-v1' },
   })
 })
@@ -564,6 +631,8 @@ headers: {
 ```
 
 Use `customerAcquisition: 'NEW' | 'RETURNING'`; Phase A sends `NEW` only when already known and otherwise omits it. Accept 200/202/206. For 202, retain `processing` only if a batch ID exists and schedule reconciliation; for 206, update each item independently. Never persist AWIN error messages verbatim; map them to `VALIDATION_FAILED`, `AUTH_FAILED`, `RATE_LIMITED`, `PROVIDER_5XX`, or `UNKNOWN_PROVIDER_RESPONSE`.
+
+Populate the Conversion API field `voucher` only when the outbox contains a validated non-empty `voucher_code`. Both the top-level `amount` and the single commission-group `amount` use immutable outbox `amount_pence` (the tested commissionable value), never `customer_paid_pence`.
 
 - [ ] **Step 4: Implement the authenticated worker**
 
@@ -602,6 +671,8 @@ git commit -m "feat: deliver AWIN conversions from outbox"
 
 **Files:**
 - Modify: `supabase/functions/stripe-webhook/index.ts`
+- Modify: `supabase/functions/_shared/awinCommission.ts`
+- Modify: `supabase/functions/_shared/awinCommission.test.ts`
 - Modify: `supabase/functions/_shared/purchaseSafety.ts`
 - Modify: `supabase/functions/_shared/purchaseSafety.test.ts`
 - Modify: `supabase/functions/_shared/awin.test.ts`
@@ -610,6 +681,7 @@ git commit -m "feat: deliver AWIN conversions from outbox"
 **Interfaces:**
 - Produces `classifyAwinEligibility(pi): { eligible: boolean; reason: string }`.
 - Produces `enqueueAwinConversion(supabase, input): Promise<void>`.
+- Consumes `SOLUM_VAT_EFFECTIVE_AT` and `SOLUM_VAT_RATE_BPS` only in the server webhook. If no effective date is configured, VAT is zero. If a payment is at/after the effective date, an absent or invalid rate is a retryable configuration error rather than a silent gross submission.
 - Removes runtime use of `sendAwinPurchaseEvent` and `markPaymentIntentAwinAttempted`.
 
 - [ ] **Step 1: Add failing eligibility and idempotency tests**
@@ -625,6 +697,20 @@ assertEquals(classifyAwinEligibility({ livemode: true, awc: 'x', channel: 'organ
 
 Mock two enqueue attempts for the same PaymentIntent and assert the second performs an upsert/no-op rather than creating a second row.
 
+Add webhook fixtures for these exact financial outcomes:
+
+```ts
+assertEquals(calculateAwinCommissionableAmount({
+  customerPaidPence: 6500, discountPence: 0, deliveryPence: 0,
+  paidAt: '2026-09-30T23:59:59Z', vatEffectiveAt: '2026-10-01T00:00:00Z', vatRateBps: 2000,
+}).commissionablePence, 6500)
+
+assertEquals(calculateAwinCommissionableAmount({
+  customerPaidPence: 6500, discountPence: 0, deliveryPence: 0,
+  paidAt: '2026-10-01T00:00:00Z', vatEffectiveAt: '2026-10-01T00:00:00Z', vatRateBps: 2000,
+}).commissionablePence, 5417)
+```
+
 - [ ] **Step 2: Run the focused tests and verify failure**
 
 Run: `deno test supabase/functions/_shared/purchaseSafety.test.ts supabase/functions/_shared/awin.test.ts`
@@ -639,13 +725,21 @@ After the order and address are durable—and before confirmation email, Meta, T
 {
   orderRef: pi.id,
   orderId: order.id,
-  amountPence: pi.amount,
+  customerPaidPence: pi.amount,
+  discountPence: validatedIntegerMetadata(pi.metadata.discount_amount_pence, 0),
+  deliveryPence: validatedIntegerMetadata(pi.metadata.delivery_amount_pence, 0),
+  vatPence: commission.vatPence,
+  amountPence: commission.commissionablePence,
+  voucherCode: validatedVoucher(pi.metadata.voucher_code),
+  financialBasisVersion: 'solum-commission-v1',
   currency: 'GBP',
   commissionGroup: 'DEFAULT',
   channel: awin_channel,
   awc,
 }
 ```
+
+`pi.amount` is already the customer-paid amount after Stripe discounts. Never subtract `discountPence` a second time. Current free/bundled delivery must supply `deliveryPence = 0`; do not insert the £5.95 terms figure, Royal Mail cost, or any other internal fulfilment estimate. `paidAt` comes from Stripe's immutable PaymentIntent creation/payment timestamp, and VAT applies only at or after the configured effective date.
 
 Encrypt `awc` and calculate `awc_hash` before the upsert. On eligible persistence failure, throw so Stripe retries the webhook. Remove the bounded AWIN fetch and the `awin_attempted` state transition; preserve compatibility when reading old event claim JSON.
 
@@ -654,7 +748,7 @@ Encrypt `awc` and calculate `awc_hash` before the upsert. On eligible persistenc
 Run:
 
 ```bash
-deno test supabase/functions/_shared/awin.test.ts supabase/functions/_shared/awinOutbox.test.ts supabase/functions/_shared/awinConversionApi.test.ts supabase/functions/_shared/purchaseSafety.test.ts
+deno test supabase/functions/_shared/awin.test.ts supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinOutbox.test.ts supabase/functions/_shared/awinConversionApi.test.ts supabase/functions/_shared/purchaseSafety.test.ts
 npm --prefix web run test:unit
 npm --prefix web run lint
 npm --prefix web run build
@@ -670,7 +764,7 @@ Apply the migration and deploy `stripe-webhook`, `create-first-box-payment-inten
 - [ ] **Step 6: Commit the webhook cutover**
 
 ```bash
-git add supabase/functions/stripe-webhook/index.ts supabase/functions/_shared/purchaseSafety.ts supabase/functions/_shared/purchaseSafety.test.ts supabase/functions/_shared/awin.test.ts docs/manual-changes-log.md
+git add supabase/functions/stripe-webhook/index.ts supabase/functions/_shared/awinCommission.ts supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/purchaseSafety.ts supabase/functions/_shared/purchaseSafety.test.ts supabase/functions/_shared/awin.test.ts docs/manual-changes-log.md
 git commit -m "fix: enqueue AWIN conversions durably"
 ```
 
@@ -693,7 +787,7 @@ node --test scripts/awin/verify-feed.test.mjs infra/awin-tracking/src/index.test
 npm --prefix web run test:unit
 npm --prefix web run lint
 npm --prefix web run build
-deno test supabase/functions/_shared/awin.test.ts supabase/functions/_shared/awinOutbox.test.ts supabase/functions/_shared/awinConversionApi.test.ts supabase/functions/_shared/purchaseSafety.test.ts
+deno test supabase/functions/_shared/awin.test.ts supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinOutbox.test.ts supabase/functions/_shared/awinConversionApi.test.ts supabase/functions/_shared/purchaseSafety.test.ts
 sam validate --template-file infra/awin-tracking/template.yaml
 git diff --check
 ```
@@ -706,6 +800,9 @@ Expected: every command exits 0.
 - A direct HTTPS request to `track-dev.bysolum.co.uk/awin/click` sets a 30-day HttpOnly `.bysolum.co.uk` cookie. Because the current development storefront is on `amplifyapp.com`, cross-site SameSite cookie recovery is verified through Lambda integration tests until a `dev.bysolum.co.uk` storefront domain exists; local-storage attribution remains the development browser path.
 - Resolve returns an opaque token and never the checksum.
 - One fixture payment event creates one outbox row.
+- A pre-registration £65 fixture stores customer paid/commissionable as `6500/6500`, VAT/delivery as `0/0`, and no voucher.
+- A post-effective-date £65 fixture at 20% stores customer paid/commissionable as `6500/5417` and VAT as `1083`; a free-delivery fixture still stores delivery as `0`.
+- A fixture with a real voucher preserves its validated code in the outbox and Conversion API `voucher` field; the no-code launch promotion omits the field.
 - Stubbed 429 transitions to retry; stubbed 200 transitions to sent.
 - `/feeds/awin.csv` returns two-row CSV on the development storefront.
 

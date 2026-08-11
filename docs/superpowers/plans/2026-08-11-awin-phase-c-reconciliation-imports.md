@@ -84,6 +84,7 @@ network_fee_pence integer,
 currency text not null check (currency ~ '^[A-Z]{3}$'),
 commission_group text,
 click_reference text,
+voucher_code text,
 raw_hash text not null,
 first_seen_at timestamptz not null default now(),
 last_synced_at timestamptz not null default now(),
@@ -310,11 +311,11 @@ Expected: FAIL because the reconciliation module is missing.
 
 - [ ] **Step 3: Implement classification with a 30-minute grace period**
 
-Use exact GBP pence comparison in Phase C. The function checks, in order: AWIN-only, duplicate order reference, awaiting grace, SOLUM-only, currency mismatch, value mismatch, then matched.
+Use exact GBP pence comparison between AWIN `sale_amount_pence` and the matched outbox's immutable commissionable `amount_pence`, not gross `orders.amount_pence`. The function checks, in order: AWIN-only, duplicate order reference, awaiting grace, SOLUM-only, currency mismatch, value mismatch, then matched.
 
 - [ ] **Step 4: Implement the SQL view and safe order join**
 
-Join `awin_transactions.order_ref = orders.stripe_payment_id`. Aggregate AWIN rows per `order_ref` before joining. The view exposes `awin_transaction_count`, `awin_transaction_ids`, actual commission/fee totals, and `reconciliation_state`; `gross_revenue_pence` comes from one `orders.amount_pence` value regardless of transaction count.
+Join `awin_transactions.order_ref = orders.stripe_payment_id` and the unique outbox row by `order_ref`. Aggregate AWIN rows per `order_ref` before joining. The view exposes `awin_transaction_count`, `awin_transaction_ids`, actual commission/fee totals, voucher code, customer-paid/discount/delivery/VAT/commissionable values, and `reconciliation_state`; customer-paid receipts come from one `orders.amount_pence` value regardless of transaction count, while value comparison uses one outbox `amount_pence`.
 
 Do not grant the view to `anon` or `authenticated`.
 

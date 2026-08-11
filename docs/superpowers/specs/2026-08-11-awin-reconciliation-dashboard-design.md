@@ -226,7 +226,13 @@ Table: `awin_conversion_outbox`
 | `id uuid` | Internal primary key. |
 | `order_ref text unique` | Stripe PaymentIntent ID; logical idempotency key. |
 | `order_id uuid unique` | Joined SOLUM order. |
-| `amount_pence integer` | Immutable submitted value. |
+| `customer_paid_pence integer` | Immutable gross customer receipt after discounts. |
+| `discount_pence integer` | Discount already reflected in `customer_paid_pence`; reporting only, never subtracted twice. |
+| `delivery_pence integer` | Delivery separately charged to the customer; zero for free/bundled delivery and never an internal fulfilment cost. |
+| `vat_pence integer` | Actual VAT removed only at/after the confirmed VAT effective date; zero while SOLUM is not registered. |
+| `amount_pence integer` | Immutable AWIN commissionable value: customer paid minus separately charged delivery and actual VAT. |
+| `voucher_code text` | Validated applied code, or null when no code was used. |
+| `financial_basis_version text` | Versioned server calculation policy, initially `solum-commission-v1`. |
 | `currency text` | `GBP` for current programme. |
 | `commission_group text` | `DEFAULT`, `NEW`, or `EXISTING`. |
 | `channel text` | Validated `aw`, `display`, `ppc`, or `email`. |
@@ -401,7 +407,7 @@ Each transaction/order pair is classified as:
 - `currency_mismatch`: transaction and order are not comparable directly;
 - `awaiting_network`: conversion was sent recently and is inside the normal AWIN ingestion delay.
 
-Value comparison uses exact GBP pence after applying the programme's agreed commissionable-order-value rule. If AWIN excludes delivery, VAT, discounts, or refunds differently, that rule is encoded once in a tested server helper and documented in the dashboard tooltip.
+Value comparison uses exact GBP pence after applying the programme's agreed commissionable-order-value rule. The helper treats Stripe customer-paid value as already discounted, removes only delivery separately charged to the customer, and removes VAT only from the configured effective registration date. Free/bundled delivery has value zero; internal fulfilment cost is never deducted. The dashboard displays customer-paid, discount, delivery, VAT, and commissionable values separately and documents the versioned rule in its tooltip.
 
 ## 10. Phase 4 — secure admin dashboard
 
@@ -519,13 +525,15 @@ The views are not granted to `anon` or ordinary `authenticated` users. Only serv
 
 Canonical formulas:
 
-- `gross_revenue_pence`: matched SOLUM `orders.amount_pence`, once per `order_id`.
+- `customer_paid_pence`: matched SOLUM `orders.amount_pence`, once per `order_id`; this is gross customer receipts, not accounting revenue.
+- `commissionable_revenue_pence`: matched immutable outbox `amount_pence`, once per `order_id`.
+- `accounting_revenue_pence`: customer paid less actual output VAT, kept separate from the AWIN commission base.
 - `actual_commission_pence`: imported AWIN transaction commission for selected statuses.
 - `actual_network_fee_pence`: imported AWIN network fee.
 - `refund_pence`: canonical SOLUM/Stripe refunded value once refund data is available.
-- `net_revenue_pence = gross_revenue_pence - actual_commission_pence - actual_network_fee_pence - refund_pence`.
+- `net_cash_after_affiliate_pence = customer_paid_pence - actual_commission_pence - actual_network_fee_pence - refund_pence`.
 - `conversion_rate = matched_orders / clicks`.
-- `aov = gross_revenue_pence / matched_orders`.
+- `aov = customer_paid_pence / matched_orders`.
 - `publisher_epc = approved_commission_pence / clicks`.
 
 If AWIN does not expose network fee through the available API/account response, the dashboard displays `Unavailable`; it does not silently assume zero.

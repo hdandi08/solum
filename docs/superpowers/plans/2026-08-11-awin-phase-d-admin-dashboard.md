@@ -77,7 +77,7 @@ Expected: FAIL because the reporting module is missing.
 
 - [ ] **Step 3: Implement canonical formulas**
 
-Deduplicate matched orders by `orderId`. Set `net_revenue_pence` to null when actual network fee is unavailable. Use `approvedCommissionPence / clicks` for publisher EPC and `grossRevenue / matchedOrders` for AOV.
+Deduplicate matched orders by `orderId`. Keep gross customer receipts, accounting revenue, AWIN commissionable value, VAT, delivery, discounts, commission, fee, and refunds as distinct measures. Set affiliate net cash to null when actual network fee is unavailable. Use `approvedCommissionPence / clicks` for publisher EPC and customer-paid receipts divided by matched orders for AOV.
 
 - [ ] **Step 4: Create reporting views**
 
@@ -86,8 +86,9 @@ Deduplicate matched orders by `orderId`. Set `net_revenue_pence` to null when ac
 ```text
 order_id, order_created_at, masked_order_ref, publisher_id, publisher_name,
 publisher_category, retain_protected, submitted_commission_group,
-reported_commission_group, customer_acquisition, solum_amount_pence,
-awin_sale_amount_pence, commission_pence, network_fee_pence, refund_pence,
+reported_commission_group, customer_acquisition, customer_paid_pence,
+discount_pence, delivery_pence, vat_pence, commissionable_pence,
+awin_sale_amount_pence, voucher_code, commission_pence, network_fee_pence, refund_pence,
 awin_status, delivery_state, reconciliation_state, last_synced_at
 ```
 
@@ -406,7 +407,7 @@ Expected: FAIL because the page does not exist.
 
 - [ ] **Step 3: Implement filters and summary**
 
-Render controls for date range, status, publisher, category, commission group, customer type, and reconciliation state. Summary cards show orders, gross revenue, actual commission, network fee, net revenue, delivery success, AWIN-only, and SOLUM-only counts.
+Render controls for date range, status, publisher, category, commission group, customer type, voucher, and reconciliation state. Summary cards show orders, customer-paid receipts, commissionable value, actual VAT, actual commission, network fee, affiliate net cash, delivery success, AWIN-only, and SOLUM-only counts. Tooltips must state that free/bundled delivery has no notional deduction and VAT is removed only from the confirmed effective date.
 
 - [ ] **Step 4: Implement the four data sections**
 
