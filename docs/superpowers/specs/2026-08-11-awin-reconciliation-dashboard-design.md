@@ -1,7 +1,7 @@
 # SOLUM — AWIN Tracking, Reconciliation, and Partner Performance Design
 
 > Date: 2026-08-11
-> Status: approved architecture; written specification awaiting review
+> Status: approved 2026-08-11; implementation split into four phase plans
 > Advertiser: SOLUM (`129171`)
 > Goal: make AWIN conversion delivery reliable, reconcile every AWIN transaction to one SOLUM order, and show publisher and commission performance in the secure admin dashboard without double-counting revenue across channels.
 
