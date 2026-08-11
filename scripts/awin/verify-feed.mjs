@@ -5,8 +5,26 @@ const AWIN_FEED_HEADER = [
 ]
 
 const EXPECTED_KITS = {
-  ground: { search_price: '65.00', currency: 'GBP', brand_name: 'SOLUM', delivery_cost: '0.00' },
-  ritual: { search_price: '85.00', currency: 'GBP', brand_name: 'SOLUM', delivery_cost: '0.00' },
+  ground: {
+    product_name: "SOLUM GROUND Kit — Complete Men's Body Ritual",
+    merchant_image_url: 'https://bysolum.co.uk/products/kit/ground.webp',
+    search_price: '65.00',
+    currency: 'GBP',
+    merchant_deep_link: 'https://bysolum.co.uk/buy?kit=ground',
+    brand_name: 'SOLUM',
+    merchant_category: 'Health & Beauty > Personal Care > Cosmetics > Skin Care',
+    delivery_cost: '0.00',
+  },
+  ritual: {
+    product_name: "SOLUM RITUAL Kit — Complete Men's Body Ritual",
+    merchant_image_url: 'https://bysolum.co.uk/products/kit/still.webp',
+    search_price: '85.00',
+    currency: 'GBP',
+    merchant_deep_link: 'https://bysolum.co.uk/buy?kit=ritual',
+    brand_name: 'SOLUM',
+    merchant_category: 'Health & Beauty > Personal Care > Cosmetics > Skin Care',
+    delivery_cost: '0.00',
+  },
 }
 
 function parseCsv(text) {

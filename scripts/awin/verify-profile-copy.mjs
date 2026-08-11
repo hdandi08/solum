@@ -8,6 +8,8 @@ const REQUIRED_TERMS = [
   'Payments: customers pay SOLUM through Stripe; Awin tracks affiliate attribution and commission.',
 ]
 
+const REQUIRED_KIT_CLAIM = 'GROUND includes the weekly clay mask. RITUAL adds organic argan body oil and the mixing bowl.'
+
 function cleanField(value) {
   return value.replace(/(?:\n\s*-{3,}\s*)+$/, '').trim()
 }
@@ -40,6 +42,7 @@ export function assertAwinProfileFields({ recommended, alternate, full }) {
   for (const term of REQUIRED_TERMS) {
     if (!full.includes(term)) throw new Error('AWIN programme terms are incomplete')
   }
+  if (!full.includes(REQUIRED_KIT_CLAIM)) throw new Error('AWIN profile kit claim must keep the clay mask in GROUND')
   if (/Inside each kit:[\s\S]*?argan/i.test(full)) throw new Error('AWIN profile incorrectly assigns argan oil to each kit')
   if (/Turkey/i.test(full)) throw new Error('AWIN profile incorrectly claims Turkish sourcing for live kits')
 }

@@ -26,3 +26,15 @@ test('rejects an AWIN full description above the 2,000-character limit', () => {
     /2,000/i,
   )
 })
+
+test('rejects a claim that RITUAL adds the clay mask already in GROUND', async () => {
+  const fields = extractAwinProfileFields(await readFile(profilePath, 'utf8'))
+  const inaccurate = {
+    ...fields,
+    full: fields.full.replace(
+      'GROUND includes the weekly clay mask. RITUAL adds organic argan body oil and the mixing bowl.',
+      'GROUND is the daily body-care ritual. RITUAL adds the weekly clay-mask and argan-body-oil ritual.',
+    ),
+  }
+  assert.throws(() => assertAwinProfileFields(inaccurate), /clay/i)
+})
