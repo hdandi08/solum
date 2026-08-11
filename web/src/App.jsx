@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import { capture, getTikTokIds } from './lib/analytics';
 import { captureAwinAttribution } from './lib/awinAttribution';
+import { ensureAwinMasterTag, mustReloadWithoutAwin, shouldLoadAwinMasterTag } from './lib/awinMasterTag';
 import OfferBar from './components/OfferBar.jsx';
 import FullSite from './pages/FullSite';
 import './styles/global.css';
@@ -64,6 +65,27 @@ function AuthRedirectGuard() {
   return null
 }
 
+function AwinMasterTagGate() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    if (mustReloadWithoutAwin({
+      pathname,
+      masterTagPresent: Boolean(document.getElementById('solum-awin-mastertag')),
+    })) {
+      window.location.replace(window.location.href)
+      return
+    }
+    if (shouldLoadAwinMasterTag({
+      hostname: window.location.hostname,
+      pathname,
+      webdriver: navigator.webdriver,
+    })) ensureAwinMasterTag(document)
+  }, [pathname])
+
+  return null
+}
+
 export default function App() {
   useEffect(() => { initQualifiedVisitTracker(); }, []);
 
@@ -96,6 +118,7 @@ export default function App() {
   }, []);
   return (
     <BrowserRouter>
+      <AwinMasterTagGate />
       <OfferBar />
       <AuthRedirectGuard />
       <Suspense fallback={<RouteFallback />}>

@@ -153,14 +153,5 @@
   <body style="background:#08090b">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <!-- Awin MasterTag — production visitors only; never development or WebDriver. -->
-    <script>
-      if(/^(www\.)?bysolum\.co\.uk$/.test(location.hostname) && navigator.webdriver !== true){
-        var awin=document.createElement('script');
-        awin.src='https://www.dwin1.com/129171.js';
-        awin.defer=true;
-        document.body.appendChild(awin);
-      }
-    </script>
   </body>
 </html>
