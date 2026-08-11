@@ -7,7 +7,7 @@ import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
 import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
-import { captureAwinAttribution, normalizeCheckoutSource, toAwinPaymentIntentMetadata } from '../lib/awinAttribution.js';
+import { captureAwinAttribution, normalizeCheckoutSource, resolveAwinPaymentIntentMetadata } from '../lib/awinAttribution.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
@@ -837,6 +837,7 @@ export default function BuyPage() {
 
     setLoading(true);
     try {
+      const awinMetadata = await resolveAwinPaymentIntentMetadata(captureAwinAttribution());
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
@@ -849,7 +850,7 @@ export default function BuyPage() {
           source,
           site_host:  window.location.hostname,
           ...getTikTokIds(),
-          ...toAwinPaymentIntentMetadata(captureAwinAttribution()),
+          ...awinMetadata,
           line1:      form.line1.trim(),
           line2:      form.line2.trim() || null,
           city:       form.city.trim(),

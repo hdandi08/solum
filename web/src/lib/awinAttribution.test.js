@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ATTRIBUTION_TTL_MS,
   normalizeCheckoutSource,
+  resolveAwinPaymentIntentMetadata,
   resolveAwinAttribution,
   toAwinPaymentIntentMetadata,
 } from './awinAttribution.js';
@@ -84,6 +85,8 @@ describe('toAwinPaymentIntentMetadata', () => {
       .toEqual({ awc: 'a'.repeat(500), awin_channel: 'aw' });
     expect(toAwinPaymentIntentMetadata({ awc: 'a'.repeat(501), channel: 'aw' }))
       .toEqual({ awin_channel: 'aw' });
+    expect(toAwinPaymentIntentMetadata({ awc: 'unsafe value', channel: 'aw' }))
+      .toEqual({ awin_channel: 'aw' });
   });
 
   it('prevents oversized URL or stored AWC values from reaching metadata', () => {
@@ -101,5 +104,35 @@ describe('toAwinPaymentIntentMetadata', () => {
 
     expect(toAwinPaymentIntentMetadata(fromUrl)).toEqual({ awin_channel: 'aw' });
     expect(toAwinPaymentIntentMetadata(fromStorage)).toEqual({ awin_channel: 'aw' });
+  });
+});
+
+describe('resolveAwinPaymentIntentMetadata', () => {
+  it('prefers a valid direct checksum without resolving a token', async () => {
+    let resolveCount = 0;
+    const metadata = await resolveAwinPaymentIntentMetadata(
+      { awc: '129171_direct', channel: 'aw' },
+      async () => {
+        resolveCount += 1;
+        return 'opaque-token';
+      },
+    );
+
+    expect(metadata).toEqual({ awc: '129171_direct', awin_channel: 'aw' });
+    expect(resolveCount).toBe(0);
+  });
+
+  it('uses an opaque token only when a direct checksum is unavailable', async () => {
+    await expect(resolveAwinPaymentIntentMetadata(
+      { awc: 'unsafe value', channel: 'display' },
+      async () => 'opaque-token',
+    )).resolves.toEqual({ awin_attribution_token: 'opaque-token', awin_channel: 'display' });
+  });
+
+  it('fails closed when token resolution fails', async () => {
+    await expect(resolveAwinPaymentIntentMetadata(
+      { channel: 'email' },
+      async () => { throw new Error('unavailable'); },
+    )).resolves.toEqual({ awin_channel: 'email' });
   });
 });

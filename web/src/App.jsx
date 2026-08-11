@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
 import { capture, getTikTokIds } from './lib/analytics';
 import { captureAwinAttribution } from './lib/awinAttribution';
+import { storeAwcCookie } from './lib/awinCookieBridge';
 import { ensureAwinMasterTag, mustReloadWithoutAwin, shouldLoadAwinMasterTag } from './lib/awinMasterTag';
 import OfferBar from './components/OfferBar.jsx';
 import FullSite from './pages/FullSite';
@@ -91,7 +92,12 @@ export default function App() {
 
   // Capture affiliate/ad attribution (Awin awc, TikTok ttclid) on first landing,
   // on ANY page, so it survives internal navigation to /buy.
-  useEffect(() => { captureAwinAttribution(); getTikTokIds(); }, []);
+  useEffect(() => {
+    const urlAwc = new URLSearchParams(window.location.search).get('awc');
+    if (urlAwc !== null) storeAwcCookie(urlAwc).catch(() => {});
+    captureAwinAttribution();
+    getTikTokIds();
+  }, []);
 
   // Canonical buy-intent event: record EVERY click that sends the visitor to
   // /buy, site-wide, via delegation — covers <a href="/buy..."> links and any

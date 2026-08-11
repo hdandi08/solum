@@ -1,7 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
-import { normalizeAwinChannel, normalizeOrderSource } from '../_shared/awin.ts';
+import { normalizeOrderSource, resolveAwinCheckoutAttribution } from '../_shared/awin.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -32,7 +32,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id = body.kit_id;
     email  = body.email?.trim().toLowerCase();
-    const { first_name, last_name, source, phone, site_host, line1, line2, city, postcode, ttclid, ttp, awc, awin_channel } = body;
+    const {
+      first_name, last_name, source, phone, site_host, line1, line2, city,
+      postcode, ttclid, ttp, awc, awin_channel, awin_attribution_token,
+    } = body;
 
     if (!KIT_PENCE[kit_id!]) {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), {
@@ -54,8 +57,12 @@ Deno.serve(async (req) => {
     }
 
     const effectiveSource = normalizeOrderSource(source);
-    const effectiveAwinChannel = normalizeAwinChannel(awin_channel);
-    const effectiveAwc = typeof awc === 'string' ? awc.trim() : '';
+    const awinAttribution = await resolveAwinCheckoutAttribution({
+      awc,
+      token: awin_attribution_token,
+      channel: awin_channel,
+      secret: Deno.env.get('AWIN_ATTRIBUTION_SECRET') ?? '',
+    });
     const amount = KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
@@ -99,8 +106,8 @@ Deno.serve(async (req) => {
         site_host:    site_host ?? '',
         ttclid:       ttclid ?? '',
         ttp:          ttp ?? '',
-        ...(effectiveAwc && effectiveAwc.length <= 500 ? { awc: effectiveAwc } : {}),
-        ...(effectiveAwinChannel ? { awin_channel: effectiveAwinChannel } : {}),
+        ...(awinAttribution.awc ? { awc: awinAttribution.awc } : {}),
+        ...(awinAttribution.channel ? { awin_channel: awinAttribution.channel } : {}),
         dispatch_date: fmtDay(dispatch),
         arrival_date:  fmtDay(arrival),
       },
@@ -128,8 +135,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (err) {
-    console.error('FIRST_BOX_PAYMENT_INTENT_ERROR', err.message, { kit_id, email });
+  } catch {
+    console.error('FIRST_BOX_PAYMENT_INTENT_ERROR', { kit_id });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.co.uk.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },

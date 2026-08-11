@@ -1,7 +1,10 @@
+import { resolveAwcToken } from './awinCookieBridge.js';
+
 export const ATTRIBUTION_STORAGE_KEY = 'solum_awin_attribution';
 export const ATTRIBUTION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 const MAX_AWC_LENGTH = 500;
+const VALID_AWC = /^[A-Za-z0-9._~-]+$/;
 const VALID_ORDER_SOURCES = new Set(['first_batch', 'gift', 'tiktok_shop']);
 const VALID_CHANNELS = new Set(['aw', 'display', 'ppc', 'email']);
 const SEARCH_SIGNALS = new Set(['google', 'bing', 'cpc', 'ppc', 'paid_search']);
@@ -17,7 +20,7 @@ export function normalizeCheckoutSource(rawSource) {
 function normalizeAwc(value) {
   if (typeof value !== 'string') return undefined;
   const awc = value.trim();
-  return awc && awc.length <= MAX_AWC_LENGTH ? awc : undefined;
+  return awc && awc.length <= MAX_AWC_LENGTH && VALID_AWC.test(awc) ? awc : undefined;
 }
 
 function validExistingAttribution(existing, now) {
@@ -138,4 +141,21 @@ export function toAwinPaymentIntentMetadata(attribution = {}) {
     ...(awc ? { awc } : {}),
     ...(VALID_CHANNELS.has(attribution.channel) ? { awin_channel: attribution.channel } : {}),
   };
+}
+
+export async function resolveAwinPaymentIntentMetadata(
+  attribution = {},
+  tokenResolver = resolveAwcToken,
+) {
+  const directMetadata = toAwinPaymentIntentMetadata(attribution);
+  if (directMetadata.awc) return directMetadata;
+
+  try {
+    const token = await tokenResolver();
+    return typeof token === 'string' && token.length > 0
+      ? { ...directMetadata, awin_attribution_token: token }
+      : directMetadata;
+  } catch {
+    return directMetadata;
+  }
 }

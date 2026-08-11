@@ -1,5 +1,32 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import { buildAwinS2sUrl, normalizeOrderSource } from './awin.ts';
+import { buildAwinS2sUrl, normalizeOrderSource, resolveAwinCheckoutAttribution } from './awin.ts';
+
+const SECRET = 'development-secret-development-secret';
+const NOW = Date.parse('2026-08-11T12:00:00.000Z');
+
+function base64Url(bytes: Uint8Array): string {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+}
+
+async function encryptFixture(
+  payload: Record<string, unknown>,
+  secret = SECRET,
+): Promise<string> {
+  const keyBytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
+  const key = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['encrypt']);
+  const iv = Uint8Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  const ciphertextAndTag = new Uint8Array(await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    new TextEncoder().encode(JSON.stringify(payload)),
+  ));
+  const packed = new Uint8Array(iv.length + ciphertextAndTag.length);
+  packed.set(iv);
+  packed.set(ciphertextAndTag, iv.length);
+  return base64Url(packed);
+}
 
 Deno.test('normalizes Awin source away from the order-flow source', () => {
   assertEquals(normalizeOrderSource('aw'), 'first_batch');
@@ -50,4 +77,54 @@ Deno.test('builds the required S2S merchant fields', () => {
   assertEquals(url.searchParams.get('ref'), 'pi_789');
   assertEquals(url.searchParams.get('ch'), 'email');
   assertEquals(url.searchParams.get('cks'), 'checksum');
+});
+
+Deno.test('prefers a valid direct checksum over the opaque fallback token', async () => {
+  assertEquals(await resolveAwinCheckoutAttribution({
+    awc: ' 129171_direct ',
+    token: 'not-a-token',
+    channel: 'display',
+    secret: SECRET,
+    now: () => NOW,
+  }), { awc: '129171_direct', channel: 'display' });
+});
+
+Deno.test('decrypts a valid five-minute fallback token', async () => {
+  const token = await encryptFixture({
+    v: 1,
+    awc: '129171_cookie',
+    exp: Math.floor(NOW / 1000) + 300,
+  });
+
+  assertEquals(await resolveAwinCheckoutAttribution({
+    token,
+    channel: 'aw',
+    secret: SECRET,
+    now: () => NOW,
+  }), { awc: '129171_cookie', channel: 'aw' });
+});
+
+Deno.test('fails closed for expired, overlong, malformed, or tampered tokens', async () => {
+  const expired = await encryptFixture({ v: 1, awc: 'expired', exp: Math.floor(NOW / 1000) });
+  const overlong = await encryptFixture({ v: 1, awc: 'future', exp: Math.floor(NOW / 1000) + 301 });
+  const valid = await encryptFixture({ v: 1, awc: 'valid', exp: Math.floor(NOW / 1000) + 300 });
+  const tampered = `${valid.slice(0, -1)}${valid.endsWith('A') ? 'B' : 'A'}`;
+
+  for (const token of [expired, overlong, 'not-a-token', tampered]) {
+    assertEquals(await resolveAwinCheckoutAttribution({
+      token,
+      channel: 'aw',
+      secret: SECRET,
+      now: () => NOW,
+    }), {});
+  }
+});
+
+Deno.test('fails closed for an invalid direct checksum when no valid fallback exists', async () => {
+  assertEquals(await resolveAwinCheckoutAttribution({
+    awc: 'unsafe value',
+    channel: 'aw',
+    secret: SECRET,
+    now: () => NOW,
+  }), {});
 });

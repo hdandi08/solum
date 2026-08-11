@@ -74,6 +74,56 @@ Production CORS accepts credentialed requests only from
 only `POST`, rate-limits requests through API Gateway, and logs no raw `awc`,
 credentials, or request bodies.
 
+The stack is defined at `infra/awin-tracking/template.yaml`. Its parameters are:
+
+- `TrackingDomainName`: exactly `track-dev.bysolum.co.uk` or
+  `track.bysolum.co.uk`.
+- `CertificateArn`: an ACM certificate ARN issued in `eu-west-2` for that
+  hostname.
+- `AwinAttributionSecretArn`: the Secrets Manager ARN whose plaintext value is
+  injected into the Lambda through a dynamic reference.
+- `AllowedOrigins`: a comma-separated list of exact origins. Production must
+  use `https://bysolum.co.uk,https://www.bysolum.co.uk`; development must use
+  only the approved development storefront origin.
+- `CookieDomain`: `.bysolum.co.uk`.
+
+The same secret plaintext must be configured as
+`AWIN_ATTRIBUTION_SECRET` for the `create-first-box-payment-intent` Supabase
+function. It is used only to decrypt the five-minute opaque token. Never put
+the secret, an `awc`, a request body, an email address, or a Stripe client
+secret in a command line, deployment output, log, ticket, or screenshot.
+
+Before any separately approved deployment, run locally:
+
+```bash
+node --test infra/awin-tracking/src/index.test.mjs
+npm --prefix web run test:unit -- src/lib/awinCookieBridge.test.js src/lib/awinAttribution.test.js
+deno test supabase/functions/_shared/awin.test.ts
+sam validate --template-file infra/awin-tracking/template.yaml
+```
+
+After deployment, map the selected hostname to the stack's
+`CustomDomainTarget` output using an approved DNS change. Do not point either
+tracking hostname at the storefront CloudFront distribution. The
+`ApiEndpoint` output is diagnostic only; browser traffic uses the custom
+hostname so the cookie remains first-party.
+
+## Browser and checkout flow
+
+On a landing URL containing `awc`, the browser keeps the existing bounded
+local attribution record and also sends the value once to `/awin/click` using
+`credentials: include`. Failure to reach the cookie service does not block the
+storefront and is not logged.
+
+At checkout, a valid direct `awc` remains preferred and no resolve request is
+made. Only when a direct checksum is unavailable does the browser call
+`/awin/resolve`; the resulting opaque token is sent as
+`awin_attribution_token`. The PaymentIntent function decrypts it, rejects it at
+expiry or if it claims a lifetime beyond 300 seconds, and stores only the
+validated checksum and one of `aw`, `display`, `ppc`, or `email` in Stripe
+metadata. The opaque token is not stored in Stripe, orders, analytics, or admin
+data.
+
 ## Development acceptance
 
 Use only development fixtures and the development tracking hostname to verify:

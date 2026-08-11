@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Isolated first-party AWIN attribution cookie service
+
+Parameters:
+  TrackingDomainName:
+    Type: String
+    Default: track-dev.bysolum.co.uk
+    AllowedValues:
+      - track-dev.bysolum.co.uk
+      - track.bysolum.co.uk
+  CertificateArn:
+    Type: String
+    Description: ARN of the ACM certificate for the tracking domain in eu-west-2
+    AllowedPattern: '^arn:[^:]+:acm:eu-west-2:[0-9]{12}:certificate/.+$'
+    ConstraintDescription: The certificate must be an eu-west-2 ACM certificate ARN
+  AwinAttributionSecretArn:
+    Type: String
+    Description: ARN of the Secrets Manager secret containing the attribution encryption secret
+  AllowedOrigins:
+    Type: String
+    Default: https://bysolum.co.uk,https://www.bysolum.co.uk
+    Description: Comma-separated exact storefront origins allowed to make credentialed requests
+  CookieDomain:
+    Type: String
+    Default: .bysolum.co.uk
+
+Resources:
+  TrackingHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 10
+        ThrottlingBurstLimit: 20
+
+  TrackingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - arm64
+      MemorySize: 128
+      Timeout: 5
+      Environment:
+        Variables:
+          ALLOWED_ORIGINS: !Ref AllowedOrigins
+          COOKIE_DOMAIN: !Ref CookieDomain
+          AWIN_ATTRIBUTION_SECRET: !Sub '{{resolve:secretsmanager:${AwinAttributionSecretArn}:SecretString}}'
+      Events:
+        StoreClick:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TrackingHttpApi
+            Path: /awin/click
+            Method: POST
+        ResolveClick:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TrackingHttpApi
+            Path: /awin/resolve
+            Method: POST
+        Preflight:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TrackingHttpApi
+            Path: /awin/{proxy+}
+            Method: OPTIONS
+
+  TrackingFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${TrackingFunction}
+      RetentionInDays: 14
+
+  TrackingDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: !Ref TrackingDomainName
+      DomainNameConfigurations:
+        - CertificateArn: !Ref CertificateArn
+          EndpointType: REGIONAL
+          SecurityPolicy: TLS_1_2
+
+  TrackingApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: TrackingHttpApiApiGatewayDefaultStage
+    Properties:
+      ApiId: !Ref TrackingHttpApi
+      DomainName: !Ref TrackingDomain
+      Stage: $default
+
+Outputs:
+  ApiEndpoint:
+    Description: Regional HTTP API endpoint
+    Value: !Sub https://${TrackingHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}
+  CustomDomainTarget:
+    Description: Regional API Gateway target for the custom-domain DNS record
+    Value: !GetAtt TrackingDomain.RegionalDomainName
