@@ -24,6 +24,9 @@ frontend:
     - source: '/.well-known/<*>'
       target: '/.well-known/<*>'
       status: '200'
+    - source: '/feeds/awin.csv'
+      target: 'https://gvfptmjluxpngfjendbi.supabase.co/functions/v1/awin-feed'
+      status: '200'
     - source: '</^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|mp4|webm|csv)$)([^.]+$)/>'
       target: /index.html
       status: '200'

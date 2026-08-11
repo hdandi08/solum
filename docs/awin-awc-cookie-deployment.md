@@ -1,92 +1,66 @@
-# Awin server-side `awc` cookie — deployment runbook
+# Awin first-party `awc` cookie — tracking-subdomain deployment handoff
 
-Sets a first-party, **HttpOnly + Secure** `awc` cookie from the `?awc=` landing
-parameter on affiliate clicks, so Awin can read it (via the `cks` parameter) when
-a transaction fires.
+## Status
 
-**Why:** the Awin MasterTag already sets an `awc` cookie client-side, but
-Safari / iOS ITP caps JavaScript-set cookies at **7 days**. That would silently
-shrink our **45-day** cookie window on a large share of mobile visitors. A
-server-set HttpOnly cookie is not subject to that cap.
+The former Amplify/CloudFront Function deployment is **superseded**. Do not
+create, publish, associate, or re-associate the old CloudFront Function. The
+Amplify-managed storefront distribution cannot provide the required durable
+cookie endpoint safely.
 
-**Stack reality:** bysolum.co.uk is a static React/Vite SPA on AWS Amplify
-(CloudFront). There is no PHP/server layer, and Amplify static custom headers
-cannot read a query-parameter value. The correct mechanism is a **CloudFront
-Function on `viewer-response`**. Function code: `scripts/awin/awc-cookie-cloudfront-function.js`.
+Task 3 replaces it with an isolated tracking-subdomain service. This document
+is the deployment handoff for that service; it does not authorise a production
+deployment.
 
-> CloudFront Functions run in `us-east-1` (CloudFront is global). Use
-> `--region us-east-1` on every command below, regardless of our eu-west-2 default.
+## Target architecture
 
----
+- Production endpoint: `https://track.bysolum.co.uk/awin/click`
+- Development endpoint: `https://track-dev.bysolum.co.uk/awin/click`
+- Runtime: API Gateway HTTP API and Lambda with a custom domain in `eu-west-2`
+- Cookie scope: `.bysolum.co.uk`
+- Cookie lifetime: 30 days (`Max-Age=2592000`)
 
-## 1. Find the Amplify app's CloudFront distribution
+The browser sends a credentialed `POST` containing the landing-page checksum.
+The service validates it, stores it in an HttpOnly cookie, and returns no
+checksum in its response. `POST /awin/resolve` reads that cookie and returns a
+short-lived opaque token for checkout; it never returns the checksum itself.
 
-Amplify serves the custom domain through a managed CloudFront distribution.
+The cookie must be set with:
 
-```bash
-aws cloudfront list-distributions --region us-east-1 \
-  --query "DistributionList.Items[?contains(Aliases.Items, 'www.bysolum.co.uk') || contains(Aliases.Items, 'bysolum.co.uk')].{Id:Id,Domain:DomainName,Aliases:Aliases.Items}" \
-  --output table
+```text
+awc=<validated-value>; Domain=.bysolum.co.uk; Path=/; Max-Age=2592000; Secure; HttpOnly; SameSite=Lax
 ```
 
-Note the **distribution Id** (looks like `E123ABC...`).
+## Task 3 deployment requirements
 
-## 2. Create and publish the function
+Task 3 must deploy the `infra/awin-tracking` SAM stack only after its local
+tests and `sam validate` pass. The stack requires separate production and
+development custom domains, an ACM certificate in `eu-west-2`, and an
+`AWIN_ATTRIBUTION_SECRET` supplied from Secrets Manager. It must not modify the
+storefront CloudFront distribution.
 
-```bash
-aws cloudfront create-function --region us-east-1 \
-  --name solum-awin-awc-cookie \
-  --function-config Comment="Set Awin awc HttpOnly cookie from ?awc=",Runtime="cloudfront-js-2.0" \
-  --function-code fileb://scripts/awin/awc-cookie-cloudfront-function.js
-# → note the ETag in the output, then:
+Production CORS accepts credentialed requests only from
+`https://bysolum.co.uk` and `https://www.bysolum.co.uk`. The endpoint accepts
+only `POST`, rate-limits requests through API Gateway, and logs no raw `awc`,
+credentials, or request bodies.
 
-aws cloudfront publish-function --region us-east-1 \
-  --name solum-awin-awc-cookie --if-match <ETag-from-create>
-# → note the published function ARN:
-#   arn:aws:cloudfront::798470762256:function/solum-awin-awc-cookie
-```
+## Development acceptance
 
-## 3. Associate on viewer-response (Console is simplest)
+Use only development fixtures and the development tracking hostname to verify:
 
-**Console:** CloudFront → Distributions → *[the id from step 1]* → **Behaviors**
-→ select the Default (`*`) behavior → **Edit** → **Function associations** →
-**Viewer response** → type **CloudFront Function** → select `solum-awin-awc-cookie`
-→ Save. Repeat for any other behavior that serves HTML (e.g. `/index.html`).
+1. A valid click request receives a 30-day HttpOnly `.bysolum.co.uk` cookie.
+2. An unapproved origin is rejected.
+3. Resolve returns an opaque short-lived token, never the checksum.
+4. No customer data, raw checksum, or secret is written to logs.
 
-**CLI alternative:** `get-distribution-config` → add a `FunctionAssociations`
-entry (`EventType=viewer-response`, `FunctionARN=<arn>`) to the
-`DefaultCacheBehavior` → `update-distribution --if-match <ETag>`.
+The development storefront currently uses `amplifyapp.com`, so cross-site
+cookie recovery remains covered by the Lambda integration tests until a
+`dev.bysolum.co.uk` storefront exists. Bounded local-storage attribution
+remains the development browser fallback.
 
-## 4. Test
+## Production guardrail
 
-```bash
-curl -sI "https://www.bysolum.co.uk/?awc=TEST_123" | grep -i set-cookie
-# expect: set-cookie: awc=TEST_123; Domain=.bysolum.co.uk; Path=/; Max-Age=31536000; Secure; HttpOnly; SameSite=Lax
-```
-
-Also check in a browser: DevTools → Application → Cookies → `awc` present, with
-**HttpOnly** and **Secure** flags ticked. Confirm a request *without* `?awc=`
-sets **no** cookie.
-
-## 5. Amplify redeploy caveat (must verify)
-
-Amplify manages this distribution. After the **next Amplify build/deploy**,
-re-run the step 4 `curl` to confirm the function association survived. If Amplify
-strips it:
-- fall back to **Lambda@Edge** (same logic, Node.js, `viewer-response`), which
-  attaches at the distribution level and is less likely to be reset, **or**
-- put a thin CloudFront distribution in front that we fully own.
-
-## 6. Confirm with Awin
-
-Once live, Awin transactions should carry the `awc` value in the `cks`
-parameter (instead of the literal `{{awc}}`). Verify in Awin's tag/transaction
-diagnostics.
-
----
-
-### Rollback
-Remove the function association from the behavior (Console → Behaviors → Edit →
-clear the Viewer response function), then optionally
-`aws cloudfront delete-function --region us-east-1 --name solum-awin-awc-cookie --if-match <ETag>`.
-No app code or deploy is involved, so rollback is immediate and risk-free.
+Do not deploy, alter DNS, issue certificates, or run checkout/conversion tests
+against production without separate explicit approval. After an approved
+deployment, use read-only checks only: inspect the public endpoint response
+headers, deployed stack configuration, and CloudWatch error counts. Real
+customer activity is the only source of production conversion events.
