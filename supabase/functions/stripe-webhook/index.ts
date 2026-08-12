@@ -4,9 +4,11 @@ import { sendPosthogPurchase } from '../_shared/posthog.ts';
 import { calculateAwinCommissionableAmount, enqueueAwinConversion } from '../_shared/awinCommission.ts';
 import {
   classifyAwinEligibility,
+  paymentIntentPurchaseSideEffectsAttempted,
   shouldSendExternalPurchaseSideEffects,
   validatedIntegerMetadata,
   validatedVoucher,
+  withPaymentIntentPurchaseSideEffectsAttempted,
 } from '../_shared/purchaseSafety.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
@@ -309,6 +311,7 @@ function paymentIntentClaimData(
   paymentIntentId: string,
   stripeEventId: string,
   token: string,
+  purchaseSideEffectsAttempted: boolean | undefined,
   revision = 1,
 ) {
   return {
@@ -317,6 +320,9 @@ function paymentIntentClaimData(
     stripe_event_id: stripeEventId,
     claim_token: token,
     claimed_at: new Date().toISOString(),
+    ...(purchaseSideEffectsAttempted === undefined
+      ? {}
+      : { purchase_side_effects_attempted: purchaseSideEffectsAttempted }),
     revision,
   };
 }
@@ -339,7 +345,7 @@ async function claimPaymentIntent(
 ): Promise<PaymentIntentClaimResult> {
   const key = `payment_intent.succeeded:${pi.id}`;
   const token = crypto.randomUUID();
-  const data = paymentIntentClaimData(pi.id, event.id, token);
+  const data = paymentIntentClaimData(pi.id, event.id, token, false);
   const { error: insertError } = await supabase.from('events').insert({
     stripe_event_id: key,
     event_type: event.type,
@@ -368,6 +374,7 @@ async function claimPaymentIntent(
     pi.id,
     event.id,
     token,
+    paymentIntentPurchaseSideEffectsAttempted(existingData),
     (previousRevision ?? 0) + 1,
   );
   let reclaimQuery = supabase
@@ -417,6 +424,18 @@ async function completePaymentIntentClaim(
     state: 'completed',
     completed_at: new Date().toISOString(),
   }, 'complete');
+}
+
+async function markPaymentIntentPurchaseSideEffectsAttempted(
+  supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
+) {
+  claim.data = await updatePaymentIntentClaim(
+    supabase,
+    claim,
+    withPaymentIntentPurchaseSideEffectsAttempted(claim.data),
+    'purchase_side_effects_attempt',
+  );
 }
 
 async function releasePaymentIntentClaim(
@@ -550,6 +569,7 @@ async function sendMetaPurchaseEvent(opts: {
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
+  claim: PaymentIntentClaim,
 ) {
   const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc, awin_channel } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
@@ -568,7 +588,6 @@ async function handleOneTimeOrderFromPI(
 
   let order = existingOrder;
   let customerId = existingOrder?.customer_id;
-  const isNewOrder = !existingOrder;
   if (!order) {
     const { data: customer, error: customerErr } = await supabase
       .from('customers')
@@ -664,8 +683,16 @@ async function handleOneTimeOrderFromPI(
     });
   }
 
-  // New-order side effects must not repeat when finalisation resumes.
-  if (isNewOrder && email && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
+  // The durable claim marker, not order novelty, is the at-most-once gate.
+  // An enqueue failure happens before this marker, so a replay against an
+  // existing order can still make the required attempts.
+  if (email && shouldSendExternalPurchaseSideEffects({
+    livemode: pi.livemode,
+    orderAlreadyExists: existingOrder !== null,
+    purchaseSideEffectsAttempted:
+      paymentIntentPurchaseSideEffectsAttempted(claim.data),
+  })) {
+    await markPaymentIntentPurchaseSideEffectsAttempted(supabase, claim);
     const orderRef = pi.id.slice(-8).toUpperCase();
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
@@ -988,8 +1015,13 @@ Deno.serve(async (req) => {
           if (claimResult.state === 'processing') throw new Error('payment_intent_claim_processing');
           const claim = claimResult.claim;
           try {
-            await handleOneTimeOrderFromPI(pi, supabase);
+            await handleOneTimeOrderFromPI(pi, supabase, claim);
           } catch (err) {
+            if (paymentIntentPurchaseSideEffectsAttempted(claim.data)) {
+              await completePaymentIntentClaim(supabase, claim);
+              console.error('payment_intent_purchase_side_effect_attempt_failed', pi.id);
+              break;
+            }
             try {
               await releasePaymentIntentClaim(supabase, claim);
             } catch (releaseErr) {

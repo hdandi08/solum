@@ -1,7 +1,32 @@
+export type PurchaseSideEffectEligibility = {
+  livemode?: boolean;
+  orderAlreadyExists: boolean;
+  purchaseSideEffectsAttempted: boolean | undefined;
+};
+
 export function shouldSendExternalPurchaseSideEffects(
-  livemode: boolean | undefined,
+  input: boolean | undefined | PurchaseSideEffectEligibility,
 ): boolean {
-  return livemode === true;
+  if (typeof input !== "object") return input === true;
+  if (input.livemode !== true) return false;
+  if (input.purchaseSideEffectsAttempted === undefined) {
+    return !input.orderAlreadyExists;
+  }
+  return !input.purchaseSideEffectsAttempted;
+}
+
+export function paymentIntentPurchaseSideEffectsAttempted(
+  data: Record<string, unknown>,
+): boolean | undefined {
+  return typeof data.purchase_side_effects_attempted === "boolean"
+    ? data.purchase_side_effects_attempted
+    : undefined;
+}
+
+export function withPaymentIntentPurchaseSideEffectsAttempted(
+  data: Record<string, unknown>,
+): Record<string, unknown> {
+  return { ...data, purchase_side_effects_attempted: true };
 }
 
 const AWIN_CHANNELS = ["aw", "display", "ppc", "email"] as const;

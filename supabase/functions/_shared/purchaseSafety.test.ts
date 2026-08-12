@@ -60,3 +60,96 @@ Deno.test("normalizes only bounded integer metadata and trimmed vouchers", () =>
   assertEquals(helpers.validatedVoucher("   "), null);
   assertEquals(helpers.validatedVoucher("x".repeat(101)), null);
 });
+
+Deno.test("existing-order replay after enqueue failure can attempt side effects only without a durable marker", () => {
+  const shouldAttempt = shouldSendExternalPurchaseSideEffects as unknown as (
+    input: {
+      livemode?: boolean;
+      orderAlreadyExists: boolean;
+      purchaseSideEffectsAttempted: boolean;
+    },
+  ) => boolean;
+
+  assertEquals(shouldAttempt({
+    livemode: true,
+    orderAlreadyExists: true,
+    purchaseSideEffectsAttempted: false,
+  }), true);
+  assertEquals(shouldAttempt({
+    livemode: true,
+    orderAlreadyExists: true,
+    purchaseSideEffectsAttempted: true,
+  }), false);
+  assertEquals(shouldAttempt({
+    livemode: false,
+    orderAlreadyExists: true,
+    purchaseSideEffectsAttempted: false,
+  }), false);
+});
+
+Deno.test("purchase side-effect attempt marker is immutable input and survives stale-claim replay", () => {
+  const helpers = purchaseSafety as unknown as {
+    paymentIntentPurchaseSideEffectsAttempted: (data: Record<string, unknown>) => boolean;
+    withPaymentIntentPurchaseSideEffectsAttempted: (
+      data: Record<string, unknown>,
+    ) => Record<string, unknown>;
+  };
+  const replayedClaim = {
+    state: "processing",
+    purchase_side_effects_attempted: false,
+    revision: 1,
+  };
+
+  assertEquals(
+    helpers.paymentIntentPurchaseSideEffectsAttempted(replayedClaim),
+    false,
+  );
+  const attempted = helpers.withPaymentIntentPurchaseSideEffectsAttempted(
+    replayedClaim,
+  );
+  assertEquals(
+    helpers.paymentIntentPurchaseSideEffectsAttempted(attempted),
+    true,
+  );
+  assertEquals(
+    helpers.paymentIntentPurchaseSideEffectsAttempted({
+      ...attempted,
+      revision: 2,
+    }),
+    true,
+  );
+  assertEquals(replayedClaim, {
+    state: "processing",
+    purchase_side_effects_attempted: false,
+    revision: 1,
+  });
+});
+
+Deno.test("legacy claim JSON stays distinct from an explicit retryable marker", () => {
+  const marker = (
+    purchaseSafety as unknown as {
+      paymentIntentPurchaseSideEffectsAttempted: (
+        data: Record<string, unknown>,
+      ) => boolean | undefined;
+    }
+  ).paymentIntentPurchaseSideEffectsAttempted;
+  const shouldAttempt = shouldSendExternalPurchaseSideEffects as unknown as (
+    input: {
+      livemode?: boolean;
+      orderAlreadyExists: boolean;
+      purchaseSideEffectsAttempted: boolean | undefined;
+    },
+  ) => boolean;
+
+  assertEquals(marker({ state: "processing", awin_attempted: true }), undefined);
+  assertEquals(shouldAttempt({
+    livemode: true,
+    orderAlreadyExists: true,
+    purchaseSideEffectsAttempted: undefined,
+  }), false);
+  assertEquals(shouldAttempt({
+    livemode: true,
+    orderAlreadyExists: true,
+    purchaseSideEffectsAttempted: false,
+  }), true);
+});
