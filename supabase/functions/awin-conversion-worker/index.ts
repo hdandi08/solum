@@ -43,6 +43,18 @@ export function createAwinConversionRepository(
       return data;
     },
 
+    async accept({ id, workerId, status, batchId, nextReconcileAt }) {
+      const { data, error } = await client.rpc("accept_awin_conversion_batch", {
+        p_id: id,
+        p_worker_id: workerId,
+        p_http_status: status,
+        p_batch_id: batchId,
+        p_next_reconcile_at: nextReconcileAt,
+      });
+      if (error || typeof data !== "boolean") rpcFailure();
+      return data;
+    },
+
     async retry({ id, workerId, state, nextAttemptAt, status, errorCode }) {
       const { data, error } = await client.rpc("retry_awin_conversion", {
         p_id: id,
@@ -60,7 +72,13 @@ export function createAwinConversionRepository(
 
 function unavailableResponse(): Response {
   return new Response(
-    JSON.stringify({ claimed: 0, sent: 0, retried: 0, dead_letter: 0 }),
+    JSON.stringify({
+      claimed: 0,
+      accepted: 0,
+      sent: 0,
+      retried: 0,
+      dead_letter: 0,
+    }),
     { status: 500, headers: { "Content-Type": "application/json" } },
   );
 }

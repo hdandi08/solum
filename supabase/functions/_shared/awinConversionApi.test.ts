@@ -40,6 +40,13 @@ function order(overrides: Partial<OutboxRow> = {}): OutboxRow {
 type StoredTransition =
   | { state: "processing"; row: OutboxRow }
   | {
+    state: "accepted";
+    row: OutboxRow;
+    status: 202;
+    batchId: string;
+    nextReconcileAt: string;
+  }
+  | {
     state: "sent";
     row: OutboxRow;
     status: number;
@@ -108,6 +115,27 @@ class MemoryRepository implements DeliveryRepository {
       ...(input.status ? { status: input.status } : {}),
       errorCode: input.errorCode,
       ...(input.nextAttemptAt ? { nextAttemptAt: input.nextAttemptAt } : {}),
+    });
+    return Promise.resolve(true);
+  }
+
+  accept(input: {
+    id: string;
+    workerId: string;
+    status: 202;
+    batchId: string;
+    nextReconcileAt: string;
+  }) {
+    const current = this.stored.get(input.id);
+    if (!current || current.state !== "processing") {
+      return Promise.resolve(false);
+    }
+    this.stored.set(input.id, {
+      state: "accepted",
+      row: current.row,
+      status: input.status,
+      batchId: input.batchId,
+      nextReconcileAt: input.nextReconcileAt,
     });
     return Promise.resolve(true);
   }
@@ -295,7 +323,28 @@ Deno.test("sends the exact authenticated request and covers each claimed referen
   assertEquals(headers.get("content-type"), "application/json");
   assertEquals(headers.get("x-api-key"), API_KEY);
   assertEquals(requestUrl.includes(API_KEY), false);
-  assertEquals(JSON.parse(String(requestInit?.body)).length, 2);
+  assertEquals(JSON.parse(String(requestInit?.body)), {
+    orders: [
+      {
+        orderReference: "pi_ok",
+        amount: 50,
+        channel: "aw",
+        currency: "GBP",
+        awc: "129171_click",
+        commissionGroups: [{ code: "DEFAULT", amount: 50 }],
+        custom: { "1": "solum-outbox-v1" },
+      },
+      {
+        orderReference: "pi_missing",
+        amount: 20,
+        channel: "ppc",
+        currency: "GBP",
+        awc: "129171_other",
+        commissionGroups: [{ code: "NEW", amount: 20 }],
+        custom: { "1": "solum-outbox-v1" },
+      },
+    ],
+  });
   assertEquals([...result.outcomes.keys()].sort(), ["pi_missing", "pi_ok"]);
   assertEquals(result.outcomes.get("pi_ok")?.state, "sent");
   assertEquals(result.outcomes.get("pi_missing"), {
@@ -393,6 +442,112 @@ Deno.test("classifies 200/202/400/401/403/408/425/429/5xx and malformed response
   }
 });
 
+Deno.test("honors HTTP-date Retry-After values and caps excessive provider delays", async () => {
+  const cases = [
+    {
+      retryAfter: new Date(NOW + 120_000).toUTCString(),
+      expectedDelayMs: 120_000,
+    },
+    { retryAfter: "604801", expectedDelayMs: 6 * 24 * 60 * 60 * 1_000 },
+  ];
+
+  for (const testCase of cases) {
+    const result = await sendConversionBatch({
+      orders: [buildConversionOrder({
+        orderRef: "pi_123",
+        amountPence: 100,
+        currency: "GBP",
+        channel: "aw",
+        awc: "129171_click",
+        commissionGroup: "DEFAULT",
+      })],
+      apiKey: API_KEY,
+      endpoint: "https://api.awin.com/s2s/advertiser/129171/orders",
+      now: () => NOW,
+      fetch: () =>
+        Promise.resolve(
+          new Response("{}", {
+            status: 429,
+            headers: { "retry-after": testCase.retryAfter },
+          }),
+        ),
+    });
+    assertEquals(result.outcomes.get("pi_123"), {
+      state: "retry",
+      status: 429,
+      errorCode: "RATE_LIMITED",
+      retryAfterMs: testCase.expectedDelayMs,
+    });
+  }
+});
+
+Deno.test("rejects an oversized declared provider body before reading it", async () => {
+  let canceled = false;
+  const body = new ReadableStream<Uint8Array>({
+    cancel() {
+      canceled = true;
+    },
+  });
+  const result = await sendConversionBatch({
+    orders: [buildConversionOrder({
+      orderRef: "pi_123",
+      amountPence: 100,
+      currency: "GBP",
+      channel: "aw",
+      awc: "129171_click",
+      commissionGroup: "DEFAULT",
+    })],
+    apiKey: API_KEY,
+    endpoint: "https://api.awin.com/s2s/advertiser/129171/orders",
+    fetch: () =>
+      Promise.resolve(
+        new Response(body, {
+          status: 500,
+          headers: { "content-length": "65537" },
+        }),
+      ),
+  });
+
+  assertEquals(canceled, true);
+  assertEquals(result.outcomes.get("pi_123"), {
+    state: "retry",
+    status: 500,
+    errorCode: "PROVIDER_5XX",
+  });
+});
+
+Deno.test("cancels a chunked provider response that crosses the byte cap", async () => {
+  let canceled = false;
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array(65_537));
+    },
+    cancel() {
+      canceled = true;
+    },
+  });
+  const result = await sendConversionBatch({
+    orders: [buildConversionOrder({
+      orderRef: "pi_123",
+      amountPence: 100,
+      currency: "GBP",
+      channel: "aw",
+      awc: "129171_click",
+      commissionGroup: "DEFAULT",
+    })],
+    apiKey: API_KEY,
+    endpoint: "https://api.awin.com/s2s/advertiser/129171/orders",
+    fetch: () => Promise.resolve(new Response(body, { status: 500 })),
+  });
+
+  assertEquals(canceled, true);
+  assertEquals(result.outcomes.get("pi_123"), {
+    state: "retry",
+    status: 500,
+    errorCode: "PROVIDER_5XX",
+  });
+});
+
 Deno.test("aborts an AWIN request after exactly five seconds", async () => {
   let timeoutMs = 0;
   let cleared = false;
@@ -458,9 +613,20 @@ Deno.test("allows the base URL override only for the exact development project r
     ),
     "https://api.awin.com/s2s/advertiser/129171/orders",
   );
+  for (const override of [undefined, "http://127.0.0.1:9443", "not a URL"]) {
+    assertThrows(
+      () =>
+        resolveAwinConversionEndpoint(
+          "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+          override,
+        ),
+      TypeError,
+      "AWIN_CONVERSION_API_BASE_URL",
+    );
+  }
 });
 
-Deno.test("maps every worker transition to its hardened Task 4 RPC", async () => {
+Deno.test("maps delivery transitions to the hardened outbox RPCs", async () => {
   const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
   const repository = createAwinConversionRepository({
     rpc(name, args) {
@@ -484,8 +650,8 @@ Deno.test("maps every worker transition to its hardened Task 4 RPC", async () =>
     await repository.complete({
       id: "11111111-1111-4111-8111-111111111111",
       workerId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-      status: 202,
-      batchId: "batch-202",
+      status: 200,
+      batchId: "batch-200",
     }),
     true,
   );
@@ -515,8 +681,8 @@ Deno.test("maps every worker transition to its hardened Task 4 RPC", async () =>
       args: {
         p_id: "11111111-1111-4111-8111-111111111111",
         p_worker_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-        p_http_status: 202,
-        p_batch_id: "batch-202",
+        p_http_status: 200,
+        p_batch_id: "batch-200",
         p_provider_transaction_id: null,
       },
     },
@@ -532,6 +698,37 @@ Deno.test("maps every worker transition to its hardened Task 4 RPC", async () =>
       },
     },
   ]);
+});
+
+Deno.test("maps accepted AWIN batches to the reconciliation RPC", async () => {
+  const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+  const repository = createAwinConversionRepository({
+    rpc(name, args) {
+      calls.push({ name, args });
+      return Promise.resolve({ data: true, error: null });
+    },
+  });
+
+  assertEquals(
+    await repository.accept({
+      id: "11111111-1111-4111-8111-111111111111",
+      workerId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      status: 202,
+      batchId: "batch-202",
+      nextReconcileAt: "2026-08-12T12:15:00.000Z",
+    }),
+    true,
+  );
+  assertEquals(calls, [{
+    name: "accept_awin_conversion_batch",
+    args: {
+      p_id: "11111111-1111-4111-8111-111111111111",
+      p_worker_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      p_http_status: 202,
+      p_batch_id: "batch-202",
+      p_next_reconcile_at: "2026-08-12T12:15:00.000Z",
+    },
+  }]);
 });
 
 Deno.test("worker rejects non-POST, bad bearer credentials, malformed bodies, and invalid limits", async () => {
@@ -587,6 +784,7 @@ Deno.test("worker rejects non-POST, bad bearer credentials, malformed bodies, an
     assertEquals(response.status, testCase.status);
     assertEquals(await response.json(), {
       claimed: 0,
+      accepted: 0,
       sent: 0,
       retried: 0,
       dead_letter: 0,
@@ -647,6 +845,7 @@ Deno.test("worker claims, waits for minimum age, decrypts, sends, and transition
   assertEquals(response.status, 200);
   assertEquals(await response.json(), {
     claimed: 2,
+    accepted: 0,
     sent: 1,
     retried: 0,
     dead_letter: 1,
@@ -657,15 +856,17 @@ Deno.test("worker claims, waits for minimum age, decrypts, sends, and transition
     leaseSeconds: 60,
   });
   assertEquals(waitedMs, 5_000);
-  assertEquals(sentPayload, [{
-    orderReference: "pi_123",
-    amount: 70.83,
-    channel: "aw",
-    currency: "GBP",
-    awc: "129171_click",
-    commissionGroups: [{ code: "DEFAULT", amount: 70.83 }],
-    custom: { "1": "solum-outbox-v1" },
-  }]);
+  assertEquals(sentPayload, {
+    orders: [{
+      orderReference: "pi_123",
+      amount: 70.83,
+      channel: "aw",
+      currency: "GBP",
+      awc: "129171_click",
+      commissionGroups: [{ code: "DEFAULT", amount: 70.83 }],
+      custom: { "1": "solum-outbox-v1" },
+    }],
+  });
   assertEquals(repository.stored.get(rows[0].id)?.state, "sent");
   assertEquals(repository.stored.get(rows[1].id), {
     state: "dead_letter",
@@ -703,19 +904,21 @@ Deno.test("worker sends NEW acquisition only when the immutable group confirms i
   });
 
   assertEquals((await handler(jsonRequest({}))).status, 200);
-  assertEquals(sentPayload, [{
-    orderReference: "pi_123",
-    amount: 70.83,
-    channel: "aw",
-    currency: "GBP",
-    awc: "129171_click",
-    customerAcquisition: "NEW",
-    commissionGroups: [{ code: "NEW", amount: 70.83 }],
-    custom: { "1": "solum-outbox-v1" },
-  }]);
+  assertEquals(sentPayload, {
+    orders: [{
+      orderReference: "pi_123",
+      amount: 70.83,
+      channel: "aw",
+      currency: "GBP",
+      awc: "129171_click",
+      customerAcquisition: "NEW",
+      commissionGroups: [{ code: "NEW", amount: 70.83 }],
+      custom: { "1": "solum-outbox-v1" },
+    }],
+  });
 });
 
-Deno.test("worker treats a sanitized 202 batch acceptance as terminal to prevent duplicate delivery", async () => {
+Deno.test("worker retains a sanitized 202 batch acceptance for reconciliation", async () => {
   const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
   const row202 = order({ awc_ciphertext: encrypted });
   const repository = new MemoryRepository([row202]);
@@ -732,15 +935,17 @@ Deno.test("worker treats a sanitized 202 batch acceptance as terminal to prevent
 
   assertEquals(await (await handler(jsonRequest({}))).json(), {
     claimed: 1,
-    sent: 1,
+    accepted: 1,
+    sent: 0,
     retried: 0,
     dead_letter: 0,
   });
   assertEquals(repository.stored.get(row202.id), {
-    state: "sent",
+    state: "accepted",
     row: row202,
     status: 202,
     batchId: "batch-202",
+    nextReconcileAt: "2026-08-12T12:15:00.000Z",
   });
 });
 
@@ -778,6 +983,7 @@ Deno.test("worker retries network failures and unresolved partial items without 
   const response = await handler(jsonRequest({ limit: 2 }));
   assertEquals(await response.json(), {
     claimed: 2,
+    accepted: 0,
     sent: 1,
     retried: 1,
     dead_letter: 0,
@@ -811,6 +1017,7 @@ Deno.test("worker honors a transient provider Retry-After schedule", async () =>
 
   assertEquals(await (await handler(jsonRequest({}))).json(), {
     claimed: 1,
+    accepted: 0,
     sent: 0,
     retried: 1,
     dead_letter: 0,
@@ -822,6 +1029,72 @@ Deno.test("worker honors a transient provider Retry-After schedule", async () =>
     errorCode: "RATE_LIMITED",
     nextAttemptAt: "2026-08-12T12:02:00.000Z",
   });
+});
+
+Deno.test("worker surfaces refused and thrown outbox transitions without reporting delivery", async () => {
+  const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
+  const delivered = order({ awc_ciphertext: encrypted });
+  const refusingRepository = new MemoryRepository([delivered]);
+  refusingRepository.complete = () => Promise.resolve(false);
+  const refusingHandler = createAwinConversionWorker({
+    repository: refusingRepository,
+    apiKey: API_KEY,
+    encryptionKey: ENCRYPTION_SECRET,
+    workerSecret: WORKER_SECRET,
+    supabaseUrl: "https://production.supabase.co",
+    now: () => NOW,
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          '{"successfulOrders":[{"orderReference":"pi_123"}]}',
+          { status: 200 },
+        ),
+      ),
+  });
+
+  const refusedResponse = await refusingHandler(jsonRequest({}));
+  assertEquals(refusedResponse.status, 500);
+  assertEquals(await refusedResponse.json(), {
+    claimed: 1,
+    accepted: 0,
+    sent: 0,
+    retried: 0,
+    dead_letter: 0,
+  });
+  assertEquals(
+    refusingRepository.stored.get(delivered.id)?.state,
+    "processing",
+  );
+
+  const transient = order({ awc_ciphertext: encrypted });
+  const throwingRepository = new MemoryRepository([transient]);
+  throwingRepository.retry = () =>
+    Promise.reject(new Error("database response with internal detail"));
+  const throwingHandler = createAwinConversionWorker({
+    repository: throwingRepository,
+    apiKey: API_KEY,
+    encryptionKey: ENCRYPTION_SECRET,
+    workerSecret: WORKER_SECRET,
+    supabaseUrl: "https://production.supabase.co",
+    now: () => NOW,
+    fetch: () => Promise.resolve(new Response("{}", { status: 429 })),
+  });
+
+  const thrownResponse = await throwingHandler(jsonRequest({}));
+  assertEquals(thrownResponse.status, 500);
+  const thrownBody = await thrownResponse.json();
+  assertEquals(thrownBody, {
+    claimed: 1,
+    accepted: 0,
+    sent: 0,
+    retried: 0,
+    dead_letter: 0,
+  });
+  assertEquals(JSON.stringify(thrownBody).includes("internal detail"), false);
+  assertEquals(
+    throwingRepository.stored.get(transient.id)?.state,
+    "processing",
+  );
 });
 
 Deno.test("worker converts a fetch rejection into per-row retries and a count-only response", async () => {
@@ -841,7 +1114,13 @@ Deno.test("worker converts a fetch rejection into per-row retries and a count-on
   });
   const response = await handler(jsonRequest({}));
   const body = await response.json();
-  assertEquals(body, { claimed: 1, sent: 0, retried: 1, dead_letter: 0 });
+  assertEquals(body, {
+    claimed: 1,
+    accepted: 0,
+    sent: 0,
+    retried: 1,
+    dead_letter: 0,
+  });
   assertEquals(JSON.stringify(body).includes("provider response"), false);
   const stored = repository.stored.get(failed.id);
   assertEquals(stored?.state, "retry");

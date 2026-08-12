@@ -8,6 +8,7 @@ const MAX_REQUEST_BODY_BYTES = 1_024;
 const MAX_PROVIDER_BODY_BYTES = 65_536;
 const REQUEST_TIMEOUT_MS = 5_000;
 const MINIMUM_ORDER_AGE_MS = 10_000;
+const RECONCILIATION_DELAY_MS = 15 * 60 * 1_000;
 const MAX_RETRY_AFTER_MS = 6 * 24 * 60 * 60 * 1_000;
 const LEASE_SECONDS = 60;
 const DEFAULT_LIMIT = 100;
@@ -89,6 +90,13 @@ export interface DeliveryRepository {
     batchId?: string;
     transactionId?: string;
   }): Promise<boolean>;
+  accept(input: {
+    id: string;
+    workerId: string;
+    status: 202;
+    batchId: string;
+    nextReconcileAt: string;
+  }): Promise<boolean>;
   retry(input: {
     id: string;
     workerId: string;
@@ -123,6 +131,7 @@ export type WorkerDependencies = {
 
 type WorkerCounts = {
   claimed: number;
+  accepted: number;
   sent: number;
   retried: number;
   dead_letter: number;
@@ -346,12 +355,47 @@ function retryAfterMs(value: string | null, now: number): number | undefined {
 }
 
 async function boundedResponseJson(response: Response): Promise<unknown> {
-  const text = await response.text();
-  if (new TextEncoder().encode(text).length > MAX_PROVIDER_BODY_BYTES) {
+  const contentLength = response.headers.get("content-length");
+  if (contentLength !== null && /^\d+$/.test(contentLength)) {
+    const declaredBytes = Number(contentLength);
+    if (
+      !Number.isSafeInteger(declaredBytes) ||
+      declaredBytes > MAX_PROVIDER_BODY_BYTES
+    ) {
+      await response.body?.cancel();
+      return undefined;
+    }
+  }
+  if (!response.body) return undefined;
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytesRead = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytesRead += value.byteLength;
+      if (bytesRead > MAX_PROVIDER_BODY_BYTES) {
+        await reader.cancel();
+        return undefined;
+      }
+      chunks.push(value);
+    }
+  } catch {
     return undefined;
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(bytesRead);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
   }
   try {
-    return JSON.parse(text);
+    return JSON.parse(new TextDecoder().decode(bytes));
   } catch {
     return undefined;
   }
@@ -378,7 +422,7 @@ export async function sendConversionBatch(input: {
       clearTimeout(handle as ReturnType<typeof setTimeout>));
   const controller = new AbortController();
   const timeout = schedule(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  const conversionBatch = input.orders;
+  const conversionBatch = { orders: input.orders };
   try {
     const response = await fetcher(input.endpoint, {
       method: "POST",
@@ -432,23 +476,30 @@ export function resolveAwinConversionEndpoint(
   supabaseUrl: string,
   baseUrlOverride?: string,
 ): string {
+  let projectUrl: URL;
   try {
-    const projectUrl = new URL(supabaseUrl);
-    const development = projectUrl.protocol === "https:" &&
-      projectUrl.hostname === `${DEVELOPMENT_PROJECT_REF}.supabase.co`;
-    if (development && baseUrlOverride) {
-      const override = new URL(baseUrlOverride);
-      if (override.protocol === "https:") {
-        return new URL(
-          "/s2s/advertiser/129171/orders",
-          override,
-        ).toString();
-      }
-    }
+    projectUrl = new URL(supabaseUrl);
   } catch {
     // Invalid configuration fails closed to AWIN's fixed production endpoint.
+    return AWIN_CONVERSION_ENDPOINT;
   }
-  return AWIN_CONVERSION_ENDPOINT;
+
+  const development = projectUrl.protocol === "https:" &&
+    projectUrl.hostname === `${DEVELOPMENT_PROJECT_REF}.supabase.co`;
+  if (!development) return AWIN_CONVERSION_ENDPOINT;
+
+  try {
+    const override = new URL(baseUrlOverride ?? "");
+    if (override.protocol !== "https:") throw new TypeError();
+    return new URL(
+      "/s2s/advertiser/129171/orders",
+      override,
+    ).toString();
+  } catch {
+    throw new TypeError(
+      "AWIN_CONVERSION_API_BASE_URL must be a valid HTTPS URL in development",
+    );
+  }
 }
 
 async function constantTimeSecretEquals(candidate: string, expected: string) {
@@ -533,7 +584,7 @@ function countResponse(counts: WorkerCounts, status = 200): Response {
 }
 
 function emptyCounts(): WorkerCounts {
-  return { claimed: 0, sent: 0, retried: 0, dead_letter: 0 };
+  return { claimed: 0, accepted: 0, sent: 0, retried: 0, dead_letter: 0 };
 }
 
 function validOutboxEnum<T extends string>(
@@ -708,7 +759,7 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
           errorCode: "UNKNOWN_PROVIDER_RESPONSE" as const,
         };
         try {
-          if (outcome.state === "sent" || outcome.state === "processing") {
+          if (outcome.state === "sent") {
             const changed = await dependencies.repository.complete({
               id: row.id,
               workerId,
@@ -719,6 +770,18 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
                 : {}),
             });
             if (changed) counts.sent += 1;
+            else transitionFailure = true;
+          } else if (outcome.state === "processing") {
+            const changed = await dependencies.repository.accept({
+              id: row.id,
+              workerId,
+              status: 202,
+              batchId: outcome.batchId,
+              nextReconcileAt: new Date(
+                now() + RECONCILIATION_DELAY_MS,
+              ).toISOString(),
+            });
+            if (changed) counts.accepted += 1;
             else transitionFailure = true;
           } else {
             const changedState = await transitionRetry(

@@ -23,6 +23,39 @@
 - Imports are read-only against AWIN; no transaction validation or publisher mutation API is called.
 - Production backfill and scheduling require explicit deployment approval and use read-only AWIN endpoints only.
 
+## Phase A 202 batch handoff
+
+The Phase A delivery worker treats a Conversion API `202` as provider-accepted
+but not delivered. `accept_awin_conversion_batch` retains the outbox row in
+`processing`, stores only the sanitised `provider_batch_id` and HTTP `202`,
+clears the worker lease, and sets `next_reconcile_at` for fifteen minutes
+later. A provider-accepted row is deliberately excluded from ordinary expired
+lease recovery, so it cannot be claimed and sent again as though the `202`
+never happened. A crashed pre-acceptance worker has no provider batch ID and
+remains eligible for ordinary expired-lease recovery.
+
+The transaction import schedule must add this bounded reconciliation handoff
+without inventing a provider batch-status endpoint:
+
+1. Every 30-minute `transactions` import also selects due accepted outbox rows
+   (`state = 'processing'`, non-null `provider_batch_id`, and
+   `next_reconcile_at <= now()`) and matches their `order_ref` against the
+   imported AWIN transactions.
+2. A matched order is completed through a dedicated Phase C service-role RPC
+   that records the imported AWIN transaction ID and moves it to `sent`. It is
+   not completed by the delivery worker because there is no worker lease.
+3. An absent order remains `processing`; the Phase C RPC advances only its
+   reconciliation schedule by thirty minutes. It never puts the row back in
+   the delivery queue and never resends an already accepted AWIN batch.
+4. After 24 hours from `provider_batch_accepted_at`, an absent batch moves to
+   `dead_letter` with a sanitised reconciliation-timeout code and a manual
+   exception. Operators investigate AWIN/import timing before any deliberately
+   authorised resend; no automatic resend is permitted.
+
+The Phase C migration and tests must cover this dedicated resolver, the
+24-hour deadline, duplicate imported transactions, and that due accepted rows
+are never selected by `claim_awin_conversion_batch`.
+
 ---
 
 ### Task 1: Create transaction, performance, and sync-run storage
