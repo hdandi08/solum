@@ -29,6 +29,7 @@ function order(overrides: Partial<OutboxRow> = {}): OutboxRow {
     currency: "GBP",
     channel: "aw",
     commission_group: "DEFAULT",
+    customer_acquisition: null,
     voucher_code: null,
     awc_ciphertext: "set-by-test",
     attempt_count: 1,
@@ -178,6 +179,36 @@ Deno.test("builds the authenticated AWIN order payload from immutable outbox amo
   );
 });
 
+Deno.test("builds a conversion with a future imported group code", () => {
+  const order = buildConversionOrder({
+    orderRef: "pi_dynamic1",
+    amountPence: 7083,
+    currency: "GBP",
+    channel: "aw",
+    awc: "safe_awc",
+    commissionGroup: "KIT_RITUAL_2027",
+    customerAcquisition: "RETURNING",
+  });
+  assertEquals(order.commissionGroups, [{
+    code: "KIT_RITUAL_2027",
+    amount: 70.83,
+  }]);
+  assertEquals(order.customerAcquisition, "RETURNING");
+});
+
+Deno.test("does not infer customer acquisition from group names", () => {
+  const order = buildConversionOrder({
+    orderRef: "pi_dynamic2",
+    amountPence: 7083,
+    currency: "GBP",
+    channel: "aw",
+    awc: "safe_awc",
+    commissionGroup: "NEW",
+    customerAcquisition: "RETURNING",
+  });
+  assertEquals(order.customerAcquisition, "RETURNING");
+});
+
 Deno.test("parses 206 outcomes independently per order reference", () => {
   const outcomes = parseConversionResponse(206, {
     batchId: "batch-1",
@@ -275,17 +306,21 @@ Deno.test("parses 200, 202, and conflicting 206 entries without leaking provider
 });
 
 Deno.test("treats every claimed order in a sanitized 202 batch as processing before item arrays", async () => {
-  for (const body of [
-    {
-      batchId: "batch-202",
-      successfulOrders: [{ orderReference: "pi_first" }],
-    },
-    {
-      batchId: "batch-202",
-      successfulOrders: [{ orderReference: "pi_first" }],
-      failedOrders: [{ orderReference: "pi_first" }, { orderReference: "pi_second" }],
-    },
-  ]) {
+  for (
+    const body of [
+      {
+        batchId: "batch-202",
+        successfulOrders: [{ orderReference: "pi_first" }],
+      },
+      {
+        batchId: "batch-202",
+        successfulOrders: [{ orderReference: "pi_first" }],
+        failedOrders: [{ orderReference: "pi_first" }, {
+          orderReference: "pi_second",
+        }],
+      },
+    ]
+  ) {
     const result = await sendConversionBatch({
       orders: [
         buildConversionOrder({
@@ -307,7 +342,8 @@ Deno.test("treats every claimed order in a sanitized 202 batch as processing bef
       ],
       apiKey: API_KEY,
       endpoint: "https://api.awin.test/orders",
-      fetch: () => Promise.resolve(new Response(JSON.stringify(body), { status: 202 })),
+      fetch: () =>
+        Promise.resolve(new Response(JSON.stringify(body), { status: 202 })),
     });
 
     assertEquals([...result.outcomes.values()], [
@@ -329,9 +365,15 @@ Deno.test("retries every claimed order when a 202 response has no sanitized batc
     })],
     apiKey: API_KEY,
     endpoint: "https://api.awin.test/orders",
-    fetch: () => Promise.resolve(new Response(JSON.stringify({
-      successfulOrders: [{ orderReference: "pi_first" }],
-    }), { status: 202 })),
+    fetch: () =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            successfulOrders: [{ orderReference: "pi_first" }],
+          }),
+          { status: 202 },
+        ),
+      ),
   });
 
   assertEquals(result.outcomes.get("pi_first"), {
@@ -942,13 +984,14 @@ Deno.test("worker claims, waits for minimum age, decrypts, sends, and transition
   });
 });
 
-Deno.test("worker sends NEW acquisition only when the immutable group confirms it", async () => {
+Deno.test("worker reads acquisition independently from the immutable group", async () => {
   const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
-  const newCustomer = order({
+  const returningCustomer = order({
     awc_ciphertext: encrypted,
     commission_group: "NEW",
+    customer_acquisition: "RETURNING",
   });
-  const repository = new MemoryRepository([newCustomer]);
+  const repository = new MemoryRepository([returningCustomer]);
   let sentPayload: unknown;
   const handler = createAwinConversionWorker({
     repository,
@@ -978,10 +1021,79 @@ Deno.test("worker sends NEW acquisition only when the immutable group confirms i
       channel: "aw",
       currency: "GBP",
       awc: "129171_click",
-      customerAcquisition: "NEW",
+      customerAcquisition: "RETURNING",
       commissionGroups: [{ code: "NEW", amount: 70.83 }],
       custom: { "1": "solum-outbox-v1" },
     }],
+  });
+});
+
+Deno.test("worker omits acquisition for historical Phase A rows", async () => {
+  const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
+  const historical = order({
+    awc_ciphertext: encrypted,
+    commission_group: "KIT_RITUAL_2027",
+    customer_acquisition: null,
+  });
+  const repository = new MemoryRepository([historical]);
+  let sentPayload: unknown;
+  const handler = createAwinConversionWorker({
+    repository,
+    apiKey: API_KEY,
+    encryptionKey: ENCRYPTION_SECRET,
+    workerSecret: WORKER_SECRET,
+    supabaseUrl: "https://production.supabase.co",
+    now: () => NOW,
+    fetch: (_url, init) => {
+      sentPayload = JSON.parse(String(init?.body));
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            successfulOrders: [{ orderReference: "pi_123" }],
+          }),
+          { status: 200 },
+        ),
+      );
+    },
+  });
+
+  assertEquals((await handler(jsonRequest({}))).status, 200);
+  const sentOrder = (sentPayload as { orders: Record<string, unknown>[] })
+    .orders[0];
+  assertEquals("customerAcquisition" in sentOrder, false);
+  assertEquals(sentOrder.commissionGroups, [{
+    code: "KIT_RITUAL_2027",
+    amount: 70.83,
+  }]);
+});
+
+Deno.test("worker dead-letters invalid stored customer acquisition", async () => {
+  const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
+  const invalid = order({
+    awc_ciphertext: encrypted,
+    customer_acquisition: "new",
+  });
+  const repository = new MemoryRepository([invalid]);
+  const handler = createAwinConversionWorker({
+    repository,
+    apiKey: API_KEY,
+    encryptionKey: ENCRYPTION_SECRET,
+    workerSecret: WORKER_SECRET,
+    supabaseUrl: "https://production.supabase.co",
+    now: () => NOW,
+  });
+
+  assertEquals(await (await handler(jsonRequest({}))).json(), {
+    claimed: 1,
+    accepted: 0,
+    sent: 0,
+    retried: 0,
+    dead_letter: 1,
+  });
+  assertEquals(repository.stored.get(invalid.id), {
+    state: "dead_letter",
+    row: invalid,
+    errorCode: "VALIDATION_FAILED",
   });
 });
 
@@ -1018,18 +1130,22 @@ Deno.test("worker retains a sanitized 202 batch acceptance for reconciliation", 
 
 Deno.test("worker transitions 100 delayed accepted rows concurrently within a bounded lease budget", async () => {
   const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
-  const rows = Array.from({ length: 100 }, (_, index) => order({
-    id: `${String(index + 1).padStart(8, "0")}-1111-4111-8111-111111111111`,
-    order_ref: `pi_${index + 1}`,
-    awc_ciphertext: encrypted,
-  }));
+  const rows = Array.from({ length: 100 }, (_, index) =>
+    order({
+      id: `${String(index + 1).padStart(8, "0")}-1111-4111-8111-111111111111`,
+      order_ref: `pi_${index + 1}`,
+      awc_ciphertext: encrypted,
+    }));
   const repository = new MemoryRepository(rows);
   let activeTransitions = 0;
   let maximumActiveTransitions = 0;
   const originalAccept = repository.accept.bind(repository);
   repository.accept = async (input) => {
     activeTransitions += 1;
-    maximumActiveTransitions = Math.max(maximumActiveTransitions, activeTransitions);
+    maximumActiveTransitions = Math.max(
+      maximumActiveTransitions,
+      activeTransitions,
+    );
     await new Promise((resolve) => setTimeout(resolve, 5));
     const changed = await originalAccept(input);
     activeTransitions -= 1;
@@ -1042,7 +1158,8 @@ Deno.test("worker transitions 100 delayed accepted rows concurrently within a bo
     workerSecret: WORKER_SECRET,
     supabaseUrl: "https://production.supabase.co",
     now: () => NOW,
-    fetch: () => Promise.resolve(new Response('{"batchId":"batch-100"}', { status: 202 })),
+    fetch: () =>
+      Promise.resolve(new Response('{"batchId":"batch-100"}', { status: 202 })),
   });
 
   const startedAt = performance.now();

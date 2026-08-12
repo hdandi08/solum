@@ -1,4 +1,7 @@
 import { encryptAwc, hashAwc } from "./awinOutbox.ts";
+import { normalizeCommissionGroupCode } from "./awinPublisherPolicy.ts";
+
+export type AwinCustomerAcquisition = "NEW" | "RETURNING";
 
 export type AwinCommissionInput = {
   customerPaidPence: number;
@@ -28,7 +31,8 @@ export type EnqueueAwinConversionInput = {
   voucherCode: string | null;
   financialBasisVersion: "solum-commission-v1";
   currency: "GBP";
-  commissionGroup: "DEFAULT";
+  commissionGroup: string;
+  customerAcquisition: AwinCustomerAcquisition;
   channel: "aw" | "display" | "ppc" | "email";
   awc: string;
 };
@@ -42,13 +46,78 @@ type AwinOutboxClient = {
   };
 };
 
+type AwinCustomerHistoryResult = {
+  count: number | null;
+  error: { message?: string } | null;
+};
+
+type AwinCustomerHistoryQuery = {
+  eq(column: string, value: unknown): AwinCustomerHistoryQuery;
+  lt(column: string, value: unknown): AwinCustomerHistoryQuery;
+  neq(column: string, value: unknown): AwinCustomerHistoryQuery;
+  then<TResult1 = AwinCustomerHistoryResult, TResult2 = never>(
+    onfulfilled?:
+      | ((value: AwinCustomerHistoryResult) => TResult1 | PromiseLike<TResult1>)
+      | null,
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
+  ): PromiseLike<TResult1 | TResult2>;
+};
+
+type AwinCustomerHistoryClient = {
+  from(table: "orders"): {
+    select(
+      columns: "id",
+      options: { count: "exact"; head: true },
+    ): AwinCustomerHistoryQuery;
+  };
+};
+
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const ISO_TIMESTAMP =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/;
 
+export function classifyAwinCustomer(
+  priorPaidOrderCount: number,
+): AwinCustomerAcquisition {
+  if (!Number.isSafeInteger(priorPaidOrderCount) || priorPaidOrderCount < 0) {
+    throw new TypeError("priorPaidOrderCount must be a non-negative integer");
+  }
+  return priorPaidOrderCount === 0 ? "NEW" : "RETURNING";
+}
+
+export async function customerAcquisitionForOrder(
+  supabase: AwinCustomerHistoryClient,
+  customerId: string,
+  currentOrder: { id: string; created_at: string },
+): Promise<AwinCustomerAcquisition> {
+  let result: AwinCustomerHistoryResult;
+  try {
+    result = await supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("customer_id", customerId)
+      .eq("status", "paid")
+      .lt("created_at", currentOrder.created_at)
+      .neq("id", currentOrder.id);
+  } catch {
+    throw new Error("awin_customer_classification_failed");
+  }
+
+  if (result.error || result.count === null) {
+    throw new Error("awin_customer_classification_failed");
+  }
+  try {
+    return classifyAwinCustomer(result.count);
+  } catch {
+    throw new Error("awin_customer_classification_failed");
+  }
+}
+
 export function paymentIntentCreatedAt(created: number): string {
   if (!Number.isSafeInteger(created) || created <= 0) {
-    throw new TypeError("PaymentIntent created must be a positive Unix timestamp");
+    throw new TypeError(
+      "PaymentIntent created must be a positive Unix timestamp",
+    );
   }
   return new Date(created * 1000).toISOString();
 }
@@ -169,6 +238,13 @@ export async function enqueueAwinConversion(
   encryptionKey = Deno.env.get("AWIN_OUTBOX_ENCRYPTION_KEY"),
 ): Promise<void> {
   if (!encryptionKey) throw new Error("awin_outbox_encryption_key_missing");
+  const commissionGroup = normalizeCommissionGroupCode(input.commissionGroup);
+  if (
+    !(input.customerAcquisition === "NEW" ||
+      input.customerAcquisition === "RETURNING")
+  ) {
+    throw new TypeError("customerAcquisition is invalid");
+  }
 
   const [awcCiphertext, awcHash] = await Promise.all([
     encryptAwc(input.awc, encryptionKey),
@@ -185,7 +261,8 @@ export async function enqueueAwinConversion(
     voucher_code: input.voucherCode,
     financial_basis_version: input.financialBasisVersion,
     currency: input.currency,
-    commission_group: input.commissionGroup,
+    commission_group: commissionGroup,
+    customer_acquisition: input.customerAcquisition,
     channel: input.channel,
     awc_ciphertext: awcCiphertext,
     awc_hash: awcHash,

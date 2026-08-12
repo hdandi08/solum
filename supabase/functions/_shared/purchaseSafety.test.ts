@@ -1,5 +1,7 @@
+// deno-lint-ignore-file no-import-prefix no-unversioned-import require-await -- Preserve the pinned test import and async contract stub.
 import { assertEquals } from "jsr:@std/assert";
 import * as purchaseSafety from "./purchaseSafety.ts";
+import { customerAcquisitionForOrder } from "./awinCommission.ts";
 
 const {
   shouldSendExternalPurchaseSideEffects,
@@ -61,6 +63,132 @@ Deno.test("normalizes only bounded integer metadata and trimmed vouchers", () =>
   assertEquals(helpers.validatedVoucher("x".repeat(101)), null);
 });
 
+Deno.test("classifies AWIN customer from prior paid order history before enqueue", async () => {
+  const makeClient = (
+    result: { count: number | null; error: { message: string } | null },
+  ) => {
+    const calls: Array<[string, ...unknown[]]> = [];
+    const query = {
+      eq(column: string, value: unknown) {
+        calls.push(["eq", column, value]);
+        return query;
+      },
+      lt(column: string, value: unknown) {
+        calls.push(["lt", column, value]);
+        return query;
+      },
+      neq(column: string, value: unknown) {
+        calls.push(["neq", column, value]);
+        return query;
+      },
+      then(resolve: (value: typeof result) => unknown) {
+        return Promise.resolve(result).then(resolve);
+      },
+    };
+    return {
+      calls,
+      from(table: string) {
+        calls.push(["from", table]);
+        return {
+          select(columns: string, options: unknown) {
+            calls.push(["select", columns, options]);
+            return query;
+          },
+        };
+      },
+    };
+  };
+  const order = {
+    id: "11111111-1111-4111-8111-111111111111",
+    created_at: "2026-08-12T12:00:00.000Z",
+  };
+
+  const firstPurchase = makeClient({ count: 0, error: null });
+  assertEquals(
+    await customerAcquisitionForOrder(
+      firstPurchase as never,
+      "customer-1",
+      order,
+    ),
+    "NEW",
+  );
+  assertEquals(firstPurchase.calls, [
+    ["from", "orders"],
+    ["select", "id", { count: "exact", head: true }],
+    ["eq", "customer_id", "customer-1"],
+    ["eq", "status", "paid"],
+    ["lt", "created_at", order.created_at],
+    ["neq", "id", order.id],
+  ]);
+
+  const repeatPurchase = makeClient({ count: 1, error: null });
+  assertEquals(
+    await customerAcquisitionForOrder(
+      repeatPurchase as never,
+      "customer-1",
+      order,
+    ),
+    "RETURNING",
+  );
+
+  const failedCount = makeClient({
+    count: null,
+    error: { message: "raw database detail" },
+  });
+  let error: unknown;
+  try {
+    await customerAcquisitionForOrder(
+      failedCount as never,
+      "customer-1",
+      order,
+    );
+  } catch (caught) {
+    error = caught;
+  }
+  assertEquals((error as Error).message, "awin_customer_classification_failed");
+  assertEquals(
+    failedCount.calls.some((call) => call[1] === "awin_conversion_outbox"),
+    false,
+  );
+
+  const rejectedQuery = {
+    eq() {
+      return rejectedQuery;
+    },
+    lt() {
+      return rejectedQuery;
+    },
+    neq() {
+      return rejectedQuery;
+    },
+    then(
+      resolve: (value: unknown) => unknown,
+      reject: (reason: unknown) => unknown,
+    ) {
+      return Promise.reject(new Error("raw transport detail")).then(
+        resolve,
+        reject,
+      );
+    },
+  };
+  const rejectedClient = {
+    from() {
+      return { select: () => rejectedQuery };
+    },
+  };
+  error = undefined;
+  try {
+    await customerAcquisitionForOrder(
+      rejectedClient as never,
+      "customer-1",
+      order,
+    );
+  } catch (caught) {
+    error = caught;
+  }
+  assertEquals((error as Error).message, "awin_customer_classification_failed");
+});
+
 Deno.test("existing-order replay after enqueue failure can attempt side effects only without a durable marker", () => {
   const shouldAttempt = shouldSendExternalPurchaseSideEffects as unknown as (
     input: {
@@ -70,26 +198,37 @@ Deno.test("existing-order replay after enqueue failure can attempt side effects 
     },
   ) => boolean;
 
-  assertEquals(shouldAttempt({
-    livemode: true,
-    orderAlreadyExists: true,
-    purchaseSideEffectsAttempted: false,
-  }), true);
-  assertEquals(shouldAttempt({
-    livemode: true,
-    orderAlreadyExists: true,
-    purchaseSideEffectsAttempted: true,
-  }), false);
-  assertEquals(shouldAttempt({
-    livemode: false,
-    orderAlreadyExists: true,
-    purchaseSideEffectsAttempted: false,
-  }), false);
+  assertEquals(
+    shouldAttempt({
+      livemode: true,
+      orderAlreadyExists: true,
+      purchaseSideEffectsAttempted: false,
+    }),
+    true,
+  );
+  assertEquals(
+    shouldAttempt({
+      livemode: true,
+      orderAlreadyExists: true,
+      purchaseSideEffectsAttempted: true,
+    }),
+    false,
+  );
+  assertEquals(
+    shouldAttempt({
+      livemode: false,
+      orderAlreadyExists: true,
+      purchaseSideEffectsAttempted: false,
+    }),
+    false,
+  );
 });
 
 Deno.test("purchase side-effect attempt marker is immutable input and survives stale-claim replay", () => {
   const helpers = purchaseSafety as unknown as {
-    paymentIntentPurchaseSideEffectsAttempted: (data: Record<string, unknown>) => boolean;
+    paymentIntentPurchaseSideEffectsAttempted: (
+      data: Record<string, unknown>,
+    ) => boolean;
     withPaymentIntentPurchaseSideEffectsAttempted: (
       data: Record<string, unknown>,
     ) => Record<string, unknown>;
@@ -141,17 +280,26 @@ Deno.test("legacy claim JSON stays distinct from an explicit retryable marker", 
     },
   ) => boolean;
 
-  assertEquals(marker({ state: "processing", awin_attempted: true }), undefined);
-  assertEquals(shouldAttempt({
-    livemode: true,
-    orderAlreadyExists: true,
-    purchaseSideEffectsAttempted: undefined,
-  }), false);
-  assertEquals(shouldAttempt({
-    livemode: true,
-    orderAlreadyExists: true,
-    purchaseSideEffectsAttempted: false,
-  }), true);
+  assertEquals(
+    marker({ state: "processing", awin_attempted: true }),
+    undefined,
+  );
+  assertEquals(
+    shouldAttempt({
+      livemode: true,
+      orderAlreadyExists: true,
+      purchaseSideEffectsAttempted: undefined,
+    }),
+    false,
+  );
+  assertEquals(
+    shouldAttempt({
+      livemode: true,
+      orderAlreadyExists: true,
+      purchaseSideEffectsAttempted: false,
+    }),
+    true,
+  );
 });
 
 Deno.test("temporary acceptance secrets are available only on the exact development project", () => {
@@ -169,9 +317,18 @@ Deno.test("temporary acceptance secrets are available only on the exact developm
     resolve("https://rodvvmfzkyjsqbufkjbc.supabase.co", secret),
     secret,
   );
-  assertEquals(resolve("https://gvfptmjluxpngfjendbi.supabase.co", secret), undefined);
-  assertEquals(resolve("https://rodvvmfzkyjsqbufkjbc.attacker.invalid", secret), undefined);
-  assertEquals(resolve("https://rodvvmfzkyjsqbufkjbc.supabase.co", "short"), undefined);
+  assertEquals(
+    resolve("https://gvfptmjluxpngfjendbi.supabase.co", secret),
+    undefined,
+  );
+  assertEquals(
+    resolve("https://rodvvmfzkyjsqbufkjbc.attacker.invalid", secret),
+    undefined,
+  );
+  assertEquals(
+    resolve("https://rodvvmfzkyjsqbufkjbc.supabase.co", "short"),
+    undefined,
+  );
 });
 
 Deno.test("Stripe verification keeps the primary secret authoritative and exact-dev fallback isolated", async () => {
@@ -183,37 +340,51 @@ Deno.test("Stripe verification keeps the primary secret authoritative and exact-
         primarySecret: string;
         supabaseUrl?: string;
         acceptanceSecret?: string;
-        construct: (body: string, signature: string, secret: string) => Promise<T>;
+        construct: (
+          body: string,
+          signature: string,
+          secret: string,
+        ) => Promise<T>;
       }) => Promise<T>;
     }
   ).verifyStripeWebhookWithDevelopmentFallback;
   const attempts: string[] = [];
-  const construct = async (_body: string, _signature: string, secret: string) => {
+  const construct = async (
+    _body: string,
+    _signature: string,
+    secret: string,
+  ) => {
     attempts.push(secret);
     if (secret === "normal-secret") return "primary";
     if (secret === "temporary-development-acceptance-secret") return "fallback";
     throw new Error("invalid signature");
   };
 
-  assertEquals(await verify({
-    body: "{}",
-    signature: "signature",
-    primarySecret: "normal-secret",
-    supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
-    acceptanceSecret: "temporary-development-acceptance-secret",
-    construct,
-  }), "primary");
+  assertEquals(
+    await verify({
+      body: "{}",
+      signature: "signature",
+      primarySecret: "normal-secret",
+      supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+      acceptanceSecret: "temporary-development-acceptance-secret",
+      construct,
+    }),
+    "primary",
+  );
   assertEquals(attempts, ["normal-secret"]);
 
   attempts.length = 0;
-  assertEquals(await verify({
-    body: "{}",
-    signature: "signature",
-    primarySecret: "invalid-primary",
-    supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
-    acceptanceSecret: "temporary-development-acceptance-secret",
-    construct,
-  }), "fallback");
+  assertEquals(
+    await verify({
+      body: "{}",
+      signature: "signature",
+      primarySecret: "invalid-primary",
+      supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+      acceptanceSecret: "temporary-development-acceptance-secret",
+      construct,
+    }),
+    "fallback",
+  );
   assertEquals(attempts, [
     "invalid-primary",
     "temporary-development-acceptance-secret",

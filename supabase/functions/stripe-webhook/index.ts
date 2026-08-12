@@ -1,7 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
-import { calculateAwinCommissionableAmount, enqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
+import { calculateAwinCommissionableAmount, customerAcquisitionForOrder, enqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
 import {
   classifyAwinEligibility,
   paymentIntentPurchaseSideEffectsAttempted,
@@ -585,7 +585,7 @@ async function handleOneTimeOrderFromPI(
   // Existing orders resume only the idempotent address/Awin finalisation below.
   const { data: existingOrder, error: existingOrderError } = await supabase
     .from('orders')
-    .select('id, customer_id')
+    .select('id, customer_id, created_at')
     .eq('stripe_payment_id', pi.id)
     .eq('order_type', 'first_box')
     .maybeSingle();
@@ -618,7 +618,7 @@ async function handleOneTimeOrderFromPI(
       amount_pence: pi.amount,
       status: 'paid',
       source,
-    }).select('id, customer_id').single();
+    }).select('id, customer_id, created_at').single();
     if (orderErr || !newOrder) throw new Error(`one_time_pi_order_insert_failed: ${orderErr?.message ?? 'missing order'}`);
     order = newOrder;
 
@@ -633,6 +633,7 @@ async function handleOneTimeOrderFromPI(
   }
   if (!customerId) throw new Error('one_time_pi_order_missing_customer');
   if (!order) throw new Error('one_time_pi_order_missing_order');
+  const canonicalOrder = order as unknown as { id: string; created_at: string };
 
   // Store shipping address from pi.shipping before non-critical delivery events.
   const sh = pi.shipping;
@@ -659,6 +660,11 @@ async function handleOneTimeOrderFromPI(
     channel: awin_channel,
   });
   if (eligibility.eligible) {
+    const customerAcquisition = await customerAcquisitionForOrder(
+      supabase as never,
+      customerId,
+      canonicalOrder,
+    );
     const discountPence = validatedIntegerMetadata(pi.metadata.discount_amount_pence, 0);
     const deliveryPence = validatedIntegerMetadata(pi.metadata.delivery_amount_pence, 0);
     const vatEffectiveAt = Deno.env.get('SOLUM_VAT_EFFECTIVE_AT');
@@ -673,7 +679,7 @@ async function handleOneTimeOrderFromPI(
     });
     await enqueueAwinConversion(supabase, {
       orderRef: pi.id,
-      orderId: order.id,
+      orderId: canonicalOrder.id,
       customerPaidPence: pi.amount,
       discountPence,
       deliveryPence,
@@ -683,6 +689,7 @@ async function handleOneTimeOrderFromPI(
       financialBasisVersion: 'solum-commission-v1',
       currency: 'GBP',
       commissionGroup: 'DEFAULT',
+      customerAcquisition,
       channel: awin_channel as 'aw' | 'display' | 'ppc' | 'email',
       awc: awc!,
     });

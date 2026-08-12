@@ -1,4 +1,5 @@
 import { decryptAwc, retryDecision } from "./awinOutbox.ts";
+import { normalizeCommissionGroupCode } from "./awinPublisherPolicy.ts";
 
 export const AWIN_CONVERSION_ENDPOINT =
   "https://api.awin.com/s2s/advertiser/129171/orders";
@@ -18,7 +19,11 @@ const PROVIDER_ID_PATTERN = /^[A-Za-z0-9._:-]+$/;
 
 export type AwinChannel = "aw" | "display" | "ppc" | "email";
 export type CustomerAcquisition = "NEW" | "RETURNING";
-export type CommissionGroup = "DEFAULT" | "NEW" | "EXISTING";
+export type CommissionGroup = string;
+
+export function validateCommissionGroupCode(value: unknown): CommissionGroup {
+  return normalizeCommissionGroupCode(value);
+}
 
 export type BuildConversionOrderInput = {
   orderRef: string;
@@ -73,6 +78,7 @@ export type OutboxRow = {
   currency: string;
   channel: string;
   commission_group: string;
+  customer_acquisition: string | null;
   voucher_code: string | null;
   awc_ciphertext: string;
   attempt_count: number;
@@ -173,11 +179,7 @@ export function buildConversionOrder(
   if (!(["aw", "display", "ppc", "email"] as const).includes(input.channel)) {
     throw new TypeError("channel is invalid");
   }
-  if (
-    !(["DEFAULT", "NEW", "EXISTING"] as const).includes(input.commissionGroup)
-  ) {
-    throw new TypeError("commissionGroup is invalid");
-  }
+  const commissionGroup = validateCommissionGroupCode(input.commissionGroup);
   if (
     input.customerAcquisition !== undefined &&
     !(["NEW", "RETURNING"] as const).includes(input.customerAcquisition)
@@ -200,7 +202,7 @@ export function buildConversionOrder(
       ? { customerAcquisition: input.customerAcquisition }
       : {}),
     ...(voucher ? { voucher } : {}),
-    commissionGroups: [{ code: input.commissionGroup, amount }],
+    commissionGroups: [{ code: commissionGroup, amount }],
     custom: { "1": "solum-outbox-v1" },
   };
 }
@@ -749,11 +751,16 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
           row.awc_ciphertext,
           dependencies.encryptionKey,
         );
-        const commissionGroup = validOutboxEnum(
+        const commissionGroup = validateCommissionGroupCode(
           row.commission_group,
-          ["DEFAULT", "NEW", "EXISTING"] as const,
-          "commissionGroup",
         );
+        const customerAcquisition = row.customer_acquisition === null
+          ? undefined
+          : validOutboxEnum(
+            row.customer_acquisition,
+            ["NEW", "RETURNING"] as const,
+            "customerAcquisition",
+          );
         ready.push({
           row,
           order: buildConversionOrder({
@@ -771,9 +778,7 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
             ),
             awc,
             commissionGroup,
-            ...(commissionGroup === "NEW"
-              ? { customerAcquisition: "NEW" }
-              : {}),
+            ...(customerAcquisition ? { customerAcquisition } : {}),
             voucherCode: row.voucher_code,
           }),
         });
@@ -819,73 +824,79 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
         now,
       });
 
-      const transitions = await runConcurrentTransitions(ready, async ({ row }) => {
-        const outcome = result.outcomes.get(row.order_ref) ?? {
-          state: "retry" as const,
-          status: result.status,
-          errorCode: "UNKNOWN_PROVIDER_RESPONSE" as const,
-        };
-        if (outcome.state === "sent") {
-          const changed = await dependencies.repository.complete({
-            id: row.id,
+      const transitions = await runConcurrentTransitions(
+        ready,
+        async ({ row }) => {
+          const outcome = result.outcomes.get(row.order_ref) ?? {
+            state: "retry" as const,
+            status: result.status,
+            errorCode: "UNKNOWN_PROVIDER_RESPONSE" as const,
+          };
+          if (outcome.state === "sent") {
+            const changed = await dependencies.repository.complete({
+              id: row.id,
+              workerId,
+              status: outcome.status,
+              ...(outcome.batchId ? { batchId: outcome.batchId } : {}),
+              ...(outcome.providerTransactionId
+                ? { transactionId: outcome.providerTransactionId }
+                : {}),
+            });
+            return changed ? "sent" : undefined;
+          }
+          if (outcome.state === "processing") {
+            const changed = await dependencies.repository.accept({
+              id: row.id,
+              workerId,
+              status: 202,
+              batchId: outcome.batchId,
+              nextReconcileAt: new Date(
+                now() + RECONCILIATION_DELAY_MS,
+              ).toISOString(),
+            });
+            return changed ? "accepted" : undefined;
+          }
+          const changedState = await transitionRetry(
+            dependencies.repository,
+            row,
             workerId,
-            status: outcome.status,
-            ...(outcome.batchId ? { batchId: outcome.batchId } : {}),
-            ...(outcome.providerTransactionId
-              ? { transactionId: outcome.providerTransactionId }
-              : {}),
-          });
-          return changed ? "sent" : undefined;
-        }
-        if (outcome.state === "processing") {
-          const changed = await dependencies.repository.accept({
-            id: row.id,
-            workerId,
-            status: 202,
-            batchId: outcome.batchId,
-            nextReconcileAt: new Date(
-              now() + RECONCILIATION_DELAY_MS,
-            ).toISOString(),
-          });
-          return changed ? "accepted" : undefined;
-        }
-        const changedState = await transitionRetry(
-          dependencies.repository,
-          row,
-          workerId,
-          now(),
-          outcome,
-          jitterMs(),
-        );
-        return changedState === "retry"
-          ? "retried"
-          : changedState === "dead_letter"
-          ? "dead_letter"
-          : undefined;
-      });
+            now(),
+            outcome,
+            jitterMs(),
+          );
+          return changedState === "retry"
+            ? "retried"
+            : changedState === "dead_letter"
+            ? "dead_letter"
+            : undefined;
+        },
+      );
       for (const transition of transitions.results) {
         if (transition) counts[transition] += 1;
       }
       if (transitions.failed) transitionFailure = true;
     } catch {
-      const transitions = await runConcurrentTransitions(ready, async ({ row }) => {
-        const decision = retryDecision({
-          attempt: row.attempt_count,
-          jitterMs: jitterMs(),
-        });
-        const nextAttemptAt = decision.state === "retry"
-          ? new Date(now() + decision.nextAttemptMs).toISOString()
-          : undefined;
-        const changed = await dependencies.repository.retry({
-          id: row.id,
-          workerId,
-          state: decision.state,
-          ...(nextAttemptAt ? { nextAttemptAt } : {}),
-          errorCode: "UNKNOWN_PROVIDER_RESPONSE",
-        });
-        if (!changed) return undefined;
-        return decision.state === "retry" ? "retried" : "dead_letter";
-      });
+      const transitions = await runConcurrentTransitions(
+        ready,
+        async ({ row }) => {
+          const decision = retryDecision({
+            attempt: row.attempt_count,
+            jitterMs: jitterMs(),
+          });
+          const nextAttemptAt = decision.state === "retry"
+            ? new Date(now() + decision.nextAttemptMs).toISOString()
+            : undefined;
+          const changed = await dependencies.repository.retry({
+            id: row.id,
+            workerId,
+            state: decision.state,
+            ...(nextAttemptAt ? { nextAttemptAt } : {}),
+            errorCode: "UNKNOWN_PROVIDER_RESPONSE",
+          });
+          if (!changed) return undefined;
+          return decision.state === "retry" ? "retried" : "dead_letter";
+        },
+      );
       for (const transition of transitions.results) {
         if (transition) counts[transition] += 1;
       }
