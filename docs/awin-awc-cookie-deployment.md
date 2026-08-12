@@ -147,14 +147,121 @@ cookie recovery remains covered by the Lambda integration tests until a
 `dev.bysolum.co.uk` storefront exists. Bounded local-storage attribution
 remains the development browser fallback.
 
-## Production guardrail
+### Current development state (2026-08-12)
 
-Do not deploy, alter DNS, issue certificates, or run checkout/conversion tests
-against production without separate explicit approval. After an approved
-deployment, use read-only checks only: inspect the public endpoint response
-headers, deployed stack configuration, Amplify app rules, and CloudWatch error
-counts. Verify `/feeds/awin.csv` returns a successful CSV response and that
-ordinary storefront routes still use the SPA fallback.
+Development is exactly Supabase project `rodvvmfzkyjsqbufkjbc`. Its conversion
+worker has one active pg_cron job named `awin-conversion-worker-dev`, scheduled
+as `* * * * *`. The job posts only to
+`https://rodvvmfzkyjsqbufkjbc.supabase.co/functions/v1/awin-conversion-worker`
+and builds its bearer header at execution time from the single Vault entry
+named `awin_worker_bearer_dev`, which contains the value configured as the
+worker's `AWIN_WORKER_SECRET`; no credential is embedded in SQL or source.
+The final guarded verification found exactly one job, a recent successful cron
+run, HTTP 200 with `claimed`, `sent`, `retried`, and `dead_letter` all zero,
+and an empty outbox.
+
+An earlier generated development bearer was treated as compromised after it
+appeared in internal diagnostic output. It was replaced, the edge-function and
+Vault copies were synchronized without exposing the replacement, and an
+authenticated empty worker response verified the recovery. Temporary files
+were removed. Do not copy a bearer value into this runbook, logs, tickets, or
+command output.
+
+To pause or roll back development delivery, unschedule only the exact job:
+
+```sql
+select cron.unschedule('awin-conversion-worker-dev');
+```
+
+Then verify that no active job with that name remains. Do not delete the Vault
+entry until delivery is intentionally retired and the worker secret has also
+been removed from the exact development project. Recreating the job must
+restore the exact name, minute schedule, development URL, and Vault lookup
+above. The production schedule is a separate action and must never reuse the
+development Vault entry or project URL.
+
+The isolated AWS stack `solum-awin-conversion-fixture-dev` is intentionally
+retained in account `798470762256`, region `eu-west-2`, for guarded development
+acceptance. The development project also retains these five AWIN settings:
+`AWIN_ATTRIBUTION_SECRET`, `AWIN_CONVERSION_API_BASE_URL`,
+`AWIN_CONVERSION_API_KEY`, `AWIN_OUTBOX_ENCRYPTION_KEY`, and
+`AWIN_WORKER_SECRET`. The API base URL points only to the retained fixture; the
+fixture never calls AWIN. Remove the stack with
+`infra/awin-conversion-fixture-dev/scripts/teardown-aws-dev.sh`, whose exact
+account/region/`-dev` guards must pass. Before teardown, unschedule the worker
+or change its development-only API configuration so it cannot target a removed
+fixture. No production setting is part of this teardown.
+
+### Storefront deployment prerequisite
+
+The exact storefront `https://dev.d3pa095gzazg3c.amplifyapp.com` was read-only
+checked on 2026-08-12. The restricted routes `/buy`, `/checkout`, `/account`,
+and `/creators` correctly had no MasterTag, but `/` also had no
+`#solum-awin-mastertag` or `https://www.dwin1.com/129171.js`, and
+`/feeds/awin.csv` returned HTTP 404 with an empty body. This is a stale/missing
+development web deployment, not a local Phase A test failure.
+
+Before production approval, deploy/push `codex/awin-phase-a` to the Amplify
+**development branch only**, then repeat these exact read-only checks:
+
+1. `/` contains exactly one script with id `solum-awin-mastertag` and source
+   `https://www.dwin1.com/129171.js`.
+2. `/buy`, `/checkout`, `/account`, and `/creators` contain none.
+3. `/feeds/awin.csv` returns HTTP 200, a CSV content type, and exactly the two
+   expected product rows (plus the header), validated with
+   `scripts/awin/verify-feed.mjs`.
+
+Do not substitute production for this missing development evidence. The
+Amplify development hostname is outside `.bysolum.co.uk`, so it cannot prove
+first-party `.bysolum.co.uk` cookie recovery; Lambda integration tests remain
+the authority until a `dev.bysolum.co.uk` storefront domain exists.
+
+## Attribution and commission interpretation
+
+Acquisition reporting and AWIN commission reporting answer different questions
+and must not be added together. Preserve UTMs, referrer, and the normalized
+platform channel (`aw`, `display`, `ppc`, or `email`) for acquisition analysis.
+For an AWIN-attributed order, report the AWIN publisher/partner and click
+identity, order reference, validated voucher (when present), and commission
+group as affiliate dimensions on that same conversion. One order remains one
+order and one revenue amount; the AWIN dimensions enrich it rather than create
+a second conversion.
+
+Commissionable prices are customer-paid amounts inclusive of VAT and delivery.
+Before VAT registration, use VAT `0`. From the separately configured effective
+instant onward, remove VAT from the VAT-inclusive amount. Deduct only delivery
+the customer actually paid as a separate charge. Free or bundled delivery is
+`0`; never deduct internal or notional fulfilment figures such as £3.85, £3.95,
+or £5.95. Send a voucher only when a real code was validated and stored on the
+order. A no-code launch promotion, inferred discount, or display label must not
+populate AWIN's `voucher` field.
+
+## Production rollout gate and read-only acceptance
+
+Phase A completion does not authorise production deployment. Obtain a separate,
+explicit approval that names the production AWS/Supabase/Amplify rollout before
+deploying code or functions, applying migrations, creating the production
+schedule, changing Amplify rules or DNS, issuing certificates, or setting
+production secrets. The production schedule is created only inside that
+approved rollout, with its own Vault secret and production worker URL.
+
+After an approved production deployment, acceptance is read-only only:
+
+- `GET`/`HEAD` the public storefront routes and confirm ordinary SPA routes
+  still load; verify exactly one MasterTag on public routes and none on `/buy`,
+  `/checkout`, `/account`, or `/creators`.
+- `GET`/`HEAD` `/feeds/awin.csv`; require HTTP 200, CSV content type, and the
+  verified two-row product contract.
+- Inspect the deployed AWS stack/Lambda versions, API Gateway/custom-domain
+  mapping, Supabase migration/function versions, production pg_cron command,
+  and Vault **names only**. Do not read or print secret values.
+- Inspect CloudWatch error counts and the Supabase sync/outbox backlog,
+  retry/dead-letter counts, and worker run health. Use only naturally occurring
+  real customer activity; do not create an order, conversion, refund, label, or
+  dispatch as an acceptance test.
+- Compare the real order and sync/outbox outcome by opaque reference or
+  aggregate status. Never expose raw `awc`, ciphertext, bearer credentials, or
+  provider response bodies.
 
 ```bash
 aws amplify get-app \
@@ -168,7 +275,8 @@ curl -sS -D - -o /dev/null https://bysolum.co.uk/feeds/awin.csv
 
 For Awin platform acceptance, wait for naturally occurring, completed real
 customer transactions. In Awin diagnostics, confirm the resolved `cks` /
-attribution outcome is present for those transactions. Do not create synthetic
-production conversions, replay customer orders, or copy raw `awc`/`cks` values
-into logs, tickets, analytics, or documentation. Record only the diagnostic
-outcome and aggregate counts.
+attribution outcome, publisher/partner, order reference, voucher omission or
+validated code, and commission group. Do not create synthetic production
+conversions, replay customer orders, or copy raw `awc`/`cks` values into logs,
+tickets, analytics, or documentation. Record only the diagnostic outcome and
+aggregate counts.
