@@ -55,6 +55,67 @@ function validExport(overrides = {}) {
   };
 }
 
+function premiumExport({ publisher = {}, rateValues, assignment = {} } = {}) {
+  return validExport({
+    commissionGroups: [
+      { code: "DEFAULT", name: "Default", active: true },
+      { code: "PREMIUM", name: "Premium", active: true },
+    ],
+    rateSets: [
+      { key: "standard", name: "Standard", active: true },
+      { key: "solum-premium", name: "Solum Premium", active: true },
+    ],
+    rateValues: rateValues ?? [
+      {
+        rateSetKey: "standard",
+        groupCode: "DEFAULT",
+        commissionType: "percentage",
+        rateBps: 1000,
+      },
+      {
+        rateSetKey: "standard",
+        groupCode: "PREMIUM",
+        commissionType: "percentage",
+        rateBps: 1500,
+      },
+      {
+        rateSetKey: "solum-premium",
+        groupCode: "DEFAULT",
+        commissionType: "percentage",
+        rateBps: 1500,
+      },
+      {
+        rateSetKey: "solum-premium",
+        groupCode: "PREMIUM",
+        commissionType: "percentage",
+        rateBps: 1500,
+      },
+    ],
+    publishers: [
+      {
+        id: 900001,
+        name: "Editorial Example",
+        primaryRegion: null,
+        primaryType: "Editorial Content",
+        status: "joined",
+        approvalReason: "Approved direct commercial terms",
+        approvedBy: "Commercial owner",
+        approvedAt: "2026-08-12T20:00:00Z",
+        ...publisher,
+      },
+    ],
+    assignments: [
+      {
+        publisherId: 900001,
+        rateSetKey: "solum-premium",
+        state: "current",
+        effectiveFrom: "2026-08-12T21:33:00Z",
+        ...assignment,
+      },
+    ],
+  });
+}
+
 test("preserves a dynamic group/rate-set matrix", () => {
   const normalized = normalizePolicyExport(validExport());
 
@@ -245,16 +306,13 @@ test("rejects invalid basis points and incomplete premium approval", () => {
   assert.throws(
     () =>
       validatePolicyExport(
-        validExport({
-          publishers: [
-            {
-              id: 900001,
-              name: "Editorial Example",
-              primaryType: "Editorial Content",
-              status: "joined",
-              commercialTier: "premium",
-            },
-          ],
+        premiumExport({
+          publisher: {
+            commercialTier: "premium",
+            approvalReason: undefined,
+            approvedBy: undefined,
+            approvedAt: undefined,
+          },
         }),
       ),
     /premium publisher 900001 requires approval metadata/,
@@ -287,4 +345,93 @@ test("renders the exact audit columns and never fabricates unknown values as zer
   const unknownCells = unknown.split(",");
   assert.equal(unknownCells[10], "unverified");
   assert.deepEqual(unknownCells.slice(11, 17), ["", "", "", "", "", ""]);
+});
+
+test("rejects an unapproved solum-premium assignment", () => {
+  const input = premiumExport({
+    publisher: {
+      approvalReason: undefined,
+      approvedBy: undefined,
+      approvedAt: undefined,
+    },
+  });
+
+  assert.throws(
+    () => validatePolicyExport(input),
+    /premium publisher 900001 requires approval metadata/,
+  );
+});
+
+test("rejects a declared premium publisher assigned to the wrong rate set", () => {
+  const input = premiumExport({
+    publisher: { commercialTier: "premium" },
+    assignment: { rateSetKey: "standard" },
+  });
+
+  assert.throws(
+    () => validatePolicyExport(input),
+    /declared premium publisher 900001 must be assigned to solum-premium/,
+  );
+});
+
+test("rejects a missing active premium matrix cell when a premium assignment exists", () => {
+  const input = premiumExport({
+    rateValues: [
+      {
+        rateSetKey: "standard",
+        groupCode: "DEFAULT",
+        commissionType: "percentage",
+        rateBps: 1000,
+      },
+      {
+        rateSetKey: "standard",
+        groupCode: "PREMIUM",
+        commissionType: "percentage",
+        rateBps: 1500,
+      },
+      {
+        rateSetKey: "solum-premium",
+        groupCode: "DEFAULT",
+        commissionType: "percentage",
+        rateBps: 1500,
+      },
+    ],
+  });
+
+  assert.throws(
+    () => validatePolicyExport(input),
+    /solum-premium is missing an active rate value for PREMIUM/,
+  );
+});
+
+test("accepts a fully approved premium assignment with every active matrix cell", () => {
+  const normalized = normalizePolicyExport(premiumExport());
+  const publisher = normalized.publishers[0];
+
+  assert.equal(publisher.commercial_tier, "premium");
+  assert.equal(publisher.rate_source, "approved_exception");
+  assert.equal(publisher.commission_rate_set_key, "solum-premium");
+  assert.equal(publisher.exception_reason, "Approved direct commercial terms");
+  assert.equal(publisher.exception_approved_by, "Commercial owner");
+  assert.equal(publisher.exception_approved_at, "2026-08-12T20:00:00.000Z");
+});
+
+test("keeps a Skimlinks lookalike name on another ID unprotected", () => {
+  const input = validExport({
+    publishers: [
+      {
+        id: 900001,
+        name: "Skimlinks Lookalike Editorial",
+        primaryRegion: null,
+        primaryType: "Editorial Content",
+        status: "joined",
+      },
+    ],
+  });
+  const publisher = normalizePolicyExport(input).publishers[0];
+
+  assert.equal(publisher.category, "editorial");
+  assert.equal(publisher.retain_protected, false);
+  assert.equal(publisher.commercial_tier, "standard");
+  assert.equal(publisher.rate_source, "awin_assignment");
 });

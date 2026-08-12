@@ -113,8 +113,8 @@ export function sourceHash(value) {
   return createHash("sha256").update(canonicalJson, "utf8").digest("hex");
 }
 
-function classifyPublisher(publisher) {
-  if (SKIMLINKS_IDS.has(publisher.id) || /skimlinks/i.test(publisher.name)) {
+function classifyPublisher(publisher, premiumAssignment) {
+  if (SKIMLINKS_IDS.has(publisher.id)) {
     return {
       category: "subnetwork",
       retainProtected: true,
@@ -130,7 +130,7 @@ function classifyPublisher(publisher) {
   else if (/influencer|social|creator/.test(label)) category = "creator";
   else if (/content|editorial|blog/.test(label)) category = "editorial";
 
-  if (publisher.commercialTier === "premium") {
+  if (premiumAssignment) {
     return {
       category,
       retainProtected: false,
@@ -325,19 +325,37 @@ export function validatePolicyExport(value) {
       row,
     ]),
   );
+  let hasPremiumAssignment = false;
   for (const publisher of publishers) {
-    if (publisher.commercialTier !== "premium") continue;
-    const approval = approvalFields(publisher);
     const currentAssignment = currentAssignments.get(publisher.id);
+    const premiumAssignment = currentAssignment?.rateSetKey === "solum-premium";
+    if (publisher.commercialTier === "premium" && !premiumAssignment) {
+      throw new TypeError(
+        `declared premium publisher ${publisher.id} must be assigned to solum-premium`,
+      );
+    }
+    if (!premiumAssignment) continue;
+
+    hasPremiumAssignment = true;
+    const approval = approvalFields(publisher);
     try {
       requireTrimmedString(approval.reason, "approval reason", 1000);
       requireTrimmedString(approval.approvedBy, "approval approver");
       normalizeTimestamp(approval.approvedAt, "approval timestamp");
-      if (!currentAssignment) throw new TypeError("missing current assignment");
     } catch {
       throw new TypeError(
-        `premium publisher ${publisher.id} requires approval metadata and a current assignment`,
+        `premium publisher ${publisher.id} requires approval metadata`,
       );
+    }
+  }
+
+  if (hasPremiumAssignment) {
+    for (const group of commissionGroups) {
+      if (group.active && !rateValueKeys.has(`solum-premium:${group.code}`)) {
+        throw new TypeError(
+          `solum-premium is missing an active rate value for ${group.code}`,
+        );
+      }
     }
   }
 
@@ -397,9 +415,10 @@ export function normalizePolicyExport(value) {
   }));
 
   const publishers = document.publishers.map((publisher) => {
-    const classification = classifyPublisher(publisher);
-    const approval = approvalFields(publisher);
     const currentAssignment = currentAssignments.get(publisher.id);
+    const premiumAssignment = currentAssignment?.rateSetKey === "solum-premium";
+    const classification = classifyPublisher(publisher, premiumAssignment);
+    const approval = approvalFields(publisher);
     const premium = classification.commercialTier === "premium";
     return {
       publisher_id: publisher.id,

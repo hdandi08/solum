@@ -43,6 +43,10 @@ managed:
 - `181013` — Skimlinks Coupon Deal sites
 - `2573975` — Skimlinks Rewards sites
 
+Protection is keyed only by those verified immutable publisher IDs. A different
+publisher is not protected merely because its mutable display name contains
+"Skimlinks".
+
 Their current programme-standard assignments are preserved. SOLUM automation
 must not move them, end them, or reinterpret their externally managed
 commercial terms.
@@ -52,8 +56,11 @@ commercial terms.
 A direct premium assignment requires explicit publisher-level approval. Before
 assigning any direct publisher to `Solum Premium`, an operator must record the
 publisher-specific reason, approver, and approval timestamp, then read back all
-rate-set/group values from AWIN. Unknown cells cannot be inferred from display
-names or from the observed programme-standard matrix.
+active commission-group values in that rate set from AWIN. The importer rejects
+a current `solum-premium` assignment unless those approval fields and all active
+matrix cells are present; its normalized tier and rate source come from that
+authoritative assignment. Unknown cells cannot be inferred from display names
+or from the observed programme-standard matrix.
 
 ## Read-only importer
 
