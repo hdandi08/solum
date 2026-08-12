@@ -86,3 +86,30 @@ node scripts/awin/policy-import.mjs \
 
 The CLI reports counts and local paths only. It does not print publisher names,
 free-text approval data, credentials, or raw AWIN account responses.
+
+## Development acceptance
+
+Phase B was applied only to Supabase development project
+`rodvvmfzkyjsqbufkjbc` on 13 August 2026. The linked lint found no schema
+errors, and the exact dry-run and apply contained only:
+
+- `20260813000001_awin_commission_policy.sql`
+- `20260813000002_awin_customer_acquisition.sql`
+
+The preserved observed snapshot read back as two groups, two rate sets, two
+known rate values, eight publishers, eight current assignments, and three
+protected publishers. Count/boolean-only acceptance confirmed valid matrix
+joins, the 10% programme-standard `DEFAULT` cell, absent rather than fabricated
+`Solum Premium` values, all three Skimlinks protections/current assignments,
+one current assignment per publisher, independent customer acquisition, and
+denial of both anonymous and authenticated table access.
+
+The anonymous REST probe was rejected at the table authorization boundary. The
+authenticated denial is also enforced by the applied migration's RLS enablement
+and explicit privilege revocation for every policy table; that exact contract
+is covered by the migration test and linked schema lint. No storefront function
+was deployed, no AWIN provider call was made, and production was not contacted
+or changed.
+
+The premium gate remains manual: read back every active `Solum Premium`
+rate-set/group matrix cell before assigning any direct premium publisher.
