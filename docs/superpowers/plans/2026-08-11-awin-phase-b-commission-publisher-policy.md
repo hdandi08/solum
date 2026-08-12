@@ -26,7 +26,7 @@
 ### Task 1: Create the server-only publisher policy registry
 
 **Files:**
-- Create: `supabase/migrations/20260811000002_awin_publishers.sql`
+- Create: `supabase/migrations/20260813000001_awin_publishers.sql`
 - Create: `supabase/functions/_shared/awinPublisherPolicy.ts`
 - Create: `supabase/functions/_shared/awinPublisherPolicy.test.ts`
 
@@ -136,7 +136,7 @@ Expected: tests pass and the dry run contains only the new table/RPC/grants.
 - [ ] **Step 6: Commit the policy registry**
 
 ```bash
-git add supabase/migrations/20260811000002_awin_publishers.sql supabase/functions/_shared/awinPublisherPolicy.ts supabase/functions/_shared/awinPublisherPolicy.test.ts
+git add supabase/migrations/20260813000001_awin_publishers.sql supabase/functions/_shared/awinPublisherPolicy.ts supabase/functions/_shared/awinPublisherPolicy.test.ts
 git commit -m "feat: add AWIN publisher policy registry"
 ```
 
@@ -226,7 +226,7 @@ git commit -m "docs: add AWIN publisher policy snapshot"
 ### Task 3: Classify each conversion as new or existing at enqueue time
 
 **Files:**
-- Create: `supabase/migrations/20260811000003_awin_customer_classification.sql`
+- Create: `supabase/migrations/20260813000002_awin_customer_classification.sql`
 - Modify: `supabase/functions/_shared/awin.ts`
 - Modify: `supabase/functions/_shared/awin.test.ts`
 - Modify: `supabase/functions/stripe-webhook/index.ts`
@@ -320,7 +320,7 @@ Expected: tests pass; the invalid-enum scan returns no matches.
 - [ ] **Step 6: Commit conversion classification**
 
 ```bash
-git add supabase/migrations/20260811000003_awin_customer_classification.sql supabase/functions/_shared/awin.ts supabase/functions/_shared/awin.test.ts supabase/functions/stripe-webhook/index.ts supabase/functions/_shared/awinConversionApi.ts supabase/functions/_shared/awinConversionApi.test.ts
+git add supabase/migrations/20260813000002_awin_customer_classification.sql supabase/functions/_shared/awin.ts supabase/functions/_shared/awin.test.ts supabase/functions/stripe-webhook/index.ts supabase/functions/_shared/awinConversionApi.ts supabase/functions/_shared/awinConversionApi.test.ts
 git commit -m "feat: classify AWIN customer acquisition"
 ```
 

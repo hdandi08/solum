@@ -10,7 +10,9 @@ const REQUEST_TIMEOUT_MS = 5_000;
 const MINIMUM_ORDER_AGE_MS = 10_000;
 const RECONCILIATION_DELAY_MS = 15 * 60 * 1_000;
 const MAX_RETRY_AFTER_MS = 6 * 24 * 60 * 60 * 1_000;
-const LEASE_SECONDS = 60;
+const LEASE_SECONDS = 300;
+const TRANSITION_CONCURRENCY = 10;
+const TRANSITION_DEADLINE_MS = 60_000;
 const DEFAULT_LIMIT = 100;
 const PROVIDER_ID_PATTERN = /^[A-Za-z0-9._:-]+$/;
 
@@ -258,6 +260,29 @@ export function parseConversionResponse(
   if (!response || ![200, 202, 206].includes(status)) return outcomes;
   const batchId = sanitizedProviderId(response.batchId);
 
+  if (status === 202) {
+    if (!batchId) return outcomes;
+    for (
+      const items of [
+        response.successfulOrders,
+        response.pendingOrders,
+        response.failedOrders,
+      ]
+    ) {
+      if (!Array.isArray(items)) continue;
+      for (const item of items) {
+        const reference = itemReference(item);
+        if (!reference || !/^pi_[A-Za-z0-9]+$/.test(reference)) continue;
+        outcomes.set(reference, {
+          state: "processing",
+          status: 202,
+          batchId,
+        });
+      }
+    }
+    return outcomes;
+  }
+
   if (Array.isArray(response.successfulOrders)) {
     for (const item of response.successfulOrders) {
       const reference = itemReference(item);
@@ -274,20 +299,6 @@ export function parseConversionResponse(
           ...(batchId ? { batchId } : {}),
           ...(transactionId ? { providerTransactionId: transactionId } : {}),
         },
-        status,
-        batchId,
-      );
-    }
-  }
-
-  if (status === 202 && batchId && Array.isArray(response.pendingOrders)) {
-    for (const item of response.pendingOrders) {
-      const reference = itemReference(item);
-      if (!reference) continue;
-      putOutcome(
-        outcomes,
-        reference,
-        { state: "processing", status: 202, batchId },
         status,
         batchId,
       );
@@ -587,6 +598,62 @@ function emptyCounts(): WorkerCounts {
   return { claimed: 0, accepted: 0, sent: 0, retried: 0, dead_letter: 0 };
 }
 
+type TransitionCount = "accepted" | "sent" | "retried" | "dead_letter";
+
+async function runConcurrentTransitions<T>(
+  items: T[],
+  transition: (item: T) => Promise<TransitionCount | undefined>,
+): Promise<{ results: Array<TransitionCount | undefined>; failed: boolean }> {
+  const results = new Array<TransitionCount | undefined>(items.length);
+  const startedAt = performance.now();
+  let nextIndex = 0;
+  let failed = false;
+  let deadlineReached = false;
+
+  async function runWorker() {
+    while (!deadlineReached) {
+      const index = nextIndex;
+      nextIndex += 1;
+      if (index >= items.length) return;
+
+      const remainingMs = TRANSITION_DEADLINE_MS -
+        (performance.now() - startedAt);
+      if (remainingMs <= 0) {
+        deadlineReached = true;
+        failed = true;
+        return;
+      }
+
+      let timeout: ReturnType<typeof setTimeout> | undefined;
+      try {
+        results[index] = await Promise.race([
+          transition(items[index]),
+          new Promise<undefined>((resolve) => {
+            timeout = setTimeout(() => {
+              deadlineReached = true;
+              resolve(undefined);
+            }, remainingMs);
+          }),
+        ]);
+        if (results[index] === undefined) failed = true;
+      } catch {
+        failed = true;
+      } finally {
+        if (timeout !== undefined) clearTimeout(timeout);
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from(
+      { length: Math.min(TRANSITION_CONCURRENCY, items.length) },
+      () => runWorker(),
+    ),
+  );
+  if (nextIndex < items.length) failed = true;
+  return { results, failed };
+}
+
 function validOutboxEnum<T extends string>(
   value: string,
   values: readonly T[],
@@ -752,78 +819,77 @@ export function createAwinConversionWorker(dependencies: WorkerDependencies) {
         now,
       });
 
-      for (const { row } of ready) {
+      const transitions = await runConcurrentTransitions(ready, async ({ row }) => {
         const outcome = result.outcomes.get(row.order_ref) ?? {
           state: "retry" as const,
           status: result.status,
           errorCode: "UNKNOWN_PROVIDER_RESPONSE" as const,
         };
-        try {
-          if (outcome.state === "sent") {
-            const changed = await dependencies.repository.complete({
-              id: row.id,
-              workerId,
-              status: outcome.status,
-              ...(outcome.batchId ? { batchId: outcome.batchId } : {}),
-              ...(outcome.state === "sent" && outcome.providerTransactionId
-                ? { transactionId: outcome.providerTransactionId }
-                : {}),
-            });
-            if (changed) counts.sent += 1;
-            else transitionFailure = true;
-          } else if (outcome.state === "processing") {
-            const changed = await dependencies.repository.accept({
-              id: row.id,
-              workerId,
-              status: 202,
-              batchId: outcome.batchId,
-              nextReconcileAt: new Date(
-                now() + RECONCILIATION_DELAY_MS,
-              ).toISOString(),
-            });
-            if (changed) counts.accepted += 1;
-            else transitionFailure = true;
-          } else {
-            const changedState = await transitionRetry(
-              dependencies.repository,
-              row,
-              workerId,
-              now(),
-              outcome,
-              jitterMs(),
-            );
-            if (changedState === "retry") counts.retried += 1;
-            else if (changedState === "dead_letter") counts.dead_letter += 1;
-            else transitionFailure = true;
-          }
-        } catch {
-          transitionFailure = true;
-        }
-      }
-    } catch {
-      for (const { row } of ready) {
-        try {
-          const decision = retryDecision({
-            attempt: row.attempt_count,
-            jitterMs: jitterMs(),
-          });
-          const nextAttemptAt = decision.state === "retry"
-            ? new Date(now() + decision.nextAttemptMs).toISOString()
-            : undefined;
-          const changed = await dependencies.repository.retry({
+        if (outcome.state === "sent") {
+          const changed = await dependencies.repository.complete({
             id: row.id,
             workerId,
-            state: decision.state,
-            ...(nextAttemptAt ? { nextAttemptAt } : {}),
-            errorCode: "UNKNOWN_PROVIDER_RESPONSE",
+            status: outcome.status,
+            ...(outcome.batchId ? { batchId: outcome.batchId } : {}),
+            ...(outcome.providerTransactionId
+              ? { transactionId: outcome.providerTransactionId }
+              : {}),
           });
-          if (changed && decision.state === "retry") counts.retried += 1;
-          else if (changed) counts.dead_letter += 1;
-          else transitionFailure = true;
-        } catch {
-          transitionFailure = true;
+          return changed ? "sent" : undefined;
         }
+        if (outcome.state === "processing") {
+          const changed = await dependencies.repository.accept({
+            id: row.id,
+            workerId,
+            status: 202,
+            batchId: outcome.batchId,
+            nextReconcileAt: new Date(
+              now() + RECONCILIATION_DELAY_MS,
+            ).toISOString(),
+          });
+          return changed ? "accepted" : undefined;
+        }
+        const changedState = await transitionRetry(
+          dependencies.repository,
+          row,
+          workerId,
+          now(),
+          outcome,
+          jitterMs(),
+        );
+        return changedState === "retry"
+          ? "retried"
+          : changedState === "dead_letter"
+          ? "dead_letter"
+          : undefined;
+      });
+      for (const transition of transitions.results) {
+        if (transition) counts[transition] += 1;
       }
+      if (transitions.failed) transitionFailure = true;
+    } catch {
+      const transitions = await runConcurrentTransitions(ready, async ({ row }) => {
+        const decision = retryDecision({
+          attempt: row.attempt_count,
+          jitterMs: jitterMs(),
+        });
+        const nextAttemptAt = decision.state === "retry"
+          ? new Date(now() + decision.nextAttemptMs).toISOString()
+          : undefined;
+        const changed = await dependencies.repository.retry({
+          id: row.id,
+          workerId,
+          state: decision.state,
+          ...(nextAttemptAt ? { nextAttemptAt } : {}),
+          errorCode: "UNKNOWN_PROVIDER_RESPONSE",
+        });
+        if (!changed) return undefined;
+        return decision.state === "retry" ? "retried" : "dead_letter";
+      });
+      for (const transition of transitions.results) {
+        if (transition) counts[transition] += 1;
+      }
+      if (transitions.failed) transitionFailure = true;
     }
 
     return countResponse(counts, transitionFailure ? 500 : 200);

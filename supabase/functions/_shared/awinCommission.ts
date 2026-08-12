@@ -46,6 +46,13 @@ const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const ISO_TIMESTAMP =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/;
 
+export function paymentIntentCreatedAt(created: number): string {
+  if (!Number.isSafeInteger(created) || created <= 0) {
+    throw new TypeError("PaymentIntent created must be a positive Unix timestamp");
+  }
+  return new Date(created * 1000).toISOString();
+}
+
 function requirePence(name: string, value: number, allowZero: boolean): void {
   if (
     !Number.isSafeInteger(value) || value > MAX_POSTGRES_INTEGER ||

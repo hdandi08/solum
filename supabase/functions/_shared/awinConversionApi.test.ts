@@ -274,6 +274,73 @@ Deno.test("parses 200, 202, and conflicting 206 entries without leaking provider
   assertEquals(JSON.stringify(conflict).includes("raw provider"), false);
 });
 
+Deno.test("treats every claimed order in a sanitized 202 batch as processing before item arrays", async () => {
+  for (const body of [
+    {
+      batchId: "batch-202",
+      successfulOrders: [{ orderReference: "pi_first" }],
+    },
+    {
+      batchId: "batch-202",
+      successfulOrders: [{ orderReference: "pi_first" }],
+      failedOrders: [{ orderReference: "pi_first" }, { orderReference: "pi_second" }],
+    },
+  ]) {
+    const result = await sendConversionBatch({
+      orders: [
+        buildConversionOrder({
+          orderRef: "pi_first",
+          amountPence: 1_000,
+          currency: "GBP",
+          channel: "aw",
+          awc: "129171_click",
+          commissionGroup: "DEFAULT",
+        }),
+        buildConversionOrder({
+          orderRef: "pi_second",
+          amountPence: 2_000,
+          currency: "GBP",
+          channel: "aw",
+          awc: "129171_click",
+          commissionGroup: "DEFAULT",
+        }),
+      ],
+      apiKey: API_KEY,
+      endpoint: "https://api.awin.test/orders",
+      fetch: () => Promise.resolve(new Response(JSON.stringify(body), { status: 202 })),
+    });
+
+    assertEquals([...result.outcomes.values()], [
+      { state: "processing", status: 202, batchId: "batch-202" },
+      { state: "processing", status: 202, batchId: "batch-202" },
+    ]);
+  }
+});
+
+Deno.test("retries every claimed order when a 202 response has no sanitized batch id", async () => {
+  const result = await sendConversionBatch({
+    orders: [buildConversionOrder({
+      orderRef: "pi_first",
+      amountPence: 1_000,
+      currency: "GBP",
+      channel: "aw",
+      awc: "129171_click",
+      commissionGroup: "DEFAULT",
+    })],
+    apiKey: API_KEY,
+    endpoint: "https://api.awin.test/orders",
+    fetch: () => Promise.resolve(new Response(JSON.stringify({
+      successfulOrders: [{ orderReference: "pi_first" }],
+    }), { status: 202 })),
+  });
+
+  assertEquals(result.outcomes.get("pi_first"), {
+    state: "retry",
+    status: 202,
+    errorCode: "UNKNOWN_PROVIDER_RESPONSE",
+  });
+});
+
 Deno.test("sends the exact authenticated request and covers each claimed reference once", async () => {
   let requestUrl = "";
   let requestInit: RequestInit | undefined;
@@ -853,7 +920,7 @@ Deno.test("worker claims, waits for minimum age, decrypts, sends, and transition
   assertEquals(repository.claimInput, {
     limit: 2,
     workerId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    leaseSeconds: 60,
+    leaseSeconds: 300,
   });
   assertEquals(waitedMs, 5_000);
   assertEquals(sentPayload, {
@@ -947,6 +1014,51 @@ Deno.test("worker retains a sanitized 202 batch acceptance for reconciliation", 
     batchId: "batch-202",
     nextReconcileAt: "2026-08-12T12:15:00.000Z",
   });
+});
+
+Deno.test("worker transitions 100 delayed accepted rows concurrently within a bounded lease budget", async () => {
+  const encrypted = await encryptAwc("129171_click", ENCRYPTION_SECRET);
+  const rows = Array.from({ length: 100 }, (_, index) => order({
+    id: `${String(index + 1).padStart(8, "0")}-1111-4111-8111-111111111111`,
+    order_ref: `pi_${index + 1}`,
+    awc_ciphertext: encrypted,
+  }));
+  const repository = new MemoryRepository(rows);
+  let activeTransitions = 0;
+  let maximumActiveTransitions = 0;
+  const originalAccept = repository.accept.bind(repository);
+  repository.accept = async (input) => {
+    activeTransitions += 1;
+    maximumActiveTransitions = Math.max(maximumActiveTransitions, activeTransitions);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    const changed = await originalAccept(input);
+    activeTransitions -= 1;
+    return changed;
+  };
+  const handler = createAwinConversionWorker({
+    repository,
+    apiKey: API_KEY,
+    encryptionKey: ENCRYPTION_SECRET,
+    workerSecret: WORKER_SECRET,
+    supabaseUrl: "https://production.supabase.co",
+    now: () => NOW,
+    fetch: () => Promise.resolve(new Response('{"batchId":"batch-100"}', { status: 202 })),
+  });
+
+  const startedAt = performance.now();
+  const response = await handler(jsonRequest({ limit: 100 }));
+  const elapsedMs = performance.now() - startedAt;
+  assertEquals(response.status, 200);
+  assertEquals(await response.json(), {
+    claimed: 100,
+    accepted: 100,
+    sent: 0,
+    retried: 0,
+    dead_letter: 0,
+  });
+  assertEquals(maximumActiveTransitions > 1, true);
+  assertEquals(maximumActiveTransitions <= 10, true);
+  assertEquals(elapsedMs < 1_000, true);
 });
 
 Deno.test("worker retries network failures and unresolved partial items without leaking details", async () => {

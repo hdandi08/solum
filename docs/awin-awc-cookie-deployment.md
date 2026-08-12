@@ -165,6 +165,11 @@ fields. These time-bounded cron-run and HTTP-response observations were not
 correlated by a request id, so they prove recent schedule health separately,
 not that the inspected HTTP row came from the inspected cron run.
 
+The guarded acceptance rerun pauses this exact job, rotates the Edge Function
+secret and Vault bearer to the same generated value without printing it, proves
+an authenticated empty worker invocation, and restores exactly one minute job
+from its exit trap. Never rotate only one side of this credential pair.
+
 An earlier generated development bearer was treated as compromised after it
 appeared in internal diagnostic output. It was replaced, the edge-function and
 Vault copies were synchronized without exposing the replacement, and an

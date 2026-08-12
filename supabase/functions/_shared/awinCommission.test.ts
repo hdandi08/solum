@@ -3,7 +3,30 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { calculateAwinCommissionableAmount } from "./awinCommission.ts";
+import {
+  calculateAwinCommissionableAmount,
+  paymentIntentCreatedAt,
+} from "./awinCommission.ts";
+
+Deno.test("VAT uses immutable PaymentIntent creation time, not the later webhook time", () => {
+  const paidAt = paymentIntentCreatedAt(
+    Date.parse("2026-09-30T23:59:59Z") / 1000,
+  );
+  const webhookReceivedAt = "2026-10-01T00:05:00Z";
+
+  assertEquals(webhookReceivedAt > "2026-10-01T00:00:00Z", true);
+  assertEquals(
+    calculateAwinCommissionableAmount({
+      customerPaidPence: 6500,
+      discountPence: 0,
+      deliveryPence: 0,
+      paidAt,
+      vatEffectiveAt: "2026-10-01T00:00:00Z",
+      vatRateBps: 2000,
+    }).commissionablePence,
+    6500,
+  );
+});
 
 Deno.test("does not deduct VAT before the configured effective date", () => {
   assertEquals(

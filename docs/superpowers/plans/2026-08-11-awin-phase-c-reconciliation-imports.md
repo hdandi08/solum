@@ -61,7 +61,7 @@ are never selected by `claim_awin_conversion_batch`.
 ### Task 1: Create transaction, performance, and sync-run storage
 
 **Files:**
-- Create: `supabase/migrations/20260811000004_awin_reconciliation.sql`
+- Create: `supabase/migrations/20260813000003_awin_reconciliation.sql`
 - Create: `supabase/functions/_shared/awinMoney.ts`
 - Create: `supabase/functions/_shared/awinMoney.test.ts`
 
@@ -145,7 +145,7 @@ Expected: tests pass; dry run adds only the new tables/indexes/grants.
 - [ ] **Step 6: Commit import storage**
 
 ```bash
-git add supabase/migrations/20260811000004_awin_reconciliation.sql supabase/functions/_shared/awinMoney.ts supabase/functions/_shared/awinMoney.test.ts
+git add supabase/migrations/20260813000003_awin_reconciliation.sql supabase/functions/_shared/awinMoney.ts supabase/functions/_shared/awinMoney.test.ts
 git commit -m "feat: add AWIN reconciliation storage"
 ```
 
@@ -313,7 +313,7 @@ git commit -m "feat: normalize AWIN reporting data"
 ### Task 4: Implement deterministic order reconciliation
 
 **Files:**
-- Modify: `supabase/migrations/20260811000004_awin_reconciliation.sql`
+- Modify: `supabase/migrations/20260813000003_awin_reconciliation.sql`
 - Create: `supabase/functions/_shared/awinReconciliation.ts`
 - Create: `supabase/functions/_shared/awinReconciliation.test.ts`
 
@@ -367,7 +367,7 @@ Expected: tests pass and the migration remains additive.
 - [ ] **Step 6: Commit reconciliation logic**
 
 ```bash
-git add supabase/migrations/20260811000004_awin_reconciliation.sql supabase/functions/_shared/awinReconciliation.ts supabase/functions/_shared/awinReconciliation.test.ts
+git add supabase/migrations/20260813000003_awin_reconciliation.sql supabase/functions/_shared/awinReconciliation.ts supabase/functions/_shared/awinReconciliation.test.ts
 git commit -m "feat: reconcile AWIN transactions to orders"
 ```
 

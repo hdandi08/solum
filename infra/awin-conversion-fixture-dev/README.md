@@ -25,15 +25,19 @@ Deploy only after the scripts prove AWS account `798470762256`, region
 ```
 
 To rerun only the guarded acceptance after the initial function deployment,
-rotate the normal DEV worker secret and enable the exact-DEV Stripe fallback
-temporarily with:
+pause the exact DEV minute job, rotate the normal DEV worker secret and its
+Vault bearer together, and enable the exact-DEV Stripe fallback temporarily
+with:
 
 ```bash
 ./scripts/rerun-acceptance-supabase-dev.sh
 ```
 
-This does not deploy functions or add an alternate worker bearer. It removes
-the temporary Stripe acceptance secret in its exit trap. The harness schedules
+This does not deploy functions or add an alternate worker bearer. Its exit trap
+removes the temporary Stripe acceptance secret and restores exactly one
+Vault-backed `awin-conversion-worker-dev` minute job, including on failure.
+Before restoring the schedule it proves the rotated bearer with an authenticated
+empty worker call. The harness schedules
 only the expected allowlisted rows at a deterministic past instant and invokes
 the normal worker with an exact matching limit. It injects a non-allowlisted
 synthetic row after scheduling and proves that row remains pending and

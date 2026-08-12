@@ -1,7 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
-import { calculateAwinCommissionableAmount, enqueueAwinConversion } from '../_shared/awinCommission.ts';
+import { calculateAwinCommissionableAmount, enqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
 import {
   classifyAwinEligibility,
   paymentIntentPurchaseSideEffectsAttempted,
@@ -663,7 +663,7 @@ async function handleOneTimeOrderFromPI(
       customerPaidPence: pi.amount,
       discountPence,
       deliveryPence,
-      paidAt: new Date(pi.created * 1000).toISOString(),
+      paidAt: paymentIntentCreatedAt(pi.created),
       vatEffectiveAt: vatEffectiveAt || null,
       vatRateBps,
     });
