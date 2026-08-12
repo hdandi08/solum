@@ -5,6 +5,7 @@ import {
   buildBreakoutUrl,
   detectInAppBrowser,
   detectPlatform,
+  formatIabCheckoutSummary,
   IAB_CHECKOUT_EVENTS,
 } from '../lib/inAppBrowser.js';
 import { capture, getMetaIds, getTikTokIds } from '../lib/analytics.js';
@@ -23,10 +24,11 @@ const APP_NAMES = {
   none: 'this app',
 };
 
-export default function IabCheckoutGate({ kit, source, onContinue }) {
+export default function IabCheckoutGate({ kit, kitName, price, source, onContinue, expressReady, expressAvailable, children }) {
   const app = detectInAppBrowser();
   const platform = detectPlatform();
   const [showOverlay, setShowOverlay] = useState(false);
+  const summary = formatIabCheckoutSummary({ kitName, price, app });
 
   useEffect(() => {
     try {
@@ -59,16 +61,23 @@ export default function IabCheckoutGate({ kit, source, onContinue }) {
 
   return (
     <div className="iabg-card">
-      <div className="iabg-title">Pay with Apple Pay, Google Pay or PayPal</div>
+      <div className="iabg-selection">{summary.selection}</div>
+      <div className="iabg-delivery">{summary.delivery}</div>
+      <div className="iabg-title">Choose how you pay</div>
       <p className="iabg-body">
-        One tap payment only works in your full browser, not inside {APP_NAMES[app] ?? 'this app'}.
-        Your kit and details carry over.
+        {summary.support}
       </p>
+      <div className="iabg-express" aria-label="Available quick-pay options">
+        {children}
+      </div>
+      {expressReady && !expressAvailable && (
+        <p className="iabg-unavailable">No quick-pay option was detected in {APP_NAMES[app] ?? 'this app'}.</p>
+      )}
       <button type="button" className="iabg-open" onClick={onOpen}>
-        Open in browser <span aria-hidden="true">↗</span>
+        Open in browser for more payment options <span aria-hidden="true">↗</span>
       </button>
       <button type="button" className="iabg-stay" onClick={onStay}>
-        or continue here and pay by card
+        {summary.continueLabel} and pay by card
       </button>
 
       {showOverlay && (

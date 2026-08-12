@@ -12,7 +12,7 @@ import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
 import { buildFirstBoxPaymentIntentBody } from '../lib/firstBoxPaymentIntent.js';
 import { expressElementsOptions } from '../lib/expressCheckout.js';
-import { shouldShowIabGate } from '../lib/inAppBrowser.js';
+import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowser.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
@@ -199,7 +199,7 @@ function ProgressBar({ step }) {
 
 // ── Mobile header (one-time, no subscription language) ────────────────────────
 
-function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hideUntilScroll }) {
+function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hideUntilScroll, suppressed = false }) {
   const [open, setOpen] = useState(false);
   const [zoomSrc, setZoomSrc] = useState(null);
 
@@ -208,11 +208,15 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
   const [scrolledPast, setScrolledPast] = useState(false);
   useEffect(() => {
     if (!hideUntilScroll) return undefined;
-    const onScroll = () => setScrolledPast(window.scrollY > 340);
+    const onScroll = () => setScrolledPast(current => nextStickyPriceVisibility({
+      visible: current,
+      scrollY: window.scrollY,
+      suppressed,
+    }));
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [hideUntilScroll]);
+  }, [hideUntilScroll, suppressed]);
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
@@ -261,10 +265,14 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
     return () => el.removeEventListener('touchmove', move);
   }, [open]);
 
-  if (hideUntilScroll && !scrolledPast) return null;
+  const concealed = suppressed || (hideUntilScroll && !scrolledPast);
 
   return (
-    <div className="co-mobile-header">
+    <div
+      className={`co-mobile-header${concealed ? ' is-concealed' : ''}`}
+      aria-hidden={concealed}
+      inert={concealed ? true : undefined}
+    >
       <div className="co-mobile-header-bar">
         <button
           className="co-mobile-header-info"
@@ -742,9 +750,11 @@ export default function BuyPage() {
   // Stripe's wallet iframe can take several seconds to decide which methods
   // this browser supports. Never leave a permanent skeleton if scripts fail.
   useEffect(() => {
+    setExpressAvailable(false);
+    setExpressReady(false);
     const timeout = setTimeout(() => setExpressReady(true), 6000);
     return () => clearTimeout(timeout);
-  }, []);
+  }, [selectedKit]);
 
   // Restore state after a failed redirect-based card payment.
   useEffect(() => {
@@ -920,6 +930,33 @@ export default function BuyPage() {
   // ── Shared header + summary props ─────────────────────────────────────────
 
   const headerProps = { kit: activeKit, price, dispatch, arrival, inventory };
+  const expressCheckoutElement = (
+    <>
+      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
+      <Elements
+        key={selectedKit}
+        stripe={stripePromise}
+        options={expressElementsOptions({
+          amountPence: price * 100,
+          appearance: stripeAppearance,
+        })}
+      >
+        <ExpressCheckout
+          kitId={selectedKit}
+          kitName={activeKit?.name ?? selectedKit}
+          price={price}
+          source={source}
+          supabaseUrl={SUPABASE_URL}
+          authHeaders={authHeaders}
+          onError={setError}
+          onAvailability={(available) => {
+            setExpressAvailable(available);
+            setExpressReady(true);
+          }}
+        />
+      </Elements>
+    </>
+  );
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -1037,7 +1074,12 @@ export default function BuyPage() {
       <BuyCheckoutNav />
       <div className="co-page">
         <div className="co-left">
-          <BuyMobileHeader {...headerProps} onCta={step === 'details' ? scrollToForm : undefined} hideUntilScroll={step === 'details'} />
+          <BuyMobileHeader
+            {...headerProps}
+            onCta={step === 'details' ? scrollToForm : undefined}
+            hideUntilScroll={step === 'details'}
+            suppressed={step === 'details' && iabGate}
+          />
           {!isDirectLanding && (
             <a className="co-back-btn" href="/#kits" style={{ marginTop: 0, marginBottom: 20 }}>
               ← Back to kits
@@ -1171,35 +1213,19 @@ export default function BuyPage() {
                     <IabCheckoutGate
                       key={selectedKit}
                       kit={selectedKit}
+                      kitName={activeKit?.name ?? selectedKit}
+                      price={price}
                       source={source}
                       onContinue={continueInApp}
-                    />
+                      expressReady={expressReady}
+                      expressAvailable={expressAvailable}
+                    >
+                      {expressCheckoutElement}
+                    </IabCheckoutGate>
                   ) : (
                     <>
                       <InAppBrowserBanner variant="inline" />
-                      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
-                      <Elements
-                        key={selectedKit}
-                        stripe={stripePromise}
-                        options={expressElementsOptions({
-                          amountPence: price * 100,
-                          appearance: stripeAppearance,
-                        })}
-                      >
-                        <ExpressCheckout
-                          kitId={selectedKit}
-                          kitName={activeKit?.name ?? selectedKit}
-                          price={price}
-                          source={source}
-                          supabaseUrl={SUPABASE_URL}
-                          authHeaders={authHeaders}
-                          onError={setError}
-                          onAvailability={(available) => {
-                            setExpressAvailable(available);
-                            setExpressReady(true);
-                          }}
-                        />
-                      </Elements>
+                      {expressCheckoutElement}
                       {expressAvailable && (
                         <>
                           <div className="by-express-consent">

@@ -29,6 +29,34 @@ export const IAB_CHECKOUT_EVENTS = Object.freeze({
   gateContinueClicked: 'iab_gate_continue_clicked',
 });
 
+const IAB_DISPLAY_NAMES = Object.freeze({
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  snapchat: 'Snapchat',
+  twitter: 'X',
+  android_webview: 'this app',
+  none: 'this app',
+});
+
+export function formatIabCheckoutSummary({ kitName, price, app = 'instagram' }) {
+  const safePrice = Number.isFinite(Number(price)) ? Number(price) : 0;
+  return {
+    selection: `${String(kitName ?? '').trim().toUpperCase()} · £${safePrice} total`,
+    delivery: 'Free UK delivery · no hidden costs',
+    continueLabel: `Continue in ${IAB_DISPLAY_NAMES[app] ?? 'this app'}`,
+    support: 'We’ll show any available quick-pay options. Card payment is always available.',
+  };
+}
+
+// A wide show/hide gap prevents mobile browser chrome from toggling the fixed
+// price bar when it nudges window.scrollY around a single boundary.
+export function nextStickyPriceVisibility({ visible, scrollY, suppressed = false }) {
+  if (suppressed) return false;
+  if (visible) return scrollY >= 280;
+  return scrollY > 380;
+}
+
 /**
  * @param {string} [ua] user-agent string; defaults to navigator.userAgent
  * @returns {'instagram'|'facebook'|'tiktok'|'snapchat'|'twitter'|'android_webview'|'none'}
@@ -114,10 +142,10 @@ export function buildAndroidIntentUrl(httpsUrl) {
 }
 
 /**
- * Whether /buy should replace the payment area with the in-app-browser gate:
- * a blocking "open in browser / continue here" choice card. True inside any
- * recognised iOS/Android in-app webview, where Apple Pay / Google Pay /
- * PayPal never render. `?forceIab=1` forces it for preview in any browser.
+ * Whether /buy should wrap its payment area in the in-app-browser guidance
+ * card. Stripe still mounts immediately and can expose any method it detects;
+ * the card also retains external-browser and standard-card routes.
+ * `?forceIab=1` forces it for preview in any browser.
  * @param {string} [ua] user-agent; defaults to navigator.userAgent
  * @param {string} [search] location search string, e.g. '?forceIab=1'
  * @returns {boolean}

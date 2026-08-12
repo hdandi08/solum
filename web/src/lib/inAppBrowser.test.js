@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { detectInAppBrowser, IAB_CHECKOUT_EVENTS, shouldShowIabGate } from './inAppBrowser';
+import {
+  detectInAppBrowser,
+  formatIabCheckoutSummary,
+  IAB_CHECKOUT_EVENTS,
+  nextStickyPriceVisibility,
+  shouldShowIabGate,
+} from './inAppBrowser';
 
 // Representative real-world user-agent strings for the in-app webviews we care about.
 const UA = {
@@ -146,4 +152,26 @@ describe('shouldShowIabGate', () => {
     expect(shouldShowIabGate(UA.chrome, '?forceIab=1')).toBe(true));
   it('handles missing search string', () =>
     expect(shouldShowIabGate(UA.safari, undefined)).toBe(false));
+});
+
+describe('Instagram checkout presentation', () => {
+  it('shows the selected kit, total, included delivery, and the card fallback clearly', () => {
+    expect(formatIabCheckoutSummary({ kitName: 'Ritual', price: 85 })).toEqual({
+      selection: 'RITUAL · £85 total',
+      delivery: 'Free UK delivery · no hidden costs',
+      continueLabel: 'Continue in Instagram',
+      support: 'We’ll show any available quick-pay options. Card payment is always available.',
+    });
+  });
+
+  it('conceals the sticky price while the IAB gate is active', () => {
+    expect(nextStickyPriceVisibility({ visible: true, scrollY: 1000, suppressed: true })).toBe(false);
+  });
+
+  it('uses hysteresis so Instagram browser chrome cannot flicker the sticky price at one threshold', () => {
+    expect(nextStickyPriceVisibility({ visible: false, scrollY: 379 })).toBe(false);
+    expect(nextStickyPriceVisibility({ visible: false, scrollY: 381 })).toBe(true);
+    expect(nextStickyPriceVisibility({ visible: true, scrollY: 341 })).toBe(true);
+    expect(nextStickyPriceVisibility({ visible: true, scrollY: 279 })).toBe(false);
+  });
 });

@@ -1354,6 +1354,14 @@ select.co-input option {
     margin: 0;
     overflow: visible;
     box-shadow: 0 -1px 0 rgba(240,236,226,0.1), 0 -8px 32px rgba(0,0,0,0.6);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  }
+
+  .co-mobile-header.is-concealed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(100%);
   }
 
   /* Expanded panel slides upward from the bar */
