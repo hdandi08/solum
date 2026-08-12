@@ -12,7 +12,13 @@ test('rerun synchronizes the DEV Edge/Vault bearer while the exact minute job is
   const sandbox = await mkdtemp(join(tmpdir(), 'solum-awin-rerun-contract.'))
   const bin = join(sandbox, 'bin')
   const trace = join(sandbox, 'trace')
-  await import('node:fs/promises').then(({ mkdir }) => mkdir(bin))
+  const repo = join(sandbox, 'repo')
+  await import('node:fs/promises').then(async ({ mkdir }) => {
+    await mkdir(bin)
+    await mkdir(join(repo, 'supabase', '.temp'), { recursive: true })
+    await mkdir(join(repo, 'supabase', 'migrations'), { recursive: true })
+  })
+  await writeFile(join(repo, 'supabase', '.temp', 'project-ref'), 'rodvvmfzkyjsqbufkjbc\n')
   const executable = async (name, source) => {
     const path = join(bin, name)
     await writeFile(path, source, { mode: 0o700 })
@@ -60,7 +66,7 @@ exit 0
 
   const result = spawnSync('/bin/bash', [script], {
     cwd: resolve(fixtureDir, '../..'),
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TRACE: trace, REPO_DIR: resolve(fixtureDir, '../..') },
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TRACE: trace, REPO_DIR: repo },
     encoding: 'utf8',
   })
   const actions = (await readFile(trace, 'utf8').catch(() => '')).trim().split('\n').filter(Boolean)
@@ -84,7 +90,7 @@ exit 0
       ...process.env,
       PATH: `${bin}:${process.env.PATH}`,
       TRACE: trace,
-      REPO_DIR: resolve(fixtureDir, '../..'),
+      REPO_DIR: repo,
       FAIL_ACCEPTANCE: '1',
     },
     encoding: 'utf8',
