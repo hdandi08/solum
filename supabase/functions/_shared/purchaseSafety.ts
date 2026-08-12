@@ -31,6 +31,51 @@ export function withPaymentIntentPurchaseSideEffectsAttempted(
 
 const AWIN_CHANNELS = ["aw", "display", "ppc", "email"] as const;
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
+const DEVELOPMENT_PROJECT_REF = "rodvvmfzkyjsqbufkjbc";
+
+export function resolveDevelopmentAcceptanceSecret(
+  supabaseUrl: string | undefined,
+  candidate: string | undefined,
+): string | undefined {
+  if (typeof candidate !== "string" || candidate.length < 32) return undefined;
+  try {
+    const url = new URL(supabaseUrl ?? "");
+    return url.protocol === "https:" &&
+        url.hostname === `${DEVELOPMENT_PROJECT_REF}.supabase.co`
+      ? candidate
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function verifyStripeWebhookWithDevelopmentFallback<T>(input: {
+  body: string;
+  signature: string;
+  primarySecret: string;
+  supabaseUrl?: string;
+  acceptanceSecret?: string;
+  construct: (
+    body: string,
+    signature: string,
+    secret: string,
+  ) => Promise<T>;
+}): Promise<T> {
+  try {
+    return await input.construct(
+      input.body,
+      input.signature,
+      input.primarySecret,
+    );
+  } catch (primaryError) {
+    const acceptanceSecret = resolveDevelopmentAcceptanceSecret(
+      input.supabaseUrl,
+      input.acceptanceSecret,
+    );
+    if (!acceptanceSecret) throw primaryError;
+    return await input.construct(input.body, input.signature, acceptanceSecret);
+  }
+}
 
 export type AwinEligibilityInput = {
   livemode?: boolean;

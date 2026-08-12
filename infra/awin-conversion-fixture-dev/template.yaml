@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Isolated development-only AWIN Conversion API fixture
+
+Resources:
+  AwinConversionFixtureSecretDev:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: solum-awin-conversion-fixture-api-key-dev
+      Description: Development-only API key for the isolated AWIN conversion fixture
+      GenerateSecretString:
+        PasswordLength: 48
+        ExcludePunctuation: true
+
+  AwinConversionFixtureApiDev:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: solum-awin-conversion-fixture-api-dev
+      StageName: $default
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 5
+        ThrottlingBurstLimit: 10
+
+  AwinConversionFixtureFunctionDev:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: solum-awin-conversion-fixture-dev
+      Description: Development-only deterministic AWIN Conversion API fixture
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - arm64
+      MemorySize: 128
+      Timeout: 3
+      Environment:
+        Variables:
+          FIXTURE_API_KEY: !Sub '{{resolve:secretsmanager:${AwinConversionFixtureSecretDev}:SecretString}}'
+      Events:
+        ConversionFixturePostDev:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AwinConversionFixtureApiDev
+            Path: /s2s/advertiser/129171/orders
+            Method: POST
+
+  AwinConversionFixtureLogGroupDev:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AwinConversionFixtureFunctionDev}
+      RetentionInDays: 1
+
+Outputs:
+  FixtureBaseUrlDev:
+    Description: Development-only HTTPS fixture base URL
+    Value: !Sub https://${AwinConversionFixtureApiDev}.execute-api.${AWS::Region}.${AWS::URLSuffix}
+  FixtureSecretArnDev:
+    Description: Development-only fixture API key secret ARN
+    Value: !Ref AwinConversionFixtureSecretDev

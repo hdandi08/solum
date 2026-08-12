@@ -153,3 +153,86 @@ Deno.test("legacy claim JSON stays distinct from an explicit retryable marker", 
     purchaseSideEffectsAttempted: false,
   }), true);
 });
+
+Deno.test("temporary acceptance secrets are available only on the exact development project", () => {
+  const resolve = (
+    purchaseSafety as unknown as {
+      resolveDevelopmentAcceptanceSecret: (
+        supabaseUrl: string | undefined,
+        candidate: string | undefined,
+      ) => string | undefined;
+    }
+  ).resolveDevelopmentAcceptanceSecret;
+  const secret = "temporary-development-acceptance-secret";
+
+  assertEquals(
+    resolve("https://rodvvmfzkyjsqbufkjbc.supabase.co", secret),
+    secret,
+  );
+  assertEquals(resolve("https://gvfptmjluxpngfjendbi.supabase.co", secret), undefined);
+  assertEquals(resolve("https://rodvvmfzkyjsqbufkjbc.attacker.invalid", secret), undefined);
+  assertEquals(resolve("https://rodvvmfzkyjsqbufkjbc.supabase.co", "short"), undefined);
+});
+
+Deno.test("Stripe verification keeps the primary secret authoritative and exact-dev fallback isolated", async () => {
+  const verify = (
+    purchaseSafety as unknown as {
+      verifyStripeWebhookWithDevelopmentFallback: <T>(input: {
+        body: string;
+        signature: string;
+        primarySecret: string;
+        supabaseUrl?: string;
+        acceptanceSecret?: string;
+        construct: (body: string, signature: string, secret: string) => Promise<T>;
+      }) => Promise<T>;
+    }
+  ).verifyStripeWebhookWithDevelopmentFallback;
+  const attempts: string[] = [];
+  const construct = async (_body: string, _signature: string, secret: string) => {
+    attempts.push(secret);
+    if (secret === "normal-secret") return "primary";
+    if (secret === "temporary-development-acceptance-secret") return "fallback";
+    throw new Error("invalid signature");
+  };
+
+  assertEquals(await verify({
+    body: "{}",
+    signature: "signature",
+    primarySecret: "normal-secret",
+    supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+    acceptanceSecret: "temporary-development-acceptance-secret",
+    construct,
+  }), "primary");
+  assertEquals(attempts, ["normal-secret"]);
+
+  attempts.length = 0;
+  assertEquals(await verify({
+    body: "{}",
+    signature: "signature",
+    primarySecret: "invalid-primary",
+    supabaseUrl: "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+    acceptanceSecret: "temporary-development-acceptance-secret",
+    construct,
+  }), "fallback");
+  assertEquals(attempts, [
+    "invalid-primary",
+    "temporary-development-acceptance-secret",
+  ]);
+
+  attempts.length = 0;
+  let rejected = false;
+  try {
+    await verify({
+      body: "{}",
+      signature: "signature",
+      primarySecret: "invalid-primary",
+      supabaseUrl: "https://gvfptmjluxpngfjendbi.supabase.co",
+      acceptanceSecret: "temporary-development-acceptance-secret",
+      construct,
+    });
+  } catch {
+    rejected = true;
+  }
+  assertEquals(rejected, true);
+  assertEquals(attempts, ["invalid-primary"]);
+});

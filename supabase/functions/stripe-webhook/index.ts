@@ -8,6 +8,7 @@ import {
   shouldSendExternalPurchaseSideEffects,
   validatedIntegerMetadata,
   validatedVoucher,
+  verifyStripeWebhookWithDevelopmentFallback,
   withPaymentIntentPurchaseSideEffectsAttempted,
 } from '../_shared/purchaseSafety.ts';
 
@@ -279,7 +280,7 @@ async function sendAdminNotification(
       }),
     });
     const body = await res.json().catch(() => ({}));
-    if (!res.ok) console.error('admin_notification_resend_error', res.status, JSON.stringify(body));
+    if (!res.ok) console.error('admin_notification_resend_error', res.status);
     else console.log('admin_notification_sent', { orderRef, resendId: body.id });
   } catch(e) { console.error('admin_notification_catch', e); }
 }
@@ -513,7 +514,7 @@ async function sendTikTokPurchaseEvent(opts: {
       }),
     });
     const result = await res.json();
-    if (result.code !== 0) console.error('tiktok_events_api_error', JSON.stringify(result));
+    if (result.code !== 0) console.error('tiktok_events_api_error', res.status);
     else console.log('tiktok_events_api_ok', opts.eventId);
   } catch (err) {
     console.error('tiktok_events_api_throw', err.message);
@@ -559,7 +560,7 @@ async function sendMetaPurchaseEvent(opts: {
       }),
     });
     const result = await res.json();
-    if (result.error) console.error('meta_capi_error', JSON.stringify(result.error));
+    if (result.error) console.error('meta_capi_error', res.status);
     else console.log('meta_capi_ok', opts.eventId, result.events_received);
   } catch (err) {
     console.error('meta_capi_throw', err.message);
@@ -807,7 +808,15 @@ Deno.serve(async (req) => {
 
   let event: Stripe.Event;
   try {
-    event = await stripe.webhooks.constructEventAsync(body, sig, webhookSecret);
+    event = await verifyStripeWebhookWithDevelopmentFallback({
+      body,
+      signature: sig,
+      primarySecret: webhookSecret,
+      supabaseUrl: Deno.env.get('SUPABASE_URL'),
+      acceptanceSecret: Deno.env.get('STRIPE_ACCEPTANCE_WEBHOOK_SECRET'),
+      construct: (payload, signature, secret) =>
+        stripe.webhooks.constructEventAsync(payload, signature, secret),
+    });
   } catch (err) {
     return new Response(`Webhook error: ${err.message}`, { status: 400 });
   }
