@@ -215,11 +215,59 @@ create table public.awin_commission_rate_sets (
 
 `awin_commission_rate_values` has primary key `(rate_set_key, commission_group_code)`, foreign keys to both parent tables, `commission_type` in `percentage|fixed`, and a check requiring exactly one of `rate_bps` or `fixed_amount_pence`. Percentage basis points are `0..10000`; fixed pence is `0..2147483647`; fixed rows require `currency = 'GBP'`, percentage rows require null currency.
 
-`awin_publishers` is keyed by positive `publisher_id bigint`, has the six category values, relationship status, `retain_protected`, the three commercial tiers, the three rate sources, nullable `commission_rate_set_key`, approval metadata, AWIN tags, source hash, and lifecycle timestamps. A `premium` tier requires non-empty reason/approver, approval timestamp, and a rate-set key. A protected row cannot be changed to unprotected by the service-role upsert RPC.
+Use exact rate-set keys `program-standard` for display name `Program Standard Commission Rates` and `solum-premium` for display name `Solum Premium`.
 
-`awin_publisher_rate_assignments` stores `(publisher_id, rate_set_key, effective_from)` with nullable `effective_to`, state `current|scheduled|historical`, source hash, and a non-overlapping-time validation in the service-role import path. Partial unique index: one `current` assignment per publisher.
+`awin_publishers` is keyed by positive `publisher_id bigint` and has these exact policy columns in addition to lifecycle timestamps:
 
-All five tables are owned by `postgres`, have RLS enabled, revoke all access from `public`, `anon`, and `authenticated`, and grant table DML only to `service_role`. Seed the two observed groups (`DEFAULT`, `PREMIUM`), the two observed rate-set names, and the observed programme-standard values (`DEFAULT` = 1000 bps, `PREMIUM` = 1500 bps) with deterministic source hashes. Do not fabricate any unverified `Solum Premium` matrix value.
+```sql
+publisher_name text not null,
+primary_region text,
+primary_type text,
+category text not null,
+relationship_status text not null
+  check (relationship_status ~ '^[a-z][a-z0-9_]{0,49}$'),
+retain_protected boolean not null default false,
+commercial_tier text not null,
+rate_source text not null,
+commission_rate_set_key text references public.awin_commission_rate_sets(rate_set_key),
+exception_reason text,
+exception_approved_by text,
+exception_approved_at timestamptz,
+awin_tags jsonb not null default '[]'::jsonb
+  check (jsonb_typeof(awin_tags) = 'array'),
+source_hash text not null check (source_hash ~ '^[a-f0-9]{64}$')
+```
+
+`publisher_name`, non-null `primary_region`, non-null `primary_type`, `exception_reason`, and `exception_approved_by` must be trimmed; publisher/type/region/approver lengths are `1..200`, and reason length is `1..1000`. Category uses the six exact values, commercial tier uses the three exact values, and rate source uses the three exact values from the shared module. A `premium` tier requires non-empty reason/approver, approval timestamp, `rate_source = 'approved_exception'`, and a rate-set key. Non-premium rows require all exception metadata null.
+
+Create `guard_awin_publisher_protection()` as a `before update` trigger. It raises SQLSTATE `22023` if a row with `retain_protected = true` would become false or if its positive publisher ID would change. No import/upsert RPC is introduced in Task 1; Task 4 uses service-role table DML and this trigger remains the invariant boundary.
+
+`awin_publisher_rate_assignments` stores `(publisher_id, rate_set_key, effective_from)` with nullable `effective_to`, state `current|scheduled|historical`, source hash, and a partial unique index allowing one `current` assignment per publisher. Create `guard_awin_publisher_assignment_overlap()` as a `before insert or update` trigger. It takes `pg_advisory_xact_lock(new.publisher_id)`, then rejects another assignment for the same publisher whose half-open interval `[effective_from, effective_to)` overlaps the new interval; null `effective_to` means infinity. It excludes `old` on update and raises SQLSTATE `23P01` on overlap.
+
+All five tables are owned by `postgres`, have RLS enabled, revoke all access from `public`, `anon`, and `authenticated`, and grant table DML only to `service_role`. Seed the two observed groups (`DEFAULT`, `PREMIUM`), the two observed rate-set names, and the observed programme-standard values (`DEFAULT` = 1000 bps, `PREMIUM` = 1500 bps). Use these exact lowercase SHA-256 source hashes, derived from the displayed canonical strings with no trailing newline:
+
+| Seed row | Canonical string | `source_hash` |
+| --- | --- | --- |
+| group `DEFAULT` | `awin-group:DEFAULT:2026-08-12` | `585ea6d58e1fcbbfbaf38d3b0eb1a9217f3a5c70c6617da4ead9c61b7719c187` |
+| group `PREMIUM` | `awin-group:PREMIUM:2026-08-12` | `cdcfb67126966309c2dcefee986e3b3c25d41d7a12075fb671ab54339f3fb06f` |
+| rate set `program-standard` | `awin-rate-set:program-standard:2026-08-12` | `6753418e9c6ebc0369d0240afa09279c3f78549771c611a8c6d5b4b42889b78e` |
+| rate set `solum-premium` | `awin-rate-set:solum-premium:2026-08-12` | `b306cc59dece2a23c3ad5cdc5313ce297742a6066ec87c3300b4bee144e8ccc5` |
+| standard/`DEFAULT` value | `awin-rate-value:program-standard:DEFAULT:1000:2026-08-12` | `d288363bdb1cf6146331a2e44ef662f106cb8abe06f0a955622ba63a1235a85e` |
+| standard/`PREMIUM` value | `awin-rate-value:program-standard:PREMIUM:1500:2026-08-12` | `67c2a724d32eb6f2ea3de96757da5651a79b3928baf50067bdaecf6abc6e59ad` |
+
+Do not fabricate any unverified `Solum Premium` matrix value. Task 2 derives future/imported source hashes as lowercase SHA-256 of recursively key-sorted compact JSON encoded as UTF-8; array order is preserved.
+
+`classifyPublisher` consumes exactly:
+
+```ts
+export type PublisherClassificationInput = {
+  publisherId: number;
+  publisherName: string;
+  primaryType?: string | null;
+};
+```
+
+Validate a positive safe-integer publisher ID and a trimmed non-empty name. Apply classification in this order: verified Skimlinks ID or case-insensitive `skimlinks` name → protected `subnetwork`; primary type containing `cashback|loyalty|reward` → `cashback_loyalty`; `comparison` → `comparison`; `influencer|social|creator` → `creator`; `content|editorial|blog` → `editorial`; otherwise `other`. `normalizePublisherCategory` maps those same singular/plural/type-label synonyms, including `Influencers` → `creator`, and returns `other` for unknown input. Every non-Skimlinks classification returns standard/AWIN-assignment commercial metadata.
 
 - [ ] **Step 8: Verify migration contracts and commit Task 1**
 
