@@ -163,6 +163,7 @@ test('deployment and teardown scripts hard-guard exact dev resources before muta
   const deploy = await readFile(new URL('../scripts/deploy-aws-dev.sh', import.meta.url), 'utf8')
   const teardown = await readFile(new URL('../scripts/teardown-aws-dev.sh', import.meta.url), 'utf8')
   const supabase = await readFile(new URL('../scripts/deploy-supabase-dev.sh', import.meta.url), 'utf8')
+  const rerun = await readFile(new URL('../scripts/rerun-acceptance-supabase-dev.sh', import.meta.url), 'utf8')
 
   for (const script of [deploy, teardown]) {
     assert.match(script, /798470762256/)
@@ -178,6 +179,12 @@ test('deployment and teardown scripts hard-guard exact dev resources before muta
   assert.match(supabase, /create-first-box-payment-intent/)
   assert.match(supabase, /awin-conversion-worker/)
   assert.doesNotMatch(supabase, /gvfptmjluxpngfjendbi/)
+  assert.match(rerun, /rodvvmfzkyjsqbufkjbc/)
+  assert.match(rerun, /--profile supabase/)
+  assert.match(rerun, /AWIN_WORKER_SECRET/)
+  assert.match(rerun, /STRIPE_ACCEPTANCE_WEBHOOK_SECRET/)
+  assert.match(rerun, /secrets unset[\s\\]+STRIPE_ACCEPTANCE_WEBHOOK_SECRET/)
+  assert.doesNotMatch(rerun, /functions deploy|AWIN_ACCEPTANCE_WORKER_SECRET/)
 })
 
 test('acceptance harness guarantees cleanup and emits only sanitized results', async () => {
@@ -192,6 +199,10 @@ test('acceptance harness guarantees cleanup and emits only sanitized results', a
   assert.match(source, /replayNoDuplicate/)
   assert.match(source, /ciphertextOnly/)
   assert.match(source, /partialIndependence/)
+  assert.match(source, /concurrencyIsolation/)
+  assert.match(source, /planAcceptanceClaim\(orderRefs\)/)
+  assert.match(source, /invokeWorker\(claimPlan\.limit\)/)
+  assert.match(source, /attempt_count === 0/)
   assert.match(source, /cleanupResidue/)
   assert.doesNotMatch(source, /console\.(?:log|error)\([^\n]*(?:secret|awc|email|body)/i)
 })

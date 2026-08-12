@@ -1,15 +1,18 @@
 import { createHmac, randomBytes, randomUUID } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { planAcceptanceClaim } from '../src/acceptanceIsolation.mjs'
 
 const EXPECTED_REF = 'rodvvmfzkyjsqbufkjbc'
-const refs = [
+const fixtureRefs = [
   'pi_s2s429dev0001',
   'pi_s2s500dev0001',
   'pi_s2s200dev0001',
   'pi_s2s206okdev001',
   'pi_s2s206faildev1',
 ]
+const unrelatedRef = 'pi_s2sunrelated01'
+const refs = [...fixtureRefs, unrelatedRef]
 const projectRef = process.env.SUPABASE_PROJECT_REF
 const stripeSecret = process.env.STRIPE_ACCEPTANCE_WEBHOOK_SECRET
 const workerSecret = process.env.AWIN_WORKER_SECRET
@@ -41,6 +44,7 @@ const results = {
   retry500: false,
   sent200: false,
   partialIndependence: false,
+  concurrencyIsolation: false,
   rawAttributionAbsent: false,
   deployedInteroperability: false,
   cleanupVerified: false,
@@ -153,6 +157,28 @@ async function suppress(orderRef) {
   })
 }
 
+async function claimExpected(orderRefs) {
+  const claimPlan = planAcceptanceClaim(orderRefs)
+  for (const orderRef of claimPlan.orderRefs) {
+    await rest(`awin_conversion_outbox?order_ref=eq.${orderRef}`, {
+      method: 'PATCH',
+      body: { state: 'pending', next_attempt_at: claimPlan.nextAttemptAt },
+    })
+  }
+  const counts = await invokeWorker(claimPlan.limit)
+  if (counts.claimed !== claimPlan.limit) {
+    throw new Error('development worker claimed outside exact acceptance batch')
+  }
+  return counts
+}
+
+async function unrelatedRowUnchanged() {
+  const unrelated = await outbox(unrelatedRef)
+  return unrelated.length === 1 && unrelated[0]?.state === 'pending' &&
+    unrelated[0]?.attempt_count === 0 && unrelated[0]?.last_http_status === null &&
+    unrelated[0]?.last_error_code === null
+}
+
 try {
   const existingDeliverable = await rows(
     'awin_conversion_outbox?state=in.(pending,retry,processing)&select=id&limit=1',
@@ -218,30 +244,43 @@ try {
   await invokeWebhook(refs[0])
   results.replayNoDuplicate = (await outbox(refs[0])).length === 1
 
-  let counts = await invokeWorker()
+  const firstPlan = planAcceptanceClaim([fixtureRefs[0]])
+  await rest(`awin_conversion_outbox?order_ref=eq.${fixtureRefs[0]}`, {
+    method: 'PATCH',
+    body: { state: 'pending', next_attempt_at: firstPlan.nextAttemptAt },
+  })
+  // Simulate a real conversion arriving after preflight and fixture scheduling.
+  await invokeWebhook(unrelatedRef)
+  let counts = await invokeWorker(firstPlan.limit)
+  if (counts.claimed !== firstPlan.limit) {
+    throw new Error('development worker claimed outside exact acceptance batch')
+  }
   row = await outbox(refs[0])
   results.retry429 = counts.retried === 1 && row[0]?.state === 'retry' && row[0]?.last_http_status === 429
+  results.concurrencyIsolation = await unrelatedRowUnchanged()
   await suppress(refs[0])
 
   await invokeWebhook(refs[1])
-  counts = await invokeWorker()
+  counts = await claimExpected([refs[1]])
   row = await outbox(refs[1])
   results.retry500 = counts.retried === 1 && row[0]?.state === 'retry' && row[0]?.last_http_status === 500
   await suppress(refs[1])
 
   await invokeWebhook(refs[2])
-  counts = await invokeWorker()
+  counts = await claimExpected([refs[2]])
   row = await outbox(refs[2])
   results.sent200 = counts.sent === 1 && row[0]?.state === 'sent' && row[0]?.last_http_status === 200
 
   await invokeWebhook(refs[3])
   await invokeWebhook(refs[4])
-  counts = await invokeWorker()
+  counts = await claimExpected([refs[3], refs[4]])
   const partialOk = await outbox(refs[3])
   const partialFail = await outbox(refs[4])
   results.partialIndependence = counts.sent === 1 && counts.dead_letter === 1 &&
     partialOk[0]?.state === 'sent' && partialOk[0]?.last_http_status === 206 &&
     partialFail[0]?.state === 'dead_letter' && partialFail[0]?.last_http_status === 206
+  results.concurrencyIsolation = results.concurrencyIsolation &&
+    await unrelatedRowUnchanged()
   results.deployedInteroperability = true
 } finally {
   const cleanupFailures = []
