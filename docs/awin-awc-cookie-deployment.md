@@ -156,9 +156,14 @@ as `* * * * *`. The job posts only to
 and builds its bearer header at execution time from the single Vault entry
 named `awin_worker_bearer_dev`, which contains the value configured as the
 worker's `AWIN_WORKER_SECRET`; no credential is embedded in SQL or source.
-The final guarded verification found exactly one job, a recent successful cron
-run, HTTP 200 with `claimed`, `sent`, `retried`, and `dead_letter` all zero,
-and an empty outbox.
+The final guarded verification found exactly one matching job and a recent
+successful cron run for its job id. A separate recent pg_net response check
+found HTTP 200 with `claimed`, `sent`, `retried`, and `dead_letter` all zero,
+and the outbox was empty. The worker response may also contain an `accepted`
+counter; the verifier asserted the four named counters and did not reject extra
+fields. These time-bounded cron-run and HTTP-response observations were not
+correlated by a request id, so they prove recent schedule health separately,
+not that the inspected HTTP row came from the inspected cron run.
 
 An earlier generated development bearer was treated as compromised after it
 appeared in internal diagnostic output. It was replaced, the edge-function and
@@ -188,33 +193,54 @@ acceptance. The development project also retains these five AWIN settings:
 `AWIN_WORKER_SECRET`. The API base URL points only to the retained fixture; the
 fixture never calls AWIN. Remove the stack with
 `infra/awin-conversion-fixture-dev/scripts/teardown-aws-dev.sh`, whose exact
-account/region/`-dev` guards must pass. Before teardown, unschedule the worker
-or change its development-only API configuration so it cannot target a removed
-fixture. No production setting is part of this teardown.
+account/region/`-dev` guards must pass. Before teardown, unschedule the worker.
+Then, with the exact DEV project guard in place, explicitly remove all five
+retained Supabase settings:
 
-### Storefront deployment prerequisite
+```bash
+supabase secrets unset \
+  AWIN_ATTRIBUTION_SECRET \
+  AWIN_CONVERSION_API_BASE_URL \
+  AWIN_CONVERSION_API_KEY \
+  AWIN_OUTBOX_ENCRYPTION_KEY \
+  AWIN_WORKER_SECRET \
+  --project-ref rodvvmfzkyjsqbufkjbc \
+  --profile supabase \
+  --yes
+```
+
+Verify all five names are absent and remove the DEV Vault entry only after the
+schedule and Edge Function worker secret are retired. No production setting is
+part of this teardown.
+
+### Storefront MasterTag and feed evidence
 
 The exact storefront `https://dev.d3pa095gzazg3c.amplifyapp.com` was read-only
-checked on 2026-08-12. The restricted routes `/buy`, `/checkout`, `/account`,
-and `/creators` correctly had no MasterTag, but `/` also had no
-`#solum-awin-mastertag` or `https://www.dwin1.com/129171.js`, and
-`/feeds/awin.csv` returned HTTP 404 with an empty body. This is a stale/missing
-development web deployment, not a local Phase A test failure.
+checked on 2026-08-12. `/`, `/buy`, `/checkout`, `/account`, and `/creators`
+all had zero MasterTags. This is the correct Task 1 production-only policy:
+`awinMasterTag.js` accepts only `bysolum.co.uk` and `www.bysolum.co.uk`, so an
+Amplify DEV hostname must never load the live tag. Do not enable the MasterTag
+on DEV to manufacture acceptance evidence.
 
-Before production approval, deploy/push `codex/awin-phase-a` to the Amplify
-**development branch only**, then repeat these exact read-only checks:
+The one-tag behavior was instead proved with a local production-host browser
+simulation. The external `https://www.dwin1.com/129171.js` request was
+intercepted so no live AWIN request was sent; the simulated public route
+contained exactly one `#solum-awin-mastertag`. Focused route-policy tests prove
+the tag is excluded from `/buy`, `/checkout`, `/account`, and `/creators` and
+is idempotent on allowed production routes.
 
-1. `/` contains exactly one script with id `solum-awin-mastertag` and source
-   `https://www.dwin1.com/129171.js`.
-2. `/buy`, `/checkout`, `/account`, and `/creators` contain none.
-3. `/feeds/awin.csv` returns HTTP 200, a CSV content type, and exactly the two
-   expected product rows (plus the header), validated with
-   `scripts/awin/verify-feed.mjs`.
+The DEV request to `/feeds/awin.csv` returned HTTP 404. That is not evidence of
+a stale branch deployment: the route is an Amplify **app-level custom rule**,
+not a file created by deploying a branch. The committed rule artifact targets
+the production `awin-feed` Edge Function and must not be applied app-wide just
+to make DEV pass. Phase A feed evidence is the local two-product-row contract
+test plus `node scripts/awin/verify-amplify-custom-rules.mjs`. The live feed
+check is deferred until the separately and explicitly approved production
+app-rule rollout, followed by the read-only production checks below.
 
-Do not substitute production for this missing development evidence. The
-Amplify development hostname is outside `.bysolum.co.uk`, so it cannot prove
-first-party `.bysolum.co.uk` cookie recovery; Lambda integration tests remain
-the authority until a `dev.bysolum.co.uk` storefront domain exists.
+The Amplify development hostname is outside `.bysolum.co.uk`, so it also cannot
+prove first-party `.bysolum.co.uk` cookie recovery; Lambda integration tests
+remain the authority until a `dev.bysolum.co.uk` storefront domain exists.
 
 ## Attribution and commission interpretation
 
@@ -259,6 +285,11 @@ After an approved production deployment, acceptance is read-only only:
   retry/dead-letter counts, and worker run health. Use only naturally occurring
   real customer activity; do not create an order, conversion, refund, label, or
   dispatch as an acceptance test.
+- Correlate the production scheduled invocation to its pg_cron run and pg_net /
+  worker response using a request id or other deployed observability field when
+  available. If no correlation field exists, report cron-run and HTTP-response
+  evidence as separate time-bounded observations rather than claiming a direct
+  link.
 - Compare the real order and sync/outbox outcome by opaque reference or
   aggregate status. Never expose raw `awc`, ciphertext, bearer credentials, or
   provider response bodies.
