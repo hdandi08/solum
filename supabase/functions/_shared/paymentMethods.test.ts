@@ -1,5 +1,9 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import { boundedTrackingId, stripePaymentMethodTypesForWallets } from './paymentMethods.ts';
+import {
+  boundedTrackingId,
+  dynamicPaymentMethodOptions,
+  stripePaymentMethodTypesForWallets,
+} from './paymentMethods.ts';
 
 Deno.test('maps every restored express wallet to the required Stripe payment method types', () => {
   assertEquals(
@@ -13,4 +17,13 @@ Deno.test('accepts only bounded opaque click identifiers for Stripe metadata', (
   assertEquals(boundedTrackingId('bad value'), '');
   assertEquals(boundedTrackingId('<script>'), '');
   assertEquals(boundedTrackingId('x'.repeat(501)), '');
+});
+
+Deno.test('keeps the final Payment Element on Stripe dynamic payment methods', () => {
+  assertEquals(dynamicPaymentMethodOptions(), {
+    automatic_payment_methods: {
+      enabled: true,
+      allow_redirects: 'always',
+    },
+  });
 });

@@ -2,7 +2,7 @@ import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
 import { normalizeOrderSource, resolveAwinCheckoutAttribution } from '../_shared/awin.ts';
-import { boundedTrackingId, stripePaymentMethodTypesForWallets } from '../_shared/paymentMethods.ts';
+import { boundedTrackingId, dynamicPaymentMethodOptions } from '../_shared/paymentMethods.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -84,12 +84,7 @@ Deno.serve(async (req) => {
     const pi = await stripe.paymentIntents.create({
       amount,
       currency: 'gbp',
-      payment_method_types: stripePaymentMethodTypesForWallets([
-        'apple_pay',
-        'google_pay',
-        'link',
-        'paypal',
-      ]),
+      ...dynamicPaymentMethodOptions(),
       customer: customer.id,
       shipping: {
         name: [first_name, last_name].filter(Boolean).join(' '),

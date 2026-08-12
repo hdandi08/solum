@@ -16,3 +16,12 @@ export function boundedTrackingId(value: unknown): string {
 export function stripePaymentMethodTypesForWallets(wallets: string[]): string[] {
   return [...new Set(wallets.map((wallet) => WALLET_TO_STRIPE_TYPE[wallet]).filter(Boolean))];
 }
+
+export function dynamicPaymentMethodOptions() {
+  return {
+    automatic_payment_methods: {
+      enabled: true,
+      allow_redirects: 'always' as const,
+    },
+  };
+}
