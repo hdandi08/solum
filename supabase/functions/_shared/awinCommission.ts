@@ -1,3 +1,5 @@
+import { encryptAwc, hashAwc } from "./awinOutbox.ts";
+
 export type AwinCommissionInput = {
   customerPaidPence: number;
   discountPence: number;
@@ -13,6 +15,31 @@ export type AwinCommissionBreakdown = {
   deliveryPence: number;
   vatPence: number;
   commissionablePence: number;
+};
+
+export type EnqueueAwinConversionInput = {
+  orderRef: string;
+  orderId: string;
+  customerPaidPence: number;
+  discountPence: number;
+  deliveryPence: number;
+  vatPence: number;
+  amountPence: number;
+  voucherCode: string | null;
+  financialBasisVersion: "solum-commission-v1";
+  currency: "GBP";
+  commissionGroup: "DEFAULT";
+  channel: "aw" | "display" | "ppc" | "email";
+  awc: string;
+};
+
+type AwinOutboxClient = {
+  from(table: "awin_conversion_outbox"): {
+    upsert(
+      row: Record<string, unknown>,
+      options: { onConflict: "order_ref"; ignoreDuplicates: true },
+    ): PromiseLike<{ error: { message?: string } | null }>;
+  };
 };
 
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
@@ -127,4 +154,35 @@ export function calculateAwinCommissionableAmount(
     vatPence,
     commissionablePence,
   };
+}
+
+export async function enqueueAwinConversion(
+  supabase: AwinOutboxClient,
+  input: EnqueueAwinConversionInput,
+  encryptionKey = Deno.env.get("AWIN_OUTBOX_ENCRYPTION_KEY"),
+): Promise<void> {
+  if (!encryptionKey) throw new Error("awin_outbox_encryption_key_missing");
+
+  const [awcCiphertext, awcHash] = await Promise.all([
+    encryptAwc(input.awc, encryptionKey),
+    hashAwc(input.awc),
+  ]);
+  const { error } = await supabase.from("awin_conversion_outbox").upsert({
+    order_ref: input.orderRef,
+    order_id: input.orderId,
+    customer_paid_pence: input.customerPaidPence,
+    discount_pence: input.discountPence,
+    delivery_pence: input.deliveryPence,
+    vat_pence: input.vatPence,
+    amount_pence: input.amountPence,
+    voucher_code: input.voucherCode,
+    financial_basis_version: input.financialBasisVersion,
+    currency: input.currency,
+    commission_group: input.commissionGroup,
+    channel: input.channel,
+    awc_ciphertext: awcCiphertext,
+    awc_hash: awcHash,
+  }, { onConflict: "order_ref", ignoreDuplicates: true });
+
+  if (error) throw new Error("awin_outbox_enqueue_failed");
 }

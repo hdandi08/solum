@@ -1,8 +1,13 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
-import { buildAwinS2sUrl, type AwinS2sInput } from '../_shared/awin.ts';
-import { shouldSendExternalPurchaseSideEffects } from '../_shared/purchaseSafety.ts';
+import { calculateAwinCommissionableAmount, enqueueAwinConversion } from '../_shared/awinCommission.ts';
+import {
+  classifyAwinEligibility,
+  shouldSendExternalPurchaseSideEffects,
+  validatedIntegerMetadata,
+  validatedVoucher,
+} from '../_shared/purchaseSafety.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -304,7 +309,6 @@ function paymentIntentClaimData(
   paymentIntentId: string,
   stripeEventId: string,
   token: string,
-  awinAttempted = false,
   revision = 1,
 ) {
   return {
@@ -313,7 +317,6 @@ function paymentIntentClaimData(
     stripe_event_id: stripeEventId,
     claim_token: token,
     claimed_at: new Date().toISOString(),
-    awin_attempted: awinAttempted,
     revision,
   };
 }
@@ -365,7 +368,6 @@ async function claimPaymentIntent(
     pi.id,
     event.id,
     token,
-    existingData.awin_attempted === true,
     (previousRevision ?? 0) + 1,
   );
   let reclaimQuery = supabase
@@ -404,14 +406,6 @@ async function updatePaymentIntentClaim(
   const { data: updated, error } = await updateQuery.select('id').maybeSingle();
   if (error || !updated) throw new Error(`payment_intent_claim_${action}_failed: ${error?.message ?? 'claim lost'}`);
   return nextData;
-}
-
-async function markPaymentIntentAwinAttempted(
-  supabase: ReturnType<typeof createClient>,
-  claim: PaymentIntentClaim,
-) {
-  const data = { ...claim.data, awin_attempted: true };
-  claim.data = await updatePaymentIntentClaim(supabase, claim, data, 'awin_attempt');
 }
 
 async function completePaymentIntentClaim(
@@ -553,28 +547,9 @@ async function sendMetaPurchaseEvent(opts: {
   }
 }
 
-// Awin server-to-server conversion — fired from the webhook so it survives ad
-// blockers / ITP that can drop browser-side tracking. The shared builder
-// fails closed unless the paid PaymentIntent carries live, valid attribution.
-async function sendAwinPurchaseEvent(opts: AwinS2sInput) {
-  const url = buildAwinS2sUrl(opts);
-  if (!url) return;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000);
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    console.log('awin_s2s', res.status, opts.orderRef);
-  } catch {
-    console.error('awin_s2s_network_or_timeout', opts.orderRef);
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
   supabase: ReturnType<typeof createClient>,
-  claim: PaymentIntentClaim,
 ) {
   const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc, awin_channel } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
@@ -633,6 +608,7 @@ async function handleOneTimeOrderFromPI(
       .eq('stripe_session_id', pi.id);
   }
   if (!customerId) throw new Error('one_time_pi_order_missing_customer');
+  if (!order) throw new Error('one_time_pi_order_missing_order');
 
   // Store shipping address from pi.shipping before non-critical delivery events.
   const sh = pi.shipping;
@@ -653,6 +629,41 @@ async function handleOneTimeOrderFromPI(
     if (addressErr) throw new Error(`one_time_pi_address_upsert_failed: ${addressErr.message}`);
   }
 
+  const eligibility = classifyAwinEligibility({
+    livemode: pi.livemode,
+    awc,
+    channel: awin_channel,
+  });
+  if (eligibility.eligible) {
+    const discountPence = validatedIntegerMetadata(pi.metadata.discount_amount_pence, 0);
+    const deliveryPence = validatedIntegerMetadata(pi.metadata.delivery_amount_pence, 0);
+    const vatEffectiveAt = Deno.env.get('SOLUM_VAT_EFFECTIVE_AT');
+    const vatRateBps = validatedIntegerMetadata(Deno.env.get('SOLUM_VAT_RATE_BPS'), 0);
+    const commission = calculateAwinCommissionableAmount({
+      customerPaidPence: pi.amount,
+      discountPence,
+      deliveryPence,
+      paidAt: new Date(pi.created * 1000).toISOString(),
+      vatEffectiveAt: vatEffectiveAt || null,
+      vatRateBps,
+    });
+    await enqueueAwinConversion(supabase, {
+      orderRef: pi.id,
+      orderId: order.id,
+      customerPaidPence: pi.amount,
+      discountPence,
+      deliveryPence,
+      vatPence: commission.vatPence,
+      amountPence: commission.commissionablePence,
+      voucherCode: validatedVoucher(pi.metadata.voucher_code),
+      financialBasisVersion: 'solum-commission-v1',
+      currency: 'GBP',
+      commissionGroup: 'DEFAULT',
+      channel: awin_channel as 'aw' | 'display' | 'ppc' | 'email',
+      awc: awc!,
+    });
+  }
+
   // New-order side effects must not repeat when finalisation resumes.
   if (isNewOrder && email && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
     const orderRef = pi.id.slice(-8).toUpperCase();
@@ -663,12 +674,6 @@ async function handleOneTimeOrderFromPI(
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
   }
 
-  // This is the final handler action: mark the one permitted Awin attempt
-  // before the bounded, caught fetch, so a stale-claim recovery never resends it.
-  if (claim.data.awin_attempted !== true && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
-    await markPaymentIntentAwinAttempted(supabase, claim);
-    await sendAwinPurchaseEvent({ amountPence: pi.amount, orderRef: pi.id, awc, channel: awin_channel, live: pi.livemode });
-  }
 }
 
 async function handleOneTimeOrder(
@@ -983,7 +988,7 @@ Deno.serve(async (req) => {
           if (claimResult.state === 'processing') throw new Error('payment_intent_claim_processing');
           const claim = claimResult.claim;
           try {
-            await handleOneTimeOrderFromPI(pi, supabase, claim);
+            await handleOneTimeOrderFromPI(pi, supabase);
           } catch (err) {
             try {
               await releasePaymentIntentClaim(supabase, claim);

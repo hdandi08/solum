@@ -25,6 +25,34 @@ Deno.test("does not deduct VAT before the configured effective date", () => {
   );
 });
 
+Deno.test("keeps the full customer-paid amount one second before VAT takes effect", () => {
+  assertEquals(
+    calculateAwinCommissionableAmount({
+      customerPaidPence: 6500,
+      discountPence: 0,
+      deliveryPence: 0,
+      paidAt: "2026-09-30T23:59:59Z",
+      vatEffectiveAt: "2026-10-01T00:00:00Z",
+      vatRateBps: 2000,
+    }).commissionablePence,
+    6500,
+  );
+});
+
+Deno.test("deducts VAT at the exact configured effective instant", () => {
+  assertEquals(
+    calculateAwinCommissionableAmount({
+      customerPaidPence: 6500,
+      discountPence: 0,
+      deliveryPence: 0,
+      paidAt: "2026-10-01T00:00:00Z",
+      vatEffectiveAt: "2026-10-01T00:00:00Z",
+      vatRateBps: 2000,
+    }).commissionablePence,
+    5417,
+  );
+});
+
 Deno.test("does not deduct VAT when no effective date is configured", () => {
   assertEquals(
     calculateAwinCommissionableAmount({

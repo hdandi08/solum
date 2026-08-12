@@ -1,6 +1,7 @@
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import nodeTokenVector from '../../../infra/awin-tracking/test-vectors/node-aes-gcm.json' with { type: 'json' };
 import { buildAwinS2sUrl, normalizeOrderSource, resolveAwinCheckoutAttribution } from './awin.ts';
+import * as awinCommission from './awinCommission.ts';
 
 const SECRET = 'development-secret-development-secret';
 const NOW = Date.parse('2026-08-11T12:00:00.000Z');
@@ -143,4 +144,107 @@ Deno.test('fails closed for an invalid direct checksum when no valid fallback ex
     secret: SECRET,
     now: () => NOW,
   }), {});
+});
+
+Deno.test('duplicate PaymentIntent enqueue is one encrypted outbox row', async () => {
+  const rows = new Map<string, Record<string, unknown>>();
+  const operations: Array<{ table: string; options: Record<string, unknown> }> = [];
+  const supabase = {
+    from(table: string) {
+      return {
+        async upsert(
+          row: Record<string, unknown>,
+          options: Record<string, unknown>,
+        ) {
+          operations.push({ table, options });
+          if (options.onConflict === 'order_ref' && options.ignoreDuplicates === true) {
+            const orderRef = String(row.order_ref);
+            if (!rows.has(orderRef)) rows.set(orderRef, row);
+            return { error: null };
+          }
+          return { error: { message: 'non-idempotent write' } };
+        },
+      };
+    },
+  };
+  const enqueueAwinConversion = (
+    awinCommission as unknown as {
+      enqueueAwinConversion: (
+        client: typeof supabase,
+        input: Record<string, unknown>,
+        encryptionKey?: string,
+      ) => Promise<void>;
+    }
+  ).enqueueAwinConversion;
+  const input = {
+    orderRef: 'pi_123456789',
+    orderId: '11111111-1111-4111-8111-111111111111',
+    customerPaidPence: 6500,
+    discountPence: 500,
+    deliveryPence: 0,
+    vatPence: 0,
+    amountPence: 6500,
+    voucherCode: 'SOLUM10',
+    financialBasisVersion: 'solum-commission-v1',
+    currency: 'GBP',
+    commissionGroup: 'DEFAULT',
+    channel: 'aw',
+    awc: '129171_click',
+  };
+  const encryptionKey = 'development-secret-development-secret';
+
+  await enqueueAwinConversion(supabase, input, encryptionKey);
+  await enqueueAwinConversion(supabase, input, encryptionKey);
+
+  assertEquals(operations, [
+    { table: 'awin_conversion_outbox', options: { onConflict: 'order_ref', ignoreDuplicates: true } },
+    { table: 'awin_conversion_outbox', options: { onConflict: 'order_ref', ignoreDuplicates: true } },
+  ]);
+  assertEquals(rows.size, 1);
+  const row = rows.get('pi_123456789')!;
+  assertEquals(row.awc_hash, 'ba1bae1bbb5acf822c1c61935bfd4261fff30400c09eb4acc1f5aefca05e7bd9');
+  assertEquals(typeof row.awc_ciphertext, 'string');
+  assertEquals(String(row.awc_ciphertext).includes('129171_click'), false);
+  assertEquals('awc' in row, false);
+});
+
+Deno.test('eligible outbox persistence failure throws only a sanitized retryable error', async () => {
+  const enqueueAwinConversion = (
+    awinCommission as unknown as {
+      enqueueAwinConversion: (
+        client: unknown,
+        input: Record<string, unknown>,
+        encryptionKey?: string,
+      ) => Promise<void>;
+    }
+  ).enqueueAwinConversion;
+  const supabase = {
+    from() {
+      return {
+        async upsert() {
+          return { error: { message: 'provider body and raw attribution' } };
+        },
+      };
+    },
+  };
+
+  await assertRejects(
+    () => enqueueAwinConversion(supabase, {
+      orderRef: 'pi_987654321',
+      orderId: '22222222-2222-4222-8222-222222222222',
+      customerPaidPence: 6500,
+      discountPence: 0,
+      deliveryPence: 0,
+      vatPence: 0,
+      amountPence: 6500,
+      voucherCode: null,
+      financialBasisVersion: 'solum-commission-v1',
+      currency: 'GBP',
+      commissionGroup: 'DEFAULT',
+      channel: 'aw',
+      awc: '129171_click',
+    }, 'development-secret-development-secret'),
+    Error,
+    'awin_outbox_enqueue_failed',
+  );
 });
