@@ -1,5 +1,10 @@
 # E2E Checkout Safety and Card-Only Flow Design
 
+> Superseded in part on 2026-08-12: Express Checkout (Apple Pay, Google Pay,
+> Link, and PayPal) was explicitly restored for customers. The development-only
+> E2E safety boundary remains mandatory and production E2E purchases remain
+> prohibited. The standard test-card flow remains the automated DEV fallback.
+
 **Date:** 2026-07-30
 **Status:** Approved for implementation planning
 **Scope:** SOLUM Playwright safety, worktree configuration, checkout payment methods, analytics isolation, test-data cleanup, and the real development checkout test

@@ -1,5 +1,9 @@
 # E2E Checkout Safety Implementation Plan
 
+> Historical note (2026-08-12): the card-only product decision in this plan was
+> later reversed by explicit approval. Express Checkout is restored; the
+> production-test prohibition and exact DEV safety guards remain in force.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make every SOLUM E2E run development-only, metrics-clean and worktree-safe while restoring a real Stripe test-card checkout through a card-only `/buy` flow.

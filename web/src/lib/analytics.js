@@ -1,6 +1,6 @@
 import posthog from 'posthog-js';
 import { detectInAppBrowser } from './inAppBrowser';
-import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
+import { readCookie, deriveFbc, newEventId, preferBridgeValue } from './metaCapi.js';
 import { isAutomatedBrowser } from './analyticsEnvironment.js';
 
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
@@ -101,8 +101,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 function sendMetaCapi(eventName, eventId, payload = {}) {
   if (!IS_PROD || !SUPABASE_URL) return;
-  let fbclid = null;
-  try { fbclid = new URLSearchParams(window.location.search).get('fbclid'); } catch { /* no-op */ }
+  const { fbp, fbc } = getMetaIds();
   try {
     fetch(`${SUPABASE_URL}/functions/v1/meta-capi-relay`, {
       method: 'POST',
@@ -111,13 +110,22 @@ function sendMetaCapi(eventName, eventId, payload = {}) {
         event_name: eventName,
         event_id: eventId,
         source_url: window.location.href,
-        fbp: readCookie('_fbp') ?? undefined,
-        fbc: deriveFbc(readCookie('_fbc'), fbclid) ?? undefined,
+        fbp,
+        fbc,
         ...payload,
       }),
       keepalive: true, // survives the SPA nav right after a kit CTA click
     }).catch(() => {});
   } catch { /* fire-and-forget — never break the UI for tracking */ }
+}
+
+export function getMetaIds() {
+  let params;
+  try { params = new URLSearchParams(window.location.search); } catch { params = new URLSearchParams(); }
+  return {
+    fbp: preferBridgeValue(params.get('fbp'), readCookie('_fbp')),
+    fbc: deriveFbc(preferBridgeValue(params.get('fbc'), readCookie('_fbc')), params.get('fbclid')) ?? undefined,
+  };
 }
 
 // eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added
@@ -250,12 +258,17 @@ export function ttqTrack(event, props = {}) {
 // Returns undefined for absent values so they drop cleanly from JSON payloads.
 export function getTikTokIds() {
   let ttclid;
+  let ttp;
   try {
-    const fromUrl = new URL(window.location.href).searchParams.get('ttclid');
+    const params = new URL(window.location.href).searchParams;
+    const fromUrl = params.get('ttclid');
+    const ttpFromUrl = params.get('ttp');
     if (fromUrl) localStorage.setItem('ttclid', fromUrl);
+    if (ttpFromUrl) localStorage.setItem('ttp', ttpFromUrl);
     ttclid = fromUrl || localStorage.getItem('ttclid') || undefined;
+    ttp = ttpFromUrl || readCookie('_ttp') || localStorage.getItem('ttp') || undefined;
   } catch { /* ignore */ }
-  return { ttclid, ttp: readCookie('_ttp') || undefined };
+  return { ttclid, ttp: ttp || readCookie('_ttp') || undefined };
 }
 
 export { posthog };

@@ -528,13 +528,17 @@ async function sendMetaPurchaseEvent(opts: {
   kitName: string;
   amountPence: number;
   eventId: string;
+  fbp?: string | null;
+  fbc?: string | null;
 }) {
   const accessToken = Deno.env.get('META_CAPI_ACCESS_TOKEN');
   if (!accessToken) { console.warn('META_CAPI_ACCESS_TOKEN not set — skipping Meta event'); return; }
 
-  const userData: Record<string, string[]> = {};
+  const userData: Record<string, string[] | string> = {};
   if (opts.email) userData['em'] = [await sha256hex(opts.email.trim().toLowerCase())];
   if (opts.phone) userData['ph'] = [await sha256hex(opts.phone.replace(/\D/g, ''))];
+  if (opts.fbp) userData['fbp'] = opts.fbp;
+  if (opts.fbc) userData['fbc'] = opts.fbc;
 
   try {
     const res = await fetch('https://graph.facebook.com/v21.0/690345887768095/events', {
@@ -572,7 +576,7 @@ async function handleOneTimeOrderFromPI(
   supabase: ReturnType<typeof createClient>,
   claim: PaymentIntentClaim,
 ) {
-  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, awc, awin_channel } = pi.metadata ?? {};
+  const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, fbp, fbc, awc, awin_channel } = pi.metadata ?? {};
   const email = metaEmail?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
@@ -698,7 +702,7 @@ async function handleOneTimeOrderFromPI(
     await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
     await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
-    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
+    await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, fbp, fbc });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
   }
 

@@ -20,6 +20,15 @@ const SIGNATURES = [
   ['android_webview', /;\s*wv[);]/i],
 ];
 
+export const IAB_CHECKOUT_EVENTS = Object.freeze({
+  bannerShown: 'iab_banner_shown',
+  bannerClicked: 'iab_banner_clicked',
+  bannerDismissed: 'iab_banner_dismissed',
+  gateShown: 'iab_gate_shown',
+  gateOpenClicked: 'iab_gate_open_clicked',
+  gateContinueClicked: 'iab_gate_continue_clicked',
+});
+
 /**
  * @param {string} [ua] user-agent string; defaults to navigator.userAgent
  * @returns {'instagram'|'facebook'|'tiktok'|'snapchat'|'twitter'|'android_webview'|'none'}
@@ -57,11 +66,34 @@ export function detectPlatform(ua) {
  * @param {string} [href] source URL; defaults to window.location.href
  * @returns {string}
  */
-export function buildBreakoutUrl(distinctId, href) {
+const BRIDGE_VALUE = /^[A-Za-z0-9._~-]{1,500}$/;
+const BRIDGE_CHANNELS = new Set(['aw', 'display', 'ppc', 'email']);
+
+function setBridgeValue(url, key, value) {
+  if (typeof value === 'string' && BRIDGE_VALUE.test(value.trim())) {
+    url.searchParams.set(key, value.trim());
+  }
+}
+
+export function buildBreakoutUrl(distinctId, href, tracking = {}) {
   const src = href ?? (typeof window !== 'undefined' ? window.location.href : '');
   const url = new URL(src);
   if (distinctId && !url.searchParams.has('distinct_id')) {
     url.searchParams.set('distinct_id', distinctId);
+  }
+  setBridgeValue(url, 'awc', tracking.awin?.awc);
+  setBridgeValue(url, 'fbp', tracking.meta?.fbp);
+  setBridgeValue(url, 'fbc', tracking.meta?.fbc);
+  setBridgeValue(url, 'ttclid', tracking.tiktok?.ttclid);
+  setBridgeValue(url, 'ttp', tracking.tiktok?.ttp);
+
+  const channel = tracking.awin?.channel;
+  if (BRIDGE_CHANNELS.has(channel) && !url.searchParams.has('utm_medium')) {
+    const campaign = channel === 'display'
+      ? { source: tracking.tiktok?.ttclid ? 'tiktok' : 'meta', medium: 'paid_social' }
+      : { source: channel === 'aw' ? 'awin' : channel, medium: channel };
+    url.searchParams.set('utm_source', campaign.source);
+    url.searchParams.set('utm_medium', campaign.medium);
   }
   return url.toString();
 }

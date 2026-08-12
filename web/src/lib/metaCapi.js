@@ -15,6 +15,10 @@ export function deriveFbc(fbcCookie, fbclid, now = Date.now()) {
   return null;
 }
 
+export function preferBridgeValue(bridgeValue, cookieValue) {
+  return bridgeValue || cookieValue || undefined;
+}
+
 // Shared event id for pixel + CAPI dedup.
 export function newEventId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();

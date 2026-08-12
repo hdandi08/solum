@@ -19,6 +19,7 @@ const input = {
   source: 'first_batch',
   siteHost: 'www.bysolum.co.uk',
   tikTokIds: { ttclid: 'tt-click', ttp: 'tt-cookie' },
+  metaIds: { fbp: 'fb.1.browser', fbc: 'fb.1.click' },
 };
 
 const baseBody = {
@@ -31,6 +32,8 @@ const baseBody = {
   site_host: 'www.bysolum.co.uk',
   ttclid: 'tt-click',
   ttp: 'tt-cookie',
+  fbp: 'fb.1.browser',
+  fbc: 'fb.1.click',
   line1: '14 Example Street',
   line2: null,
   city: 'London',

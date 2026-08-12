@@ -6,6 +6,7 @@ export async function buildFirstBoxPaymentIntentBody({
   source,
   siteHost,
   tikTokIds = {},
+  metaIds = {},
   attribution = {},
 }, tokenResolver) {
   const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, tokenResolver);
@@ -18,6 +19,7 @@ export async function buildFirstBoxPaymentIntentBody({
     source,
     site_host: siteHost,
     ...tikTokIds,
+    ...metaIds,
     ...awinMetadata,
     line1: form.line1.trim(),
     line2: form.line2.trim() || null,

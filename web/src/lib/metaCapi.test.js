@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
+import { readCookie, deriveFbc, newEventId, preferBridgeValue } from './metaCapi.js';
 
 describe('readCookie', () => {
   it('reads a named cookie from a cookie string', () => {
@@ -28,6 +28,13 @@ describe('deriveFbc', () => {
   });
   it('returns null with neither cookie nor fbclid', () => {
     expect(deriveFbc(null, null)).toBeNull();
+  });
+});
+
+describe('cross-browser campaign precedence', () => {
+  it('prefers a current breakout bridge over an older target-browser cookie', () => {
+    expect(preferBridgeValue('current-click', 'stale-cookie')).toBe('current-click');
+    expect(preferBridgeValue(null, 'cookie-only')).toBe('cookie-only');
   });
 });
 

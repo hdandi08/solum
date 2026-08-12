@@ -218,7 +218,8 @@ test.describe('Checkout flow', () => {
     test.setTimeout(90_000); // Stripe webhook delivery and persistence are asynchronous.
 
     await page.goto('/buy?kit=ground');
-    await expect(page.locator('.by-express-wrap')).toHaveCount(0);
+    await expect(page.getByTestId('express-checkout')).toBeAttached();
+    await expect(page.getByTestId('details-form')).toBeVisible();
     const buyer = await fillForm(page);
     const intentResponsePromise = page.waitForResponse(response =>
       response.url().includes('/functions/v1/create-first-box-payment-intent') &&

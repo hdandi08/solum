@@ -6,13 +6,18 @@ import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
 import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
-import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getTikTokIds } from '../lib/analytics.js';
+import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getMetaIds, getTikTokIds } from '../lib/analytics.js';
 import { captureAwinAttribution, normalizeCheckoutSource } from '../lib/awinAttribution.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
 import { buildFirstBoxPaymentIntentBody } from '../lib/firstBoxPaymentIntent.js';
+import { expressElementsOptions } from '../lib/expressCheckout.js';
+import { shouldShowIabGate } from '../lib/inAppBrowser.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
+import ExpressCheckout from '../components/ExpressCheckout.jsx';
+import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
+import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import { videoFor } from '../data/productMedia.js';
 import './checkout/checkout.css';
 import { jumpTop } from '../lib/scroll.js';
@@ -69,6 +74,14 @@ const CSS = `
 .by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
 @media(max-width:768px){.by-intro-head{font-size:22px;}}
 .by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
+.by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
+.by-express-skel{height:48px;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
+@keyframes byShimmer{to{background-position:-200% 0;}}
+.by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
+.by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
+.by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
+.by-express-consent a{color:var(--blit);text-decoration:none;}
+.by-express-consent a:hover{text-decoration:underline;}
 .by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
 .by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
@@ -697,7 +710,7 @@ export default function BuyPage() {
   // kit re-decision UI stays collapsed behind "Change kit".
   const isWarmArrival = !isDirectLanding && !!preselect;
 
-  // Kit CTAs and the sticky bar scroll to the details form.
+  // Kit CTAs and the sticky bar scroll to wallets + the details form.
   const formStartRef = useRef(null);
   const scrollToForm = () => formStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -710,9 +723,28 @@ export default function BuyPage() {
   const [clientSecret, setClientSecret] = useState(null);
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
+  const [expressAvailable, setExpressAvailable] = useState(false);
+  const [expressReady, setExpressReady] = useState(false);
   const [kitPickerOpen, setKitPickerOpen]       = useState(!isWarmArrival);
 
+  const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
+  const [iabContinued, setIabContinued] = useState(() => {
+    try { return sessionStorage.getItem(IAB_CONTINUE_KEY) === '1'; } catch { return false; }
+  });
+  const iabGate = !iabContinued && shouldShowIabGate(undefined, window.location.search);
+  const continueInApp = () => {
+    try { sessionStorage.setItem(IAB_CONTINUE_KEY, '1'); } catch { /* unavailable */ }
+    setIabContinued(true);
+  };
+
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
+
+  // Stripe's wallet iframe can take several seconds to decide which methods
+  // this browser supports. Never leave a permanent skeleton if scripts fail.
+  useEffect(() => {
+    const timeout = setTimeout(() => setExpressReady(true), 6000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Restore state after a failed redirect-based card payment.
   useEffect(() => {
@@ -844,6 +876,7 @@ export default function BuyPage() {
         source,
         siteHost: window.location.hostname,
         tikTokIds: getTikTokIds(),
+        metaIds: getMetaIds(),
         attribution: captureAwinAttribution(),
       });
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
@@ -895,6 +928,7 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
+        <InAppBrowserBanner />
         <div className="by-soldout-page">
           {/* Left — apology */}
           <div className="by-soldout-left">
@@ -969,6 +1003,7 @@ export default function BuyPage() {
       <>
         <style>{CSS}</style>
         <BuyCheckoutNav />
+        <InAppBrowserBanner />
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
           <div className="co-page">
             <div className="co-left">
@@ -1130,11 +1165,62 @@ export default function BuyPage() {
                 </div>
               )}
 
-              {step === 'details' && <ProgressBar step="details" />}
+              {step === 'details' && (
+                <div className="by-express-wrap" ref={formStartRef} data-testid="express-checkout">
+                  {iabGate ? (
+                    <IabCheckoutGate
+                      key={selectedKit}
+                      kit={selectedKit}
+                      source={source}
+                      onContinue={continueInApp}
+                    />
+                  ) : (
+                    <>
+                      <InAppBrowserBanner variant="inline" />
+                      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
+                      <Elements
+                        key={selectedKit}
+                        stripe={stripePromise}
+                        options={expressElementsOptions({
+                          amountPence: price * 100,
+                          appearance: stripeAppearance,
+                        })}
+                      >
+                        <ExpressCheckout
+                          kitId={selectedKit}
+                          kitName={activeKit?.name ?? selectedKit}
+                          price={price}
+                          source={source}
+                          supabaseUrl={SUPABASE_URL}
+                          authHeaders={authHeaders}
+                          onError={setError}
+                          onAvailability={(available) => {
+                            setExpressAvailable(available);
+                            setExpressReady(true);
+                          }}
+                        />
+                      </Elements>
+                      {expressAvailable && (
+                        <>
+                          <div className="by-express-consent">
+                            By continuing with express checkout, you agree to our{' '}
+                            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+                            {' '}and{' '}
+                            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                          </div>
+                          <div className="by-express-or"><span>or pay by card</span></div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+
+              {step === 'details' && !iabGate && <ProgressBar step="details" />}
 
               {/* Step 1: Details */}
-              {step === 'details' && (
-                <form ref={formStartRef} onSubmit={handleDetailsNext} noValidate data-testid="details-form">
+              {step === 'details' && !iabGate && (
+                <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
                   <div className="co-step-heading">Your Details.</div>
                   <div className="co-step-subhead">Takes 60 seconds. We only ask what we need.</div>
 

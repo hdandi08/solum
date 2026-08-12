@@ -2,6 +2,7 @@ import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
 import { normalizeOrderSource, resolveAwinCheckoutAttribution } from '../_shared/awin.ts';
+import { boundedTrackingId, stripePaymentMethodTypesForWallets } from '../_shared/paymentMethods.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -34,7 +35,7 @@ Deno.serve(async (req) => {
     email  = body.email?.trim().toLowerCase();
     const {
       first_name, last_name, source, phone, site_host, line1, line2, city,
-      postcode, ttclid, ttp, awc, awin_channel, awin_attribution_token,
+      postcode, ttclid, ttp, fbp, fbc, awc, awin_channel, awin_attribution_token,
     } = body;
 
     if (!KIT_PENCE[kit_id!]) {
@@ -83,7 +84,12 @@ Deno.serve(async (req) => {
     const pi = await stripe.paymentIntents.create({
       amount,
       currency: 'gbp',
-      payment_method_types: ['card'],
+      payment_method_types: stripePaymentMethodTypesForWallets([
+        'apple_pay',
+        'google_pay',
+        'link',
+        'paypal',
+      ]),
       customer: customer.id,
       shipping: {
         name: [first_name, last_name].filter(Boolean).join(' '),
@@ -104,8 +110,10 @@ Deno.serve(async (req) => {
         source:       effectiveSource,
         phone:        phone ?? '',
         site_host:    site_host ?? '',
-        ttclid:       ttclid ?? '',
-        ttp:          ttp ?? '',
+        ttclid:       boundedTrackingId(ttclid),
+        ttp:          boundedTrackingId(ttp),
+        fbp:          boundedTrackingId(fbp),
+        fbc:          boundedTrackingId(fbc),
         ...(awinAttribution.awc ? { awc: awinAttribution.awc } : {}),
         ...(awinAttribution.channel ? { awin_channel: awinAttribution.channel } : {}),
         dispatch_date: fmtDay(dispatch),
