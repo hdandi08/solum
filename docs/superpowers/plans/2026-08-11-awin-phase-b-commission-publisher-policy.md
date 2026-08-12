@@ -360,6 +360,21 @@ The fixture contains the account facts verified on 2026-08-12:
 - Skimlinks `78888`, Coupon Deal `181013`, and Rewards `2573975` are current programme-standard assignments;
 - unverified `Solum Premium` rate-value cells are absent, not guessed.
 
+The eight live programme-standard publisher assignments read back on 2026-08-12 are exactly:
+
+| Publisher ID | Publisher name | Known primary type |
+| ---: | --- | --- |
+| 111 | Awin Test Publisher - do not suspend | null |
+| 2939789 | Creovia | Content Creators & Influencers |
+| 45628 | Example Publisher | null |
+| 171741 | Rank | null |
+| 2944797 | Sensible Content Group | null |
+| 78888 | Skimlinks | Sub Networks |
+| 181013 | Skimlinks Coupon Deal sites | Sub Networks |
+| 2573975 | Skimlinks Rewards sites | Cashback |
+
+Use relationship status `joined` for the current assignment snapshot. Unknown primary type and region fields remain null; do not infer them from publisher names. The fixture's `observedAt` is `2026-08-12T21:33:00Z` and current assignment `effectiveFrom` is `2026-08-12T21:33:00Z` when AWIN exposes no earlier assignment timestamp in this read-back.
+
 Reject duplicate group codes, duplicate rate-set keys, orphan rate values, orphan assignments, multiple current assignments for one publisher, unsafe codes, invalid basis points, and premium publishers without approval metadata. CSV columns are exactly:
 
 ```text
