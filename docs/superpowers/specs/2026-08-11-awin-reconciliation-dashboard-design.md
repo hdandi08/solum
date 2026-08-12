@@ -10,7 +10,7 @@
 SOLUM will use one integrated affiliate measurement system with four ordered phases:
 
 1. **Tracking reliability** — correct the MasterTag and feed configuration, add a durable first-party `awc` cookie path, and replace fire-and-forget conversion delivery with an idempotent outbox.
-2. **Commission configuration** — import the effective AWIN partnership assignment, use a 10% programme standard, and assign explicitly approved direct premium editorial/influencer publishers to the 15% `Solum Premium` publisher rate. Customer acquisition remains a separate `NEW`/`RETURNING` dimension.
+2. **Commission configuration** — import AWIN commission groups, publisher rate sets, and publisher assignments as a dynamic rate matrix. The current programme uses a 10% standard and a 15% approved premium path, but the data model supports future groups without adding enum values. Customer acquisition remains a separate `NEW`/`RETURNING` dimension.
 3. **AWIN reconciliation** — import AWIN transactions and publisher performance, then join AWIN transactions to SOLUM orders by the unique Stripe PaymentIntent reference.
 4. **Admin reporting** — add a secure AWIN dashboard for partner, publisher category, commission group, status, profitability, and data-quality monitoring.
 
@@ -111,7 +111,7 @@ Customer acquisition is decided at order creation from SOLUM history and is inde
 
 The classification is stored with the conversion outbox record so a later retry cannot change it after customer history evolves. It is sent in AWIN's `customerAcquisition` field.
 
-The conversion's tracked-part commission group remains `DEFAULT` unless SOLUM later approves a transaction-level rule that explicitly emits `PREMIUM`. Publisher category, publisher ID, and `awc` are never used by checkout to guess a commission group. AWIN's publisher commission-rate assignment controls whether an approved direct publisher receives the premium commercial rate.
+The conversion's tracked-part commission group remains `DEFAULT` unless SOLUM later approves another deterministic order/product rule. Commission-group codes are stored as data rather than a closed application enum. Publisher category, publisher ID, and `awc` are never used by checkout to guess a transaction group. AWIN resolves the publisher and applies the value at the intersection of that publisher's assigned rate set and the submitted transaction group.
 
 ## 6. Target architecture
 
@@ -235,7 +235,7 @@ Table: `awin_conversion_outbox`
 | `voucher_code text` | Validated applied code, or null when no code was used. |
 | `financial_basis_version text` | Versioned server calculation policy, initially `solum-commission-v1`. |
 | `currency text` | `GBP` for current programme. |
-| `commission_group text` | `DEFAULT` or `PREMIUM`; current checkout submissions use `DEFAULT`. |
+| `commission_group text` | Immutable AWIN tracked-part group code; current checkout submissions use `DEFAULT`, while future configured codes remain supported. |
 | `customer_acquisition text` | Immutable `NEW` or `RETURNING`, stored separately from commission. |
 | `channel text` | Validated `aw`, `display`, `ppc`, or `email`. |
 | `awc_ciphertext text` | Restricted server-only checksum storage. |
@@ -284,17 +284,30 @@ No distributed system can guarantee exactly-once delivery if a worker crashes af
 
 ### 8.1 Commission rules
 
-- Programme standard: **10%** through `Program Standard Commission Rates`.
-- Approved direct premium editorials/influencers: **15%** through the publisher-specific `Solum Premium` rate.
-- Live transaction commission groups: `DEFAULT` at 10% and `PREMIUM` at 15%.
-- Current conversion delivery submits `DEFAULT`. It must not infer `PREMIUM` from publisher category or from an opaque AWIN checksum.
+- Programme standard currently resolves to **10%** through `Program Standard Commission Rates`.
+- Approved direct premium editorials/influencers resolve to **15%** only after the `Solum Premium` rate matrix is read back and the specific publisher assignment becomes effective.
+- The live tracked-part groups currently include `DEFAULT` and `PREMIUM`; the implementation does not hard-code those as the only future values.
+- Current conversion delivery submits `DEFAULT`. Any future group is selected only by an explicit deterministic order/product rule; it must not be inferred from publisher category or an opaque AWIN checksum.
 - A direct publisher moves to `Solum Premium` only after SOLUM records the publisher ID, approved rate, reason, approver, and effective date.
-- The system imports the current AWIN publisher-rate assignment and records its effective value; it never invents or automatically changes that assignment.
+- The system imports all visible commission groups, publisher rate sets, per-group values, and current publisher assignments; it never invents or automatically changes them.
 - Actual transaction commission imported from AWIN remains the financial authority even when the locally recorded nominal rate differs.
 
-Publisher-specific rates, tracked-part commission groups, and customer acquisition are separate concepts. The publisher-rate assignment controls partner commercial terms; `DEFAULT`/`PREMIUM` identifies the submitted tracked part; `NEW`/`RETURNING` describes the customer relationship.
+Nominal expected commission is inferred from a two-dimensional association:
+
+`publisher rate-set assignment × transaction commission-group code → configured rate`
+
+Publisher-specific rate sets, tracked-part commission groups, and customer acquisition are separate concepts. The rate-set assignment controls partner commercial terms; the group identifies the submitted tracked part; `NEW`/`RETURNING` describes the customer relationship. A group alone is insufficient to infer the publisher's rate, and a publisher assignment alone is insufficient when a rate set contains multiple group values.
 
 AWIN commission-group reference: <https://help.awin.com/advertisers/docs/en/commission-groups>.
+
+Tables:
+
+- `awin_commission_groups` — one row per imported group code, including name, description, condition summary, active state, and source timestamps;
+- `awin_commission_rate_sets` — one row per AWIN publisher commission-rate set;
+- `awin_commission_rate_values` — one row per `(rate_set_key, commission_group_code)` containing the configured percentage or fixed amount; and
+- `awin_publisher_rate_assignments` — the current and scheduled rate-set assignment for each publisher.
+
+Names are display labels, not relational keys. When AWIN exposes a stable source identifier it is retained; otherwise the importer generates a deterministic source-scoped key and records the source hash. Imports upsert observed rows and preserve history rather than deleting unseen configuration automatically.
 
 ### 8.2 Publisher categories
 
@@ -319,8 +332,7 @@ Table: `awin_publishers`
 | `status text` | Current relationship/programme status. |
 | `retain_protected boolean` | True for Skimlinks records and any later protected partner. |
 | `commercial_tier text` | `standard`, `premium`, or `externally_managed`. |
-| `commission_rate_name text` | Current AWIN publisher-rate assignment, such as `Program Standard Commission Rates` or `Solum Premium`. |
-| `effective_rate_bps integer` | Nominal effective rate observed from the current AWIN assignment. |
+| `commission_rate_set_key text` | Current imported rate-set assignment; joins to the dynamic rate matrix. |
 | `rate_source text` | `awin_assignment`, `skimlinks_managed`, or `approved_exception`. |
 | `exception_reason text null` | Commercial approval/audit note for a direct premium exception. |
 | `exception_approved_by text null` | Person who approved a direct premium exception. |
@@ -328,7 +340,7 @@ Table: `awin_publishers`
 | `awin_tags jsonb` | Imported publisher tags without making them the local category authority. |
 | `first_seen_at`, `last_seen_at`, `updated_at` | Lifecycle timestamps. |
 
-Rate fields are context and QA data. Actual reporting uses transaction-level commission imported from AWIN.
+Rate-matrix fields provide expectation and QA context. Actual reporting uses transaction-level commission imported from AWIN.
 
 ## 9. Phase 3 — AWIN imports and reconciliation
 
@@ -479,7 +491,7 @@ Rows with zero clicks show conversion rate and EPC as unavailable, not zero-perf
 
 ### 10.5 Commission and customer-acquisition views
 
-The dashboard groups commission metrics by publisher-rate assignment and submitted tracked part (`DEFAULT` or `PREMIUM`). It shows both the submitted group and the group returned by AWIN; disagreement is a QA exception. A separate view groups orders by immutable customer acquisition (`NEW` or `RETURNING`).
+The dashboard groups commission metrics by the dynamically imported publisher rate set and transaction group. It shows the configured nominal rate at that intersection, the submitted group, and the group returned by AWIN; missing matrix entries or group disagreement are QA exceptions. A separate view groups orders by immutable customer acquisition (`NEW` or `RETURNING`).
 
 ### 10.6 Order-level reconciliation table
 
@@ -592,7 +604,7 @@ Each phase is independently reversible:
 ### 14.1 Automated tests
 
 - Vitest: MasterTag route allow/deny behaviour; browser attribution and 30-day expiry; tracking request construction.
-- Deno: eligibility, channel validation, `NEW`/`RETURNING` classification, `DEFAULT`/`PREMIUM` validation, publisher-policy validation, retry classification, redaction, API pagination, minor-unit conversion, and reconciliation states.
+- Deno: eligibility, channel validation, `NEW`/`RETURNING` classification, dynamic commission-group parsing, rate-matrix inference, publisher-policy validation, retry classification, redaction, API pagination, minor-unit conversion, and reconciliation states.
 - SQL tests: unique constraints, atomic claims, RLS denial, reporting formulas, duplicate-order protection, and matched/unmatched views.
 - Admin tests: payload normalisation, filters, money/ratio display, unavailable fee handling, stale-data warnings, and no sensitive fields.
 - Build/lint: storefront and admin production builds plus existing unit suites.
@@ -639,8 +651,8 @@ Never run production checkout E2E, synthetic purchase, conversion, refund, label
 ### Phase B — commission configuration
 
 1. Read back the live 10% `Program Standard Commission Rates` assignment and the 15% `Solum Premium` publisher rate.
-2. Verify the live `DEFAULT` and `PREMIUM` tracked-part groups while keeping current checkout submissions on `DEFAULT`.
-3. Import publisher categories, rate assignments, and effective rates; protect all three Skimlinks relationships as externally managed.
+2. Import the live tracked-part groups and rate-set/group matrix while keeping current checkout submissions on `DEFAULT`.
+3. Import publisher categories and rate-set assignments; protect all three Skimlinks relationships as externally managed.
 4. Keep customer acquisition as a separate immutable `NEW`/`RETURNING` field.
 5. Assign a direct publisher to `Solum Premium` only after the specific publisher ID and commercial approval are recorded and independently reviewed.
 
@@ -674,7 +686,7 @@ The system is complete when:
 10. Actual commission and network fee are used when available; unavailable values are labelled.
 11. New/returning customer classification is stable across retries and independent of commission assignment.
 12. All three Skimlinks relationships are retained, externally managed, and protected from automatic rate or partnership changes.
-13. The dashboard shows publisher, category, AWIN rate assignment, tracked-part group, customer acquisition, status, profitability, and data freshness.
+13. The dashboard shows publisher, category, AWIN rate-set assignment, dynamic tracked-part group, inferred nominal rate, actual commission, customer acquisition, status, profitability, and data freshness.
 14. No production E2E or synthetic transaction test is required or executed.
 
 ## 17. Superseded guidance
