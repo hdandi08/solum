@@ -5,6 +5,14 @@ import { pathToFileURL } from "node:url";
 
 const DEV_PROJECT_REF = "rodvvmfzkyjsqbufkjbc";
 const SKIMLINKS_IDS = [78888, 181013, 2573975];
+const OBSERVED_PUBLISHER_IDS = [
+  111,
+  2939789,
+  45628,
+  171741,
+  2944797,
+  ...SKIMLINKS_IDS,
+];
 
 function rows(value, key) {
   return value !== null && typeof value === "object" &&
@@ -32,21 +40,32 @@ export function verifyPolicyState(state) {
   const requiredGroups = ["DEFAULT", "PREMIUM"];
   const requiredRateSets = ["program-standard", "solum-premium"];
 
-  const groupsImported = requiredGroups.every((code) =>
-    commissionGroups.some((row) => row.code === code && row.active === true)
-  ) && uniqueKeys(commissionGroups, (row) => row.code);
-  const rateSetsImported = requiredRateSets.every((key) =>
-    rateSets.some((row) =>
-      row.rate_set_key === key && row.active === true
-    )
-  ) && uniqueKeys(rateSets, (row) => row.rate_set_key);
+  const groupsImported = commissionGroups.length === 2 &&
+    requiredGroups.every((code) =>
+      commissionGroups.some((row) => row.code === code && row.active === true)
+    ) && uniqueKeys(commissionGroups, (row) => row.code);
+  const rateSetsImported = rateSets.length === 2 &&
+    requiredRateSets.every((key) =>
+      rateSets.some((row) =>
+        row.rate_set_key === key && row.active === true
+      )
+    ) && uniqueKeys(rateSets, (row) => row.rate_set_key);
 
-  const matrixJoinsValid = uniqueKeys(
+  const expectedMatrix = new Map([
+    ["program-standard:DEFAULT", 1000],
+    ["program-standard:PREMIUM", 1500],
+  ]);
+  const matrixJoinsValid = rateValues.length === 2 && uniqueKeys(
     rateValues,
     (row) => `${row.rate_set_key}:${row.commission_group_code}`,
   ) && rateValues.every((row) =>
     rateSetKeys.has(row.rate_set_key) &&
-    groupCodes.has(row.commission_group_code)
+    groupCodes.has(row.commission_group_code) &&
+    row.commission_type === "percentage" &&
+    row.rate_bps === expectedMatrix.get(
+      `${row.rate_set_key}:${row.commission_group_code}`,
+    ) &&
+    row.fixed_amount_pence === null
   );
 
   const standardDefault = rateValues.filter((row) =>
@@ -69,14 +88,32 @@ export function verifyPolicyState(state) {
   const publishersById = new Map(
     publishers.map((row) => [row.publisher_id, row]),
   );
-  const skimlinksProtected = SKIMLINKS_IDS.every((publisherId) =>
-    publishersById.get(publisherId)?.retain_protected === true
+  const publisherIdsExact = publishers.length === 8 &&
+    uniqueKeys(publishers, (row) => row.publisher_id) &&
+    OBSERVED_PUBLISHER_IDS.every((publisherId) =>
+      publishersById.has(publisherId)
+    );
+  const protectedPublishers = publishers.filter((row) =>
+    row.retain_protected === true
   );
-  const skimlinksExternallyManaged = SKIMLINKS_IDS.every((publisherId) => {
-    const publisher = publishersById.get(publisherId);
-    return publisher?.commercial_tier === "externally_managed" &&
-      publisher?.rate_source === "skimlinks_managed";
-  });
+  const skimlinksProtected = publisherIdsExact &&
+    protectedPublishers.length === 3 &&
+    SKIMLINKS_IDS.every((publisherId) =>
+      publishersById.get(publisherId)?.retain_protected === true
+    );
+  const skimlinksExternallyManaged = publisherIdsExact &&
+    publishers.every((publisher) => {
+      const skimlinks = SKIMLINKS_IDS.includes(publisher.publisher_id);
+      if (!skimlinks) {
+        return publisher.retain_protected === false &&
+          publisher.commercial_tier === "standard" &&
+          publisher.rate_source === "awin_assignment" &&
+          publisher.commission_rate_set_key === "program-standard";
+      }
+      return publisher.commercial_tier === "externally_managed" &&
+        publisher.rate_source === "skimlinks_managed" &&
+        publisher.commission_rate_set_key === "program-standard";
+    });
 
   const currentAssignments = assignments.filter((row) =>
     row.state === "current"
@@ -88,12 +125,13 @@ export function verifyPolicyState(state) {
       (currentCounts.get(assignment.publisher_id) ?? 0) + 1,
     );
   }
-  const oneCurrentAssignmentPerPublisher = publishers.length > 0 &&
+  const oneCurrentAssignmentPerPublisher = publisherIdsExact &&
+    currentAssignments.length === 8 &&
     assignments.every((row) =>
       publisherIds.has(row.publisher_id) && rateSetKeys.has(row.rate_set_key)
     ) &&
-    publishers.every((row) => currentCounts.get(row.publisher_id) === 1) &&
-    SKIMLINKS_IDS.every((publisherId) =>
+    OBSERVED_PUBLISHER_IDS.every((publisherId) =>
+      currentCounts.get(publisherId) === 1 &&
       currentAssignments.some((row) =>
         row.publisher_id === publisherId &&
         row.rate_set_key === "program-standard"
@@ -185,7 +223,12 @@ async function runCli(args) {
   const input = options.input === null
     ? await readStdin()
     : await readMode0600TemporaryFile(resolve(options.input));
-  const state = JSON.parse(input);
+  let state;
+  try {
+    state = JSON.parse(input);
+  } catch {
+    throw new TypeError("policy_input_invalid");
+  }
   if (state?.projectRef !== undefined && state.projectRef !== options.projectRef) {
     throw new TypeError("sanitized state project ref mismatch");
   }
@@ -201,6 +244,9 @@ async function runCli(args) {
       publishers: rows(state, "publishers").length,
       currentAssignments: rows(state, "assignments").filter((row) =>
         row.state === "current"
+      ).length,
+      protectedPublishers: rows(state, "publishers").filter((row) =>
+        row.retain_protected === true
       ).length,
     },
     verification,

@@ -101,15 +101,17 @@ known rate values, eight publishers, eight current assignments, and three
 protected publishers. Count/boolean-only acceptance confirmed valid matrix
 joins, the 10% programme-standard `DEFAULT` cell, absent rather than fabricated
 `Solum Premium` values, all three Skimlinks protections/current assignments,
-one current assignment per publisher, independent customer acquisition, and
-denial of both anonymous and authenticated table access.
+one current assignment per publisher, and independent customer acquisition.
 
-The anonymous REST probe was rejected at the table authorization boundary. The
-authenticated denial is also enforced by the applied migration's RLS enablement
-and explicit privilege revocation for every policy table; that exact contract
-is covered by the migration test and linked schema lint. No storefront function
-was deployed, no AWIN provider call was made, and production was not contacted
-or changed.
+The anonymous REST probe was live evidence: it was rejected at the table
+authorization boundary. Authenticated denial was not proved with a live valid
+authenticated session in the final read-only run; its evidence is the applied
+migration contract, which enables RLS and explicitly revokes `authenticated`
+access on all five policy tables. The existing static migration test directly
+covers the publisher-table revoke, while all five applied clauses were inspected
+in the migration and the linked schema lint reported no errors. No storefront
+function was deployed, no AWIN provider call was made, and production was not
+contacted or changed.
 
 The premium gate remains manual: read back every active `Solum Premium`
 rate-set/group matrix cell before assigning any direct premium publisher.
