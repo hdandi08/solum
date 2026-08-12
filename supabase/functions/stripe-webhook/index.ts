@@ -1,7 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
-import { calculateAwinCommissionableAmount, customerAcquisitionForOrder, enqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
+import { calculateAwinCommissionableAmount, classifyThenEnqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
 import {
   classifyAwinEligibility,
   paymentIntentPurchaseSideEffectsAttempted,
@@ -660,11 +660,6 @@ async function handleOneTimeOrderFromPI(
     channel: awin_channel,
   });
   if (eligibility.eligible) {
-    const customerAcquisition = await customerAcquisitionForOrder(
-      supabase as never,
-      customerId,
-      canonicalOrder,
-    );
     const discountPence = validatedIntegerMetadata(pi.metadata.discount_amount_pence, 0);
     const deliveryPence = validatedIntegerMetadata(pi.metadata.delivery_amount_pence, 0);
     const vatEffectiveAt = Deno.env.get('SOLUM_VAT_EFFECTIVE_AT');
@@ -677,7 +672,7 @@ async function handleOneTimeOrderFromPI(
       vatEffectiveAt: vatEffectiveAt || null,
       vatRateBps,
     });
-    await enqueueAwinConversion(supabase, {
+    await classifyThenEnqueueAwinConversion(supabase as never, customerId, canonicalOrder, {
       orderRef: pi.id,
       orderId: canonicalOrder.id,
       customerPaidPence: pi.amount,
@@ -688,8 +683,6 @@ async function handleOneTimeOrderFromPI(
       voucherCode: validatedVoucher(pi.metadata.voucher_code),
       financialBasisVersion: 'solum-commission-v1',
       currency: 'GBP',
-      commissionGroup: 'DEFAULT',
-      customerAcquisition,
       channel: awin_channel as 'aw' | 'display' | 'ppc' | 'email',
       awc: awc!,
     });

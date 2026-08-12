@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-import-prefix no-unversioned-import require-await -- Preserve the pinned test import and async contract stub.
 import { assertEquals } from "jsr:@std/assert";
 import * as purchaseSafety from "./purchaseSafety.ts";
-import { customerAcquisitionForOrder } from "./awinCommission.ts";
+import { classifyThenEnqueueAwinConversion } from "./awinCommission.ts";
 
 const {
   shouldSendExternalPurchaseSideEffects,
@@ -63,7 +63,7 @@ Deno.test("normalizes only bounded integer metadata and trimmed vouchers", () =>
   assertEquals(helpers.validatedVoucher("x".repeat(101)), null);
 });
 
-Deno.test("classifies AWIN customer from prior paid order history before enqueue", async () => {
+Deno.test("classifies AWIN customer before enqueueing the default group", async () => {
   const makeClient = (
     result: { count: number | null; error: { message: string } | null },
   ) => {
@@ -82,6 +82,7 @@ Deno.test("classifies AWIN customer from prior paid order history before enqueue
         return query;
       },
       then(resolve: (value: typeof result) => unknown) {
+        calls.push(["classification_result"]);
         return Promise.resolve(result).then(resolve);
       },
     };
@@ -103,14 +104,58 @@ Deno.test("classifies AWIN customer from prior paid order history before enqueue
     created_at: "2026-08-12T12:00:00.000Z",
   };
 
-  const firstPurchase = makeClient({ count: 0, error: null });
-  assertEquals(
-    await customerAcquisitionForOrder(
-      firstPurchase as never,
+  const conversion = {
+    orderRef: "pi_123",
+    orderId: order.id,
+    customerPaidPence: 7083,
+    discountPence: 0,
+    deliveryPence: 0,
+    vatPence: 0,
+    amountPence: 7083,
+    voucherCode: null,
+    financialBasisVersion: "solum-commission-v1" as const,
+    currency: "GBP" as const,
+    channel: "aw" as const,
+    awc: "safe_awc",
+  };
+
+  for (
+    const scenario of [
+      { priorCount: 0, expectedAcquisition: "NEW" },
+      { priorCount: 1, expectedAcquisition: "RETURNING" },
+    ] as const
+  ) {
+    const client = makeClient({ count: scenario.priorCount, error: null });
+    const enqueueInputs: unknown[] = [];
+    await classifyThenEnqueueAwinConversion(
+      client as never,
       "customer-1",
       order,
-    ),
-    "NEW",
+      conversion,
+      (_supabase, input) => {
+        client.calls.push(["enqueue"]);
+        enqueueInputs.push(input);
+        return Promise.resolve();
+      },
+    );
+    assertEquals(enqueueInputs.length, 1);
+    assertEquals(enqueueInputs[0], {
+      ...conversion,
+      commissionGroup: "DEFAULT",
+      customerAcquisition: scenario.expectedAcquisition,
+    });
+    assertEquals(client.calls.at(-1), ["enqueue"]);
+    assertEquals(client.calls.at(-2), ["classification_result"]);
+    assertEquals(client.calls.filter(([name]) => name === "enqueue").length, 1);
+  }
+
+  const firstPurchase = makeClient({ count: 0, error: null });
+  await classifyThenEnqueueAwinConversion(
+    firstPurchase as never,
+    "customer-1",
+    order,
+    conversion,
+    () => Promise.resolve(),
   );
   assertEquals(firstPurchase.calls, [
     ["from", "orders"],
@@ -119,37 +164,31 @@ Deno.test("classifies AWIN customer from prior paid order history before enqueue
     ["eq", "status", "paid"],
     ["lt", "created_at", order.created_at],
     ["neq", "id", order.id],
+    ["classification_result"],
   ]);
-
-  const repeatPurchase = makeClient({ count: 1, error: null });
-  assertEquals(
-    await customerAcquisitionForOrder(
-      repeatPurchase as never,
-      "customer-1",
-      order,
-    ),
-    "RETURNING",
-  );
 
   const failedCount = makeClient({
     count: null,
     error: { message: "raw database detail" },
   });
   let error: unknown;
+  let enqueueCallCount = 0;
   try {
-    await customerAcquisitionForOrder(
+    await classifyThenEnqueueAwinConversion(
       failedCount as never,
       "customer-1",
       order,
+      conversion,
+      () => {
+        enqueueCallCount += 1;
+        return Promise.resolve();
+      },
     );
   } catch (caught) {
     error = caught;
   }
   assertEquals((error as Error).message, "awin_customer_classification_failed");
-  assertEquals(
-    failedCount.calls.some((call) => call[1] === "awin_conversion_outbox"),
-    false,
-  );
+  assertEquals(enqueueCallCount, 0);
 
   const rejectedQuery = {
     eq() {
@@ -178,15 +217,21 @@ Deno.test("classifies AWIN customer from prior paid order history before enqueue
   };
   error = undefined;
   try {
-    await customerAcquisitionForOrder(
+    await classifyThenEnqueueAwinConversion(
       rejectedClient as never,
       "customer-1",
       order,
+      conversion,
+      () => {
+        enqueueCallCount += 1;
+        return Promise.resolve();
+      },
     );
   } catch (caught) {
     error = caught;
   }
   assertEquals((error as Error).message, "awin_customer_classification_failed");
+  assertEquals(enqueueCallCount, 0);
 });
 
 Deno.test("existing-order replay after enqueue failure can attempt side effects only without a durable marker", () => {

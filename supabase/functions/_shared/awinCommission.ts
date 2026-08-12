@@ -72,6 +72,16 @@ type AwinCustomerHistoryClient = {
   };
 };
 
+export type AwinConversionWithoutCustomerClassification = Omit<
+  EnqueueAwinConversionInput,
+  "commissionGroup" | "customerAcquisition"
+>;
+
+export type AwinConversionEnqueuer = (
+  supabase: AwinOutboxClient,
+  input: EnqueueAwinConversionInput,
+) => Promise<void>;
+
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const ISO_TIMESTAMP =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/;
@@ -111,6 +121,25 @@ export async function customerAcquisitionForOrder(
   } catch {
     throw new Error("awin_customer_classification_failed");
   }
+}
+
+export async function classifyThenEnqueueAwinConversion(
+  supabase: AwinCustomerHistoryClient & AwinOutboxClient,
+  customerId: string,
+  currentOrder: { id: string; created_at: string },
+  conversion: AwinConversionWithoutCustomerClassification,
+  enqueue: AwinConversionEnqueuer = enqueueAwinConversion,
+): Promise<void> {
+  const customerAcquisition = await customerAcquisitionForOrder(
+    supabase,
+    customerId,
+    currentOrder,
+  );
+  await enqueue(supabase, {
+    ...conversion,
+    commissionGroup: "DEFAULT",
+    customerAcquisition,
+  });
 }
 
 export function paymentIntentCreatedAt(created: number): string {
