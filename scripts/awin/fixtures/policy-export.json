@@ -1,0 +1,149 @@
+{
+  "observedAt": "2026-08-12T21:33:00Z",
+  "commissionGroups": [
+    {
+      "code": "DEFAULT",
+      "name": "DEFAULT",
+      "active": true
+    },
+    {
+      "code": "PREMIUM",
+      "name": "PREMIUM",
+      "active": true
+    }
+  ],
+  "rateSets": [
+    {
+      "key": "program-standard",
+      "name": "Program Standard Commission Rates",
+      "active": true
+    },
+    {
+      "key": "solum-premium",
+      "name": "Solum Premium",
+      "active": true
+    }
+  ],
+  "rateValues": [
+    {
+      "rateSetKey": "program-standard",
+      "groupCode": "DEFAULT",
+      "commissionType": "percentage",
+      "rateBps": 1000
+    },
+    {
+      "rateSetKey": "program-standard",
+      "groupCode": "PREMIUM",
+      "commissionType": "percentage",
+      "rateBps": 1500
+    }
+  ],
+  "publishers": [
+    {
+      "id": 111,
+      "name": "Awin Test Publisher - do not suspend",
+      "primaryRegion": null,
+      "primaryType": null,
+      "status": "joined"
+    },
+    {
+      "id": 2939789,
+      "name": "Creovia",
+      "primaryRegion": null,
+      "primaryType": "Content Creators & Influencers",
+      "status": "joined"
+    },
+    {
+      "id": 45628,
+      "name": "Example Publisher",
+      "primaryRegion": null,
+      "primaryType": null,
+      "status": "joined"
+    },
+    {
+      "id": 171741,
+      "name": "Rank",
+      "primaryRegion": null,
+      "primaryType": null,
+      "status": "joined"
+    },
+    {
+      "id": 2944797,
+      "name": "Sensible Content Group",
+      "primaryRegion": null,
+      "primaryType": null,
+      "status": "joined"
+    },
+    {
+      "id": 78888,
+      "name": "Skimlinks",
+      "primaryRegion": null,
+      "primaryType": "Sub Networks",
+      "status": "joined"
+    },
+    {
+      "id": 181013,
+      "name": "Skimlinks Coupon Deal sites",
+      "primaryRegion": null,
+      "primaryType": "Sub Networks",
+      "status": "joined"
+    },
+    {
+      "id": 2573975,
+      "name": "Skimlinks Rewards sites",
+      "primaryRegion": null,
+      "primaryType": "Cashback",
+      "status": "joined"
+    }
+  ],
+  "assignments": [
+    {
+      "publisherId": 111,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 2939789,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 45628,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 171741,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 2944797,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 78888,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 181013,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    },
+    {
+      "publisherId": 2573975,
+      "rateSetKey": "program-standard",
+      "state": "current",
+      "effectiveFrom": "2026-08-12T21:33:00Z"
+    }
+  ]
+}

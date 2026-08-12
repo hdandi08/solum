@@ -1,0 +1,17 @@
+publisher_id,publisher_name,category,relationship_status,retain_protected,commercial_tier,rate_source,commission_rate_set_key,commission_rate_set_name,group_code,commission_type,rate_bps,fixed_amount_pence,currency,approval_reason,approved_by,approved_at,observed_at
+111,Awin Test Publisher - do not suspend,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+111,Awin Test Publisher - do not suspend,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+2939789,Creovia,creator,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+2939789,Creovia,creator,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+45628,Example Publisher,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+45628,Example Publisher,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+171741,Rank,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+171741,Rank,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+2944797,Sensible Content Group,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+2944797,Sensible Content Group,other,joined,false,standard,awin_assignment,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+78888,Skimlinks,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+78888,Skimlinks,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+181013,Skimlinks Coupon Deal sites,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+181013,Skimlinks Coupon Deal sites,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
+2573975,Skimlinks Rewards sites,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,DEFAULT,percentage,1000,,,,,,2026-08-12T21:33:00.000Z
+2573975,Skimlinks Rewards sites,subnetwork,joined,true,externally_managed,skimlinks_managed,program-standard,Program Standard Commission Rates,PREMIUM,percentage,1500,,,,,,2026-08-12T21:33:00.000Z
