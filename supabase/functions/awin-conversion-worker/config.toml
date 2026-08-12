@@ -1,0 +1,2 @@
+[functions.awin-conversion-worker]
+verify_jwt = false

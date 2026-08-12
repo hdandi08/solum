@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.meta-capi-relay]
 verify_jwt = false
+
+[functions.awin-conversion-worker]
+verify_jwt = false
