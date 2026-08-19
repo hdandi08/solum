@@ -1,10 +1,11 @@
 import { createHash, timingSafeEqual } from 'node:crypto'
+import { isFixtureCommissionGroupCode } from './commissionGroupCode.mjs'
 
 const PATH = '/s2s/advertiser/129171/orders'
 const MAX_BODY_BYTES = 65_536
 const MAX_ORDERS = 100
 const CHANNELS = new Set(['aw', 'display', 'ppc', 'email'])
-const GROUPS = new Set(['DEFAULT', 'NEW', 'EXISTING'])
+const CUSTOMER_ACQUISITIONS = new Set(['NEW', 'RETURNING'])
 const VALID_AWC = /^[A-Za-z0-9._~-]+$/
 
 const FIXTURES = Object.freeze({
@@ -56,6 +57,7 @@ function decodedBody(event) {
 function validOrder(order) {
   if (!order || typeof order !== 'object' || Array.isArray(order)) return false
   const keys = Object.keys(order).sort()
+  const hasCustomerAcquisition = Object.hasOwn(order, 'customerAcquisition')
   const allowedKeys = [
     'amount',
     'awc',
@@ -65,7 +67,13 @@ function validOrder(order) {
     'custom',
     'orderReference',
   ]
+  if (hasCustomerAcquisition) allowedKeys.push('customerAcquisition')
+  allowedKeys.sort()
   if (JSON.stringify(keys) !== JSON.stringify(allowedKeys)) return false
+  if (
+    hasCustomerAcquisition &&
+    !CUSTOMER_ACQUISITIONS.has(order.customerAcquisition)
+  ) return false
   if (!ALLOWLIST.has(order.orderReference)) return false
   if (typeof order.amount !== 'number' || !Number.isFinite(order.amount) || order.amount <= 0) return false
   if (!CHANNELS.has(order.channel) || order.currency !== 'GBP') return false
@@ -75,7 +83,7 @@ function validOrder(order) {
   const group = order.commissionGroups[0]
   return !!group && typeof group === 'object' &&
     Object.keys(group).sort().join(',') === 'amount,code' &&
-    GROUPS.has(group.code) && group.amount === order.amount
+    isFixtureCommissionGroupCode(group.code) && group.amount === order.amount
 }
 
 function fixtureResponse(orders) {

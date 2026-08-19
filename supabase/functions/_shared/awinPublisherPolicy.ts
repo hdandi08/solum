@@ -75,10 +75,7 @@ export function classifyPublisher(
     throw new TypeError("publisherName must be trimmed and non-empty");
   }
 
-  if (
-    SKIMLINKS_IDS.has(input.publisherId) ||
-    /skimlinks/i.test(input.publisherName)
-  ) {
+  if (SKIMLINKS_IDS.has(input.publisherId)) {
     return {
       category: "subnetwork",
       retainProtected: true,
@@ -88,7 +85,9 @@ export function classifyPublisher(
   }
 
   return {
-    category: normalizePublisherCategory(input.primaryType),
+    category: /skimlinks/i.test(input.publisherName)
+      ? "subnetwork"
+      : normalizePublisherCategory(input.primaryType),
     retainProtected: false,
     commercialTier: "standard",
     rateSource: "awin_assignment",

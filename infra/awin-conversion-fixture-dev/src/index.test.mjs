@@ -96,6 +96,57 @@ test('requires the exact conversion request schema and a bounded batch', async (
   }
 })
 
+test('accepts only exact optional customer acquisition values', async () => {
+  const handler = createHandler({ apiKey: API_KEY })
+
+  for (const customerAcquisition of ['NEW', 'RETURNING']) {
+    const response = await handler(event({
+      body: {
+        orders: [{ ...ORDERS.sent, customerAcquisition }],
+      },
+    }))
+    assert.equal(response.statusCode, 200)
+  }
+
+  for (const customerAcquisition of [null, '', 'new', 'EXISTING', 1]) {
+    const response = await handler(event({
+      body: {
+        orders: [{ ...ORDERS.sent, customerAcquisition }],
+      },
+    }))
+    assert.equal(response.statusCode, 400)
+    assert.deepEqual(JSON.parse(response.body), { error: 'Invalid request' })
+  }
+})
+
+test('accepts canonical dynamic commission groups and rejects unsafe codes', async () => {
+  const handler = createHandler({ apiKey: API_KEY })
+  const dynamic = await handler(event({
+    body: {
+      orders: [{
+        ...ORDERS.sent,
+        commissionGroups: [{ code: 'KIT_RITUAL_2027', amount: 65 }],
+        customerAcquisition: 'RETURNING',
+      }],
+    },
+  }))
+
+  assert.equal(dynamic.statusCode, 200)
+
+  for (const code of ['', 'premium', 'BAD-CODE', 'A'.repeat(51)]) {
+    const response = await handler(event({
+      body: {
+        orders: [{
+          ...ORDERS.sent,
+          commissionGroups: [{ code, amount: 65 }],
+        }],
+      },
+    }))
+    assert.equal(response.statusCode, 400)
+    assert.deepEqual(JSON.parse(response.body), { error: 'Invalid request' })
+  }
+})
+
 test('returns deterministic synthetic 200 success', async () => {
   const response = await createHandler({ apiKey: API_KEY })(event({
     body: { orders: [ORDERS.sent] },

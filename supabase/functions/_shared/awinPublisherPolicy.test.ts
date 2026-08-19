@@ -9,6 +9,7 @@ import {
   normalizeCommissionGroupCode,
   normalizePublisherCategory,
 } from "./awinPublisherPolicy.ts";
+import { isFixtureCommissionGroupCode } from "../../../infra/awin-conversion-fixture-dev/src/commissionGroupCode.mjs";
 import sql from "../../migrations/20260813000001_awin_commission_policy.sql" with {
   type: "text",
 };
@@ -23,6 +24,22 @@ Deno.test("accepts dynamic uppercase AWIN group codes", () => {
   assertThrows(() => normalizeCommissionGroupCode("BAD-CODE"), TypeError);
 });
 
+Deno.test("development fixture locks the Phase B commission-group contract", () => {
+  for (
+    const value of ["DEFAULT", "PREMIUM", "KIT_RITUAL_2027", "A".repeat(50)]
+  ) {
+    assertEquals(normalizeCommissionGroupCode(value), value);
+    assertEquals(isFixtureCommissionGroupCode(value), true);
+  }
+
+  for (
+    const value of [undefined, null, "", "premium", "BAD-CODE", "A".repeat(51)]
+  ) {
+    assertThrows(() => normalizeCommissionGroupCode(value), TypeError);
+    assertEquals(isFixtureCommissionGroupCode(value), false);
+  }
+});
+
 Deno.test("protects all three verified Skimlinks publisher IDs", () => {
   for (const publisherId of [78888, 181013, 2573975]) {
     assertEquals(classifyPublisher({ publisherId, publisherName: "renamed" }), {
@@ -30,6 +47,30 @@ Deno.test("protects all three verified Skimlinks publisher IDs", () => {
       retainProtected: true,
       commercialTier: "externally_managed",
       rateSource: "skimlinks_managed",
+    });
+  }
+});
+
+Deno.test("mutable Skimlinks labels affect reporting category but never protection", () => {
+  for (
+    const input of [
+      {
+        publisherId: 900001,
+        publisherName: "Skimlinks Rewards Lookalike",
+        primaryType: "Editorial Content",
+      },
+      {
+        publisherId: 900002,
+        publisherName: "Mutable Publisher Name",
+        primaryType: "Sub Networks",
+      },
+    ]
+  ) {
+    assertEquals(classifyPublisher(input), {
+      category: "subnetwork",
+      retainProtected: false,
+      commercialTier: "standard",
+      rateSource: "awin_assignment",
     });
   }
 });

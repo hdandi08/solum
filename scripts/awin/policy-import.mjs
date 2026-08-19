@@ -560,7 +560,13 @@ function parseCliArguments(args) {
 
 async function runCli(args) {
   const options = parseCliArguments(args);
-  const document = JSON.parse(await readFile(options.input, "utf8"));
+  const rawInput = await readFile(options.input, "utf8");
+  let document;
+  try {
+    document = JSON.parse(rawInput);
+  } catch {
+    throw new TypeError("policy_input_invalid");
+  }
   const normalized = normalizePolicyExport(document);
   if (!options.dryRun) {
     await writeFile(options.output, renderPolicyCsv(normalized), "utf8");

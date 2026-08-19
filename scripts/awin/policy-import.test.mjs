@@ -1,5 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 import {
@@ -434,4 +442,29 @@ test("keeps a Skimlinks lookalike name on another ID unprotected", () => {
   assert.equal(publisher.retain_protected, false);
   assert.equal(publisher.commercial_tier, "standard");
   assert.equal(publisher.rate_source, "awin_assignment");
+});
+
+test("CLI sanitizes invalid JSON without echoing supplied secrets", () => {
+  const directory = mkdtempSync(join(tmpdir(), "solum-policy-import-"));
+  const input = join(directory, "invalid.json");
+  const sentinel = "RAW_AWC_SENTINEL_TOKEN_129171";
+  writeFileSync(input, `${sentinel}{\"awc\":\"raw_awc_fragment\"}`, "utf8");
+
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [new URL("./policy-import.mjs", import.meta.url).pathname, "--input", input],
+      { encoding: "utf8" },
+    );
+
+    assert.equal(result.status, 1);
+    assert.equal(result.stdout, "");
+    assert.equal(result.stderr, "policy_input_invalid\n");
+    assert.doesNotMatch(
+      `${result.stdout}${result.stderr}`,
+      /RAW_AWC_SENTINEL_TOKEN_129171|raw_awc_fragment|awc/i,
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

@@ -267,7 +267,7 @@ export type PublisherClassificationInput = {
 };
 ```
 
-Validate a positive safe-integer publisher ID and a trimmed non-empty name. Apply classification in this order: verified Skimlinks ID or case-insensitive `skimlinks` name → protected `subnetwork`; primary type containing `cashback|loyalty|reward` → `cashback_loyalty`; `comparison` → `comparison`; `influencer|social|creator` → `creator`; `content|editorial|blog` → `editorial`; otherwise `other`. `normalizePublisherCategory` maps those same singular/plural/type-label synonyms, including `Influencers` → `creator`, and returns `other` for unknown input. Every non-Skimlinks classification returns standard/AWIN-assignment commercial metadata.
+Validate a positive safe-integer publisher ID and a trimmed non-empty name. Only a verified Skimlinks ID grants protected `subnetwork` status and externally managed commercial metadata. For every other ID, a case-insensitive `skimlinks` name or subnetwork primary type may select the `subnetwork` reporting category but cannot grant protection or externally managed status; the remaining primary-type order is `cashback|loyalty|reward` → `cashback_loyalty`, `comparison` → `comparison`, `influencer|social|creator` → `creator`, `content|editorial|blog` → `editorial`, otherwise `other`. `normalizePublisherCategory` maps those same singular/plural/type-label synonyms, including `Influencers` → `creator`, and returns `other` for unknown input. Every non-verified ID classification returns standard/AWIN-assignment commercial metadata.
 
 - [ ] **Step 8: Verify migration contracts and commit Task 1**
 
@@ -667,7 +667,7 @@ git commit -m "test: verify AWIN commission policy in development"
 ```bash
 deno test supabase/functions/_shared/awinPublisherPolicy.test.ts supabase/functions/_shared/awinCommission.test.ts supabase/functions/_shared/awinConversionApi.test.ts supabase/functions/_shared/awinOutbox.test.ts supabase/functions/_shared/purchaseSafety.test.ts
 node --test scripts/awin/policy-import.test.mjs scripts/awin/verify-policy-dev.test.mjs
-npm --prefix web test -- --run
+npm --prefix web run test:unit
 npm --prefix web run build
 npm --prefix web run lint
 git diff --check origin/master...HEAD
