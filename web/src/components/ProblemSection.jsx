@@ -28,12 +28,12 @@ const CSS = `
 `;
 
 const SYMPTOMS = [
-  ['/icons/problem-odour.webp', 'Odour back by midday', 'You showered this morning. By lunch you catch yourself again.'],
-  ['/icons/problem-rough.webp', 'Rough, bumpy skin', 'Arms, shoulders, thighs. Years of dead skin nobody taught you to remove.'],
-  ['/icons/problem-back.webp', 'A back you can\'t reach', 'Breakouts and buildup exactly where your hands never get to.'],
-  ['/icons/problem-scalp.webp', 'An itchy, flaky scalp', 'Washed with shampoo every day, never actually cleaned.'],
-  ['/icons/problem-gym.webp', 'Never clean after the gym', 'The sweat rinses off. What causes the smell does not.'],
-  ['/icons/problem-drop.webp', 'Tight and dry, then greasy', 'Your skin never settles. It just swings from one to the other.'],
+  ['/icons/problem-odour.webp', 'Freshness that fades', 'Clean should last beyond the first hour after a shower.'],
+  ['/icons/problem-rough.webp', 'Texture that builds', 'Arms, shoulders and thighs need a ritual that clears what hands cannot.'],
+  ['/icons/problem-back.webp', 'The unreachable back', 'The part most routines miss is often the part that needs the most structure.'],
+  ['/icons/problem-scalp.webp', 'Scalp as skin', 'Shampoo washes hair. The scalp still needs controlled physical work.'],
+  ['/icons/problem-gym.webp', 'Post-training reset', 'Sweat rinses away quickly. Buildup needs method, friction and order.'],
+  ['/icons/problem-drop.webp', 'Dry, then greasy', 'Skin feels better when cleansing, exfoliation and moisture happen in sequence.'],
 ];
 
 export default function ProblemSection() {
@@ -43,9 +43,9 @@ export default function ProblemSection() {
       <section className="problem-section" id="problem" data-track="problem">
         <div className="problem-inner">
           <div className="problem-head reveal">
-            <div className="problem-tag">It isn't hygiene.</div>
-            <h2>You do everything right.<br />You still don't feel clean.</h2>
-            <p>If any of these sound familiar, it isn't you. It's the routine nobody ever fixed.</p>
+            <div className="problem-tag">The missing step</div>
+            <h2>A shower cleans the surface.<br />A ritual changes the result.</h2>
+            <p>Most men do not need a longer routine. They need the right order: scalp, back, exfoliation, clay, oil and moisture timing.</p>
           </div>
           <div className="problem-grid reveal">
             {SYMPTOMS.map(([src, title, body]) => (
@@ -57,7 +57,7 @@ export default function ProblemSection() {
             ))}
           </div>
           <div className="problem-fix reveal">
-            <p>None of this is poor hygiene. A shower only wets the surface. Dead skin builds up for years and bacteria feed on it. <strong>SOLUM is the 10-minute system that clears it, head to toe.</strong></p>
+            <p>Body care has been treated like a product shelf. <strong>SOLUM turns the shower you already take into a numbered body ritual, with each step placed where it actually works.</strong></p>
           </div>
           <div className="problem-cta-row reveal">
             <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>

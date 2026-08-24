@@ -15,6 +15,7 @@ const visibleSource = (source) => source
 const homepageCopy = () => [
   component('Hero'),
   component('PressSection'),
+  component('ProblemSection'),
   component('KitComparison'),
   component('Marquee'),
   component('UnboxingFilm'),
@@ -46,6 +47,16 @@ describe('premium homepage direction', () => {
 
     expect(copy).not.toContain('—');
     expect(copy).not.toContain('--');
+  });
+
+  it('frames the problem section as premium category education, not shame copy', () => {
+    const problem = component('ProblemSection');
+
+    expect(problem).toContain('The missing step');
+    expect(problem).toContain('A shower cleans the surface.<br />A ritual changes the result.');
+    expect(problem).toContain('Most men do not need a longer routine.');
+    expect(problem).not.toContain("It isn't hygiene.");
+    expect(problem).not.toContain("You still don't feel clean.");
   });
 
   it('treats press as quiet editorial validation near the top of the page', () => {
