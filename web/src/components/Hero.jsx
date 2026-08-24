@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useVariant, trackGoal } from '../hooks/useVariant';
 import { BANNER } from '../data/productMedia.js';
-import { offerActive } from '../lib/offer.js';
-import { KITS, kitWorth } from '../data/kits.js';
 
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SMALL_SCREEN = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
@@ -32,7 +30,8 @@ const CSS = `
 .hero-glow{position:absolute;top:30%;left:25%;transform:translate(-50%,-50%);width:500px;height:400px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
 .hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:88px 24px 48px;gap:0;}
 .hero-content{width:100%;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,72px);line-height:.96;letter-spacing:0.03em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
+.hero-kicker{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:18px;animation:fadeUp .8s ease .68s both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6.2vw,88px);line-height:.9;letter-spacing:0.045em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
 /* ── Animated word swap ────────────────────────────── */
 .swap-container{display:inline-grid;position:relative;}
@@ -46,7 +45,12 @@ const CSS = `
 
 .hero-line{width:56px;height:1px;background:linear-gradient(to right,var(--blue),transparent);margin-bottom:20px;animation:lineIn 1s ease 1s both;transform-origin:left;}
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
-.hero-subline{font-size:17px;font-weight:300;letter-spacing:.3px;color:var(--mist);line-height:1.6;margin-bottom:28px;animation:fadeUp .8s ease .9s both;}
+.hero-subline{font-size:18px;font-weight:300;letter-spacing:.25px;color:var(--mist);line-height:1.65;margin-bottom:30px;max-width:520px;animation:fadeUp .8s ease .9s both;}
+.hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 30px;animation:fadeUp .8s ease .98s both;}
+.hero-meta-item{padding:13px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;}
+.hero-meta-item:last-child{border-right:0;}
+.hero-meta-label{font-size:10px;letter-spacing:2.8px;text-transform:uppercase;color:var(--stone);font-weight:700;}
+.hero-meta-value{font-size:14px;color:var(--bone);font-weight:300;line-height:1.25;}
 .hero-scope{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;animation:fadeUp .8s ease .95s both;}
 .hero-scope-pill{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 12px;}
 .hero-scope-pill.accent{color:var(--blit);border-color:rgba(46,109,164,0.3);}
@@ -56,6 +60,8 @@ const CSS = `
 .btn-primary:hover{background:#fff;transform:translateY(-1px);}
 .btn-ghost{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--stone);text-decoration:none;border-bottom:1px solid var(--lineb);padding-bottom:3px;transition:color .2s,border-color .2s;align-self:center;}
 .btn-ghost:hover{color:var(--bone);border-color:var(--blue);}
+.hero-editorial-note{margin-top:18px;font-size:13px;color:rgba(240,236,226,.62);font-weight:300;letter-spacing:.8px;line-height:1.5;animation:fadeUp .8s ease 1.12s both;}
+.hero-editorial-note span{color:var(--blit);font-weight:600;letter-spacing:1.4px;text-transform:uppercase;}
 /* Mobile: image on top, full width */
 .hero-visual{position:relative;width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;animation:fadeUp .8s ease .5s both;}
 .hero-box-img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;}
@@ -86,7 +92,11 @@ const CSS = `
   /* keep the film readable — drop the long paragraph, pills and decorative layers on mobile. the peeking marquee replaces the scroll cue. */
   .hero-scope,.hero-ghost,.hero-glow,.scroll-cue{display:none;}
   .hero-sub-more{display:none;}
+  .hero-title{font-size:clamp(42px,13vw,62px);}
   .hero-subline{font-size:15px;line-height:1.5;margin-bottom:22px;}
+  .hero-meta{grid-template-columns:1fr;margin-bottom:22px;}
+  .hero-meta-item{border-right:0;border-bottom:1px solid var(--line);padding:11px 0;}
+  .hero-meta-item:last-child{border-bottom:0;}
 }
 
 /* ── Desktop ───────────────────────────────────────── */
@@ -116,11 +126,26 @@ export default function Hero() {
         <div className="hero-glow" />
         <div className="hero-cols">
           <div className="hero-content">
+            <div className="hero-kicker">A complete body ritual</div>
             <h1 className="hero-title">
-              You shower every day.<br />So why don't you feel clean?
+              Your body.<br />Finally done right.
             </h1>
             <div className="hero-line" />
-            <p className="hero-subline"><span className="hero-sub-symptoms">Odour by midday. Rough skin. Spots on your back you can't reach. An itchy scalp.</span> <span className="hero-sub-more">A daily shower fixes none of it. SOLUM clears what's underneath, head to toe, in the 10 minutes you already spend in the shower. Every step laid out: what to use, when, and exactly how.</span></p>
+            <p className="hero-subline"><span className="hero-sub-symptoms">A guided 9-piece system for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
+            <div className="hero-meta" aria-label="SOLUM ritual summary">
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">System</span>
+                <span className="hero-meta-value">9 pieces, numbered</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Ritual</span>
+                <span className="hero-meta-value">10 minutes daily</span>
+              </div>
+              <div className="hero-meta-item">
+                <span className="hero-meta-label">Scope</span>
+                <span className="hero-meta-value">Body, not face</span>
+              </div>
+            </div>
             <div className="hero-actions">
               {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
               <a
@@ -128,45 +153,13 @@ export default function Hero() {
                 className="btn-primary"
                 onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
               >
-                Fix My Shower Routine
+                Shop the Ritual
               </a>
+              <a href="#press" className="btn-ghost">Read the press</a>
             </div>
-            {/* Value anchor is the first-tier signal; delivery is the quiet second line. */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                marginTop: 14,
-                padding: '6px 12px',
-                border: '1px solid #2E6DA4',
-                borderRadius: 2,
-                background: 'rgba(46,109,164,0.12)',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '1.2px',
-                textTransform: 'uppercase',
-                color: '#F0ECE2',
-              }}
-            >
-              <span style={{ color: '#4A8FC7', fontSize: 13 }}>✓</span>
-              £{kitWorth(KITS.find(k => k.id === 'ritual'))} of product. Yours for £{KITS.find(k => k.id === 'ritual').firstBoxPrice}.
-            </div>
-            {offerActive() && (
-              <div
-                style={{
-                  marginTop: 10,
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  letterSpacing: '0.8px',
-                  color: 'rgba(240,236,226,0.62)',
-                }}
-              >
-                Free UK delivery · worth £5.95
-              </div>
-            )}
+            <p className="hero-editorial-note">
+              <span>Press recognised</span> · Featured by Luxury Lifestyle Magazine.
+            </p>
           </div>
         </div>
         <div className="hero-visual">

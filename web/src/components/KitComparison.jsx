@@ -8,15 +8,16 @@ import { offerActive } from '../lib/offer.js';
 import { markOfferReached } from '../lib/qualifiedVisitTracker.js';
 
 const CSS = `
-.kits-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
-.kits-inner{max-width:1400px;margin:0 auto;}
-.kits-header{margin-bottom:64px;}
-.kits-header .k-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
-.kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4vw,64px);letter-spacing:.06em;color:var(--bone);line-height:1.05;margin-bottom:16px;}
-.kits-header p{font-size:17px;color:var(--mist);font-weight:300;line-height:1.7;max-width:560px;}
-.kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);max-width:860px;margin:0 auto;}
-.kit-card{background:var(--char);padding:40px 32px;display:flex;flex-direction:column;position:relative;}
-.kit-card.featured{background:var(--mid);border:1px solid var(--blue);outline:1px solid rgba(46,109,164,0.3);margin:-1px;}
+.kits-section{background:linear-gradient(180deg,#090b0f,var(--black));padding:110px 48px;border-top:1px solid var(--line);}
+.kits-inner{max-width:1240px;margin:0 auto;}
+.kits-header{margin:0 auto 58px;display:grid;grid-template-columns:1fr;gap:18px;max-width:980px;border-top:1px solid rgba(240,236,226,.14);padding-top:26px;}
+.kits-header .k-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
+.kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.8vw,86px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
+.kits-header p{font-size:18px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.7;max-width:520px;margin:0;}
+.kit-editorial-note{font-size:13px;letter-spacing:2.8px;text-transform:uppercase;color:rgba(240,236,226,.48);font-weight:700;align-self:end;}
+.kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:980px;margin:0 auto;}
+.kit-card{background:linear-gradient(180deg,rgba(24,28,36,.92),rgba(12,14,18,.98));border:1px solid rgba(240,236,226,.09);padding:42px 34px;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.22);}
+.kit-card.featured{background:linear-gradient(180deg,rgba(26,74,120,.18),rgba(12,14,18,.98));border:1px solid rgba(74,143,199,.55);outline:1px solid rgba(74,143,199,0.18);margin:0;}
 /* kit gallery — full-bleed header per card; images shown uncropped (contain) on black */
 .kit-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:calc(100% + 64px);margin:-40px -32px 0;background:var(--black);border-bottom:1px solid var(--line);}
 .kit-gallery::-webkit-scrollbar{display:none;}
@@ -29,9 +30,9 @@ const CSS = `
   .kit-gallery{width:calc(100% + 48px);margin:-28px -24px 0;}
 }
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
-.kit-badge.popular{background:var(--blue);color:var(--bone);}
+.kit-badge.popular{background:rgba(74,143,199,.14);color:var(--blit);border:1px solid rgba(74,143,199,.36);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
-.kit-name{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.06em;color:var(--bone);line-height:1;margin-bottom:10px;}
+.kit-name{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:.065em;color:var(--bone);line-height:.96;margin-bottom:12px;}
 /* Outcome-led chooser copy: bold declaration of what the kit gets you, then one line
    saying who it's for / what the difference is (replaces the long taglines). */
 .kit-outcome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:1px;text-transform:uppercase;color:var(--blit);line-height:1.25;margin-bottom:8px;}
@@ -70,7 +71,7 @@ const CSS = `
 /* margin-top:auto bottom-aligns the CTAs across cards of unequal content height
    (GROUND has no badge/dots); the toggle's margin-bottom guarantees a minimum gap. */
 .kit-cta{display:block;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.12em;text-align:center;padding:16px 24px;transition:background .2s,transform .15s;margin-top:auto;border:none;cursor:pointer;width:100%;}
-.kit-cta.active{background:var(--bone);color:var(--black);}
+.kit-cta.active{background:var(--bone);color:var(--black);box-shadow:0 12px 34px rgba(0,0,0,.22);}
 .kit-cta.active:hover{background:#fff;transform:translateY(-1px);}
 .kit-cta.inactive{background:var(--char);color:var(--stone);border:1px solid var(--lineb);cursor:default;}
 .kits-footnote{text-align:center;margin-top:32px;font-size:15px;color:var(--stone);font-weight:300;line-height:1.6;}
@@ -88,13 +89,18 @@ const CSS = `
 /* ── Mobile ─────────────────────────────────────── */
 @media(max-width:768px){
   .kits-section{padding:48px 0 60px;}
-  .kits-header{padding:0 24px;margin-bottom:40px;}
-  .kits-grid{display:flex;flex-direction:column;gap:1px;}
+  .kits-header{padding:24px 24px 0;margin-bottom:40px;}
+  .kits-grid{display:flex;flex-direction:column;gap:12px;padding:0 14px;}
   .kit-card:nth-child(1){order:2;}
   .kit-card:nth-child(2){order:1;}
   .kit-card:nth-child(3){display:none;}
   .kit-card.featured{margin:0;}
   .kit-card{padding:28px 24px;}
+  .kit-editorial-note{align-self:start;}
+}
+@media(min-width:840px){
+  .kits-header{grid-template-columns:.9fr 1.1fr;align-items:end;}
+  .kit-editorial-note{grid-column:2;}
 }
 `;
 
@@ -161,9 +167,12 @@ export default function KitComparison() {
       <section className="kits-section" id="kits">
         <div className="kits-inner">
           <div className="kits-header reveal">
-            <div className="k-sec-tag">Two ways to begin.</div>
-            <h2>Choose<br />Your Kit.</h2>
-            <p>You're not buying products. You're following a system. Every product numbered, every step timed, the exact routine in the box.</p>
+            <div>
+              <div className="k-sec-tag">Choose the ritual you want to start with.</div>
+              <h2>The Ritual System.</h2>
+            </div>
+            <p>You're not buying products. You're choosing a complete shower discipline: numbered tools, timed steps, and the exact order printed in the box.</p>
+            <div className="kit-editorial-note">First batch · 250 kits · Ground / Ritual</div>
           </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
