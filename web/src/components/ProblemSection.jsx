@@ -91,7 +91,7 @@ export default function ProblemSection() {
               </div>
               <div className="problem-cta-row reveal">
                 <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>
-                  See the Kits →
+                  Choose Your Kit
                 </a>
               </div>
             </div>

@@ -31,6 +31,9 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('Body care, rebuilt as a ritual');
     expect(hero).toContain('Your body.<br />Finally done right.');
     expect(hero).toContain('A complete ritual for skin, scalp and everything below the neck.');
+    expect(hero).toContain('See the Kits');
+    expect(hero).toContain('Read the press');
+    expect(hero).not.toContain('Shop the Ritual');
     expect(hero).not.toContain('The first serious body care system for men');
     expect(hero).not.toContain('A guided 9-piece system');
     expect(hero).not.toContain('9 pieces, numbered');
@@ -91,6 +94,8 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('Clean is not the same as cared for.');
     expect(problem).toContain('Most men use one 3-in-1 bottle, their hands and hot water, then call it done.');
     expect(problem).toContain('That is why rough skin, the missed back and scalp buildup survive the shower.');
+    expect(problem).toContain('Choose Your Kit');
+    expect(problem).not.toContain('See the Kits');
     expect(problem).not.toContain('Most men do not need more products.');
     expect(problem).not.toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
     expect(problem).not.toContain("It isn't hygiene.");
@@ -164,15 +169,15 @@ describe('premium homepage direction', () => {
     expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
   });
 
-  it('orders the homepage like a shop window before the deeper education', () => {
+  it('orders the homepage as diagnosis, proof, price, contents, then usage', () => {
     const home = page('FullSite');
 
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
     expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<ProductLineup />'));
-    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<ProblemSection />'));
-    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
+    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<RitualInAction />'));
+    expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
     expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
-    expect(home.indexOf('<SystemSection />')).toBeLessThan(home.indexOf('<RitualInAction />'));
     expect(home).not.toContain('<FrictionStrip />');
   });
 
@@ -205,6 +210,8 @@ describe('premium homepage direction', () => {
     expect(kits).toContain('The Ritual System.');
     expect(kits).toContain('kit-editorial-note');
     expect(kits).toContain('Choose the ritual you want to start with.');
+    expect(kits).toContain('Buy {kit.name} · £{kit.firstBoxPrice}');
+    expect(kits).not.toContain('Get {kit.name}');
   });
 
   it('explains the real difference between GROUND and RITUAL before the product toggle', () => {

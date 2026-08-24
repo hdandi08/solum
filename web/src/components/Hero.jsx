@@ -151,7 +151,7 @@ export default function Hero() {
                   className="btn-primary"
                   onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
                 >
-                  Shop the Ritual
+                  See the Kits
                 </a>
                 <a href="#press" className="btn-ghost">Read the press</a>
               </div>

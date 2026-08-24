@@ -340,7 +340,7 @@ export default function KitComparison() {
                         navigate(`/buy?kit=${kit.id}`);
                       }}
                     >
-                      Get {kit.name}
+                      Buy {kit.name} · £{kit.firstBoxPrice}
                     </button>
                   )}
                 </div>

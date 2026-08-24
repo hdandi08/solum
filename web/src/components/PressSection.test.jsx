@@ -26,9 +26,9 @@ describe('homepage press proof', () => {
     expect(press).toContain('rethinking body care');
     expect(press).toContain('https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/');
     expect(press).toContain('https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care');
-    expect(home.indexOf('<PressSection />')).toBeGreaterThan(home.indexOf('<Marquee />'));
+    expect(home.indexOf('<ProblemSection />')).toBeGreaterThan(home.indexOf('<Marquee />'));
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
-    expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<ProblemSection />'));
   });
 
   it('keeps /buy press proof compact and close to the payment decision', () => {
