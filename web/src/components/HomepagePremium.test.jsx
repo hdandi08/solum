@@ -80,11 +80,13 @@ describe('premium homepage direction', () => {
     const kits = component('KitComparison');
 
     expect(kits).toContain('kit-difference');
-    expect(kits).toContain('GROUND is the complete clean.');
-    expect(kits).toContain('RITUAL is the complete deep ritual.');
-    expect(kits).toContain('Everything in GROUND + Organic Argan Body Oil + Clay Mixing Bowl.');
-    expect(kits).toContain('Clay clears. Argan feeds.');
-    expect(kits).toContain('Used in the clay mix, on the scalp, and pressed into damp skin after rinsing.');
+    expect(kits).toContain('How to choose');
+    expect(kits).toContain('Choose GROUND if you want the complete clean.');
+    expect(kits).toContain('Choose RITUAL if you want the full deep ritual.');
+    expect(kits).toContain('Argan oil matters because clay clears and argan feeds.');
+    expect(kits).toContain('It goes into the clay mix, across the scalp, and onto damp skin after rinsing.');
+    expect(kits).not.toContain('kit-difference-panel');
+    expect(kits).not.toContain('kit-system-role');
     expect(dataFile('kits')).toContain('clay mix, scalp and damp skin');
     expect(dataFile('kits')).not.toContain('weekly argan oil finish');
   });
