@@ -10,19 +10,11 @@ import { markOfferReached } from '../lib/qualifiedVisitTracker.js';
 const CSS = `
 .kits-section{background:linear-gradient(180deg,#090b0f,var(--black));padding:110px 48px;border-top:1px solid var(--line);}
 .kits-inner{max-width:1240px;margin:0 auto;}
-.kits-header{margin:0 auto 58px;display:grid;grid-template-columns:1fr;gap:18px;max-width:980px;border-top:1px solid rgba(240,236,226,.14);padding-top:26px;}
+.kits-header{margin:0 auto 34px;display:grid;grid-template-columns:1fr;gap:18px;max-width:980px;border-top:1px solid rgba(240,236,226,.14);padding-top:26px;}
 .kits-header .k-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.8vw,86px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
 .kits-header p{font-size:18px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.7;max-width:520px;margin:0;}
 .kit-editorial-note{font-size:13px;letter-spacing:2.8px;text-transform:uppercase;color:rgba(240,236,226,.48);font-weight:700;align-self:end;}
-.kit-difference{max-width:980px;margin:-24px auto 30px;padding:22px 0 4px;border-top:1px solid rgba(240,236,226,.14);border-bottom:1px solid rgba(240,236,226,.08);display:grid;grid-template-columns:1fr;gap:18px;}
-.kit-difference-guide{font-size:10px;letter-spacing:3.5px;text-transform:uppercase;color:var(--blit);font-weight:700;}
-.kit-difference-list{display:grid;gap:0;}
-.kit-difference-row{display:grid;grid-template-columns:92px 1fr;gap:18px;padding:14px 0;border-top:1px solid rgba(240,236,226,.08);}
-.kit-difference-name{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.07em;color:var(--bone);line-height:1;}
-.kit-difference-copy{font-size:15px;color:rgba(240,236,226,.74);font-weight:300;line-height:1.55;margin:0;}
-.kit-difference-copy strong{color:var(--bone);font-weight:600;}
-.kit-difference-row.ritual .kit-difference-name{color:var(--blit);}
 .kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:980px;margin:0 auto;}
 .kit-card{background:linear-gradient(180deg,rgba(24,28,36,.92),rgba(12,14,18,.98));border:1px solid rgba(240,236,226,.09);padding:42px 34px;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.22);}
 .kit-card.featured{background:linear-gradient(180deg,rgba(26,74,120,.18),rgba(12,14,18,.98));border:1px solid rgba(74,143,199,.55);outline:1px solid rgba(74,143,199,0.18);margin:0;}
@@ -33,8 +25,9 @@ const CSS = `
 .kit-slide img{width:100%;height:100%;object-fit:contain;display:block;}
 .kit-slide::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44%;background:linear-gradient(to top,rgba(8,9,11,.88),rgba(8,9,11,0));pointer-events:none;}
 .kit-slide-label{position:absolute;left:18px;right:70px;bottom:16px;z-index:1;display:flex;flex-direction:column;gap:4px;color:var(--bone);}
-.kit-slide-label span:first-child{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;}
-.kit-slide-label span:last-child{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.07em;line-height:1;color:var(--bone);}
+.kit-slide-kind{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;}
+.kit-slide-name{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.07em;line-height:1;color:var(--bone);}
+.kit-slide-benefit{font-size:13px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.25;max-width:260px;}
 .kit-slide-count{position:absolute;right:18px;bottom:17px;z-index:1;font-size:10px;letter-spacing:2px;color:rgba(240,236,226,.56);font-weight:700;}
 .kit-dots{display:flex;justify-content:center;gap:7px;margin:12px 0 22px;}
 .kit-dot{width:7px;height:7px;border-radius:50%;border:none;padding:0;background:var(--line);cursor:pointer;transition:background .2s,transform .2s;}
@@ -46,10 +39,12 @@ const CSS = `
 .kit-badge.popular{background:rgba(74,143,199,.14);color:var(--blit);border:1px solid rgba(74,143,199,.36);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
 .kit-name{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:.065em;color:var(--bone);line-height:.96;margin-bottom:12px;}
-/* Outcome-led chooser copy: bold declaration of what the kit gets you, then one line
-   saying who it's for / what the difference is (replaces the long taglines). */
-.kit-outcome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:1px;text-transform:uppercase;color:var(--blit);line-height:1.25;margin-bottom:8px;}
-.kit-chooser{font-size:15px;color:var(--mist);font-weight:300;line-height:1.55;margin-bottom:24px;}
+.kit-card-decision{border-top:1px solid rgba(240,236,226,.12);border-bottom:1px solid rgba(240,236,226,.08);padding:18px 0;margin:0 0 24px;display:grid;gap:13px;}
+.kit-decision-role{font-size:10px;letter-spacing:3.4px;text-transform:uppercase;color:var(--blit);font-weight:700;}
+.kit-decision-title{font-family:'Bebas Neue',sans-serif;font-size:31px;letter-spacing:.065em;color:var(--bone);line-height:1;}
+.kit-decision-summary{font-size:15px;color:rgba(240,236,226,.74);font-weight:300;line-height:1.52;margin:0;}
+.kit-decision-change{font-size:13px;color:rgba(240,236,226,.58);font-weight:300;line-height:1.45;margin:0;padding-top:12px;border-top:1px solid rgba(240,236,226,.08);}
+.kit-decision-change strong{color:var(--bone);font-weight:600;}
 .kit-prices{margin-bottom:24px;}
 .kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
 .kit-cert-line{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
@@ -110,16 +105,27 @@ const CSS = `
   .kit-card.featured{margin:0;}
   .kit-card{padding:28px 24px;}
   .kit-editorial-note{align-self:start;}
-  .kit-difference{margin:-16px 14px 20px;}
-  .kit-difference-row{grid-template-columns:1fr;gap:8px;padding:16px 0;}
 }
 @media(min-width:840px){
   .kits-header{grid-template-columns:.9fr 1.1fr;align-items:end;}
   .kit-editorial-note{grid-column:2;}
-  .kit-difference{grid-template-columns:150px 1fr;gap:34px;align-items:start;}
-  .kit-difference-row:first-child{border-top:0;padding-top:0;}
 }
 `;
+
+const KIT_DECISIONS = {
+  ground: {
+    role: 'The essential system',
+    title: 'Full daily clean',
+    summary: 'Outcome: less odour, smoother skin and a back you can actually reach.',
+    change: 'No argan oil or clay bowl. You still get the clean foundation, but not the barrier-rebuilding oil finish.',
+  },
+  ritual: {
+    role: 'The full ritual',
+    title: 'Full weekly ritual',
+    summary: 'Outcome: barrier rebuilt, properly fed skin with the weekly oil step, not just a cleaner shower.',
+    change: 'Adds argan oil and the clay bowl. It goes into the clay mix, across the scalp, and onto damp skin after rinsing.',
+  },
+};
 
 function KitGallery({ name, slides }) {
   const ref = useRef(null);
@@ -139,8 +145,9 @@ function KitGallery({ name, slides }) {
           <div className="kit-slide" key={`${slide.label}-${slide.src}`}>
             <img src={slide.src} alt={slide.alt} loading="lazy" />
             <div className="kit-slide-label">
-              <span>{slide.kind}</span>
-              <span>{slide.label}</span>
+              <span className="kit-slide-kind">{slide.kind}</span>
+              <span className="kit-slide-name">{slide.label}</span>
+              {slide.benefit && <span className="kit-slide-benefit">{slide.benefit}</span>}
             </div>
             <div className="kit-slide-count">{i + 1}/{slides.length}</div>
           </div>
@@ -196,34 +203,16 @@ export default function KitComparison() {
             <p>You're not buying products. You're choosing a complete shower discipline: numbered tools, timed steps, and the exact order printed in the box.</p>
             <div className="kit-editorial-note">First batch · 250 kits · Ground / Ritual</div>
           </div>
-          <div className="kit-difference reveal" aria-label="How to choose between SOLUM kits">
-            <div className="kit-difference-guide">How to choose</div>
-            <div className="kit-difference-list">
-              <div className="kit-difference-row">
-                <div className="kit-difference-name">GROUND</div>
-                <p className="kit-difference-copy">
-                  <strong>Choose GROUND if you want the complete clean.</strong> Daily wash, scalp, back,
-                  exfoliation, clay reset and lotion.
-                </p>
-              </div>
-              <div className="kit-difference-row ritual">
-                <div className="kit-difference-name">RITUAL</div>
-                <p className="kit-difference-copy">
-                  <strong>Choose RITUAL if you want the full deep ritual.</strong> Everything in GROUND,
-                  plus Organic Argan Body Oil and the Clay Mixing Bowl. Argan oil matters because clay clears and argan feeds.
-                  It goes into the clay mix, across the scalp, and onto damp skin after rinsing.
-                </p>
-              </div>
-            </div>
-          </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
               const isSovereign = kit.id === 'sovereign';
+              const decision = KIT_DECISIONS[kit.id];
               const productSlides = products.filter(p => !p.comingSoon && p.media?.still).map((p) => ({
                 src: p.media.still,
                 kind: 'Included product',
                 label: `${p.num} · ${p.name}`,
+                benefit: p.outcome?.tileAfter,
                 alt: `${p.num} ${p.name} included in the ${kit.name} kit`,
               }));
               const kitSlides = [
@@ -243,8 +232,14 @@ export default function KitComparison() {
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name">{kit.name}</div>
-                  <div className="kit-outcome">{kit.outcome}</div>
-                  <div className="kit-chooser">{kit.chooser}</div>
+                  {decision && (
+                    <div className="kit-card-decision">
+                      <div className="kit-decision-role">{decision.role}</div>
+                      <div className="kit-decision-title">{decision.title}</div>
+                      <p className="kit-decision-summary">{decision.summary}</p>
+                      <p className="kit-decision-change"><strong>{decision.change.split('. ')[0]}.</strong> {decision.change.split('. ').slice(1).join('. ')}</p>
+                    </div>
+                  )}
                   <div className="kit-prices">
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>

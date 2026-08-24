@@ -42,6 +42,15 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('.hero-cols{flex:0 0 48%;padding:clamp(144px,16vh,176px) 48px 56px;justify-content:flex-start;}');
   });
 
+  it('keeps the mobile hero action above the moving strip', () => {
+    const hero = component('Hero');
+
+    expect(hero).not.toContain('.hero{min-height:88svh;}');
+    expect(hero).not.toContain('min-height:88svh;padding:108px 24px 36px');
+    expect(hero).toContain('.hero{min-height:100svh;}');
+    expect(hero).toContain('min-height:100svh;padding:108px 24px 72px');
+  });
+
   it('keeps homepage-visible copy free of dash separators', () => {
     const copy = homepageCopy();
 
@@ -79,14 +88,18 @@ describe('premium homepage direction', () => {
   it('explains the real difference between GROUND and RITUAL before the product toggle', () => {
     const kits = component('KitComparison');
 
-    expect(kits).toContain('kit-difference');
-    expect(kits).toContain('How to choose');
-    expect(kits).toContain('Choose GROUND if you want the complete clean.');
-    expect(kits).toContain('Choose RITUAL if you want the full deep ritual.');
-    expect(kits).toContain('Argan oil matters because clay clears and argan feeds.');
+    expect(kits).toContain('kit-card-decision');
+    expect(kits).toContain('The essential system');
+    expect(kits).toContain('The full ritual');
+    expect(kits).toContain('Full weekly ritual');
+    expect(kits).toContain('No argan oil or clay bowl');
+    expect(kits).toContain('Adds argan oil and the clay bowl');
+    expect(kits).toContain('less odour, smoother skin and a back you can actually reach');
+    expect(kits).toContain('barrier rebuilt, properly fed');
     expect(kits).toContain('It goes into the clay mix, across the scalp, and onto damp skin after rinsing.');
-    expect(kits).not.toContain('kit-difference-panel');
-    expect(kits).not.toContain('kit-system-role');
+    expect(kits).not.toContain('kit-difference');
+    expect(kits).not.toContain('kit-outcome');
+    expect(kits).not.toContain('kit-chooser');
     expect(dataFile('kits')).toContain('clay mix, scalp and damp skin');
     expect(dataFile('kits')).not.toContain('weekly argan oil finish');
   });
@@ -97,8 +110,10 @@ describe('premium homepage direction', () => {
 
     expect(kits).toContain('productSlides');
     expect(kits).toContain('kit-slide-label');
+    expect(kits).toContain('kit-slide-benefit');
     expect(kits).toContain('kit-slide-count');
     expect(kits).toContain('label: `${p.num} · ${p.name}`');
+    expect(kits).toContain('benefit: p.outcome?.tileAfter');
     expect(products).toContain("name: 'Body Wash'");
     expect(products).toContain("name: 'Atlas Clay Mask'");
     expect(products).toContain("name: 'Argan Body Oil'");

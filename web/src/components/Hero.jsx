@@ -83,13 +83,12 @@ const CSS = `
 
 /* ── Mobile/tablet: film as a full-bleed background, headline + CTA overlaid ── */
 @media(max-width:959px){
-  /* hero is ~88svh so the marquee below peeks into the first frame (scroll cue + a taste of "what SOLUM is") */
-  .hero{min-height:88svh;}
+  .hero{min-height:100svh;}
   .hero-visual{position:absolute;inset:0;width:100%;height:100%;min-height:100%;max-height:none;z-index:0;}
   .hero-visual .hero-box-img,.hero-visual video{object-position:center 35%;}
-  .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:88svh;padding:108px 24px 36px;
+  .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:100svh;padding:108px 24px 72px;
     background:linear-gradient(to top,rgba(8,9,11,0.94) 0%,rgba(8,9,11,0.8) 30%,rgba(8,9,11,0.4) 58%,rgba(8,9,11,0.08) 86%,rgba(8,9,11,0.5) 100%);}
-  /* keep the film readable — drop the long paragraph, pills and decorative layers on mobile. the peeking marquee replaces the scroll cue. */
+  /* keep the film readable by dropping the long paragraph, pills and decorative layers on mobile. */
   .hero-scope,.hero-ghost,.hero-glow,.scroll-cue{display:none;}
   .hero-sub-more{display:none;}
   .hero-title{font-size:clamp(42px,13vw,62px);}
