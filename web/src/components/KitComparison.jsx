@@ -29,8 +29,13 @@ const CSS = `
 /* kit gallery — full-bleed header per card; images shown uncropped (contain) on black */
 .kit-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:calc(100% + 64px);margin:-40px -32px 0;background:var(--black);border-bottom:1px solid var(--line);}
 .kit-gallery::-webkit-scrollbar{display:none;}
-.kit-slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--black);}
+.kit-slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--black);position:relative;overflow:hidden;}
 .kit-slide img{width:100%;height:100%;object-fit:contain;display:block;}
+.kit-slide::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44%;background:linear-gradient(to top,rgba(8,9,11,.88),rgba(8,9,11,0));pointer-events:none;}
+.kit-slide-label{position:absolute;left:18px;right:70px;bottom:16px;z-index:1;display:flex;flex-direction:column;gap:4px;color:var(--bone);}
+.kit-slide-label span:first-child{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;}
+.kit-slide-label span:last-child{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.07em;line-height:1;color:var(--bone);}
+.kit-slide-count{position:absolute;right:18px;bottom:17px;z-index:1;font-size:10px;letter-spacing:2px;color:rgba(240,236,226,.56);font-weight:700;}
 .kit-dots{display:flex;justify-content:center;gap:7px;margin:12px 0 22px;}
 .kit-dot{width:7px;height:7px;border-radius:50%;border:none;padding:0;background:var(--line);cursor:pointer;transition:background .2s,transform .2s;}
 .kit-dot.on{background:var(--blue);transform:scale(1.25);}
@@ -116,7 +121,7 @@ const CSS = `
 }
 `;
 
-function KitGallery({ name, images }) {
+function KitGallery({ name, slides }) {
   const ref = useRef(null);
   const [active, setActive] = useState(0);
   const onScroll = () => {
@@ -130,20 +135,25 @@ function KitGallery({ name, images }) {
   return (
     <>
       <div className="kit-gallery" ref={ref} onScroll={onScroll}>
-        {images.map((src, i) => (
-          <div className="kit-slide" key={src}>
-            <img src={src} alt={`${name} kit, view ${i + 1}`} loading="lazy" />
+        {slides.map((slide, i) => (
+          <div className="kit-slide" key={`${slide.label}-${slide.src}`}>
+            <img src={slide.src} alt={slide.alt} loading="lazy" />
+            <div className="kit-slide-label">
+              <span>{slide.kind}</span>
+              <span>{slide.label}</span>
+            </div>
+            <div className="kit-slide-count">{i + 1}/{slides.length}</div>
           </div>
         ))}
       </div>
-      {images.length > 1 && (
+      {slides.length > 1 && (
         <div className="kit-dots">
-          {images.map((src, i) => (
+          {slides.map((slide, i) => (
             <button
-              key={src}
+              key={`${slide.label}-${slide.src}`}
               type="button"
               className={`kit-dot${i === active ? ' on' : ''}`}
-              aria-label={`View ${name} photo ${i + 1}`}
+              aria-label={`View ${name} photo ${i + 1}: ${slide.label}`}
               onClick={() => goTo(i)}
             />
           ))}
@@ -210,10 +220,25 @@ export default function KitComparison() {
             {KITS.filter(k => !k.hidden).map(kit => {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
               const isSovereign = kit.id === 'sovereign';
+              const productSlides = products.filter(p => !p.comingSoon && p.media?.still).map((p) => ({
+                src: p.media.still,
+                kind: 'Included product',
+                label: `${p.num} · ${p.name}`,
+                alt: `${p.num} ${p.name} included in the ${kit.name} kit`,
+              }));
+              const kitSlides = [
+                ...(kit.gallery?.length ? kit.gallery : [kit.image]).filter(Boolean).map((src, i) => ({
+                  src,
+                  kind: 'Full kit view',
+                  label: i === 0 ? `${kit.name} kit` : `${kit.name} detail`,
+                  alt: `${kit.name} kit view ${i + 1}`,
+                })),
+                ...productSlides,
+              ];
               return (
                 <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}${openKits.has(kit.id) ? ' products-open' : ''}`}>
-                  {(kit.gallery?.length || kit.image) && (
-                    <KitGallery name={kit.name} images={kit.gallery?.length ? kit.gallery : [kit.image]} />
+                  {kitSlides.length > 0 && (
+                    <KitGallery name={kit.name} slides={kitSlides} />
                   )}
                   {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}

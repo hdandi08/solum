@@ -91,6 +91,21 @@ describe('premium homepage direction', () => {
     expect(dataFile('kits')).not.toContain('weekly argan oil finish');
   });
 
+  it('labels product images inside the kit carousel so contents are clear before selecting', () => {
+    const kits = component('KitComparison');
+    const products = dataFile('products');
+
+    expect(kits).toContain('productSlides');
+    expect(kits).toContain('kit-slide-label');
+    expect(kits).toContain('kit-slide-count');
+    expect(kits).toContain('label: `${p.num} · ${p.name}`');
+    expect(products).toContain("name: 'Body Wash'");
+    expect(products).toContain("name: 'Atlas Clay Mask'");
+    expect(products).toContain("name: 'Argan Body Oil'");
+    expect(products).toContain("name: 'Clay Mixing Bowl'");
+    expect(kits).toContain('Full kit view');
+  });
+
   it('keeps subscription replenishment language explicitly tied to launch', () => {
     const unboxing = component('UnboxingFilm');
     const subscription = component('SubscriptionSection');
