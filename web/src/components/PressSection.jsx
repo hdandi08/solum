@@ -59,7 +59,7 @@ export default function PressSection() {
               <h2 className="press-head">Independent coverage for the first SOLUM ritual.</h2>
             </div>
             <p className="press-copy">
-              Early press now frames SOLUM as part of the wider men’s body-care shift — useful proof,
+              Early press now frames SOLUM as part of the wider men’s body-care shift. Useful proof,
               kept quiet enough to feel earned.
             </p>
           </div>

@@ -184,7 +184,7 @@ export default function SubscriptionSection() {
                     width={1200}
                     height={1500}
                     loading="lazy"
-                    alt="SOLUM kit flatlay — body wash, lotion, scalp massager, exfoliating mitt and back scrub cloth arranged on a dark surface"
+                    alt="SOLUM kit flatlay with body wash, lotion, scalp massager, exfoliating mitt and back scrub cloth arranged on a dark surface"
                   />
                 )}
               </div>

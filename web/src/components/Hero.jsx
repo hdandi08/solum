@@ -102,7 +102,7 @@ const CSS = `
 /* ── Desktop ───────────────────────────────────────── */
 @media(min-width:960px){
   .hero{flex-direction:row;height:100svh;min-height:640px;}
-  .hero-cols{flex:0 0 48%;padding:80px 48px 64px;justify-content:flex-end;}
+  .hero-cols{flex:0 0 48%;padding:clamp(112px,12vh,136px) 48px 64px;justify-content:center;}
   .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
   .hero-glow{left:24%;}
   /* Right panel: image fills full height */
@@ -126,16 +126,16 @@ export default function Hero() {
         <div className="hero-glow" />
         <div className="hero-cols">
           <div className="hero-content">
-            <div className="hero-kicker">A complete body ritual</div>
+            <div className="hero-kicker">The first serious body care system for men</div>
             <h1 className="hero-title">
               Your body.<br />Finally done right.
             </h1>
             <div className="hero-line" />
-            <p className="hero-subline"><span className="hero-sub-symptoms">A guided 9-piece system for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
+            <p className="hero-subline"><span className="hero-sub-symptoms">A complete ritual for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
             <div className="hero-meta" aria-label="SOLUM ritual summary">
               <div className="hero-meta-item">
                 <span className="hero-meta-label">System</span>
-                <span className="hero-meta-value">9 pieces, numbered</span>
+                <span className="hero-meta-value">Guided, not guessed</span>
               </div>
               <div className="hero-meta-item">
                 <span className="hero-meta-label">Ritual</span>

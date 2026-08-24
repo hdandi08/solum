@@ -149,7 +149,7 @@ function KitGallery({ name, images }) {
       <div className="kit-gallery" ref={ref} onScroll={onScroll}>
         {images.map((src, i) => (
           <div className="kit-slide" key={src}>
-            <img src={src} alt={`${name} kit — view ${i + 1}`} loading="lazy" />
+            <img src={src} alt={`${name} kit, view ${i + 1}`} loading="lazy" />
           </div>
         ))}
       </div>

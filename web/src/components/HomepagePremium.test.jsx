@@ -6,15 +6,46 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const component = (name) => readFileSync(resolve(__dirname, `${name}.jsx`), 'utf8');
 const dataFile = (name) => readFileSync(resolve(__dirname, '../data', `${name}.js`), 'utf8');
+const visibleSource = (source) => source
+  .replace(/const CSS = `[\s\S]*?`;/g, '')
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/\/\/.*$/gm, '')
+  .replace(/var\(--[^)]+\)/g, 'var()');
+
+const homepageCopy = () => [
+  component('Hero'),
+  component('PressSection'),
+  component('KitComparison'),
+  component('Marquee'),
+  component('UnboxingFilm'),
+  component('SubscriptionSection'),
+  dataFile('kits'),
+].map(visibleSource).join('\n');
 
 describe('premium homepage direction', () => {
   it('opens with an editorial ritual thesis instead of a hard problem headline', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('A complete body ritual');
+    expect(hero).toContain('The first serious body care system for men');
     expect(hero).toContain('Your body.<br />Finally done right.');
+    expect(hero).toContain('A complete ritual for skin, scalp and everything below the neck.');
+    expect(hero).not.toContain('A guided 9-piece system');
+    expect(hero).not.toContain('9 pieces, numbered');
     expect(hero).not.toContain("So why don't you feel clean?");
     expect(hero).not.toContain('kitWorth');
+  });
+
+  it('keeps desktop hero copy clear of the fixed header', () => {
+    const hero = component('Hero');
+
+    expect(hero).toContain('.hero-cols{flex:0 0 48%;padding:clamp(112px,12vh,136px) 48px 64px;justify-content:center;}');
+  });
+
+  it('keeps homepage-visible copy free of dash separators', () => {
+    const copy = homepageCopy();
+
+    expect(copy).not.toContain('—');
+    expect(copy).not.toContain('--');
   });
 
   it('treats press as quiet editorial validation near the top of the page', () => {
