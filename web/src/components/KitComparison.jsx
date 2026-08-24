@@ -115,15 +115,15 @@ const CSS = `
 const KIT_DECISIONS = {
   ground: {
     role: 'The essential system',
-    title: 'Full daily clean',
-    summary: 'Outcome: less odour, smoother skin and a back you can actually reach.',
-    change: 'No argan oil or clay bowl. You still get the clean foundation, but not the barrier-rebuilding oil finish.',
+    title: 'Includes 10-min daily and 22-min weekly deep reset',
+    summary: 'Outcome: less odour, smoother skin and a back you can actually reach. Both kits include the 10-min daily ritual and the 22-min weekly deep reset.',
+    change: 'GROUND stops before the argan oil finish and clay bowl. You still get the clean foundation and clay reset, but not the fed-skin finish.',
   },
   ritual: {
     role: 'The full ritual',
-    title: 'Full weekly ritual',
-    summary: 'Outcome: barrier rebuilt, properly fed skin with the weekly oil step, not just a cleaner shower.',
-    change: 'Adds argan oil and the clay bowl. It goes into the clay mix, across the scalp, and onto damp skin after rinsing.',
+    title: 'Includes 10-min daily and complete 22-min weekly deep reset',
+    summary: 'Outcome: barrier feels fed, comfortable and complete after the weekly oil step, not just cleaner.',
+    change: 'RITUAL adds argan oil and the clay bowl. It goes into the clay mix, across the scalp, and onto damp skin after rinsing.',
   },
 };
 

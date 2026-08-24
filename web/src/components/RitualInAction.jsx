@@ -11,14 +11,14 @@ const CAROUSEL_MEDIA_MARGIN = '0px 160px';
 // Composition mirrors the canonical ritual in ritualVideo.js (RITUALS).
 // Daily: 04, 01, 03, 08, 07.  Weekly: 05, 02, 06.
 const STEPS = [
-  { num: '04', slug: '04-scalp-massager',   name: 'Scalp Massager',   freq: 'daily',  action: 'Firm circles, hairline to crown.' },
-  { num: '01', slug: '01-body-wash',        name: 'Body Wash',        freq: 'daily',  action: 'Lather chest-down. Cleans, never strips.' },
-  { num: '03', slug: '03-back-scrub-cloth', name: 'Back Scrub Cloth', freq: 'daily',  action: 'Drape, saw shoulder to lower back.' },
-  { num: '08', slug: '08-cleansing-cloth',  name: 'Intimate Cleansing Cloth',  freq: 'daily',  action: 'Gentle daily cleanse, where it matters.' },
-  { num: '07', slug: '07-body-lotion',      name: 'Body Lotion',      freq: 'daily',  action: 'Within 3 min of towelling. Skin absorbs 70% more.' },
-  { num: '05', slug: '05-atlas-clay',       name: 'Atlas Clay Mask',  freq: 'weekly', action: 'Head to toe. Draws out the deep stuff.' },
-  { num: '02', slug: '02-italy-towel-mitt', name: 'Italy Towel Mitt', freq: 'weekly', action: 'Long strokes. Dead skin lifts off.' },
-  { num: '06', slug: '06-argan-oil',        name: 'Argan Body Oil',   freq: 'weekly', action: 'Press into damp skin. Fully fed.' },
+  { num: '04', slug: '04-scalp-massager',   name: 'Scalp Massager',   freq: 'daily',  action: 'Less buildup and a fresher root feel.' },
+  { num: '01', slug: '01-body-wash',        name: 'Body Wash',        freq: 'daily',  action: 'Clean skin without the tight, stripped feeling.' },
+  { num: '03', slug: '03-back-scrub-cloth', name: 'Back Scrub Cloth', freq: 'daily',  action: 'The back finally feels as clean as the front.' },
+  { num: '08', slug: '08-cleansing-cloth',  name: 'Intimate Cleansing Cloth',  freq: 'daily',  action: 'Gentle confidence where skin is easiest to irritate.' },
+  { num: '07', slug: '07-body-lotion',      name: 'Body Lotion',      freq: 'daily',  action: 'Comfort that lasts beyond the towel.' },
+  { num: '05', slug: '05-atlas-clay',       name: 'Atlas Clay Mask',  freq: 'weekly', action: 'A clearer reset before the mitt starts working.' },
+  { num: '02', slug: '02-italy-towel-mitt', name: 'Italy Towel Mitt', freq: 'weekly', action: 'Roughness lifts so skin feels smoother fast.' },
+  { num: '06', slug: '06-argan-oil',        name: 'Argan Body Oil',   freq: 'weekly', action: 'Seals the weekly reset so skin feels fed, not dry.' },
 ];
 
 function posterFor(num) {
@@ -312,7 +312,7 @@ export default function RitualInAction() {
         <div className="ria-head-wrap">
           <div className="ria-eyebrow reveal">The Ritual</div>
           <h2 className="ria-head reveal">Ritual in Action.</h2>
-          <p className="ria-sub reveal">Every step, on real skin. Daily keeps you maintained. Weekly resets you.</p>
+          <p className="ria-sub reveal">What you feel after each step, not just what to do. Daily keeps you maintained. Weekly resets you.</p>
         </div>
 
         <div className="ria-gallery reveal">

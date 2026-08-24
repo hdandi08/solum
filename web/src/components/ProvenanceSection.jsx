@@ -21,19 +21,19 @@ const ORIGINS = [
     flag: '🇬🇧',
     country: 'United Kingdom',
     product: 'Body Wash · Body Lotion',
-    why: 'Formulated and manufactured to UK Cosmetics Regulation standards. Independently safety assessed, GMP certified, UK Responsible Person registered.',
+    why: 'Skin feels calm after washing and comfortable after towelling. Gentle clean, lasting hydration, no stripped feeling.',
   },
   {
     flag: '🇰🇷',
     country: 'Korean Tradition',
     product: 'Italy Towel · Back Scrub · Scalp Massager',
-    why: 'Korean bathhouse (jjimjilbang) culture developed exfoliation techniques refined over 60 years. The viscose mitt and back cloth are direct descendants.',
+    why: 'Smoother skin, less odour and a back that finally gets reached. Built for the parts hands miss.',
   },
   {
     flag: '🇲🇦',
     country: 'Morocco',
     product: 'Atlas Clay · Argan Body Oil',
-    why: 'Moroccan hammam clay and argan oil sourced directly. Atlas mountains rhassoul clay has been used for deep cleansing for over 1,000 years.',
+    why: 'Clearer skin after the clay reset, then a fed barrier feel after the oil finish.',
   },
 ];
 
@@ -44,11 +44,11 @@ export default function ProvenanceSection() {
       <section className="origins" id="origins">
         <div className="origins-inner">
           <div className="reveal-left">
-            <div className="o-sec-tag">Where It Comes From</div>
+            <div className="o-sec-tag">Chosen For The Result</div>
             <h2 className="o-sec-title">Sourced From<br />Where It Works.</h2>
             <p className="o-sec-body">
-              Each product is sourced from the country that does that tradition best.
-              Not for the label. For the result.
+              Origins matter only when they change what you feel after the shower.
+              These choices are here for smoother skin, lasting comfort and a better reset.
             </p>
           </div>
           <div className="origins-grid reveal">

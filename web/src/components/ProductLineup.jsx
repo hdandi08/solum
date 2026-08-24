@@ -109,7 +109,7 @@ export default function ProductLineup() {
             <h2 className="p-sec-title">The<br />System.</h2>
           </div>
           <p className="p-sec-sub">
-            Built as a sequence, not a shelf of separate purchases. Tap any piece below for the full detail.
+            See what each step changes before you tap into the detail.
           </p>
         </div>
 

@@ -18,8 +18,8 @@ export const ARTICLES = [
       {
         h2: 'The Two Rituals You Need',
         paras: [
-          "Body care isn't complicated. It's two routines: a 10-minute daily ritual and an 18-minute weekly deep ritual. The daily one keeps your skin clean and hydrated. The weekly one resets it. Every product in the SOLUM system belongs to one or both.",
-          "The order matters. Each step prepares the next. Scalp first, then body. Exfoliate before washing. Moisturise before you get dressed — not after.",
+          "Body care isn't complicated. It's two routines: a 10-minute daily ritual and a 22-minute weekly deep ritual. The daily one keeps your skin comfortable, fresher and maintained. The weekly one resets surface buildup and finishes with oil so the barrier feels fed.",
+          "The order matters. Each step prepares the next. Scalp first, then body. Wash first, then use the mitt and back cloth while skin is warm. Moisturise before you get dressed, not after.",
         ],
       },
       {
@@ -38,7 +38,7 @@ export const ARTICLES = [
         paras: [
           "Once a week, replace the daily routine with this. It takes longer but the difference is visible.",
           "Step 1. Scalp Massager (5 min). More time, more pressure. Full scalp coverage including sides and nape.",
-          "Step 2. Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8 to 10 minutes. Atlas Mountain clay draws impurities to the surface, including dead cells, excess sebum and toxins. It's been used this way in Moroccan hammams for over a thousand years.",
+          "Step 2. Rhassoul Clay Mask. Apply to damp skin head to toe. Leave 8 to 10 minutes. Atlas Mountain clay helps lift surface buildup, excess oil and the dull layer that washing alone leaves behind. It is part of longstanding Moroccan hammam practice.",
           "Step 3. Exfoliating Mitt + Back Scrub Cloth. Firm, slow strokes top to bottom simultaneously. After the clay, dead skin comes off visibly. This is the step that makes men understand the system.",
           "Step 4. Argan Body Oil. Rinse, towel lightly, stay slightly damp. 10 to 15 drops pressed into skin. Press and hold, don't rub. No lotion needed on weekly ritual days. Argan oil on damp, freshly exfoliated skin absorbs completely within minutes.",
         ],
@@ -90,7 +90,7 @@ export const ARTICLES = [
         paras: [
           "Daily: use the mitt and back cloth as part of your normal shower. Medium pressure. This keeps dead skin from accumulating.",
           "Weekly: use both essentials after the rhassoul clay mask, with firmer pressure and slower strokes. This is when the most dead skin comes off. You'll see it.",
-          "This is the Korean bathhouse method — the clay loosens everything that's built up, and the mitt takes it off. Most men find this the most satisfying part of the weekly ritual.",
+          "This is the bathhouse logic: warm skin, loosened buildup, then the mitt takes it off. Most men find this the most satisfying part of the weekly ritual.",
         ],
       },
       {
@@ -162,7 +162,7 @@ export const ARTICLES = [
   {
     slug: 'mens-shower-routine',
     metaTitle: "Men's Shower Routine — Step by Step | SOLUM Guide",
-    metaDescription: "A men's shower routine that actually works. 10 minutes daily, 18 minutes weekly. Here's the exact order, and why the order matters.",
+    metaDescription: "A men's shower routine that actually works. 10 minutes daily, 22 minutes weekly. Here's the exact order, and why the order matters.",
     category: 'The Ritual',
     readMins: 5,
     title: "The Men's Shower Routine That Actually Works",
@@ -265,11 +265,11 @@ export const ARTICLES = [
   {
     slug: 'rhassoul-clay-men',
     metaTitle: "Rhassoul Clay for Men — What It Does | SOLUM Guide",
-    metaDescription: "Rhassoul clay has been used in Moroccan hammams for over a thousand years. Here's what it does to your skin, how to use it, and why it's the anchor of the weekly ritual.",
+    metaDescription: "Rhassoul clay is part of Moroccan hammam practice. Here's what it does to your skin, how to use it, and why it's the anchor of the weekly ritual.",
     category: 'The Origin',
     readMins: 4,
     title: 'Rhassoul Clay for Men — What It Does and How to Use It',
-    intro: "Rhassoul clay has been used in Moroccan hammams for over a thousand years. Mined from the Atlas Mountains. A mineral-rich clay that draws impurities out of skin in a way washing alone can't. For men who've never tried it: the first time you use it properly, you'll understand why it's been standard practice for a millennium.",
+    intro: "Rhassoul clay is part of Moroccan hammam practice. Mined from the Atlas Mountains, it is a mineral-rich clay that helps lift surface buildup in a way washing alone can't. For men who've never tried it: the first time you use it properly, you'll understand why it anchors the weekly reset.",
     sections: [
       {
         h2: 'What Makes It Different',
@@ -299,7 +299,7 @@ export const ARTICLES = [
         h2: 'Sourcing',
         paras: [
           "SOLUM rhassoul clay is sourced from Morocco — where it originates, where the mineral composition is strongest, and where the hammam tradition that surrounds its use is still active. Moroccan Organica or Fatima's Garden, both Atlas Mountain sources.",
-          "300g jar. Enough for weekly use for 3 to 4 months.",
+          "300g jar. Enough for weekly use for about 4 sessions.",
         ],
       },
     ],
@@ -350,7 +350,7 @@ export const ARTICLES = [
         paras: [
           "Fast-absorbing — no greasy finish or white residue that transfers to clothes.",
           "Fragrance that works with your body wash. Using the same scent profile in both — cedar, sandalwood, vetiver — keeps the result clean and intentional rather than layered and confused.",
-          "Large format. Body lotion runs out faster than you'd expect with daily use. A 200ml bottle at monthly subscription pricing is the right anchor.",
+          "Large enough to use properly. Body lotion runs out faster than you'd expect with daily use. A 200ml bottle is the right launch-kit anchor, with future refills handled when subscription launches.",
         ],
       },
       {

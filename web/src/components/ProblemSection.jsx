@@ -28,12 +28,12 @@ const CSS = `
 `;
 
 const SYMPTOMS = [
-  ['/icons/problem-odour.webp', 'Freshness that fades', 'Clean should last beyond the first hour after a shower.'],
-  ['/icons/problem-rough.webp', 'Texture that builds', 'Arms, shoulders and thighs need a ritual that clears what hands cannot.'],
-  ['/icons/problem-back.webp', 'The unreachable back', 'The part most routines miss is often the part that needs the most structure.'],
-  ['/icons/problem-scalp.webp', 'Scalp as skin', 'Shampoo washes hair. The scalp still needs controlled physical work.'],
-  ['/icons/problem-gym.webp', 'Post-training reset', 'Sweat rinses away quickly. Buildup needs method, friction and order.'],
-  ['/icons/problem-drop.webp', 'Dry, then greasy', 'Skin feels better when cleansing, exfoliation and moisture happen in sequence.'],
+  ['/icons/problem-odour.webp', 'Freshness that lasts', 'Feel properly clean for longer than the first hour after a shower.'],
+  ['/icons/problem-rough.webp', 'Smoother skin you can feel', 'Arms, shoulders and thighs stop feeling rough, dull and neglected.'],
+  ['/icons/problem-back.webp', 'A back that feels properly clean', 'The place most routines miss finally feels as clean as your chest and arms.'],
+  ['/icons/problem-scalp.webp', 'A scalp that feels lighter', 'Less scalp odour, less buildup and hair that feels cleaner at the root.'],
+  ['/icons/problem-gym.webp', 'A better post-training reset', 'Freshness that survives the towel, the commute and the rest of the day.'],
+  ['/icons/problem-drop.webp', 'Comfort without the swing', 'Comfortable skin that does not swing from tight to greasy by lunchtime.'],
 ];
 
 export default function ProblemSection() {
@@ -45,7 +45,7 @@ export default function ProblemSection() {
           <div className="problem-head reveal">
             <div className="problem-tag">The missing step</div>
             <h2>A shower cleans the surface.<br />A ritual changes the result.</h2>
-            <p>Most men do not need a longer routine. They need the right order: scalp, back, exfoliation, clay, oil and moisture timing.</p>
+            <p>Most men do not need more products. They need a system that leaves the body smoother, fresher and properly cared for after the shower.</p>
           </div>
           <div className="problem-grid reveal">
             {SYMPTOMS.map(([src, title, body]) => (
@@ -57,7 +57,7 @@ export default function ProblemSection() {
             ))}
           </div>
           <div className="problem-fix reveal">
-            <p>Body care has been treated like a product shelf. <strong>SOLUM turns the shower you already take into a numbered body ritual, with each step placed where it actually works.</strong></p>
+            <p>Body care has been treated like a product shelf. <strong>SOLUM turns the shower you already take into a result you can feel: cleaner back, smoother skin, fresher scalp and lasting comfort.</strong></p>
           </div>
           <div className="problem-cta-row reveal">
             <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>

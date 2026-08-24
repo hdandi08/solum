@@ -87,7 +87,7 @@ export default function SuccessPage() {
     if (buyerEmail) {
       identify(buyerEmail, { kit: kitId, source });
       ttqIdentify(buyerEmail);
-      try { sessionStorage.removeItem('solum_buyer_email'); } catch {}
+      try { sessionStorage.removeItem('solum_buyer_email'); } catch { /* ignore unavailable storage */ }
     }
 
     // PostHog 'purchase' is fired server-side from the Stripe webhook (single source — avoids client/server double-count).
@@ -192,11 +192,11 @@ export default function SuccessPage() {
 
           <div className="su-ritual-label">Your ritual at a glance</div>
           <p className="su-ritual-copy">
-            10 minutes every morning. 18 minutes once a week. That's all it takes to go from showering to actually being clean.
+            10 minutes every morning. 22 minutes once a week. That's all it takes to go from showering to actually being clean.
           </p>
           <div className="su-ritual-pills">
             <div className="su-pill"><span className="su-pill-dot blue" />Daily · 10 min</div>
-            <div className="su-pill"><span className="su-pill-dot gold" />Weekly · 18 min</div>
+            <div className="su-pill"><span className="su-pill-dot gold" />Weekly · 22 min</div>
             <div className="su-pill"><span className="su-pill-dot blue" />Head to toe</div>
           </div>
 

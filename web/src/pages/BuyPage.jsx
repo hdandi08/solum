@@ -29,6 +29,18 @@ const STRIPE_KEY   = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = loadStripe(STRIPE_KEY);
 
 const KIT_PRICES = { ground: 65, ritual: 85 };
+const BUY_KIT_OUTCOMES = {
+  ground: {
+    label: 'Clean foundation',
+    body: 'Includes the 10-min daily ritual and 22-min weekly deep reset for less odour, smoother skin and a back that is finally cleaned properly.',
+    detail: 'Both kits have the 10-min daily and 22-min weekly system. RITUAL adds argan oil and the clay bowl.',
+  },
+  ritual: {
+    label: 'Complete ritual',
+    body: 'The same clean foundation, plus fed skin and a stronger-feeling barrier after the clay reset.',
+    detail: 'Choose this if you want the weekly oil finish that makes the reset feel complete.',
+  },
+};
 
 const stripeAppearance = {
   theme: 'night',
@@ -123,6 +135,7 @@ const CSS = `
 .by-kit-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;margin-bottom:14px;background:var(--dark);}
 .by-kit-outcome{font-size:16px;font-weight:500;color:var(--mist);line-height:1.35;margin-bottom:4px;}
 .by-kit-contents{font-size:13px;font-weight:300;color:var(--stone);letter-spacing:.3px;margin-bottom:14px;}
+.by-kit-result{font-size:13px;color:var(--stone);font-weight:300;line-height:1.45;margin-bottom:14px;}
 .by-kit-buyrow{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .by-kit-cta{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;background:var(--blue);color:#fff;border:none;padding:13px 22px;cursor:pointer;transition:background .15s;}
 .by-kit-cta:hover{background:var(--blit);}
@@ -1143,6 +1156,7 @@ export default function BuyPage() {
                   {(preselect === 'ground' ? ['ground', 'ritual'] : ['ritual', 'ground']).map((id, i) => {
                     const kit = KITS.find(k => k.id === id);
                     const contentsCount = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon).length;
+                    const kitOutcome = BUY_KIT_OUTCOMES[id];
                     return (
                       <div
                         key={id}
@@ -1161,13 +1175,9 @@ export default function BuyPage() {
                           />
                         )}
                         <div className="by-kit-name">{kit?.name}</div>
-                        <div className="by-kit-outcome">{kit?.outcome}</div>
-                        <div className="by-kit-contents">{contentsCount} products in the box · {id === 'ritual' ? 'daily + weekly ritual' : 'the daily system'}</div>
-                        <div className="by-kit-cert">
-                          {id === 'ritual'
-                            ? '100% certified organic argan oil · 100% natural Atlas clay'
-                            : '100% natural Atlas clay · sulphate-free wash'}
-                        </div>
+                        <div className="by-kit-outcome">{kitOutcome?.label ?? kit?.outcome}</div>
+                        <div className="by-kit-contents">{contentsCount} products in the box</div>
+                        {kitOutcome && <div className="by-kit-result">{kitOutcome.body} {kitOutcome.detail}</div>}
                         {isFirstBatch && (
                           inventory?.[id]?.count > 0 && inventory[id].count <= 30
                             ? <div className="by-kit-stock">Only {inventory[id].count} left in the first batch</div>

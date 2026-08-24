@@ -23,6 +23,9 @@ const CSS = `
 .system-steps{display:flex;flex-direction:column;gap:13px;}
 .system-step{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--bone);}
 .system-step-num{width:26px;height:26px;border-radius:50%;background:var(--blue);color:var(--bone);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.system-results{display:flex;flex-direction:column;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(240,236,226,0.14);}
+.system-result-kicker{font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:4px;}
+.system-result-copy{font-size:14px;color:var(--mist);font-weight:300;line-height:1.5;}
 .system-arrow{display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--blit);flex-shrink:0;}
 .system-cta{margin-top:32px;display:flex;justify-content:flex-start;}
 @media(max-width:768px){
@@ -35,19 +38,30 @@ const CSS = `
 `;
 
 const OLD_WAY = [
-  'Hot water on the back',
-  'Whatever wash was on offer',
-  'A quick scrub with your hands',
-  'Back never reached',
-  'Scalp never once cleaned',
+  'Clean for an hour, then not quite',
+  'Rough arms and thighs stay rough',
+  'A back that is still missed',
+  'A scalp that never feels reset',
+  'Skin that feels tight by lunchtime',
 ];
 
 const STEPS = [
-  'Scalp deep-cleaned · 2 min',
-  'Wash that strips nothing',
-  'Dead skin off, everywhere',
-  'Back fully cleaned · 60 sec',
-  'Locked in within 3 minutes',
+  'Scalp reset first',
+  'Wash without the stripped feeling',
+  'Mitt clears roughness',
+  'Back cloth reaches what hands miss',
+  'Lotion locks in comfort',
+];
+
+const RESULTS = [
+  {
+    label: 'Daily outcome',
+    copy: 'Freshness lasts longer, roughness comes down and the back is no longer missed.',
+  },
+  {
+    label: 'Weekly reset',
+    copy: 'Clay clears the surface, argan oil feeds the barrier, and the reset feels complete.',
+  },
 ];
 
 export default function SystemSection() {
@@ -73,6 +87,14 @@ export default function SystemSection() {
                   <div key={s} className="system-step">
                     <span className="system-step-num">{i + 1}</span>
                     <span>{s}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="system-results">
+                {RESULTS.map((result) => (
+                  <div key={result.label}>
+                    <div className="system-result-kicker">{result.label}</div>
+                    <div className="system-result-copy">{result.copy}</div>
                   </div>
                 ))}
               </div>
