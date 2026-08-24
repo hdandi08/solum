@@ -106,6 +106,12 @@ const CSS = `
 .by-demo-video{width:104px;aspect-ratio:9/16;object-fit:cover;flex-shrink:0;display:block;background:#000;}
 .by-demo-head{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:var(--bone);margin-bottom:6px;}
 .by-demo-caption{font-size:14px;font-weight:300;color:var(--mist);line-height:1.5;}
+.by-press-proof{display:flex;align-items:center;justify-content:space-between;gap:14px;background:rgba(46,109,164,0.07);border:1px solid rgba(46,109,164,0.26);padding:12px 16px;margin:0 0 12px;color:inherit;text-decoration:none;}
+.by-press-proof:hover{border-color:rgba(74,143,199,0.58);background:rgba(46,109,164,0.11);}
+.by-press-proof:focus-visible{outline:2px solid var(--blit);outline-offset:3px;}
+.by-press-proof-kicker{display:block;font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:3px;}
+.by-press-proof-quote{display:block;font-size:14px;color:var(--bone);font-weight:500;line-height:1.35;}
+.by-press-proof-arrow{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blit);line-height:1;flex-shrink:0;}
 .by-kits{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:32px;}
 @media(max-width:520px){.by-kits{grid-template-columns:1fr;}}
 .by-kit{background:var(--black);padding:24px 20px;cursor:pointer;transition:background .15s;}
@@ -1198,6 +1204,22 @@ export default function BuyPage() {
                   costs are the #1 abandonment cause, so "free · no hidden costs"
                   is the last thing read before choosing how to pay. The top
                   OfferBar already covers the very top of the page. */}
+              {step === 'details' && (
+                <a
+                  className="by-press-proof"
+                  href="https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => capture('buy_press_clicked', { source: 'luxury_lifestyle_magazine' })}
+                >
+                  <span>
+                    <span className="by-press-proof-kicker">Featured by Luxury Lifestyle Magazine</span>
+                    <span className="by-press-proof-quote">“Pioneering a new era of men’s body care”</span>
+                  </span>
+                  <span className="by-press-proof-arrow" aria-hidden="true">↗</span>
+                </a>
+              )}
+
               {step === 'details' && (
                 <div className="co-form-trust">
                   <div className="co-form-trust-line">📦 {cutoffText} · ships {fmtDay(dispatch)}</div>

@@ -28,4 +28,18 @@ describe('homepage press proof', () => {
     expect(home.indexOf('<PressSection />')).toBeGreaterThan(home.indexOf('<ProblemSection />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
   });
+
+  it('keeps /buy press proof compact and close to the payment decision', () => {
+    const buy = page('BuyPage');
+    const proofIndex = buy.indexOf('className="by-press-proof"');
+    const trustIndex = buy.indexOf('<div className="co-form-trust">');
+    const expressIndex = buy.indexOf('<div className="by-express-wrap"');
+
+    expect(proofIndex).toBeGreaterThan(-1);
+    expect(buy).toContain('Featured by Luxury Lifestyle Magazine');
+    expect(buy).toContain('Pioneering a new era of men’s body care');
+    expect(buy).not.toContain('<PressSection />');
+    expect(proofIndex).toBeLessThan(trustIndex);
+    expect(proofIndex).toBeLessThan(expressIndex);
+  });
 });
