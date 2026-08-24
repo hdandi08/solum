@@ -102,7 +102,7 @@ const CSS = `
 /* ── Desktop ───────────────────────────────────────── */
 @media(min-width:960px){
   .hero{flex-direction:row;height:100svh;min-height:640px;}
-  .hero-cols{flex:0 0 48%;padding:clamp(112px,12vh,136px) 48px 64px;justify-content:center;}
+  .hero-cols{flex:0 0 48%;padding:clamp(144px,16vh,176px) 48px 56px;justify-content:flex-start;}
   .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
   .hero-glow{left:24%;}
   /* Right panel: image fills full height */

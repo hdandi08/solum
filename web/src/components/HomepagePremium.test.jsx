@@ -39,7 +39,7 @@ describe('premium homepage direction', () => {
   it('keeps desktop hero copy clear of the fixed header', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('.hero-cols{flex:0 0 48%;padding:clamp(112px,12vh,136px) 48px 64px;justify-content:center;}');
+    expect(hero).toContain('.hero-cols{flex:0 0 48%;padding:clamp(144px,16vh,176px) 48px 56px;justify-content:flex-start;}');
   });
 
   it('keeps homepage-visible copy free of dash separators', () => {
