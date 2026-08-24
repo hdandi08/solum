@@ -53,6 +53,20 @@ describe('premium homepage direction', () => {
     expect(hero).not.toContain('padding:clamp(144px,16vh,176px) 48px 56px');
   });
 
+  it('uses a matte editorial hero rather than tech-grid decoration', () => {
+    const hero = component('Hero');
+
+    expect(hero).toContain('hero-editorial-frame');
+    expect(hero).toContain('hero-proof-strip');
+    expect(hero).toContain('The ritual your shower was missing');
+    expect(hero).toContain('Luxury Lifestyle Magazine');
+    expect(hero).toContain('SOLUM is built around the work most showers skip.');
+    expect(hero).not.toContain('hero-ghost');
+    expect(hero).not.toContain('hero-glow');
+    expect(hero).not.toContain('gridFade');
+    expect(hero).not.toContain('background-size:60px 60px');
+  });
+
   it('keeps the mobile hero action above the moving strip', () => {
     const hero = component('Hero');
 
@@ -80,6 +94,19 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('SOLUM fixes the method: wash, exfoliate, reach the back, reset the scalp and lock in comfort in the right order.');
     expect(problem).not.toContain("It isn't hygiene.");
     expect(problem).not.toContain("You still don't feel clean.");
+  });
+
+  it('makes the problem section read like an editorial diagnosis, not icon-card clutter', () => {
+    const problem = component('ProblemSection');
+
+    expect(problem).toContain('problem-editorial');
+    expect(problem).toContain('problem-diagnosis');
+    expect(problem).toContain('The old method');
+    expect(problem).toContain('The SOLUM method');
+    expect(problem).toContain('One bottle, hands, hot water.');
+    expect(problem).toContain('Order, reach, reset, finish.');
+    expect(problem).not.toContain('problem-card-ic');
+    expect(problem).not.toContain('grid-template-columns:repeat(3,1fr)');
   });
 
   it('keeps selling sections outcome-led rather than detail-led', () => {
@@ -199,6 +226,17 @@ describe('premium homepage direction', () => {
     expect(kits).toContain('Why argan oil matters');
     expect(kits).toContain('Without argan oil, the weekly reset stops after the clay rinse.');
     expect(kits).toContain('Argan oil goes into the clay mix, across the scalp and onto damp skin after rinsing.');
+  });
+
+  it('makes RITUAL feel like the editorial hero kit while GROUND remains a quiet alternative', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)');
+    expect(kits).toContain('kit-card.featured{transform:translateY(-18px)');
+    expect(kits).toContain('kit-card:not(.featured){opacity:.82');
+    expect(kits).toContain('background:radial-gradient(circle at 50% 36%');
+    expect(kits).toContain('kit-cta.active{background:var(--bone)');
+    expect(kits).not.toContain('box-shadow:0 30px 90px rgba(0,0,0,.22)');
   });
 
   it('labels product images inside the kit carousel so contents are clear before selecting', () => {

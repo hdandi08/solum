@@ -23,13 +23,10 @@ function useHeroVideoReady() {
 const CSS = `
 /* ── Mobile first ─────────────────────────────────── */
 .hero{min-height:100svh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--black);padding:0;}
-.hero::before{content:'';position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(46,109,164,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,109,164,0.03) 1px,transparent 1px);background-size:60px 60px;animation:gridFade 3s ease forwards;}
-@keyframes gridFade{from{opacity:0;}to{opacity:1;}}
-.hero-ghost{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-family:'Bebas Neue',sans-serif;font-size:clamp(110px,30vw,340px);letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1px rgba(46,109,164,0.06);pointer-events:none;user-select:none;white-space:nowrap;animation:ghostIn 2s cubic-bezier(.16,1,.3,1) .3s both;}
-@keyframes ghostIn{from{opacity:0;transform:translate(-50%,-48%) scale(.96);}to{opacity:1;transform:translate(-50%,-52%) scale(1);}}
-.hero-glow{position:absolute;top:30%;left:25%;transform:translate(-50%,-50%);width:500px;height:400px;background:radial-gradient(ellipse,rgba(46,109,164,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero::before{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(240,236,226,.035),transparent 28%,transparent 72%,rgba(46,109,164,.08));pointer-events:none;}
 .hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:88px 24px 48px;gap:0;}
-.hero-content{width:100%;}
+.hero-content{width:100%;max-width:620px;}
+.hero-editorial-frame{border:1px solid rgba(240,236,226,.14);border-top:2px solid rgba(240,236,226,.28);padding:26px 24px 24px;background:rgba(8,9,11,.32);box-shadow:0 26px 70px rgba(0,0,0,.18);}
 .hero-kicker{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:18px;animation:fadeUp .8s ease .68s both;}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6.2vw,88px);line-height:.9;letter-spacing:0.045em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
 
@@ -55,6 +52,10 @@ const CSS = `
 .hero-scope-pill{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);border:1px solid var(--lineb);padding:6px 12px;}
 .hero-scope-pill.accent{color:var(--blit);border-color:rgba(46,109,164,0.3);}
 .hero-actions{display:flex;flex-direction:column;gap:14px;animation:fadeUp .8s ease 1.05s both;}
+.hero-proof-strip{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(240,236,226,.14);animation:fadeUp .8s ease 1.08s both;}
+.hero-proof-kicker{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;}
+.hero-proof-main{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:var(--bone);line-height:1;}
+.hero-proof-copy{font-size:13px;color:rgba(240,236,226,.62);font-weight:300;line-height:1.45;max-width:430px;}
 .hero-sub-note{font-size:12px;color:var(--stone);font-weight:300;letter-spacing:.3px;margin-top:12px;line-height:1.5;}
 .btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--bone);color:var(--black);padding:18px 40px;text-decoration:none;display:block;text-align:center;transition:background .2s,transform .15s;}
 .btn-primary:hover{background:#fff;transform:translateY(-1px);}
@@ -88,8 +89,9 @@ const CSS = `
   .hero-visual .hero-box-img,.hero-visual video{object-position:center 35%;}
   .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:100svh;padding:108px 24px 72px;
     background:linear-gradient(to top,rgba(8,9,11,0.94) 0%,rgba(8,9,11,0.8) 30%,rgba(8,9,11,0.4) 58%,rgba(8,9,11,0.08) 86%,rgba(8,9,11,0.5) 100%);}
-  /* keep the film readable by dropping the long paragraph, pills and decorative layers on mobile. */
-  .hero-scope,.hero-ghost,.hero-glow,.scroll-cue{display:none;}
+  /* keep the film readable by dropping the long paragraph and pills on mobile. */
+  .hero-scope,.scroll-cue{display:none;}
+  .hero-editorial-frame{padding:22px 18px 20px;background:rgba(8,9,11,.64);}
   .hero-sub-more{display:none;}
   .hero-title{font-size:clamp(42px,13vw,62px);}
   .hero-subline{font-size:15px;line-height:1.5;margin-bottom:22px;}
@@ -102,8 +104,6 @@ const CSS = `
 @media(min-width:960px){
   .hero{flex-direction:row;height:auto;min-height:calc(100svh + 88px);overflow:visible;align-items:stretch;}
   .hero-cols{flex:0 0 48%;min-height:calc(100svh + 88px);padding:clamp(124px,14vh,152px) 48px 112px;justify-content:flex-start;}
-  .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
-  .hero-glow{left:24%;}
   /* Right panel: image fills full height */
   .hero-visual{flex:0 0 52%;width:52%;height:auto;max-height:none;min-height:calc(100svh + 88px);}
   .hero-box-img{object-position:center center;}
@@ -121,44 +121,49 @@ export default function Hero() {
     <>
       <style>{CSS}</style>
       <section className="hero" id="home">
-        <div className="hero-ghost">SOLUM</div>
-        <div className="hero-glow" />
         <div className="hero-cols">
           <div className="hero-content">
-            <div className="hero-kicker">The first serious body care system for men</div>
-            <h1 className="hero-title">
-              Your body.<br />Finally done right.
-            </h1>
-            <div className="hero-line" />
-            <p className="hero-subline"><span className="hero-sub-symptoms">A complete ritual for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
-            <div className="hero-meta" aria-label="SOLUM ritual summary">
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">System</span>
-                <span className="hero-meta-value">Guided, not guessed</span>
+            <div className="hero-editorial-frame">
+              <div className="hero-kicker">The first serious body care system for men</div>
+              <h1 className="hero-title">
+                Your body.<br />Finally done right.
+              </h1>
+              <div className="hero-line" />
+              <p className="hero-subline"><span className="hero-sub-symptoms">A complete ritual for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
+              <div className="hero-meta" aria-label="SOLUM ritual summary">
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">System</span>
+                  <span className="hero-meta-value">Guided, not guessed</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Ritual</span>
+                  <span className="hero-meta-value">10 minutes daily</span>
+                </div>
+                <div className="hero-meta-item">
+                  <span className="hero-meta-label">Scope</span>
+                  <span className="hero-meta-value">Body, not face</span>
+                </div>
               </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Ritual</span>
-                <span className="hero-meta-value">10 minutes daily</span>
+              <div className="hero-actions">
+                {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
+                <a
+                  href="#kits"
+                  className="btn-primary"
+                  onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
+                >
+                  Shop the Ritual
+                </a>
+                <a href="#press" className="btn-ghost">Read the press</a>
               </div>
-              <div className="hero-meta-item">
-                <span className="hero-meta-label">Scope</span>
-                <span className="hero-meta-value">Body, not face</span>
+              <div className="hero-proof-strip">
+                <div className="hero-proof-kicker">Luxury Lifestyle Magazine</div>
+                <div className="hero-proof-main">The ritual your shower was missing</div>
+                <div className="hero-proof-copy">SOLUM is built around the work most showers skip.</div>
               </div>
+              <p className="hero-editorial-note">
+                <span>Press recognised</span> · Featured by Luxury Lifestyle Magazine.
+              </p>
             </div>
-            <div className="hero-actions">
-              {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
-              <a
-                href="#kits"
-                className="btn-primary"
-                onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
-              >
-                Shop the Ritual
-              </a>
-              <a href="#press" className="btn-ghost">Read the press</a>
-            </div>
-            <p className="hero-editorial-note">
-              <span>Press recognised</span> · Featured by Luxury Lifestyle Magazine.
-            </p>
           </div>
         </div>
         <div className="hero-visual">
