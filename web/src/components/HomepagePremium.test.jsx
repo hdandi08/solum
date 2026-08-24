@@ -75,6 +75,9 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('The missing step');
     expect(problem).toContain('A shower cleans the surface.<br />A ritual changes the result.');
     expect(problem).toContain('Most men do not need more products.');
+    expect(problem).toContain('Most men use one 3-in-1 bottle, their hands and hot water, then call it done.');
+    expect(problem).toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
+    expect(problem).toContain('SOLUM fixes the method: wash, exfoliate, reach the back, reset the scalp and lock in comfort in the right order.');
     expect(problem).not.toContain("It isn't hygiene.");
     expect(problem).not.toContain("You still don't feel clean.");
   });

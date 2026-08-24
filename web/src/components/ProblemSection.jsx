@@ -7,6 +7,10 @@ const CSS = `
 .problem-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
 .problem-head h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,4vw,60px);letter-spacing:.06em;color:var(--bone);line-height:1.04;margin-bottom:16px;}
 .problem-head p{font-size:17px;font-weight:300;color:var(--mist);line-height:1.7;}
+.problem-truth{max-width:760px;border:1px solid rgba(240,236,226,.12);background:rgba(24,28,36,.62);padding:22px 24px;margin:0 0 24px;}
+.problem-truth p{font-size:16px;font-weight:300;color:var(--mist);line-height:1.65;margin:0 0 10px;}
+.problem-truth p:last-child{margin-bottom:0;}
+.problem-truth strong{color:var(--bone);font-weight:600;}
 .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
 .problem-card{background:var(--char);padding:24px 22px;}
 .problem-card-ic{width:48px;height:48px;display:block;margin-bottom:14px;}
@@ -21,6 +25,7 @@ const CSS = `
 @media(max-width:600px){
   .problem-section{padding:48px 20px;}
   .problem-grid{grid-template-columns:1fr;}
+  .problem-truth{padding:20px;margin-bottom:20px;}
   .problem-card{padding:20px;}
   .problem-fix{padding:24px 20px;}
   .problem-fix p{font-size:15px;}
@@ -46,6 +51,11 @@ export default function ProblemSection() {
             <div className="problem-tag">The missing step</div>
             <h2>A shower cleans the surface.<br />A ritual changes the result.</h2>
             <p>Most men do not need more products. They need a system that leaves the body smoother, fresher and properly cared for after the shower.</p>
+          </div>
+          <div className="problem-truth reveal">
+            <p><strong>Most men use one 3-in-1 bottle, their hands and hot water, then call it done.</strong></p>
+            <p>That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.</p>
+            <p>SOLUM fixes the method: wash, exfoliate, reach the back, reset the scalp and lock in comfort in the right order.</p>
           </div>
           <div className="problem-grid reveal">
             {SYMPTOMS.map(([src, title, body]) => (
