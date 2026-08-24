@@ -28,9 +28,10 @@ describe('premium homepage direction', () => {
   it('opens with an editorial ritual thesis instead of a hard problem headline', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('The first serious body care system for men');
+    expect(hero).toContain('Body care, rebuilt as a ritual');
     expect(hero).toContain('Your body.<br />Finally done right.');
     expect(hero).toContain('A complete ritual for skin, scalp and everything below the neck.');
+    expect(hero).not.toContain('The first serious body care system for men');
     expect(hero).not.toContain('A guided 9-piece system');
     expect(hero).not.toContain('9 pieces, numbered');
     expect(hero).not.toContain("So why don't you feel clean?");
@@ -86,12 +87,12 @@ describe('premium homepage direction', () => {
   it('frames the problem section as premium category education, not shame copy', () => {
     const problem = component('ProblemSection');
 
-    expect(problem).toContain('The missing step');
-    expect(problem).toContain('A shower cleans the surface.<br />A ritual changes the result.');
-    expect(problem).toContain('Most men do not need more products.');
+    expect(problem).toContain('Why the old shower fails');
+    expect(problem).toContain('Clean is not the same as cared for.');
     expect(problem).toContain('Most men use one 3-in-1 bottle, their hands and hot water, then call it done.');
-    expect(problem).toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
-    expect(problem).toContain('SOLUM fixes the method: wash, exfoliate, reach the back, reset the scalp and lock in comfort in the right order.');
+    expect(problem).toContain('That is why rough skin, the missed back and scalp buildup survive the shower.');
+    expect(problem).not.toContain('Most men do not need more products.');
+    expect(problem).not.toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
     expect(problem).not.toContain("It isn't hygiene.");
     expect(problem).not.toContain("You still don't feel clean.");
   });
@@ -159,17 +160,28 @@ describe('premium homepage direction', () => {
     expect(press).toContain('As featured in');
     expect(press).toContain('Pioneering a new era of men’s body care');
     expect(press).toContain('Independent coverage');
+    expect(press).toContain('Independent coverage for SOLUM.');
+    expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
   });
 
-  it('orders the homepage like an editorial ritual story, not a stack of equal sales blocks', () => {
+  it('orders the homepage like a shop window before the deeper education', () => {
     const home = page('FullSite');
 
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
+    expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<ProductLineup />'));
+    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<ProblemSection />'));
     expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
     expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
-    expect(home.indexOf('<SystemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
-    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<RitualInAction />'));
+    expect(home.indexOf('<SystemSection />')).toBeLessThan(home.indexOf('<RitualInAction />'));
     expect(home).not.toContain('<FrictionStrip />');
+  });
+
+  it('moves the first guided ritual framing out of the top repetition loop', () => {
+    const what = component('WhatSolumIs');
+
+    expect(what).toContain('The Body Ritual Men Were Missing');
+    expect(what).not.toContain('The First Guided');
+    expect(what).not.toContain('Ritual for Men');
   });
 
   it('uses a ritual ledger as the homepage signature system explanation', () => {

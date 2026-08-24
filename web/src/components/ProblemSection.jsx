@@ -58,15 +58,14 @@ export default function ProblemSection() {
         <div className="problem-inner">
           <div className="problem-editorial">
             <div className="problem-head reveal">
-              <div className="problem-tag">The missing step</div>
-              <h2>A shower cleans the surface.<br />A ritual changes the result.</h2>
-              <p>Most men do not need more products. They need a system that leaves the body smoother, fresher and properly cared for after the shower.</p>
+              <div className="problem-tag">Why the old shower fails</div>
+              <h2>Clean is not the same as cared for.</h2>
+              <p>The problem is not effort. It is method: most routines never reach the back, reset the scalp or finish the skin properly.</p>
             </div>
             <div>
               <div className="problem-truth reveal">
                 <p><strong>Most men use one 3-in-1 bottle, their hands and hot water, then call it done.</strong></p>
-                <p>That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.</p>
-                <p>SOLUM fixes the method: wash, exfoliate, reach the back, reset the scalp and lock in comfort in the right order.</p>
+                <p>That is why rough skin, the missed back and scalp buildup survive the shower.</p>
               </div>
               <div className="problem-method reveal">
                 <div className="problem-method-panel">

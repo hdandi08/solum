@@ -8,10 +8,11 @@ const component = (name) => readFileSync(resolve(__dirname, `${name}.jsx`), 'utf
 const page = (name) => readFileSync(resolve(__dirname, '../pages', `${name}.jsx`), 'utf8');
 
 describe('homepage press proof', () => {
-  it('uses the moderated first guided body ritual claim', () => {
+  it('uses a direct body ritual claim without repeating first guided language', () => {
     const source = component('WhatSolumIs');
 
-    expect(source).toContain('The First Guided');
+    expect(source).toContain('The Body Ritual Men Were Missing');
+    expect(source).not.toContain('The First Guided');
     expect(source).not.toMatch(/World['’]s First/i);
   });
 
@@ -25,8 +26,9 @@ describe('homepage press proof', () => {
     expect(press).toContain('rethinking body care');
     expect(press).toContain('https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/');
     expect(press).toContain('https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care');
-    expect(home.indexOf('<PressSection />')).toBeGreaterThan(home.indexOf('<ProblemSection />'));
+    expect(home.indexOf('<PressSection />')).toBeGreaterThan(home.indexOf('<Marquee />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
+    expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<ProblemSection />'));
   });
 
   it('keeps /buy press proof compact and close to the payment decision', () => {

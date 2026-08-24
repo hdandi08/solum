@@ -56,11 +56,10 @@ export default function PressSection() {
           <div className="press-intro">
             <div>
               <div className="press-kicker">As featured in</div>
-              <h2 className="press-head">Independent coverage for the first SOLUM ritual.</h2>
+              <h2 className="press-head">Independent coverage for SOLUM.</h2>
             </div>
             <p className="press-copy">
-              Early press now frames SOLUM as part of the wider men’s body-care shift. Useful proof,
-              kept quiet enough to feel earned.
+              Early press places SOLUM inside the wider men’s body-care shift. Proof first, then the kit.
             </p>
           </div>
           <a className="press-feature" href={lead.url} target="_blank" rel="noreferrer">

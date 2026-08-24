@@ -124,7 +124,7 @@ export default function Hero() {
         <div className="hero-cols">
           <div className="hero-content">
             <div className="hero-editorial-frame">
-              <div className="hero-kicker">The first serious body care system for men</div>
+              <div className="hero-kicker">Body care, rebuilt as a ritual</div>
               <h1 className="hero-title">
                 Your body.<br />Finally done right.
               </h1>

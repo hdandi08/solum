@@ -93,12 +93,12 @@ export default function FullSite() {
       <Nav />
       <Hero />
       <Marquee />
-      <ProblemSection />
-      <WhatSolumIs />
-      <SystemSection />
       <PressSection />
       <KitComparison />
       <ProductLineup />
+      <ProblemSection />
+      <WhatSolumIs />
+      <SystemSection />
       <RitualInAction />
       <HomeCTABand />
       <UnboxingFilm />
