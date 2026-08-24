@@ -134,6 +134,32 @@ describe('premium homepage direction', () => {
     expect(press).toContain('Independent coverage');
   });
 
+  it('orders the homepage like an editorial ritual story, not a stack of equal sales blocks', () => {
+    const home = page('FullSite');
+
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
+    expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
+    expect(home.indexOf('<SystemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
+    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<RitualInAction />'));
+    expect(home).not.toContain('<FrictionStrip />');
+  });
+
+  it('uses a ritual ledger as the homepage signature system explanation', () => {
+    const system = component('SystemSection');
+
+    expect(system).toContain('ritual-ledger');
+    expect(system).toContain('The Ritual Ledger');
+    expect(system).toContain('10 min daily');
+    expect(system).toContain('22 min weekly');
+    expect(system).toContain('Body zones');
+    expect(system).toContain('Scalp');
+    expect(system).toContain('Back');
+    expect(system).toContain('Skin finish');
+    expect(system).toContain('Daily does the maintenance. Weekly does the reset.');
+    expect(system).not.toContain('body-diagram');
+  });
+
   it('makes the kit offer feel like a curated ritual rather than a generic product grid', () => {
     const kits = component('KitComparison');
 
@@ -163,6 +189,18 @@ describe('premium homepage direction', () => {
     expect(dataFile('kits')).not.toContain('weekly argan oil finish');
   });
 
+  it('makes the kit comparison readable before the carousel or product toggle', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('kit-decision-matrix');
+    expect(kits).toContain('What both kits do');
+    expect(kits).toContain('Where GROUND stops');
+    expect(kits).toContain('What RITUAL adds');
+    expect(kits).toContain('Why argan oil matters');
+    expect(kits).toContain('Without argan oil, the weekly reset stops after the clay rinse.');
+    expect(kits).toContain('Argan oil goes into the clay mix, across the scalp and onto damp skin after rinsing.');
+  });
+
   it('labels product images inside the kit carousel so contents are clear before selecting', () => {
     const kits = component('KitComparison');
     const products = dataFile('products');
@@ -184,6 +222,12 @@ describe('premium homepage direction', () => {
     const buy = page('BuyPage');
 
     expect(buy).toContain('BUY_KIT_OUTCOMES');
+    expect(buy).toContain('Not a subscription');
+    expect(buy).toContain('No refill starts today.');
+    expect(buy).toContain('by-kit-mini-ledger');
+    expect(buy).toContain('Daily: 10 min');
+    expect(buy).toContain('Weekly: 22 min');
+    expect(buy).toContain('Argan finish');
     expect(buy).toContain('Clean foundation');
     expect(buy).toContain('Includes the 10-min daily ritual and 22-min weekly deep reset for less odour, smoother skin and a back that is finally cleaned properly.');
     expect(buy).toContain('Complete ritual');
@@ -212,6 +256,61 @@ describe('premium homepage direction', () => {
     expect(subscription).toContain('When subscription launches, only what you have run out of arrives at your door.');
     expect(guide).toContain('When subscription launches, refill boxes will cover the consumables that run out.');
     expect(guide).not.toContain('refills that arrive monthly.');
+  });
+
+  it('keeps legal and footer subscription copy aligned with one-time launch checkout', () => {
+    const terms = page('TermsPage');
+    const footer = component('SolumFooter');
+
+    expect(terms).toContain('Subscription has not launched yet');
+    expect(terms).toContain('Current live purchase');
+    expect(terms).toContain('one-time kit purchase');
+    expect(footer).toContain('Refills coming soon');
+    expect(terms).not.toContain('men\\\'s body care subscription');
+    expect(terms).not.toContain('5. Subscription Terms');
+    expect(terms).not.toContain('£38/month subscription');
+    expect(terms).not.toContain('£48/month subscription');
+    expect(terms).not.toContain('entering into a subscription agreement');
+    expect(terms).not.toContain('each subsequent monthly renewal');
+    expect(terms).not.toContain('Monthly subscription payments are non-refundable');
+    expect(footer).not.toContain('>Subscription<');
+  });
+
+  it('keeps public product education claim-safe and away from banned brand language', () => {
+    const products = dataFile('products');
+    const guide = dataFile('guide');
+    const kits = component('KitComparison');
+    const publicCopy = [products, guide, kits].join('\n');
+
+    expect(products).toContain("stat: '3-min'");
+    expect(products).toContain("tileAfter: 'clean everywhere, no tight feeling'");
+    expect(products).toContain("tagline: 'Cleaner roots. Fresher scalp. Daily.'");
+    expect(products).toContain("stat: 'weekly'");
+    expect(products).toContain("name: 'Beidi Black Cleanse'");
+    expect(guide).toContain('harsher foaming detergents');
+    expect(kits).toContain('Beidi Black Cleanse');
+
+    [
+      'industrial degreaser',
+      'Clinically 75×',
+      '+120% blood flow',
+      '24-week study',
+      'Thicker hair',
+      '68% improvement',
+      '24% improvement',
+      'toxins',
+      'repairs the skin barrier',
+      'rebuilds the skin barrier',
+      'Restores the skin barrier',
+      'Restores, repairs',
+      'zero irritation',
+      'Eliminates intimate odour',
+      'actively kills',
+      'Black Soap',
+      'black soap',
+    ].forEach((unsafePhrase) => {
+      expect(publicCopy).not.toContain(unsafePhrase);
+    });
   });
 
   it('slows the moving strip so it reads like a premium detail, not an ad ticker', () => {

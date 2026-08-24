@@ -32,7 +32,7 @@ export default function SolumFooter() {
               <li><a href="#kits">Choose Your Kit</a></li>
               <li><a href="#products">The Products</a></li>
               <li><a href="#ritual">The Ritual</a></li>
-              <li><a href="#subscription">Subscription</a></li>
+              <li><a href="#subscription">Refills coming soon</a></li>
             </ul>
           </div>
           <div>

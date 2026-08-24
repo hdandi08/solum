@@ -26,7 +26,7 @@ export const ARTICLES = [
         h2: 'The Daily Ritual — 10 Minutes',
         paras: [
           "Step 1. Scalp Massager (2 to 3 min). Start at the hairline. Small, firm circles moving back toward the crown. You're stimulating blood flow and loosening the buildup of dead skin, product residue and sebum that shampooing alone doesn't shift.",
-          "Step 2. Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes use sodium lauryl sulphate, an industrial degreaser that cleans but strips your skin barrier at the same time. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
+          "Step 2. Body Wash. Apply to wet skin from chest down. Use a sulphate-free amino acid formula. Standard body washes often rely on harsher foaming detergents that can leave skin feeling tight. Amino acid surfactants clean without stripping, at a pH closer to your skin's natural level.",
           "Step 3. Exfoliating Mitt. Wet the mitt, add a small amount of body wash. Long circular strokes on arms, chest, stomach, and legs. Medium pressure. This is the Korean bathhouse technique. Viscose rayon loosens dead skin that washing alone can't shift.",
           "Step 4. Back Scrub Cloth. One handle each hand, drape over your shoulder, saw back and forth across the upper, middle, and lower back. This is the only essential that properly reaches every zone of your back. 60 seconds.",
           "Step 5. Body Lotion. Apply within 3 minutes of towelling off. Your skin absorbs 70% more moisture while it's still warm from the shower. After 3 minutes, that window closes. Two pumps, pressed in. Don't rub.",
@@ -113,7 +113,7 @@ export const ARTICLES = [
   {
     slug: 'best-body-wash-men-uk',
     metaTitle: "Best Men's Body Wash UK — Sulphate-Free | SOLUM Guide",
-    metaDescription: "Most men's body washes in the UK use sulphates — industrial degreasers that strip your skin barrier every morning. Here's what to use instead.",
+    metaDescription: "Most men's body washes in the UK use sulphates that can leave skin feeling tight every morning. Here's what to use instead.",
     category: 'The Science',
     readMins: 4,
     title: "The Best Men's Body Wash — And Why Most Get It Wrong",

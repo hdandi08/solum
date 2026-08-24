@@ -26,6 +26,17 @@ const CSS = `
 .system-results{display:flex;flex-direction:column;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(240,236,226,0.14);}
 .system-result-kicker{font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:4px;}
 .system-result-copy{font-size:14px;color:var(--mist);font-weight:300;line-height:1.5;}
+.ritual-ledger{margin-top:18px;border:1px solid rgba(240,236,226,.12);background:rgba(8,9,11,.42);}
+.ritual-ledger-head{display:grid;grid-template-columns:1.1fr .95fr .95fr;border-bottom:1px solid rgba(240,236,226,.12);}
+.ritual-ledger-title{padding:14px 16px;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.07em;color:var(--bone);line-height:1;}
+.ritual-ledger-col{padding:12px 14px;border-left:1px solid rgba(240,236,226,.12);}
+.ritual-ledger-time{font-size:11px;letter-spacing:2.6px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:5px;}
+.ritual-ledger-note{font-size:13px;color:rgba(240,236,226,.66);font-weight:300;line-height:1.35;}
+.ritual-ledger-row{display:grid;grid-template-columns:1.1fr .95fr .95fr;border-bottom:1px solid rgba(240,236,226,.08);}
+.ritual-ledger-row:last-child{border-bottom:none;}
+.ritual-ledger-zone{padding:14px 16px;font-size:10px;letter-spacing:2.3px;text-transform:uppercase;color:rgba(240,236,226,.52);font-weight:700;}
+.ritual-ledger-cell{padding:14px;border-left:1px solid rgba(240,236,226,.08);font-size:14px;line-height:1.4;color:rgba(240,236,226,.78);font-weight:300;}
+.ritual-ledger-foot{padding:13px 16px;border-top:1px solid rgba(74,143,199,.28);font-size:13px;color:var(--blit);letter-spacing:1.4px;text-transform:uppercase;font-weight:700;}
 .system-arrow{display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--blit);flex-shrink:0;}
 .system-cta{margin-top:32px;display:flex;justify-content:flex-start;}
 @media(max-width:768px){
@@ -33,6 +44,8 @@ const CSS = `
   .system-inner{padding:0 24px;}
   .system-grid{flex-direction:column;}
   .system-arrow{transform:rotate(90deg);padding:2px 0;}
+  .ritual-ledger-head,.ritual-ledger-row{grid-template-columns:1fr;}
+  .ritual-ledger-col,.ritual-ledger-cell{border-left:none;border-top:1px solid rgba(240,236,226,.08);}
   .system-cta{justify-content:center;}
 }
 `;
@@ -61,6 +74,29 @@ const RESULTS = [
   {
     label: 'Weekly reset',
     copy: 'Clay clears the surface, argan oil feeds the barrier, and the reset feels complete.',
+  },
+];
+
+const LEDGER_ROWS = [
+  {
+    zone: 'Scalp',
+    daily: '04 loosens buildup before the wash.',
+    weekly: '04 gets more time, then argan oil finishes the reset.',
+  },
+  {
+    zone: 'Back',
+    daily: '03 reaches the zone hands keep missing.',
+    weekly: '03 works after clay when skin is warm and ready.',
+  },
+  {
+    zone: 'Body zones',
+    daily: '01, 02 and 07 handle clean, texture and comfort.',
+    weekly: '05 does the deeper reset before the oil finish.',
+  },
+  {
+    zone: 'Skin finish',
+    daily: '07 keeps the post-shower window from going to waste.',
+    weekly: '06 feeds the finish so the ritual feels complete.',
   },
 ];
 
@@ -97,6 +133,27 @@ export default function SystemSection() {
                     <div className="system-result-copy">{result.copy}</div>
                   </div>
                 ))}
+              </div>
+              <div className="ritual-ledger">
+                <div className="ritual-ledger-head">
+                  <div className="ritual-ledger-title">The Ritual Ledger</div>
+                  <div className="ritual-ledger-col">
+                    <div className="ritual-ledger-time">10 min daily</div>
+                    <div className="ritual-ledger-note">Maintenance for the shower you already take.</div>
+                  </div>
+                  <div className="ritual-ledger-col">
+                    <div className="ritual-ledger-time">22 min weekly</div>
+                    <div className="ritual-ledger-note">A deeper reset when skin needs more than maintenance.</div>
+                  </div>
+                </div>
+                {LEDGER_ROWS.map((row) => (
+                  <div className="ritual-ledger-row" key={row.zone}>
+                    <div className="ritual-ledger-zone">{row.zone}</div>
+                    <div className="ritual-ledger-cell">{row.daily}</div>
+                    <div className="ritual-ledger-cell">{row.weekly}</div>
+                  </div>
+                ))}
+                <div className="ritual-ledger-foot">Daily does the maintenance. Weekly does the reset.</div>
               </div>
             </div>
           </div>

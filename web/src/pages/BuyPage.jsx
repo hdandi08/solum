@@ -86,6 +86,8 @@ const CSS = `
 .by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
 @media(max-width:768px){.by-intro-head{font-size:22px;}}
 .by-intro-sub{font-size:15px;font-weight:300;color:var(--stone);line-height:1.5;max-width:520px;margin:0 0 4px;}
+.by-intro-reassurance{margin-top:8px;color:rgba(240,236,226,.76);}
+.by-intro-reassurance strong{color:var(--bone);font-weight:600;}
 .by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
 .by-express-skel{height:48px;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
 @keyframes byShimmer{to{background-position:-200% 0;}}
@@ -136,6 +138,12 @@ const CSS = `
 .by-kit-outcome{font-size:16px;font-weight:500;color:var(--mist);line-height:1.35;margin-bottom:4px;}
 .by-kit-contents{font-size:13px;font-weight:300;color:var(--stone);letter-spacing:.3px;margin-bottom:14px;}
 .by-kit-result{font-size:13px;color:var(--stone);font-weight:300;line-height:1.45;margin-bottom:14px;}
+.by-kit-mini-ledger{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin:0 0 16px;}
+.by-kit-mini-cell{padding:10px 11px;border-left:1px solid var(--line);}
+.by-kit-mini-cell:first-child{border-left:none;}
+.by-kit-mini-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:4px;}
+.by-kit-mini-copy{font-size:12px;color:var(--mist);font-weight:300;line-height:1.35;}
+.by-kit-mini-copy strong{color:var(--bone);font-weight:600;}
 .by-kit-buyrow{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .by-kit-cta{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;background:var(--blue);color:#fff;border:none;padding:13px 22px;cursor:pointer;transition:background .15s;}
 .by-kit-cta:hover{background:var(--blit);}
@@ -1126,6 +1134,7 @@ export default function BuyPage() {
                       <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
                     </>
                   )}
+                  <p className="by-intro-sub by-intro-reassurance"><strong>Not a subscription.</strong> No refill starts today.</p>
                 </div>
               )}
 
@@ -1178,6 +1187,22 @@ export default function BuyPage() {
                         <div className="by-kit-outcome">{kitOutcome?.label ?? kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box</div>
                         {kitOutcome && <div className="by-kit-result">{kitOutcome.body} {kitOutcome.detail}</div>}
+                        <div className="by-kit-mini-ledger" aria-label={`${kit?.name} ritual summary`}>
+                          <div className="by-kit-mini-cell">
+                            <div className="by-kit-mini-label">Daily: 10 min</div>
+                            <div className="by-kit-mini-copy">Wash, scalp, mitt, back, lotion.</div>
+                          </div>
+                          <div className="by-kit-mini-cell">
+                            <div className="by-kit-mini-label">Weekly: 22 min</div>
+                            <div className="by-kit-mini-copy">Clay reset replaces the daily ritual.</div>
+                          </div>
+                          <div className="by-kit-mini-cell">
+                            <div className="by-kit-mini-label">Argan finish</div>
+                            <div className="by-kit-mini-copy">
+                              {id === 'ritual' ? <strong>Included.</strong> : 'RITUAL adds it.'}
+                            </div>
+                          </div>
+                        </div>
                         {isFirstBatch && (
                           inventory?.[id]?.count > 0 && inventory[id].count <= 30
                             ? <div className="by-kit-stock">Only {inventory[id].count} left in the first batch</div>

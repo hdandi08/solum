@@ -181,7 +181,7 @@ export default function TermsPage() {
   useEffect(() => {
     document.title = 'Terms & Conditions | SOLUM';
     let meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', 'Terms and conditions for SOLUM — men\'s body care subscription. Your statutory rights, subscription terms, cosmetic product safety, returns, and governing law.');
+    if (meta) meta.setAttribute('content', 'Terms and conditions for SOLUM one-time kit purchases. Your statutory rights, future refill status, cosmetic product safety, returns, and governing law.');
     jumpTop();
   }, []);
 
@@ -196,7 +196,7 @@ export default function TermsPage() {
           <h1 className="terms-hero-title">Terms &amp; Conditions</h1>
           <div className="terms-hero-meta">Last updated: {LAST_UPDATED}</div>
           <p className="terms-hero-intro">
-            These terms govern your use of bysolum.co.uk and any purchases or subscriptions you make. Please read them carefully. Your statutory rights under UK consumer law are not affected by anything in this document.
+            These terms govern your use of bysolum.co.uk and any current one-time kit purchase you make. Subscription has not launched yet. Please read them carefully. Your statutory rights under UK consumer law are not affected by anything in this document.
           </p>
         </div>
 
@@ -211,7 +211,7 @@ export default function TermsPage() {
                 ['#s2', '2. The Products'],
                 ['#s3', '3. Placing an Order'],
                 ['#s4', '4. Pricing & Payment'],
-                ['#s5', '5. Subscription Terms'],
+                ['#s5', '5. Subscription Status'],
                 ['#s6', '6. Delivery'],
                 ['#s7', '7. Right to Cancel & Returns'],
                 ['#s8', '8. Cosmetic Product Safety'],
@@ -271,7 +271,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s2">
               <span className="terms-section-num">Section 02</span>
               <h2 className="terms-section-title">The Products</h2>
-              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered 01–10 and sold as kits (GROUND, RITUAL, SOVEREIGN) or as subscription refills. Products 09 and 10 are currently listed as coming soon and are not yet available for purchase.</p>
+              <p className="terms-p">SOLUM sells a system of men's body care products comprising physical tools and cosmetic products. Products are numbered and sold as kits. Current live purchase is a one-time kit purchase. Refill subscription is planned for a later launch and is not active today. Products 09 and 10 are currently listed as coming soon and are not yet available for purchase.</p>
 
               <div className="terms-h3">Cosmetic Products (regulated under UK Cosmetics Regulation)</div>
               <p className="terms-p">The following products are cosmetic products within the meaning of the UK Cosmetics Regulation (retained EU Regulation (EC) No 1223/2009) and have been assessed under a Cosmetic Product Safety Report (CPSR):</p>
@@ -298,7 +298,7 @@ export default function TermsPage() {
             <section className="terms-section" id="s3">
               <span className="terms-section-num">Section 03</span>
               <h2 className="terms-section-title">Placing an Order</h2>
-              <p className="terms-p">By completing the checkout process on bysolum.co.uk, you make an offer to purchase the selected products or subscription. A contract is formed when we send you an order confirmation by email.</p>
+              <p className="terms-p">By completing the checkout process on bysolum.co.uk, you make an offer to purchase the selected one-time kit. A contract is formed when we send you an order confirmation by email.</p>
 
               <div className="terms-h3">Order Process</div>
               <ul className="terms-list">
@@ -327,79 +327,60 @@ export default function TermsPage() {
               <div className="terms-info-block">
                 <div className="terms-info-row">
                   <span className="terms-info-label">GROUND Kit</span>
-                  <span className="terms-info-value">£65 first box · £38/month subscription</span>
+                  <span className="terms-info-value">£65 one-time first-batch kit</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">RITUAL Kit</span>
-                  <span className="terms-info-value">£85 first box · £48/month subscription</span>
+                  <span className="terms-info-value">£85 one-time first-batch kit</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">SOVEREIGN Kit</span>
-                  <span className="terms-info-value">£130 first box · £58/month subscription (available when all products are live)</span>
+                  <span className="terms-info-value">Coming soon</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Delivery</span>
-                  <span className="terms-info-value">£5.95 per box (Royal Mail Tracked 48)</span>
+                  <span className="terms-info-value">Free UK delivery while the current first-batch offer is live. Standard delivery, when charged, is £5.95 per box and is shown clearly at checkout before payment.</span>
                 </div>
               </div>
 
               <div className="terms-h3">Payment Processing</div>
               <p className="terms-p">Payments are processed securely by <strong>Stripe</strong>, a third-party payment processor. SOLUM does not store your card details. By providing payment information, you agree to Stripe's terms of service and privacy policy.</p>
-              <p className="terms-p">We accept major debit and credit cards. Payment is taken at the time of placing your order and at each subsequent monthly renewal.</p>
+              <p className="terms-p">We accept major debit and credit cards. Payment is taken once at the time of placing your current one-time kit order.</p>
 
               <div className="terms-h3">Failed Payments</div>
-              <p className="terms-p">If a subscription renewal payment fails, we will attempt to collect payment up to three times over a 7-day period. If payment remains unsuccessful, your subscription will be paused and we will contact you. We will not dispatch goods for which payment has not been received.</p>
+              <p className="terms-p">If a one-time order payment fails, the order will not be placed and no goods will be dispatched. If subscription launches later, any renewal-payment rules will be presented before you join.</p>
 
               <div className="terms-h3">Pricing Changes</div>
-              <p className="terms-p">We may change our prices from time to time. For subscription customers, any price increase will be communicated to you by email at least 30 days before it takes effect. If you do not accept a price increase, you may cancel your subscription before the new price applies.</p>
+              <p className="terms-p">We may change our prices from time to time. Price changes do not affect one-time orders already confirmed. If subscription launches later, subscription pricing and any future changes will be explained before you join.</p>
 
               <div className="terms-callout">
-                <p><strong>Founding Member Pricing Lock:</strong> Customers who subscribed as Founding Members (first 100) have their launch price locked permanently to their account. This commitment is honoured regardless of any subsequent price increases to new customers.</p>
+                <p><strong>Founding customer note:</strong> Any future refill subscription will be offered separately. Buying a kit today does not create an automatic monthly payment.</p>
               </div>
             </section>
 
-            {/* 5 — Subscription Terms */}
+            {/* 5 — Subscription Status */}
             <section className="terms-section" id="s5">
               <span className="terms-section-num">Section 05</span>
-              <h2 className="terms-section-title">Subscription Terms</h2>
-              <p className="terms-p">When you purchase a SOLUM kit, you are entering into a subscription agreement. Your subscription consists of a first box (containing both tools and consumable products) and monthly refill boxes thereafter (consumable products only, as tools last 1–6 months).</p>
+              <h2 className="terms-section-title">Subscription Status</h2>
+              <p className="terms-p"><strong>Subscription has not launched yet.</strong> A SOLUM kit purchase today is a one-time kit purchase. It does not start a monthly refill plan, renewal charge, or automatic replenishment.</p>
 
-              <div className="terms-h3">How the Subscription Works</div>
+              <div className="terms-h3">What is live today</div>
               <ul className="terms-list">
-                <li><strong>First box:</strong> Your full kit — tools and consumables — dispatched within 3–5 business days of your order</li>
-                <li><strong>Monthly refill:</strong> Consumable products (body wash, body lotion, and applicable products for your kit tier) dispatched each month on the anniversary of your first order</li>
-                <li>Your monthly payment is taken automatically on your renewal date via Stripe</li>
+                <li><strong>Current live purchase:</strong> One-time GROUND or RITUAL kit purchase</li>
+                <li><strong>No renewal:</strong> No monthly charge is created by buying a kit today</li>
+                <li><strong>No automatic refill:</strong> Refill boxes will only be available when subscription launches later</li>
               </ul>
 
-              <div className="terms-h3">Renewal Reminders</div>
-              <p className="terms-p">We will send you a reminder email <strong>5–7 days before each monthly renewal</strong>. The reminder will include:</p>
+              <div className="terms-h3">Future refill launch</div>
+              <p className="terms-p">We are building refill subscription for the consumables that run out. If and when it launches, the subscription price, refill contents, renewal date, cancellation rights, and reminder policy will be shown before you join.</p>
               <ul className="terms-list">
-                <li>The date your renewal payment will be taken</li>
-                <li>The amount you will be charged</li>
-                <li>Any changes from the previous payment</li>
-                <li>Clear instructions on how to cancel before the renewal</li>
+                <li>You will need to actively choose to join</li>
+                <li>Buying a kit today will not automatically enrol you</li>
+                <li>We will not take any refill payment unless you have agreed to the refill terms at launch</li>
               </ul>
 
-              <div className="terms-h3">Cancellation of Subscription</div>
-              <p className="terms-p">You may cancel your subscription at any time by:</p>
-              <ul className="terms-list">
-                <li>Logging into your account at bysolum.co.uk and selecting 'Cancel Subscription'</li>
-                <li>Emailing contact@bysolum.com with the subject line "Cancel Subscription"</li>
-              </ul>
-              <p className="terms-p">Cancellation takes effect from your next billing date. You will not be charged for any renewal after your cancellation is confirmed. You will continue to receive any box already paid for. We will acknowledge your cancellation by email within 24 hours.</p>
-              <p className="terms-p"><strong>Monthly subscription payments are non-refundable for the current billing period.</strong> If you cancel mid-cycle, you will not receive a prorated refund for the remaining days of your current subscription month. Your cancellation takes effect at the end of the period you have already paid for.</p>
-
-              <div className="terms-h3">Pausing Your Subscription</div>
-              <p className="terms-p">You may pause your subscription for up to 3 months by contacting us at contact@bysolum.com. During a pause, no payments will be taken and no boxes will be dispatched.</p>
-
-              <div className="terms-h3">Subscription Cooling-Off</div>
-              <p className="terms-p">You have the right to cancel your subscription within 14 days of entering into the subscription agreement (your first order date) without giving any reason. See Section 7 for full cancellation rights.</p>
-
-              <div className="terms-h3">Product Changes</div>
-              <p className="terms-p">Where a product in your monthly refill is temporarily unavailable or has been reformulated, we may substitute an equivalent product of the same or greater value. We will notify you of any substitution. If you are not satisfied, you may return the substituted item for a full refund without cancelling your subscription.</p>
-
-              <div className="terms-h3">Inability to Fulfil</div>
-              <p className="terms-p">If we are unable to fulfil a subscription month — for example due to supply disruption, stock shortage, or circumstances beyond our reasonable control — we will notify you by email as soon as reasonably practicable. In such circumstances, we will either pause your billing for the affected month and delay dispatch until stock is available, or issue a credit to your account to the value of that month's subscription. We will not charge you for a month in which no goods are dispatched.</p>
+              <div className="terms-h3">Kit cancellation and returns</div>
+              <p className="terms-p">For current one-time kit purchases, your cancellation and returns rights are set out in Section 7.</p>
             </section>
 
             {/* 6 — Delivery */}
@@ -417,7 +398,7 @@ export default function TermsPage() {
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Cost</span>
-                  <span className="terms-info-value">£5.95 per box</span>
+                  <span className="terms-info-value">Free UK delivery while the current first-batch offer is live. Standard delivery, when charged, is £5.95 per box and is shown before payment.</span>
                 </div>
                 <div className="terms-info-row">
                   <span className="terms-info-label">Estimated Time</span>
@@ -430,7 +411,7 @@ export default function TermsPage() {
               </div>
 
               <div className="terms-h3">Dispatch Times</div>
-              <p className="terms-p">First boxes are dispatched within 3–5 business days of your order being confirmed. Monthly subscription refills are dispatched within 2 business days of your renewal date.</p>
+              <p className="terms-p">First-batch kits are dispatched within 3–5 business days of your order being confirmed. Refill subscription dispatch will be explained separately if and when subscription launches.</p>
 
               <div className="terms-h3">Risk of Loss</div>
               <p className="terms-p">Risk in the goods passes to you when they are delivered to the address provided at checkout. If you are not present at delivery, Royal Mail will follow their standard redelivery or collection process.</p>
@@ -640,7 +621,7 @@ export default function TermsPage() {
               <span className="terms-section-num">Section 13</span>
               <h2 className="terms-section-title">Data Protection &amp; Privacy</h2>
               <p className="terms-p">SOLUM Limited is the data controller for personal data collected via bysolum.co.uk. We process your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
-              <p className="terms-p">We collect and use your personal data to process and fulfil your orders, manage your subscription, send you order and renewal communications, and comply with our legal obligations.</p>
+              <p className="terms-p">We collect and use your personal data to process and fulfil your orders, send order communications, and comply with our legal obligations. If subscription launches later and you choose to join, we will process the data needed to manage that subscription.</p>
               <p className="terms-p">Your data is shared with Stripe (for payment processing) and Royal Mail (for delivery). We do not sell your personal data to third parties.</p>
               <p className="terms-p">You have the right to access, correct, or delete your personal data, and the right to object to or restrict its processing. To exercise these rights, contact contact@bysolum.com.</p>
               <p className="terms-p">For full details of how we collect, use, store, and protect your data, please see our <strong>Privacy Policy</strong>, available at bysolum.co.uk/privacy.</p>
@@ -651,8 +632,8 @@ export default function TermsPage() {
               <span className="terms-section-num">Section 14</span>
               <h2 className="terms-section-title">Changes to These Terms</h2>
               <p className="terms-p">We may update these Terms and Conditions from time to time to reflect changes in the law, our products, or our business practices. The current version will always be available at bysolum.co.uk/terms, with the date of last update shown at the top of this page.</p>
-              <p className="terms-p">For subscription customers, we will notify you of any material changes to these terms by email at least <strong>30 days before the changes take effect</strong>. If you do not accept the revised terms, you may cancel your subscription before they take effect without penalty.</p>
-              <p className="terms-p">Continued use of our website or continued subscription after any changes take effect constitutes acceptance of the revised terms.</p>
+              <p className="terms-p">For confirmed orders, the terms that applied when your order was placed continue to govern that order. If subscription launches later, subscription-specific terms will be presented before you join.</p>
+              <p className="terms-p">Continued use of our website after any changes take effect constitutes acceptance of the revised website terms.</p>
             </section>
 
             {/* 15 — Governing Law */}
@@ -660,7 +641,7 @@ export default function TermsPage() {
               <span className="terms-section-num">Section 15</span>
               <h2 className="terms-section-title">Governing Law &amp; Jurisdiction</h2>
               <p className="terms-p">These Terms and Conditions are governed by and construed in accordance with the laws of <strong>England and Wales</strong>.</p>
-              <p className="terms-p">Any dispute arising out of or relating to these terms, any order, or any subscription shall be subject to the jurisdiction of the courts of England and Wales. Nothing in this clause prevents you from bringing proceedings in any other court of competent jurisdiction where required or permitted by applicable law.</p>
+              <p className="terms-p">Any dispute arising out of or relating to these terms, any order, or any future subscription you actively join shall be subject to the jurisdiction of the courts of England and Wales. Nothing in this clause prevents you from bringing proceedings in any other court of competent jurisdiction where required or permitted by applicable law.</p>
 
               <div className="terms-h3">Dispute Resolution</div>
               <p className="terms-p">Before initiating any formal proceedings, we encourage you to contact us at contact@bysolum.com to attempt to resolve any dispute informally. We will aim to respond within 5 business days and to resolve most issues within 14 business days.</p>

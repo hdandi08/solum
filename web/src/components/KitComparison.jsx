@@ -15,6 +15,12 @@ const CSS = `
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.8vw,86px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
 .kits-header p{font-size:18px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.7;max-width:520px;margin:0;}
 .kit-editorial-note{font-size:13px;letter-spacing:2.8px;text-transform:uppercase;color:rgba(240,236,226,.48);font-weight:700;align-self:end;}
+.kit-decision-matrix{max-width:980px;margin:0 auto 18px;border:1px solid rgba(240,236,226,.12);background:rgba(8,9,11,.36);display:grid;grid-template-columns:repeat(4,1fr);}
+.kit-decision-matrix-item{padding:18px 18px;border-left:1px solid rgba(240,236,226,.08);}
+.kit-decision-matrix-item:first-child{border-left:none;}
+.kit-decision-matrix-label{font-size:10px;letter-spacing:2.7px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:8px;}
+.kit-decision-matrix-copy{font-size:14px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.45;}
+.kit-decision-matrix-copy strong{color:var(--bone);font-weight:600;}
 .kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:980px;margin:0 auto;}
 .kit-card{background:linear-gradient(180deg,rgba(24,28,36,.92),rgba(12,14,18,.98));border:1px solid rgba(240,236,226,.09);padding:42px 34px;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.22);}
 .kit-card.featured{background:linear-gradient(180deg,rgba(26,74,120,.18),rgba(12,14,18,.98));border:1px solid rgba(74,143,199,.55);outline:1px solid rgba(74,143,199,0.18);margin:0;}
@@ -98,6 +104,9 @@ const CSS = `
 @media(max-width:768px){
   .kits-section{padding:48px 0 60px;}
   .kits-header{padding:24px 24px 0;margin-bottom:40px;}
+  .kit-decision-matrix{margin:0 14px 12px;grid-template-columns:1fr;}
+  .kit-decision-matrix-item{border-left:none;border-top:1px solid rgba(240,236,226,.08);}
+  .kit-decision-matrix-item:first-child{border-top:none;}
   .kits-grid{display:flex;flex-direction:column;gap:12px;padding:0 14px;}
   .kit-card:nth-child(1){order:2;}
   .kit-card:nth-child(2){order:1;}
@@ -200,8 +209,26 @@ export default function KitComparison() {
               <div className="k-sec-tag">Choose the ritual you want to start with.</div>
               <h2>The Ritual System.</h2>
             </div>
-            <p>You're not buying products. You're choosing a complete shower discipline: numbered tools, timed steps, and the exact order printed in the box.</p>
+            <p>You're not buying products. You're choosing a complete shower discipline: numbered pieces, timed steps, and the exact order printed in the box.</p>
             <div className="kit-editorial-note">First batch · 250 kits · Ground / Ritual</div>
+          </div>
+          <div className="kit-decision-matrix reveal" aria-label="Kit decision guide">
+            <div className="kit-decision-matrix-item">
+              <div className="kit-decision-matrix-label">What both kits do</div>
+              <div className="kit-decision-matrix-copy">Both include the 10-min daily ritual and 22-min weekly reset: wash, scalp, mitt, back, clay and lotion.</div>
+            </div>
+            <div className="kit-decision-matrix-item">
+              <div className="kit-decision-matrix-label">Where GROUND stops</div>
+              <div className="kit-decision-matrix-copy">GROUND gives you the complete clean foundation. <strong>Without argan oil, the weekly reset stops after the clay rinse.</strong></div>
+            </div>
+            <div className="kit-decision-matrix-item">
+              <div className="kit-decision-matrix-label">What RITUAL adds</div>
+              <div className="kit-decision-matrix-copy">RITUAL adds argan oil and the clay bowl so the weekly reset finishes properly.</div>
+            </div>
+            <div className="kit-decision-matrix-item">
+              <div className="kit-decision-matrix-label">Why argan oil matters</div>
+              <div className="kit-decision-matrix-copy">Argan oil goes into the clay mix, across the scalp and onto damp skin after rinsing.</div>
+            </div>
           </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
@@ -294,7 +321,7 @@ export default function KitComparison() {
                     )}
                     {isSovereign && (
                       <div className="kit-product-replacement">
-                        * Turkish Kese Mitt replaces Italy Towel Mitt · Beidi Black Soap. Both coming soon.
+                        * Turkish Kese Mitt replaces Italy Towel Mitt · Beidi Black Cleanse. Both coming soon.
                       </div>
                     )}
                   </div>

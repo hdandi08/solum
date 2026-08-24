@@ -7,7 +7,6 @@ import RitualInAction from '../components/RitualInAction.jsx';
 import HomeCTABand from '../components/HomeCTABand.jsx';
 import KitComparison from '../components/KitComparison.jsx';
 import SystemSection from '../components/SystemSection.jsx';
-import FrictionStrip from '../components/FrictionStrip.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import UnboxingFilm from '../components/UnboxingFilm.jsx';
 import ProvenanceSection from '../components/ProvenanceSection.jsx';
@@ -95,15 +94,14 @@ export default function FullSite() {
       <Hero />
       <Marquee />
       <ProblemSection />
+      <WhatSolumIs />
+      <SystemSection />
       <PressSection />
       <KitComparison />
-      <SystemSection />
-      <FrictionStrip />
       <ProductLineup />
       <RitualInAction />
       <HomeCTABand />
       <UnboxingFilm />
-      <WhatSolumIs />
       <FAQ />
       <FounderSection />
       <FullBleedBand
