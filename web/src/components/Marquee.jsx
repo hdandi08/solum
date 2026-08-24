@@ -8,7 +8,7 @@ const CSS = `
 
 const ITEMS = [
   'GROUND · RITUAL',
-  'TEN PRODUCTS. ONE SYSTEM.',
+  '9-PIECE SYSTEM. ONE RITUAL.',
   'BODY CARE. NOT FACE, NOT HAIR.',
   'BUILT FOR MEN.',
 ];
