@@ -15,6 +15,13 @@ const CSS = `
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.8vw,86px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
 .kits-header p{font-size:18px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.7;max-width:520px;margin:0;}
 .kit-editorial-note{font-size:13px;letter-spacing:2.8px;text-transform:uppercase;color:rgba(240,236,226,.48);font-weight:700;align-self:end;}
+.kit-difference{max-width:980px;margin:-26px auto 28px;border:1px solid rgba(240,236,226,.1);background:rgba(8,9,11,.48);display:grid;grid-template-columns:1fr;gap:1px;}
+.kit-difference-panel{padding:20px 22px;background:linear-gradient(180deg,rgba(24,28,36,.48),rgba(8,9,11,.72));}
+.kit-difference-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:700;margin-bottom:8px;}
+.kit-difference-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.055em;color:var(--bone);line-height:1;margin-bottom:8px;}
+.kit-difference-copy{font-size:15px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.55;margin:0;}
+.kit-difference-panel.ritual{border-top:1px solid rgba(74,143,199,.34);background:linear-gradient(180deg,rgba(26,74,120,.16),rgba(8,9,11,.78));}
+.kit-difference-panel.ritual .kit-difference-label,.kit-difference-panel.ritual .kit-difference-title{color:var(--blit);}
 .kits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:980px;margin:0 auto;}
 .kit-card{background:linear-gradient(180deg,rgba(24,28,36,.92),rgba(12,14,18,.98));border:1px solid rgba(240,236,226,.09);padding:42px 34px;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.22);}
 .kit-card.featured{background:linear-gradient(180deg,rgba(26,74,120,.18),rgba(12,14,18,.98));border:1px solid rgba(74,143,199,.55);outline:1px solid rgba(74,143,199,0.18);margin:0;}
@@ -37,6 +44,10 @@ const CSS = `
    saying who it's for / what the difference is (replaces the long taglines). */
 .kit-outcome{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:1px;text-transform:uppercase;color:var(--blit);line-height:1.25;margin-bottom:8px;}
 .kit-chooser{font-size:15px;color:var(--mist);font-weight:300;line-height:1.55;margin-bottom:24px;}
+.kit-system-role{border-top:1px solid rgba(240,236,226,.08);border-bottom:1px solid rgba(240,236,226,.08);padding:14px 0;margin:0 0 24px;}
+.kit-system-role-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);font-weight:700;margin-bottom:8px;}
+.kit-system-role-copy{font-size:14px;color:rgba(240,236,226,.75);font-weight:300;line-height:1.55;margin:0;}
+.kit-system-role-copy strong{color:var(--bone);font-weight:600;}
 .kit-prices{margin-bottom:24px;}
 .kit-value-line{font-size:14px;color:var(--mist);font-weight:300;margin-top:8px;}
 .kit-cert-line{font-size:13px;color:var(--stone);font-weight:500;margin-top:5px;}
@@ -97,12 +108,30 @@ const CSS = `
   .kit-card.featured{margin:0;}
   .kit-card{padding:28px 24px;}
   .kit-editorial-note{align-self:start;}
+  .kit-difference{margin:-16px 14px 20px;}
 }
 @media(min-width:840px){
   .kits-header{grid-template-columns:.9fr 1.1fr;align-items:end;}
   .kit-editorial-note{grid-column:2;}
+  .kit-difference{grid-template-columns:1fr 1.15fr;}
+  .kit-difference-panel.ritual{border-top:0;border-left:1px solid rgba(74,143,199,.34);}
 }
 `;
+
+const KIT_ROLES = {
+  ground: (
+    <>
+      <strong>GROUND is the complete clean.</strong> Daily wash, scalp, back, exfoliation, clay reset and lotion.
+      It does not include the argan oil deep-ritual step or the clay bowl.
+    </>
+  ),
+  ritual: (
+    <>
+      <strong>RITUAL is the complete deep ritual.</strong> Everything in GROUND + Organic Argan Body Oil + Clay Mixing Bowl.
+      Used in the clay mix, on the scalp, and pressed into damp skin after rinsing.
+    </>
+  ),
+};
 
 function KitGallery({ name, images }) {
   const ref = useRef(null);
@@ -174,6 +203,22 @@ export default function KitComparison() {
             <p>You're not buying products. You're choosing a complete shower discipline: numbered tools, timed steps, and the exact order printed in the box.</p>
             <div className="kit-editorial-note">First batch · 250 kits · Ground / Ritual</div>
           </div>
+          <div className="kit-difference reveal" aria-label="Difference between SOLUM kits">
+            <div className="kit-difference-panel">
+              <div className="kit-difference-label">GROUND</div>
+              <div className="kit-difference-title">GROUND is the complete clean.</div>
+              <p className="kit-difference-copy">
+                The daily and weekly clean system: wash, scalp, back, exfoliation, clay reset and lotion.
+              </p>
+            </div>
+            <div className="kit-difference-panel ritual">
+              <div className="kit-difference-label">RITUAL</div>
+              <div className="kit-difference-title">RITUAL is the complete deep ritual.</div>
+              <p className="kit-difference-copy">
+                Everything in GROUND + Organic Argan Body Oil + Clay Mixing Bowl. Clay clears. Argan feeds.
+              </p>
+            </div>
+          </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
@@ -188,6 +233,12 @@ export default function KitComparison() {
                   <div className="kit-name">{kit.name}</div>
                   <div className="kit-outcome">{kit.outcome}</div>
                   <div className="kit-chooser">{kit.chooser}</div>
+                  {KIT_ROLES[kit.id] && (
+                    <div className="kit-system-role">
+                      <div className="kit-system-role-label">System role</div>
+                      <p className="kit-system-role-copy">{KIT_ROLES[kit.id]}</p>
+                    </div>
+                  )}
                   <div className="kit-prices">
                     <div className="kit-price-first">
                       <span className="kit-price-first-amount">£{kit.firstBoxPrice}</span>

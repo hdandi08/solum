@@ -206,7 +206,7 @@ export const ARTICLES = [
     ],
     cta: {
       heading: 'The Full System',
-      body: 'Every step in this routine is covered by a SOLUM kit. Shower essentials that last, refills that arrive monthly.',
+      body: 'Every step in this routine is covered by a SOLUM kit. When subscription launches, refill boxes will cover the consumables that run out.',
       link: '/full#kits',
       label: 'Choose Your Kit',
     },

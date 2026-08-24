@@ -115,7 +115,7 @@ export default function UnboxingFilm() {
                 </div>
               </div>
             </div>
-            <p className="unbox-caption">Every kit ships as one system. Your refills and your shower essentials, together. Nothing to figure out, nothing missing.</p>
+            <p className="unbox-caption">Every kit ships as one system. When the refill subscription launches, the consumables that run out will be replenished separately. For now, choose the one-time kit that fits your ritual.</p>
           </div>
         </div>
       </section>

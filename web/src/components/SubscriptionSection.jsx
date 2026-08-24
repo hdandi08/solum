@@ -209,7 +209,7 @@ export default function SubscriptionSection() {
                 </div>
               </div>
             </div>
-            <p className="unbox-caption">Every kit ships as one system. Your refills and your shower essentials, together. Nothing to figure out, nothing missing.</p>
+            <p className="unbox-caption">Every kit ships as one system. When the refill subscription launches, the consumables that run out will be replenished separately. For now, choose the one-time kit that fits your ritual.</p>
           </div>
 
           <div className="sub-header reveal">
@@ -223,7 +223,7 @@ export default function SubscriptionSection() {
             <div className="reveal">
               <div className="sub-coming-badge">Coming Soon</div>
               <p style={{ fontSize: '15px', color: 'var(--stone)', fontWeight: 300, lineHeight: 1.7, marginBottom: '20px' }}>
-                This is how the subscription will work. Pay once for your kit. After that, only what you've run out of arrives at your door. One flat monthly price, no matter what ships.
+                When subscription launches, only what you have run out of arrives at your door. One flat monthly price, no matter what ships.
               </p>
               <div className="cadence-list">
                 {CADENCE.map(c => (
