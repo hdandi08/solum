@@ -14,6 +14,7 @@ import ProvenanceSection from '../components/ProvenanceSection.jsx';
 import FullBleedBand from '../components/FullBleedBand.jsx';
 import WhatSolumIs from '../components/WhatSolumIs.jsx';
 import ProblemSection from '../components/ProblemSection.jsx';
+import PressSection from '../components/PressSection.jsx';
 import FounderSection from '../components/FounderSection.jsx';
 import CredibilityStrip from '../components/CredibilityStrip.jsx';
 import FAQ from '../components/FAQ.jsx';
@@ -94,6 +95,7 @@ export default function FullSite() {
       <Hero />
       <Marquee />
       <ProblemSection />
+      <PressSection />
       <KitComparison />
       <SystemSection />
       <FrictionStrip />

@@ -39,7 +39,7 @@ export default function WhatSolumIs() {
       <section className="wsi-section" id="what">
         <div className="wsi-inner">
           <h2 className="wsi-head reveal">
-            The World's First Guided{' '}
+            The First Guided{' '}
             <span className="wsi-swap">
               <span className="wsi-word-body">Body</span>
               <span className="wsi-word-face">Face<span className="wsi-strike" /></span>
