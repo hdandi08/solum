@@ -100,12 +100,12 @@ const CSS = `
 
 /* ── Desktop ───────────────────────────────────────── */
 @media(min-width:960px){
-  .hero{flex-direction:row;height:100svh;min-height:640px;}
-  .hero-cols{flex:0 0 48%;padding:clamp(144px,16vh,176px) 48px 56px;justify-content:flex-start;}
+  .hero{flex-direction:row;height:auto;min-height:calc(100svh + 88px);overflow:visible;align-items:stretch;}
+  .hero-cols{flex:0 0 48%;min-height:calc(100svh + 88px);padding:clamp(124px,14vh,152px) 48px 112px;justify-content:flex-start;}
   .hero-ghost{font-size:clamp(180px,18vw,260px);left:24%;top:50%;}
   .hero-glow{left:24%;}
   /* Right panel: image fills full height */
-  .hero-visual{flex:0 0 52%;width:52%;height:100%;max-height:none;min-height:100%;}
+  .hero-visual{flex:0 0 52%;width:52%;height:auto;max-height:none;min-height:calc(100svh + 88px);}
   .hero-box-img{object-position:center center;}
   .hero-visual-caption{display:block;position:absolute;bottom:16px;right:20px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.4);font-weight:500;z-index:1;}
   .scroll-cue{bottom:40px;left:48px;}

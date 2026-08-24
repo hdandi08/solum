@@ -40,7 +40,17 @@ describe('premium homepage direction', () => {
   it('keeps desktop hero copy clear of the fixed header', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('.hero-cols{flex:0 0 48%;padding:clamp(144px,16vh,176px) 48px 56px;justify-content:flex-start;}');
+    expect(hero).toContain('.hero{flex-direction:row;height:auto;min-height:calc(100svh + 88px);overflow:visible;align-items:stretch;}');
+    expect(hero).toContain('.hero-cols{flex:0 0 48%;min-height:calc(100svh + 88px);padding:clamp(124px,14vh,152px) 48px 112px;justify-content:flex-start;}');
+    expect(hero).toContain('.hero-visual{flex:0 0 52%;width:52%;height:auto;max-height:none;min-height:calc(100svh + 88px);}');
+  });
+
+  it('keeps desktop hero actions above the moving strip', () => {
+    const hero = component('Hero');
+
+    expect(hero).toContain('padding:clamp(124px,14vh,152px) 48px 112px');
+    expect(hero).not.toContain('height:100svh;min-height:640px;');
+    expect(hero).not.toContain('padding:clamp(144px,16vh,176px) 48px 56px');
   });
 
   it('keeps the mobile hero action above the moving strip', () => {
