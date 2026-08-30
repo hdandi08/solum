@@ -150,13 +150,17 @@ describe('premium homepage direction', () => {
     const ritual = component('RitualInAction');
     const guide = dataFile('guide');
 
-    expect(system).toContain('Daily outcome');
-    expect(system).toContain('Weekly reset');
-    expect(system).toContain('Freshness lasts longer, roughness comes down and the back is no longer missed.');
-    expect(system).toContain('Clay clears the surface, argan oil feeds the barrier, and the reset feels complete.');
-    expect(ritual).toContain('What you feel after each step, not just what to do.');
+    expect(system).toContain('Why the order matters');
+    expect(system).toContain('The result comes from sequence.');
+    expect(system).toContain('One bottle, hands, hot water.');
+    expect(system).toContain('Scalp first. Wash. Reach the back. Reset weekly. Finish damp.');
+    expect(system).toContain('Cleaner roots, a properly reached back, smoother skin and a calmer finish after towelling.');
+    expect(system).not.toContain('Nobody ever gave you');
+    expect(system).not.toContain('ritual-ledger');
+    expect(ritual).toContain('First understand the order. Then the product list makes sense.');
     expect(ritual).toContain('Less buildup and a fresher root feel.');
     expect(ritual).toContain('Seals the weekly reset so skin feels fed, not dry.');
+    expect(ritual).toContain('Clay mix, scalp, full-body reset, oil finish.');
     expect(guide).toContain('10-minute daily ritual and a 22-minute weekly deep ritual');
     expect(guide).toContain('10 minutes daily, 22 minutes weekly');
     expect(guide).toContain('Wash first, then use the mitt and back cloth while skin is warm.');
@@ -181,13 +185,13 @@ describe('premium homepage direction', () => {
     expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
   });
 
-  it('orders the homepage as diagnosis, proof, price, contents, then usage', () => {
+  it('orders the homepage as diagnosis, proof, price, usage, then contents', () => {
     const home = page('FullSite');
 
     expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
-    expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<ProductLineup />'));
-    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<RitualInAction />'));
+    expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<RitualInAction />'));
+    expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<ProductLineup />'));
     expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
     expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
     expect(home).not.toContain('<FrictionStrip />');
@@ -201,18 +205,38 @@ describe('premium homepage direction', () => {
     expect(what).not.toContain('Ritual for Men');
   });
 
-  it('uses a ritual ledger as the homepage signature system explanation', () => {
+  it('splits daily and weekly rituals before the product list', () => {
+    const ritual = component('RitualInAction');
+
+    expect(ritual).toContain('ria-ritual-overview');
+    expect(ritual).toContain('Daily Ritual');
+    expect(ritual).toContain('Every shower · 10 minutes');
+    expect(ritual).toContain('Scalp Massager');
+    expect(ritual).toContain('Body Wash');
+    expect(ritual).toContain('Back Scrub Cloth');
+    expect(ritual).toContain('Body Lotion');
+    expect(ritual).toContain('Weekly Deep Reset');
+    expect(ritual).toContain('Once a week · 22 minutes');
+    expect(ritual).toContain('Atlas Clay Mask');
+    expect(ritual).toContain('Argan Body Oil');
+    expect(ritual).toContain('Clay mix');
+    expect(ritual).toContain('skin fed, not dry');
+    expect(ritual).toContain('Watch Daily');
+    expect(ritual).toContain('Watch Weekly');
+    expect(ritual).toContain('key={`${step.ritual}-${step.slug}`}');
+  });
+
+  it('uses a quieter sequence explanation instead of the old dense ritual ledger', () => {
     const system = component('SystemSection');
 
-    expect(system).toContain('ritual-ledger');
-    expect(system).toContain('The Ritual Ledger');
-    expect(system).toContain('10 min daily');
-    expect(system).toContain('22 min weekly');
-    expect(system).toContain('Body zones');
-    expect(system).toContain('Scalp');
-    expect(system).toContain('Back');
-    expect(system).toContain('Skin finish');
-    expect(system).toContain('Daily does the maintenance. Weekly does the reset.');
+    expect(system).toContain('sequence-proof');
+    expect(system).toContain('Why the order matters');
+    expect(system).toContain('Old shower');
+    expect(system).toContain('SOLUM sequence');
+    expect(system).toContain('What changes');
+    expect(system).toContain('The daily ritual maintains. The weekly ritual resets.');
+    expect(system).not.toContain('The Ritual Ledger');
+    expect(system).not.toContain('03 works after clay');
     expect(system).not.toContain('body-diagram');
   });
 

@@ -96,8 +96,8 @@ export default function FullSite() {
       <ProblemSection />
       <PressSection />
       <KitComparison />
-      <ProductLineup />
       <RitualInAction />
+      <ProductLineup />
       <WhatSolumIs />
       <SystemSection />
       <HomeCTABand />
