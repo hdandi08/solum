@@ -87,11 +87,15 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('.hero-visual .hero-box-img,.hero-visual video{object-position:center 18%;}');
     expect(hero).toContain('rgba(8,9,11,0.82) 0%');
     expect(hero).toContain('rgba(8,9,11,0.02) 72%');
-    expect(hero).toContain('background:rgba(8,9,11,.26)');
-    expect(hero).toContain('backdrop-filter:blur(4px)');
+    expect(hero).toContain(
+      '.hero-editorial-frame{padding:0;background:transparent;border-color:transparent;border-top-color:transparent;box-shadow:none;backdrop-filter:none;}',
+    );
+    expect(hero).toContain('.hero-content{text-shadow:0 2px 18px rgba(0,0,0,.55);}');
     expect(hero).toContain('.hero-title{font-size:clamp(36px,11vw,56px);margin-bottom:16px;}');
     expect(hero).toContain('.btn-primary{padding:15px 32px;}');
     expect(hero).toContain('.hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}');
+    expect(hero).not.toContain('background:rgba(8,9,11,.26)');
+    expect(hero).not.toContain('backdrop-filter:blur(4px)');
     expect(hero).not.toContain('background:rgba(8,9,11,.46)');
     expect(hero).not.toContain('.hero-editorial-frame{padding:22px 18px 20px;background:rgba(8,9,11,.64);}');
   });

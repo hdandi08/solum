@@ -91,7 +91,8 @@ const CSS = `
     background:linear-gradient(to top,rgba(8,9,11,0.82) 0%,rgba(8,9,11,0.54) 28%,rgba(8,9,11,0.14) 52%,rgba(8,9,11,0.02) 72%,rgba(8,9,11,0.1) 100%);}
   /* keep the film readable by dropping secondary proof and metadata on mobile. */
   .hero-scope,.scroll-cue{display:none;}
-  .hero-editorial-frame{padding:16px 15px 16px;background:rgba(8,9,11,.26);border-color:rgba(240,236,226,.1);border-top-color:rgba(240,236,226,.2);box-shadow:0 14px 40px rgba(0,0,0,.14);backdrop-filter:blur(4px);}
+  .hero-content{text-shadow:0 2px 18px rgba(0,0,0,.55);}
+  .hero-editorial-frame{padding:0;background:transparent;border-color:transparent;border-top-color:transparent;box-shadow:none;backdrop-filter:none;}
   .hero-kicker{margin-bottom:12px;}
   .hero-line{margin-bottom:14px;}
   .hero-sub-more{display:none;}
