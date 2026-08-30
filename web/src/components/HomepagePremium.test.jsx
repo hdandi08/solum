@@ -213,6 +213,9 @@ describe('premium homepage direction', () => {
     const ritual = component('RitualInAction');
 
     expect(ritual).toContain('ria-ritual-overview');
+    expect(ritual).toContain('ria-ritual-block daily');
+    expect(ritual).toContain('ria-ritual-block weekly');
+    expect(ritual).toContain('aria-label={`${ritual.title} videos`}');
     expect(ritual).toContain('Daily Ritual');
     expect(ritual).toContain('Every shower · 10 minutes');
     expect(ritual).toContain('Scalp Massager');
@@ -225,9 +228,11 @@ describe('premium homepage direction', () => {
     expect(ritual).toContain('Argan Body Oil');
     expect(ritual).toContain('Clay mix');
     expect(ritual).toContain('skin fed, not dry');
-    expect(ritual).toContain('Watch Daily');
-    expect(ritual).toContain('Watch Weekly');
     expect(ritual).toContain('key={`${step.ritual}-${step.slug}`}');
+    expect(ritual).not.toContain('Watch Daily');
+    expect(ritual).not.toContain('Watch Weekly');
+    expect(ritual).not.toContain('chooseRitual');
+    expect(ritual).not.toContain('activeRitual');
   });
 
   it('uses a quieter sequence explanation instead of the old dense ritual ledger', () => {
