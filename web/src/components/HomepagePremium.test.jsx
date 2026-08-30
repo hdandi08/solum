@@ -30,19 +30,13 @@ describe('premium homepage direction', () => {
 
     expect(hero).toContain('The shower system for men');
     expect(hero).toContain('Your shower cleans the surface.<br />We give you complete clean that lasts longer.');
-    expect(hero).toContain("A complete men's shower system for the places normal routines miss: back, scalp, intimate areas and skin barrier.");
-    expect(hero).toContain('Products plus the exact method, so your whole body feels properly clean for longer.');
-    expect(hero).toContain('Barrier-safe wash');
-    expect(hero).toContain('Back scrub');
-    expect(hero).toContain('Scalp reset');
-    expect(hero).toContain('Intimate clean');
-    expect(hero).toContain('Damp-skin finish');
-    expect(hero).toContain('Not just more products. The missing method for the whole body.');
-    expect(hero).toContain('hero-tags');
-    expect(hero).toContain('.hero-tags{display:flex;flex-wrap:wrap;');
+    expect(hero).toContain('The products and method for the places normal showers miss: back, scalp, intimate areas and the damp-skin finish.');
     expect(hero).not.toContain('A complete ritual for skin, scalp and everything below the neck.');
     expect(hero).not.toContain('Your shower is missing<br />half the system.');
     expect(hero).not.toContain('SOLUM gives you the products and the exact method');
+    expect(hero).not.toContain('Barrier-safe wash');
+    expect(hero).not.toContain('hero-tags');
+    expect(hero).not.toContain('hero-method-note');
     expect(hero).toContain('See the Kits');
     expect(hero).toContain('Read the press');
     expect(hero).not.toContain('Shop the Ritual');
