@@ -42,7 +42,10 @@ const CSS = `
 
 .hero-line{width:56px;height:1px;background:linear-gradient(to right,var(--blue),transparent);margin-bottom:20px;animation:lineIn 1s ease 1s both;transform-origin:left;}
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
-.hero-subline{font-size:18px;font-weight:300;letter-spacing:.25px;color:var(--mist);line-height:1.65;margin-bottom:30px;max-width:520px;animation:fadeUp .8s ease .9s both;}
+.hero-subline{font-size:18px;font-weight:300;letter-spacing:.25px;color:var(--mist);line-height:1.65;margin-bottom:18px;max-width:520px;animation:fadeUp .8s ease .9s both;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;animation:fadeUp .8s ease .96s both;}
+.hero-tag{font-size:10px;letter-spacing:2.3px;text-transform:uppercase;color:var(--bone);border:1px solid rgba(240,236,226,.22);background:rgba(8,9,11,.2);padding:7px 10px;line-height:1;}
+.hero-method-note{font-size:13px;color:rgba(240,236,226,.6);font-weight:300;letter-spacing:.35px;line-height:1.45;margin:0 0 30px;max-width:500px;animation:fadeUp .8s ease .99s both;}
 .hero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 30px;animation:fadeUp .8s ease .98s both;}
 .hero-meta-item{padding:13px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;}
 .hero-meta-item:last-child{border-right:0;}
@@ -98,6 +101,9 @@ const CSS = `
   .hero-sub-more{display:none;}
   .hero-title{font-size:clamp(36px,11vw,56px);margin-bottom:16px;}
   .hero-subline{font-size:14px;line-height:1.45;margin-bottom:18px;}
+  .hero-tags{gap:6px;margin:0 0 14px;}
+  .hero-tag{font-size:9px;letter-spacing:1.8px;padding:6px 8px;background:rgba(8,9,11,.18);}
+  .hero-method-note{display:none;}
   .btn-primary{padding:15px 32px;}
   .hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}
 }
@@ -128,13 +134,18 @@ export default function Hero() {
             <div className="hero-editorial-frame">
               <div className="hero-kicker">The shower system for men</div>
               <h1 className="hero-title">
-                Your shower is missing<br />half the system.
+                Your shower cleans the surface.<br />We give you a complete clean.
               </h1>
               <div className="hero-line" />
               <p className="hero-subline">
-                <span className="hero-sub-symptoms">SOLUM gives you the products and the exact method: sensitive body wash, scalp reset, back and full-body scrub, intimate clean and damp-skin lotion.</span>{' '}
-                <span className="hero-sub-more">So clean lasts longer. Not just more products. The missing method for the whole body.</span>
+                <span className="hero-sub-symptoms">A complete men's shower system for the places normal routines miss: back, scalp, intimate areas and skin barrier. Products plus the exact method, so your whole body feels properly clean for longer.</span>
               </p>
+              <div className="hero-tags" aria-label="SOLUM system highlights">
+                {['Barrier-safe wash', 'Back scrub', 'Scalp reset', 'Intimate clean', 'Damp-skin finish'].map((tag) => (
+                  <span className="hero-tag" key={tag}>{tag}</span>
+                ))}
+              </div>
+              <p className="hero-method-note">Not just more products. The missing method for the whole body.</p>
               <div className="hero-meta" aria-label="SOLUM ritual summary">
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">System</span>
