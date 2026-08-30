@@ -86,15 +86,18 @@ const CSS = `
 @media(max-width:959px){
   .hero{min-height:100svh;}
   .hero-visual{position:absolute;inset:0;width:100%;height:100%;min-height:100%;max-height:none;z-index:0;}
-  .hero-visual .hero-box-img,.hero-visual video{object-position:center 22%;}
+  .hero-visual .hero-box-img,.hero-visual video{object-position:center 18%;}
   .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:100svh;padding:108px 24px 72px;
-    background:linear-gradient(to top,rgba(8,9,11,0.86) 0%,rgba(8,9,11,0.62) 30%,rgba(8,9,11,0.24) 58%,rgba(8,9,11,0.04) 84%,rgba(8,9,11,0.18) 100%);}
+    background:linear-gradient(to top,rgba(8,9,11,0.82) 0%,rgba(8,9,11,0.54) 28%,rgba(8,9,11,0.14) 52%,rgba(8,9,11,0.02) 72%,rgba(8,9,11,0.1) 100%);}
   /* keep the film readable by dropping secondary proof and metadata on mobile. */
   .hero-scope,.scroll-cue{display:none;}
-  .hero-editorial-frame{padding:18px 16px 18px;background:rgba(8,9,11,.46);box-shadow:0 18px 50px rgba(0,0,0,.18);}
+  .hero-editorial-frame{padding:16px 15px 16px;background:rgba(8,9,11,.26);border-color:rgba(240,236,226,.1);border-top-color:rgba(240,236,226,.2);box-shadow:0 14px 40px rgba(0,0,0,.14);backdrop-filter:blur(4px);}
+  .hero-kicker{margin-bottom:12px;}
+  .hero-line{margin-bottom:14px;}
   .hero-sub-more{display:none;}
-  .hero-title{font-size:clamp(42px,13vw,62px);}
-  .hero-subline{font-size:15px;line-height:1.5;margin-bottom:22px;}
+  .hero-title{font-size:clamp(36px,11vw,56px);margin-bottom:16px;}
+  .hero-subline{font-size:14px;line-height:1.45;margin-bottom:18px;}
+  .btn-primary{padding:15px 32px;}
   .hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}
 }
 
