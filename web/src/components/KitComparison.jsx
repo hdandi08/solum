@@ -15,7 +15,7 @@ const CSS = `
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.8vw,86px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
 .kits-header p{font-size:18px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.7;max-width:520px;margin:0;}
 .kit-editorial-note{font-size:13px;letter-spacing:2.8px;text-transform:uppercase;color:rgba(240,236,226,.48);font-weight:700;align-self:end;}
-.kit-decision-matrix{max-width:980px;margin:0 auto 18px;border:1px solid rgba(240,236,226,.12);background:rgba(8,9,11,.36);display:grid;grid-template-columns:repeat(4,1fr);}
+.kit-decision-matrix{max-width:980px;margin:0 auto 18px;border:1px solid rgba(240,236,226,.12);background:rgba(8,9,11,.36);display:grid;grid-template-columns:repeat(3,1fr);}
 .kit-decision-matrix-item{padding:18px 18px;border-left:1px solid rgba(240,236,226,.08);}
 .kit-decision-matrix-item:first-child{border-left:none;}
 .kit-decision-matrix-label{font-size:10px;letter-spacing:2.7px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:8px;}
@@ -126,16 +126,16 @@ const CSS = `
 
 const KIT_DECISIONS = {
   ground: {
-    role: 'The essential system',
-    title: 'Includes 10-min daily and 22-min weekly deep reset',
-    summary: 'Outcome: less odour, smoother skin and a back you can actually reach. Both kits include the 10-min daily ritual and the 22-min weekly deep reset.',
-    change: 'GROUND stops before the argan oil finish and clay bowl. You still get the clean foundation and clay reset, but not the fed-skin finish.',
+    role: 'The clean foundation',
+    title: 'Properly clean.',
+    summary: 'Daily clean, scalp, back, exfoliation, clay reset and lotion.',
+    change: 'It stops before the argan oil finish. Choose it if you want the foundation first.',
   },
   ritual: {
-    role: 'The full ritual',
-    title: 'Includes 10-min daily and complete 22-min weekly deep reset',
-    summary: 'Outcome: barrier feels fed, comfortable and complete after the weekly oil step, not just cleaner.',
-    change: 'RITUAL adds argan oil and the clay bowl. It goes into the clay mix, across the scalp, and onto damp skin after rinsing.',
+    role: 'The complete finish',
+    title: 'Properly clean. Properly fed.',
+    summary: 'Everything in GROUND, plus argan oil and the clay bowl.',
+    change: 'Argan oil completes the weekly reset: mixed into clay, worked through scalp and pressed into damp skin.',
   },
 };
 
@@ -209,28 +209,24 @@ export default function KitComparison() {
         <div className="kits-inner">
           <div className="kits-header reveal">
             <div>
-              <div className="k-sec-tag">Choose the ritual you want to start with.</div>
-              <h2>The Ritual System.</h2>
+              <div className="k-sec-tag">Two ways to start.</div>
+              <h2>GROUND or RITUAL.</h2>
             </div>
-            <p>You're not buying products. You're choosing a complete shower discipline: numbered pieces, timed steps, and the exact order printed in the box.</p>
+            <p>Both kits give you the products and the exact routine. GROUND gets you properly clean. RITUAL gets you properly clean and properly fed.</p>
             <div className="kit-editorial-note">First batch · 250 kits · Ground / Ritual</div>
           </div>
           <div className="kit-decision-matrix reveal" aria-label="Kit decision guide">
             <div className="kit-decision-matrix-item">
-              <div className="kit-decision-matrix-label">What both kits do</div>
-              <div className="kit-decision-matrix-copy">Both include the 10-min daily ritual and 22-min weekly reset: wash, scalp, mitt, back, clay and lotion.</div>
+              <div className="kit-decision-matrix-label">GROUND</div>
+              <div className="kit-decision-matrix-copy">Start here if you want the full body clean without the oil finish.</div>
             </div>
             <div className="kit-decision-matrix-item">
-              <div className="kit-decision-matrix-label">Where GROUND stops</div>
-              <div className="kit-decision-matrix-copy">GROUND gives you the complete clean foundation. <strong>Without argan oil, the weekly reset stops after the clay rinse.</strong></div>
+              <div className="kit-decision-matrix-label">RITUAL</div>
+              <div className="kit-decision-matrix-copy">Choose this if you want the weekly reset to end with skin fed, not just rinsed.</div>
             </div>
             <div className="kit-decision-matrix-item">
-              <div className="kit-decision-matrix-label">What RITUAL adds</div>
-              <div className="kit-decision-matrix-copy">RITUAL adds argan oil and the clay bowl so the weekly reset finishes properly.</div>
-            </div>
-            <div className="kit-decision-matrix-item">
-              <div className="kit-decision-matrix-label">Why argan oil matters</div>
-              <div className="kit-decision-matrix-copy">Argan oil goes into the clay mix, across the scalp and onto damp skin after rinsing.</div>
+              <div className="kit-decision-matrix-label">Simple rule</div>
+              <div className="kit-decision-matrix-copy">If you are unsure, choose RITUAL. It is the system as designed.</div>
             </div>
           </div>
           <div className="kits-grid reveal">

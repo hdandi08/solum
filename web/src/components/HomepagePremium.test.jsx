@@ -111,11 +111,13 @@ describe('premium homepage direction', () => {
     const problem = component('ProblemSection');
 
     expect(problem).toContain('Why the old shower fails');
-    expect(problem).toContain('Clean is not the same as cared for.');
-    expect(problem).toContain('Most men use one 3-in-1 bottle, their hands and hot water, then call it done.');
-    expect(problem).toContain('That is why rough skin, the missed back and scalp buildup survive the shower.');
+    expect(problem).toContain('Your shower is doing half the job.');
+    expect(problem).toContain('Most men are not dirty. Their routine is incomplete.');
+    expect(problem).toContain('One bottle. Hot water. Hands.');
+    expect(problem).toContain('That can clean the front of the body, but it does not properly reach the back, reset the scalp or finish the skin.');
     expect(problem).toContain('Choose Your Kit');
     expect(problem).not.toContain('See the Kits');
+    expect(problem).not.toContain('Clean is not the same as cared for.');
     expect(problem).not.toContain('Most men do not need more products.');
     expect(problem).not.toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
     expect(problem).not.toContain("It isn't hygiene.");
@@ -129,10 +131,10 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('problem-diagnosis');
     expect(problem).toContain('The old method');
     expect(problem).toContain('The SOLUM method');
-    expect(problem).toContain('One bottle, hands, hot water.');
-    expect(problem).toContain('Order, reach, reset, finish.');
+    expect(problem).toContain('Rinse and hope.');
+    expect(problem).toContain('Scalp. Body. Back. Finish.');
+    expect(problem).toContain('.problem-diagnosis{display:grid;grid-template-columns:repeat(3,1fr);');
     expect(problem).not.toContain('problem-card-ic');
-    expect(problem).not.toContain('grid-template-columns:repeat(3,1fr)');
   });
 
   it('keeps selling sections outcome-led rather than detail-led', () => {
@@ -140,10 +142,10 @@ describe('premium homepage direction', () => {
     const provenance = component('ProvenanceSection');
     const products = component('ProductLineup');
 
-    expect(problem).toContain('Freshness that lasts');
-    expect(problem).toContain('Smoother skin you can feel');
-    expect(problem).toContain('A back that feels properly clean');
-    expect(problem).toContain('Comfortable skin that does not swing from tight to greasy');
+    expect(problem).toContain('Back finally reached');
+    expect(problem).toContain('Scalp feels lighter');
+    expect(problem).toContain('Skin stays comfortable');
+    expect(problem).toContain('SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish for the best outcome.');
     expect(products).toContain('See what each step changes before you tap into the detail.');
     expect(provenance).toContain('Chosen For The Result');
     expect(provenance).toContain('Skin feels calm after washing and comfortable after towelling.');
@@ -165,7 +167,7 @@ describe('premium homepage direction', () => {
     expect(system).toContain('Cleaner roots, a properly reached back, smoother skin and a calmer finish after towelling.');
     expect(system).not.toContain('Nobody ever gave you');
     expect(system).not.toContain('ritual-ledger');
-    expect(ritual).toContain('First understand the order. Then the product list makes sense.');
+    expect(ritual).toContain('First see the method. Then the product list makes sense.');
     expect(ritual).toContain('Less buildup and a fresher root feel.');
     expect(ritual).toContain('Seals the weekly reset so skin feels fed, not dry.');
     expect(ritual).toContain('Clay mix, scalp, full-body reset, oil finish.');
@@ -256,27 +258,27 @@ describe('premium homepage direction', () => {
   it('makes the kit offer feel like a curated ritual rather than a generic product grid', () => {
     const kits = component('KitComparison');
 
-    expect(kits).toContain('The Ritual System.');
+    expect(kits).toContain('GROUND or RITUAL.');
     expect(kits).toContain('kit-editorial-note');
-    expect(kits).toContain('Choose the ritual you want to start with.');
+    expect(kits).toContain('Two ways to start.');
+    expect(kits).toContain('Both kits give you the products and the exact routine. GROUND gets you properly clean. RITUAL gets you properly clean and properly fed.');
     expect(kits).toContain('Buy {kit.name} · £{kit.firstBoxPrice}');
     expect(kits).not.toContain('Get {kit.name}');
+    expect(kits).not.toContain("You're not buying products.");
   });
 
   it('explains the real difference between GROUND and RITUAL before the product toggle', () => {
     const kits = component('KitComparison');
 
     expect(kits).toContain('kit-card-decision');
-    expect(kits).toContain('The essential system');
-    expect(kits).toContain('The full ritual');
-    expect(kits).toContain('Includes 10-min daily and 22-min weekly deep reset');
-    expect(kits).toContain('Includes 10-min daily and complete 22-min weekly deep reset');
-    expect(kits).toContain('Both kits include the 10-min daily ritual and the 22-min weekly deep reset.');
-    expect(kits).toContain('GROUND stops before the argan oil finish and clay bowl.');
-    expect(kits).toContain('RITUAL adds argan oil and the clay bowl.');
-    expect(kits).toContain('less odour, smoother skin and a back you can actually reach');
-    expect(kits).toContain('barrier feels fed, comfortable and complete');
-    expect(kits).toContain('It goes into the clay mix, across the scalp, and onto damp skin after rinsing.');
+    expect(kits).toContain('The clean foundation');
+    expect(kits).toContain('The complete finish');
+    expect(kits).toContain('Properly clean.');
+    expect(kits).toContain('Properly clean. Properly fed.');
+    expect(kits).toContain('Daily clean, scalp, back, exfoliation, clay reset and lotion.');
+    expect(kits).toContain('Everything in GROUND, plus argan oil and the clay bowl.');
+    expect(kits).toContain('It stops before the argan oil finish.');
+    expect(kits).toContain('Argan oil completes the weekly reset: mixed into clay, worked through scalp and pressed into damp skin.');
     expect(kits).not.toContain('kit-difference');
     expect(kits).not.toContain('kit-outcome');
     expect(kits).not.toContain('kit-chooser');
@@ -288,12 +290,15 @@ describe('premium homepage direction', () => {
     const kits = component('KitComparison');
 
     expect(kits).toContain('kit-decision-matrix');
-    expect(kits).toContain('What both kits do');
-    expect(kits).toContain('Where GROUND stops');
-    expect(kits).toContain('What RITUAL adds');
-    expect(kits).toContain('Why argan oil matters');
-    expect(kits).toContain('Without argan oil, the weekly reset stops after the clay rinse.');
-    expect(kits).toContain('Argan oil goes into the clay mix, across the scalp and onto damp skin after rinsing.');
+    expect(kits).toContain('GROUND');
+    expect(kits).toContain('RITUAL');
+    expect(kits).toContain('Simple rule');
+    expect(kits).toContain('Start here if you want the full body clean without the oil finish.');
+    expect(kits).toContain('Choose this if you want the weekly reset to end with skin fed, not just rinsed.');
+    expect(kits).toContain('If you are unsure, choose RITUAL. It is the system as designed.');
+    expect(kits).not.toContain('What both kits do');
+    expect(kits).not.toContain('Where GROUND stops');
+    expect(kits).not.toContain('Why argan oil matters');
   });
 
   it('makes RITUAL feel like the editorial hero kit while GROUND remains a quiet alternative', () => {

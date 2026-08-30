@@ -17,7 +17,7 @@ const CSS = `
 .problem-method-panel:first-child{border-left:none;}
 .problem-method-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:9px;}
 .problem-method-copy{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--bone);line-height:.96;}
-.problem-diagnosis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+.problem-diagnosis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
 .problem-diagnosis-item{background:rgba(24,28,36,.82);padding:22px 20px;min-height:126px;}
 .problem-diagnosis-num{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(74,143,199,.9);font-weight:700;margin-bottom:18px;}
 .problem-diagnosis-item h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--bone);line-height:1.2;margin-bottom:10px;}
@@ -42,12 +42,9 @@ const CSS = `
 `;
 
 const DIAGNOSIS = [
-  ['Freshness that lasts', 'Feel properly clean for longer than the first hour after a shower.'],
-  ['Smoother skin you can feel', 'Arms, shoulders and thighs stop feeling rough, dull and neglected.'],
-  ['A back that feels properly clean', 'The place most routines miss finally feels as clean as your chest and arms.'],
-  ['A scalp that feels lighter', 'Less scalp odour, less buildup and hair that feels cleaner at the root.'],
-  ['A better post-training reset', 'Freshness that survives the towel, the commute and the rest of the day.'],
-  ['Comfort without the swing', 'Comfortable skin that does not swing from tight to greasy by lunchtime.'],
+  ['Back finally reached', 'The part hands miss feels as clean as the chest and arms.'],
+  ['Scalp feels lighter', 'Buildup is worked loose at the root before the rest of the body starts.'],
+  ['Skin stays comfortable', 'The finish happens while warm skin can still hold moisture.'],
 ];
 
 export default function ProblemSection() {
@@ -59,22 +56,22 @@ export default function ProblemSection() {
           <div className="problem-editorial">
             <div className="problem-head reveal">
               <div className="problem-tag">Why the old shower fails</div>
-              <h2>Clean is not the same as cared for.</h2>
-              <p>The problem is not effort. It is method: most routines never reach the back, reset the scalp or finish the skin properly.</p>
+              <h2>Your shower is doing half the job.</h2>
+              <p>Most men are not dirty. Their routine is incomplete.</p>
             </div>
             <div>
               <div className="problem-truth reveal">
-                <p><strong>Most men use one 3-in-1 bottle, their hands and hot water, then call it done.</strong></p>
-                <p>That is why rough skin, the missed back and scalp buildup survive the shower.</p>
+                <p><strong>One bottle. Hot water. Hands.</strong></p>
+                <p>That can clean the front of the body, but it does not properly reach the back, reset the scalp or finish the skin.</p>
               </div>
               <div className="problem-method reveal">
                 <div className="problem-method-panel">
                   <div className="problem-method-label">The old method</div>
-                  <div className="problem-method-copy">One bottle, hands, hot water.</div>
+                  <div className="problem-method-copy">Rinse and hope.</div>
                 </div>
                 <div className="problem-method-panel">
                   <div className="problem-method-label">The SOLUM method</div>
-                  <div className="problem-method-copy">Order, reach, reset, finish.</div>
+                  <div className="problem-method-copy">Scalp. Body. Back. Finish.</div>
                 </div>
               </div>
               <div className="problem-diagnosis reveal">
@@ -87,7 +84,7 @@ export default function ProblemSection() {
                 ))}
               </div>
               <div className="problem-fix reveal">
-                <p>Body care has been treated like a product shelf. <strong>SOLUM turns the shower you already take into a result you can feel: cleaner back, smoother skin, fresher scalp and lasting comfort.</strong></p>
+                <p>Body care has been treated like a product shelf. <strong>SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish for the best outcome.</strong></p>
               </div>
               <div className="problem-cta-row reveal">
                 <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>

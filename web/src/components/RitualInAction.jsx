@@ -450,7 +450,7 @@ export default function RitualInAction() {
         <div className="ria-head-wrap">
           <div className="ria-eyebrow reveal">Daily and weekly</div>
           <h2 className="ria-head reveal">See the ritual before the products.</h2>
-          <p className="ria-sub reveal">First understand the order. Then the product list makes sense.</p>
+          <p className="ria-sub reveal">First see the method. Then the product list makes sense.</p>
         </div>
 
         <div className="ria-ritual-stack">
