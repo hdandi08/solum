@@ -17,7 +17,7 @@ const CSS = `
 .problem-method-panel:first-child{border-left:none;}
 .problem-method-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:9px;}
 .problem-method-copy{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--bone);line-height:.96;}
-.problem-diagnosis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+.problem-diagnosis{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);}
 .problem-diagnosis-item{background:rgba(24,28,36,.82);padding:22px 20px;min-height:126px;}
 .problem-diagnosis-num{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(74,143,199,.9);font-weight:700;margin-bottom:18px;}
 .problem-diagnosis-item h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--bone);line-height:1.2;margin-bottom:10px;}
@@ -42,9 +42,11 @@ const CSS = `
 `;
 
 const DIAGNOSIS = [
-  ['Back finally reached', 'The part hands miss feels as clean as the chest and arms.'],
-  ['Scalp feels lighter', 'Buildup is worked loose at the root before the rest of the body starts.'],
-  ['Skin stays comfortable', 'The finish happens while warm skin can still hold moisture.'],
+  ['Barrier-safe clean', 'Sensitive body wash cleans without leaving skin tight or stripped.'],
+  ['Back and body scrubbed', 'The mitt and back cloth reach the areas hands miss.'],
+  ['Intimate clean', 'A dedicated cloth gives sensitive zones a more deliberate clean.'],
+  ['Scalp reset', 'The massager works buildup loose at the root.'],
+  ['Clean that lasts', 'The full sequence cleans, scrubs, resets and finishes so your whole body feels properly clean for longer.'],
 ];
 
 export default function ProblemSection() {
@@ -56,13 +58,13 @@ export default function ProblemSection() {
           <div className="problem-editorial">
             <div className="problem-head reveal">
               <div className="problem-tag">Why the old shower fails</div>
-              <h2>Your shower is doing half the job.</h2>
-              <p>Most men are not dirty. Their routine is incomplete.</p>
+              <h2>Most men wash the easy parts and hope the rest is fine.</h2>
+              <p>The problem is not effort. It is coverage, sequence and finish.</p>
             </div>
             <div>
               <div className="problem-truth reveal">
                 <p><strong>One bottle. Hot water. Hands.</strong></p>
-                <p>That can clean the front of the body, but it does not properly reach the back, reset the scalp or finish the skin.</p>
+                <p>That leaves sensitive skin over-stripped, the back under-scrubbed, the scalp heavy and the finish missing.</p>
               </div>
               <div className="problem-method reveal">
                 <div className="problem-method-panel">
@@ -71,7 +73,7 @@ export default function ProblemSection() {
                 </div>
                 <div className="problem-method-panel">
                   <div className="problem-method-label">The SOLUM method</div>
-                  <div className="problem-method-copy">Scalp. Body. Back. Finish.</div>
+                  <div className="problem-method-copy">Cleanse. Scrub. Reset. Finish.</div>
                 </div>
               </div>
               <div className="problem-diagnosis reveal">
@@ -84,7 +86,7 @@ export default function ProblemSection() {
                 ))}
               </div>
               <div className="problem-fix reveal">
-                <p>Body care has been treated like a product shelf. <strong>SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish for the best outcome.</strong></p>
+                <p>Body care has been treated like a product shelf. <strong>SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish so clean lasts.</strong></p>
               </div>
               <div className="problem-cta-row reveal">
                 <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>

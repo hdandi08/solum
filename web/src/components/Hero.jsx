@@ -126,12 +126,15 @@ export default function Hero() {
         <div className="hero-cols">
           <div className="hero-content">
             <div className="hero-editorial-frame">
-              <div className="hero-kicker">Body care, rebuilt as a ritual</div>
+              <div className="hero-kicker">The shower system for men</div>
               <h1 className="hero-title">
-                Your body.<br />Finally done right.
+                Your shower is missing<br />half the system.
               </h1>
               <div className="hero-line" />
-              <p className="hero-subline"><span className="hero-sub-symptoms">For the back, scalp and skin your shower keeps missing.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
+              <p className="hero-subline">
+                <span className="hero-sub-symptoms">SOLUM gives you the products and the exact method: sensitive body wash, scalp reset, back and full-body scrub, intimate clean and damp-skin lotion.</span>{' '}
+                <span className="hero-sub-more">So clean lasts longer. Not just more products. The missing method for the whole body.</span>
+              </p>
               <div className="hero-meta" aria-label="SOLUM ritual summary">
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">System</span>

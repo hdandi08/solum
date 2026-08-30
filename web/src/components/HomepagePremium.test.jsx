@@ -28,9 +28,11 @@ describe('premium homepage direction', () => {
   it('opens with an editorial ritual thesis instead of a hard problem headline', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('Body care, rebuilt as a ritual');
-    expect(hero).toContain('Your body.<br />Finally done right.');
-    expect(hero).toContain('For the back, scalp and skin your shower keeps missing.');
+    expect(hero).toContain('The shower system for men');
+    expect(hero).toContain('Your shower is missing<br />half the system.');
+    expect(hero).toContain('SOLUM gives you the products and the exact method: sensitive body wash, scalp reset, back and full-body scrub, intimate clean and damp-skin lotion.');
+    expect(hero).toContain('So clean lasts longer.');
+    expect(hero).toContain('Not just more products. The missing method for the whole body.');
     expect(hero).not.toContain('A complete ritual for skin, scalp and everything below the neck.');
     expect(hero).toContain('See the Kits');
     expect(hero).toContain('Read the press');
@@ -111,12 +113,13 @@ describe('premium homepage direction', () => {
     const problem = component('ProblemSection');
 
     expect(problem).toContain('Why the old shower fails');
-    expect(problem).toContain('Your shower is doing half the job.');
-    expect(problem).toContain('Most men are not dirty. Their routine is incomplete.');
+    expect(problem).toContain('Most men wash the easy parts and hope the rest is fine.');
+    expect(problem).toContain('The problem is not effort. It is coverage, sequence and finish.');
     expect(problem).toContain('One bottle. Hot water. Hands.');
-    expect(problem).toContain('That can clean the front of the body, but it does not properly reach the back, reset the scalp or finish the skin.');
+    expect(problem).toContain('That leaves sensitive skin over-stripped, the back under-scrubbed, the scalp heavy and the finish missing.');
     expect(problem).toContain('Choose Your Kit');
     expect(problem).not.toContain('See the Kits');
+    expect(problem).not.toContain('Your shower is doing half the job.');
     expect(problem).not.toContain('Clean is not the same as cared for.');
     expect(problem).not.toContain('Most men do not need more products.');
     expect(problem).not.toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
@@ -132,8 +135,8 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('The old method');
     expect(problem).toContain('The SOLUM method');
     expect(problem).toContain('Rinse and hope.');
-    expect(problem).toContain('Scalp. Body. Back. Finish.');
-    expect(problem).toContain('.problem-diagnosis{display:grid;grid-template-columns:repeat(3,1fr);');
+    expect(problem).toContain('Cleanse. Scrub. Reset. Finish.');
+    expect(problem).toContain('.problem-diagnosis{display:grid;grid-template-columns:repeat(5,1fr);');
     expect(problem).not.toContain('problem-card-ic');
   });
 
@@ -142,10 +145,13 @@ describe('premium homepage direction', () => {
     const provenance = component('ProvenanceSection');
     const products = component('ProductLineup');
 
-    expect(problem).toContain('Back finally reached');
-    expect(problem).toContain('Scalp feels lighter');
-    expect(problem).toContain('Skin stays comfortable');
-    expect(problem).toContain('SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish for the best outcome.');
+    expect(problem).toContain('Barrier-safe clean');
+    expect(problem).toContain('Back and body scrubbed');
+    expect(problem).toContain('Intimate clean');
+    expect(problem).toContain('Scalp reset');
+    expect(problem).toContain('Clean that lasts');
+    expect(problem).toContain('The full sequence cleans, scrubs, resets and finishes so your whole body feels properly clean for longer.');
+    expect(problem).toContain('SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish so clean lasts.');
     expect(products).toContain('See what each step changes before you tap into the detail.');
     expect(provenance).toContain('Chosen For The Result');
     expect(provenance).toContain('Skin feels calm after washing and comfortable after towelling.');
