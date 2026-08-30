@@ -86,18 +86,16 @@ const CSS = `
 @media(max-width:959px){
   .hero{min-height:100svh;}
   .hero-visual{position:absolute;inset:0;width:100%;height:100%;min-height:100%;max-height:none;z-index:0;}
-  .hero-visual .hero-box-img,.hero-visual video{object-position:center 35%;}
+  .hero-visual .hero-box-img,.hero-visual video{object-position:center 22%;}
   .hero-cols{position:relative;z-index:1;justify-content:flex-end;min-height:100svh;padding:108px 24px 72px;
-    background:linear-gradient(to top,rgba(8,9,11,0.94) 0%,rgba(8,9,11,0.8) 30%,rgba(8,9,11,0.4) 58%,rgba(8,9,11,0.08) 86%,rgba(8,9,11,0.5) 100%);}
-  /* keep the film readable by dropping the long paragraph and pills on mobile. */
+    background:linear-gradient(to top,rgba(8,9,11,0.86) 0%,rgba(8,9,11,0.62) 30%,rgba(8,9,11,0.24) 58%,rgba(8,9,11,0.04) 84%,rgba(8,9,11,0.18) 100%);}
+  /* keep the film readable by dropping secondary proof and metadata on mobile. */
   .hero-scope,.scroll-cue{display:none;}
-  .hero-editorial-frame{padding:22px 18px 20px;background:rgba(8,9,11,.64);}
+  .hero-editorial-frame{padding:18px 16px 18px;background:rgba(8,9,11,.46);box-shadow:0 18px 50px rgba(0,0,0,.18);}
   .hero-sub-more{display:none;}
   .hero-title{font-size:clamp(42px,13vw,62px);}
   .hero-subline{font-size:15px;line-height:1.5;margin-bottom:22px;}
-  .hero-meta{grid-template-columns:1fr;margin-bottom:22px;}
-  .hero-meta-item{border-right:0;border-bottom:1px solid var(--line);padding:11px 0;}
-  .hero-meta-item:last-child{border-bottom:0;}
+  .hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}
 }
 
 /* ── Desktop ───────────────────────────────────────── */
@@ -129,7 +127,7 @@ export default function Hero() {
                 Your body.<br />Finally done right.
               </h1>
               <div className="hero-line" />
-              <p className="hero-subline"><span className="hero-sub-symptoms">A complete ritual for skin, scalp and everything below the neck.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
+              <p className="hero-subline"><span className="hero-sub-symptoms">For the back, scalp and skin your shower keeps missing.</span> <span className="hero-sub-more">Built for the ten minutes you already spend in the shower: what to use, when, and exactly how.</span></p>
               <div className="hero-meta" aria-label="SOLUM ritual summary">
                 <div className="hero-meta-item">
                   <span className="hero-meta-label">System</span>

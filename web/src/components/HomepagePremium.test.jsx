@@ -30,7 +30,8 @@ describe('premium homepage direction', () => {
 
     expect(hero).toContain('Body care, rebuilt as a ritual');
     expect(hero).toContain('Your body.<br />Finally done right.');
-    expect(hero).toContain('A complete ritual for skin, scalp and everything below the neck.');
+    expect(hero).toContain('For the back, scalp and skin your shower keeps missing.');
+    expect(hero).not.toContain('A complete ritual for skin, scalp and everything below the neck.');
     expect(hero).toContain('See the Kits');
     expect(hero).toContain('Read the press');
     expect(hero).not.toContain('Shop the Ritual');
@@ -78,6 +79,17 @@ describe('premium homepage direction', () => {
     expect(hero).not.toContain('min-height:88svh;padding:108px 24px 36px');
     expect(hero).toContain('.hero{min-height:100svh;}');
     expect(hero).toContain('min-height:100svh;padding:108px 24px 72px');
+  });
+
+  it('lets the premium box lead on mobile without crowding the first fold', () => {
+    const hero = component('Hero');
+
+    expect(hero).toContain('.hero-visual .hero-box-img,.hero-visual video{object-position:center 22%;}');
+    expect(hero).toContain('rgba(8,9,11,0.86) 0%');
+    expect(hero).toContain('rgba(8,9,11,0.18) 100%');
+    expect(hero).toContain('.hero-editorial-frame{padding:18px 16px 18px;background:rgba(8,9,11,.46);');
+    expect(hero).toContain('.hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}');
+    expect(hero).not.toContain('.hero-editorial-frame{padding:22px 18px 20px;background:rgba(8,9,11,.64);}');
   });
 
   it('keeps homepage-visible copy free of dash separators', () => {
