@@ -29,7 +29,7 @@ describe('premium homepage direction', () => {
     const hero = component('Hero');
 
     expect(hero).toContain('The shower system for men');
-    expect(hero).toContain('Your shower cleans the surface.<br />We give you a complete clean.');
+    expect(hero).toContain('Your shower cleans the surface.<br />We give you complete clean that lasts longer.');
     expect(hero).toContain("A complete men's shower system for the places normal routines miss: back, scalp, intimate areas and skin barrier.");
     expect(hero).toContain('Products plus the exact method, so your whole body feels properly clean for longer.');
     expect(hero).toContain('Barrier-safe wash');

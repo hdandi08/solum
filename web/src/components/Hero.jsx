@@ -134,7 +134,7 @@ export default function Hero() {
             <div className="hero-editorial-frame">
               <div className="hero-kicker">The shower system for men</div>
               <h1 className="hero-title">
-                Your shower cleans the surface.<br />We give you a complete clean.
+                Your shower cleans the surface.<br />We give you complete clean that lasts longer.
               </h1>
               <div className="hero-line" />
               <p className="hero-subline">
