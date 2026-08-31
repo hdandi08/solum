@@ -74,7 +74,7 @@ const CSS = `
 
 /* ── Tablet ────────────────────────────────────────── */
 @media(max-width:639px){
-  .hero-title{font-size:36px;line-height:.96;}
+  .hero-title{font-size:31px;line-height:.98;}
 }
 @media(min-width:640px){
   .hero-actions{flex-direction:row;align-items:center;}
@@ -96,7 +96,7 @@ const CSS = `
   .hero-kicker{margin-bottom:12px;}
   .hero-line{margin-bottom:14px;}
   .hero-sub-more{display:none;}
-  .hero-title{font-size:clamp(36px,11vw,56px);margin-bottom:16px;}
+  .hero-title{font-size:clamp(31px,9.4vw,46px);line-height:.98;margin-bottom:14px;}
   .hero-subline{font-size:14px;line-height:1.45;margin-bottom:18px;}
   .btn-primary{padding:15px 32px;}
   .hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}
@@ -132,7 +132,7 @@ export default function Hero() {
               </h1>
               <div className="hero-line" />
               <p className="hero-subline">
-                <span className="hero-sub-symptoms">The products and method for the places normal showers miss: back, scalp, intimate areas and the damp-skin finish.</span>
+                <span className="hero-sub-symptoms">A guided system for back, scalp, intimate areas and a clean finish that lasts.</span>
               </p>
               <div className="hero-meta" aria-label="SOLUM ritual summary">
                 <div className="hero-meta-item">

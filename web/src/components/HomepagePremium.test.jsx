@@ -30,10 +30,11 @@ describe('premium homepage direction', () => {
 
     expect(hero).toContain('The shower system for men');
     expect(hero).toContain('Your shower cleans the surface.<br />We give you complete clean that lasts longer.');
-    expect(hero).toContain('The products and method for the places normal showers miss: back, scalp, intimate areas and the damp-skin finish.');
+    expect(hero).toContain('A guided system for back, scalp, intimate areas and a clean finish that lasts.');
     expect(hero).not.toContain('A complete ritual for skin, scalp and everything below the neck.');
     expect(hero).not.toContain('Your shower is missing<br />half the system.');
     expect(hero).not.toContain('SOLUM gives you the products and the exact method');
+    expect(hero).not.toContain('The products and method for the places normal showers miss');
     expect(hero).not.toContain('Barrier-safe wash');
     expect(hero).not.toContain('hero-tags');
     expect(hero).not.toContain('hero-method-note');
@@ -96,7 +97,7 @@ describe('premium homepage direction', () => {
       '.hero-editorial-frame{padding:0;background:transparent;border-color:transparent;border-top-color:transparent;box-shadow:none;backdrop-filter:none;}',
     );
     expect(hero).toContain('.hero-content{text-shadow:0 2px 18px rgba(0,0,0,.55);}');
-    expect(hero).toContain('.hero-title{font-size:clamp(36px,11vw,56px);margin-bottom:16px;}');
+    expect(hero).toContain('.hero-title{font-size:clamp(31px,9.4vw,46px);line-height:.98;margin-bottom:14px;}');
     expect(hero).toContain('.btn-primary{padding:15px 32px;}');
     expect(hero).toContain('.hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}');
     expect(hero).not.toContain('background:rgba(8,9,11,.26)');
