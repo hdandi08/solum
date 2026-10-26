@@ -7,10 +7,10 @@ import { markUnboxingProgress } from '../lib/qualifiedVisitTracker';
 // stays without any subscription/waitlist content. Feeds the unboxing_50
 // qualified-visit signal.
 const CSS = `
-.unbox-section{background:var(--black);padding:100px 48px;border-top:1px solid var(--line);}
+.unbox-section{background:var(--black);padding:72px 48px;border-top:1px solid var(--line);}
 .unbox-inner{max-width:1400px;margin:0 auto;}
 .unbox-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;text-align:center;}
-.unbox-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,56px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:36px;}
+.unbox-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,4.2vw,50px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:28px;}
 .unbox-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
 .unbox-main{position:relative;overflow:hidden;background:#000;border:1px solid var(--line);}
 .unbox-main img,.unbox-main video{width:100%;height:100%;object-fit:cover;display:block;}

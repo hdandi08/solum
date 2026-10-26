@@ -37,6 +37,7 @@ const CSS = `
   .press-copy{justify-self:end;}
   .press-feature{grid-template-columns:.78fr 1.22fr;gap:56px;padding:38px 0 42px;}
 }
+@media(min-width:960px){.press-section{display:none;}}
 @media(max-width:620px){
   .press-section{padding:42px 20px 46px;}
   .press-head{font-size:38px;}

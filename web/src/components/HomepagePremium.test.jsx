@@ -25,12 +25,19 @@ const homepageCopy = () => [
 ].map(visibleSource).join('\n');
 
 describe('premium homepage direction', () => {
-  it('opens with an editorial ritual thesis instead of a hard problem headline', () => {
+  it('opens with the guided shower ritual promise and one clear action', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('The shower system for men');
-    expect(hero).toContain('Your shower cleans the surface.<br />We give you complete clean that lasts longer.');
-    expect(hero).toContain('A guided system for back, scalp, intimate areas and a clean finish that lasts.');
+    expect(hero).not.toContain('The shower system for men');
+    expect(hero).toContain('The shower ritual men were never given.');
+    expect(hero).toContain('A guided, deeper clean for your scalp, back, intimate areas and everything in between, with a clean finish that lasts.');
+    expect(hero).toContain('Start Your Ritual');
+    expect(hero).not.toContain('See the Kits');
+    expect(hero).not.toContain('hero-meta');
+    expect(hero).not.toContain('Read the press');
+    expect(hero).not.toContain('hero-proof-strip');
+    expect(hero).not.toContain('hero-editorial-note');
+    expect(hero).not.toContain('scroll-cue');
     expect(hero).not.toContain('A complete ritual for skin, scalp and everything below the neck.');
     expect(hero).not.toContain('Your shower is missing<br />half the system.');
     expect(hero).not.toContain('SOLUM gives you the products and the exact method');
@@ -38,8 +45,6 @@ describe('premium homepage direction', () => {
     expect(hero).not.toContain('Barrier-safe wash');
     expect(hero).not.toContain('hero-tags');
     expect(hero).not.toContain('hero-method-note');
-    expect(hero).toContain('See the Kits');
-    expect(hero).toContain('Read the press');
     expect(hero).not.toContain('Shop the Ritual');
     expect(hero).not.toContain('The first serious body care system for men');
     expect(hero).not.toContain('A guided 9-piece system');
@@ -56,22 +61,25 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('.hero-visual{flex:0 0 48%;width:48%;height:100%;max-height:none;min-height:0;}');
   });
 
-  it('uses a readable desktop headline scale and compact supporting proof', () => {
+  it('uses a readable desktop headline scale and restrained supporting copy', () => {
     const hero = component('Hero');
 
     expect(hero).toContain('.hero-title{font-size:clamp(52px,4.5vw,72px);line-height:.92;margin-bottom:16px;}');
-    expect(hero).toContain('.hero-editorial-note{display:none;}');
-    expect(hero).toContain('.hero-proof-strip{grid-template-columns:auto 1fr;column-gap:14px;row-gap:2px;margin-top:14px;padding-top:12px;}');
+    expect(hero).toContain('.hero-subline{font-size:16px;line-height:1.45;margin-bottom:16px;}');
+    expect(hero).not.toContain('.hero-meta{margin:0 0 16px;}');
+    expect(hero).not.toContain('.hero-proof-strip{grid-template-columns:auto 1fr;');
   });
 
   it('uses a matte editorial hero rather than tech-grid decoration', () => {
     const hero = component('Hero');
 
     expect(hero).toContain('hero-editorial-frame');
-    expect(hero).toContain('hero-proof-strip');
-    expect(hero).toContain('The ritual your shower was missing');
-    expect(hero).toContain('Luxury Lifestyle Magazine');
-    expect(hero).toContain('SOLUM is built around the work most showers skip.');
+    expect(hero).toContain('hero-subline');
+    expect(hero).toContain('hero-press-proof');
+    expect(hero).toContain('Luxury<span>Lifestyle Magazine</span>');
+    expect(hero).toContain('Pioneering a new era of men’s body care');
+    expect(hero).not.toContain('<blockquote');
+    expect(hero).not.toContain('The ritual your shower was missing');
     expect(hero).not.toContain('hero-ghost');
     expect(hero).not.toContain('hero-glow');
     expect(hero).not.toContain('gridFade');
@@ -99,7 +107,8 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('.hero-content{text-shadow:0 2px 18px rgba(0,0,0,.55);}');
     expect(hero).toContain('.hero-title{font-size:clamp(31px,9.4vw,46px);line-height:.98;margin-bottom:14px;}');
     expect(hero).toContain('.btn-primary{padding:15px 32px;}');
-    expect(hero).toContain('.hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}');
+    expect(hero).toContain('.hero-subline{font-size:14px;line-height:1.45;margin-bottom:18px;}');
+    expect(hero).not.toContain('.hero-meta,.hero-proof-strip,.hero-editorial-note{display:none;}');
     expect(hero).not.toContain('background:rgba(8,9,11,.26)');
     expect(hero).not.toContain('backdrop-filter:blur(4px)');
     expect(hero).not.toContain('background:rgba(8,9,11,.46)');
@@ -113,16 +122,18 @@ describe('premium homepage direction', () => {
     expect(copy).not.toContain('--');
   });
 
-  it('frames the problem section as premium category education, not shame copy', () => {
+  it('makes the shower difference clear in one fast comparison', () => {
     const problem = component('ProblemSection');
 
-    expect(problem).toContain('Why the old shower fails');
-    expect(problem).toContain('Most men wash the easy parts and hope the rest is fine.');
-    expect(problem).toContain('The problem is not effort. It is coverage, sequence and finish.');
-    expect(problem).toContain('One bottle. Hot water. Hands.');
-    expect(problem).toContain('That leaves sensitive skin over-stripped, the back under-scrubbed, the scalp heavy and the finish missing.');
-    expect(problem).toContain('Choose Your Kit');
-    expect(problem).not.toContain('See the Kits');
+    expect(problem).toContain('The ten minutes you already spend in the shower.<br />A better system for your body.');
+    expect(problem).not.toContain('Same ten minutes.<br />A better system.');
+    expect(problem).toContain('What most men do');
+    expect(problem).toContain('One bottle.<br /><span>Hands.</span><br /><span>Hot water.</span>');
+    expect(problem).toContain('Cleans the easy parts. The rest is left to chance.');
+    expect(problem).toContain('The SOLUM plan');
+    expect(problem).toContain('Cleanse. Reach. Reset. Finish.');
+    expect(problem).toContain('A guided, deeper clean that lasts.');
+    expect(problem).not.toContain('Choose Your Kit');
     expect(problem).not.toContain('Your shower is doing half the job.');
     expect(problem).not.toContain('Clean is not the same as cared for.');
     expect(problem).not.toContain('Most men do not need more products.');
@@ -131,17 +142,53 @@ describe('premium homepage direction', () => {
     expect(problem).not.toContain("You still don't feel clean.");
   });
 
-  it('makes the problem section read like an editorial diagnosis, not icon-card clutter', () => {
+  it('uses a visual comparison instead of a dense diagnosis grid', () => {
     const problem = component('ProblemSection');
 
-    expect(problem).toContain('problem-editorial');
-    expect(problem).toContain('problem-diagnosis');
-    expect(problem).toContain('The old method');
-    expect(problem).toContain('The SOLUM method');
-    expect(problem).toContain('Rinse and hope.');
-    expect(problem).toContain('Cleanse. Scrub. Reset. Finish.');
-    expect(problem).toContain('.problem-diagnosis{display:grid;grid-template-columns:repeat(5,1fr);');
-    expect(problem).not.toContain('problem-card-ic');
+    expect(problem).toContain('problem-comparison');
+    expect(problem).toContain('problem-panel old');
+    expect(problem).toContain('problem-panel solum');
+    expect(problem).toContain('problem-status old');
+    expect(problem).toContain('problem-status solum');
+    expect(problem).toContain('.problem-status{width:28px;height:28px;');
+    expect(problem).toContain('.problem-status.old{color:#c85b5b;}');
+    expect(problem).toContain('.problem-status.solum{color:var(--blit);}');
+    expect(problem).toContain('.problem-comparison{display:grid;grid-template-columns:1fr 1fr;');
+    expect(problem).toContain('.problem-header{max-width:820px;}');
+    expect(problem).toContain("font-size:clamp(36px,3.4vw,44px);");
+    expect(problem).not.toContain('problem-diagnosis');
+    expect(problem).not.toContain('position:sticky');
+  });
+
+  it('keeps desktop homepage sections within a readable viewport-first hierarchy', () => {
+    const problem = component('ProblemSection');
+    const kits = component('KitComparison');
+    const ritual = component('RitualInAction');
+    const products = component('ProductLineup');
+    const what = component('WhatSolumIs');
+    const system = component('SystemSection');
+    const unboxing = component('UnboxingFilm');
+    const band = component('FullBleedBand');
+    const cta = component('CTASection');
+
+    expect(problem).toContain('.problem-section{background:linear-gradient(180deg,var(--black),#0b0d11);border-top:1px solid var(--line);padding:clamp(56px,6vw,76px) 48px;}');
+    expect(problem).toContain('.problem-header{max-width:820px;}');
+    expect(problem).toContain('font-size:clamp(36px,3.4vw,44px);');
+    expect(problem).toContain('.problem-panel{min-height:270px;');
+    expect(kits).toContain('.kits-section{background:linear-gradient(180deg,#090b0f,var(--black));padding:clamp(48px,5vw,64px) 48px;border-top:1px solid var(--line);min-height:calc(100svh - 62px);display:flex;align-items:center;}');
+    expect(kits).toContain('font-size:clamp(36px,4.2vw,52px);');
+    expect(kits).toContain('Both give you a complete body clean. RITUAL adds body oil for the weekly finish.');
+    expect(ritual).toContain('.ria-head{font-family:\'Bebas Neue\',sans-serif;font-size:clamp(36px,4.2vw,54px);');
+    expect(products).toContain('.products-section{background:var(--black);padding:68px 0;border-top:1px solid var(--line);}');
+    expect(products).toContain('font-size:clamp(38px,4.2vw,54px);');
+    expect(what).toContain('font-size:clamp(30px,4vw,48px);');
+    expect(system).toContain('.system-section{background:var(--black);padding:64px 0;border-top:1px solid var(--line);}');
+    expect(system).toContain('font-size:clamp(34px,4vw,50px);');
+    expect(unboxing).toContain('.unbox-section{background:var(--black);padding:72px 48px;border-top:1px solid var(--line);}');
+    expect(unboxing).toContain('font-size:clamp(32px,4.2vw,50px);');
+    expect(band).toContain('font-size:clamp(44px,5vw,64px);');
+    expect(cta).toContain('.cta-section{background:var(--char);border-top:1px solid var(--lineb);text-align:center;padding:96px 48px;position:relative;overflow:hidden;}');
+    expect(cta).toContain('font-size:clamp(48px,5vw,68px);');
   });
 
   it('keeps selling sections outcome-led rather than detail-led', () => {
@@ -149,13 +196,8 @@ describe('premium homepage direction', () => {
     const provenance = component('ProvenanceSection');
     const products = component('ProductLineup');
 
-    expect(problem).toContain('Barrier-safe clean');
-    expect(problem).toContain('Back and body scrubbed');
-    expect(problem).toContain('Intimate clean');
-    expect(problem).toContain('Scalp reset');
-    expect(problem).toContain('Clean that lasts');
-    expect(problem).toContain('The full sequence cleans, scrubs, resets and finishes so your whole body feels properly clean for longer.');
-    expect(problem).toContain('SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish so clean lasts.');
+    expect(problem).toContain('Cleans the easy parts. The rest is left to chance.');
+    expect(problem).toContain('A guided, deeper clean that lasts.');
     expect(products).toContain('See what each step changes before you tap into the detail.');
     expect(provenance).toContain('Chosen For The Result');
     expect(provenance).toContain('Skin feels calm after washing and comfortable after towelling.');
@@ -205,16 +247,24 @@ describe('premium homepage direction', () => {
     expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
   });
 
-  it('orders the homepage as diagnosis, proof, price, usage, then contents', () => {
+  it('puts the press feature directly after the hero, before the category education', () => {
     const home = page('FullSite');
 
-    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
+    expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<Marquee />'));
+    expect(home.indexOf('<Marquee />')).toBeLessThan(home.indexOf('<ProblemSection />'));
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
     expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<RitualInAction />'));
     expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<ProductLineup />'));
     expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
     expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
     expect(home).not.toContain('<FrictionStrip />');
+  });
+
+  it('uses the hero itself as the desktop home for press proof', () => {
+    const press = component('PressSection');
+
+    expect(press).toContain('@media(min-width:960px){.press-section{display:none;}}');
   });
 
   it('moves the first guided ritual framing out of the top repetition loop', () => {
@@ -229,6 +279,10 @@ describe('premium homepage direction', () => {
     const ritual = component('RitualInAction');
 
     expect(ritual).toContain('ria-ritual-overview');
+    expect(ritual).toContain('ria-cadence-summary');
+    expect(ritual).toContain('aria-label="Daily and weekly ritual cadence"');
+    expect(ritual).toContain('RITUALS.map(({ key, title, cadence }) => (');
+    expect(ritual).not.toContain('.ria-cadence-summary-item.weekly .ria-cadence-time{color:#c8a96e;}');
     expect(ritual).toContain('ria-ritual-block daily');
     expect(ritual).toContain('ria-ritual-block weekly');
     expect(ritual).toContain('aria-label={`${ritual.title} videos`}');
@@ -265,30 +319,33 @@ describe('premium homepage direction', () => {
     expect(system).not.toContain('body-diagram');
   });
 
-  it('makes the kit offer feel like a curated ritual rather than a generic product grid', () => {
+  it('keeps the kit choice concise before shoppers enter either card', () => {
     const kits = component('KitComparison');
 
     expect(kits).toContain('GROUND or RITUAL.');
-    expect(kits).toContain('kit-editorial-note');
-    expect(kits).toContain('Two ways to start.');
-    expect(kits).toContain('Both kits give you the products and the exact routine. GROUND gets you properly clean. RITUAL gets you properly clean and properly fed.');
+    expect(kits).toContain('Both give you a complete body clean. RITUAL adds body oil for the weekly finish.');
+    expect(kits).not.toContain('Two ways to start.');
+    expect(kits).not.toContain('kit-editorial-note');
+    expect(kits).not.toContain('kit-decision-matrix');
+    expect(kits).not.toContain('kits-footnote');
+    expect(kits).not.toContain('First batch · 250 kits');
     expect(kits).toContain('Buy {kit.name} · £{kit.firstBoxPrice}');
     expect(kits).not.toContain('Get {kit.name}');
     expect(kits).not.toContain("You're not buying products.");
   });
 
-  it('explains the real difference between GROUND and RITUAL before the product toggle', () => {
+  it('states each kit outcome once before its price and product list', () => {
     const kits = component('KitComparison');
 
+    expect(kits).toContain('kit-name-row');
+    expect(kits).toContain('<span className="kit-card-price">£{kit.firstBoxPrice}</span>');
     expect(kits).toContain('kit-card-decision');
-    expect(kits).toContain('The clean foundation');
-    expect(kits).toContain('The complete finish');
     expect(kits).toContain('Properly clean.');
-    expect(kits).toContain('Properly clean. Properly fed.');
-    expect(kits).toContain('Daily clean, scalp, back, exfoliation, clay reset and lotion.');
-    expect(kits).toContain('Everything in GROUND, plus argan oil and the clay bowl.');
-    expect(kits).toContain('It stops before the argan oil finish.');
-    expect(kits).toContain('Argan oil completes the weekly reset: mixed into clay, worked through scalp and pressed into damp skin.');
+    expect(kits).toContain('Properly clean. Skin properly fed.');
+    expect(kits).not.toContain('Daily clean, scalp, back, exfoliation, clay reset and lotion.');
+    expect(kits).not.toContain('Everything in GROUND, plus argan oil and the clay bowl.');
+    expect(kits).not.toContain('It stops before the argan oil finish.');
+    expect(kits).not.toContain('Argan oil completes the weekly reset: mixed into clay, worked through scalp and pressed into damp skin.');
     expect(kits).not.toContain('kit-difference');
     expect(kits).not.toContain('kit-outcome');
     expect(kits).not.toContain('kit-chooser');
@@ -296,27 +353,49 @@ describe('premium homepage direction', () => {
     expect(dataFile('kits')).not.toContain('weekly argan oil finish');
   });
 
-  it('makes the kit comparison readable before the carousel or product toggle', () => {
+  it('keeps desktop kit imagery compact enough for the names, prices, and outcomes to follow in the first view', () => {
     const kits = component('KitComparison');
 
-    expect(kits).toContain('kit-decision-matrix');
-    expect(kits).toContain('GROUND');
-    expect(kits).toContain('RITUAL');
-    expect(kits).toContain('Simple rule');
-    expect(kits).toContain('Start here if you want the full body clean without the oil finish.');
-    expect(kits).toContain('Choose this if you want the weekly reset to end with skin fed, not just rinsed.');
-    expect(kits).toContain('If you are unsure, choose RITUAL. It is the system as designed.');
-    expect(kits).not.toContain('What both kits do');
-    expect(kits).not.toContain('Where GROUND stops');
-    expect(kits).not.toContain('Why argan oil matters');
+    expect(kits).toContain('height:185px;');
+    expect(kits).toContain('.kit-card.featured .kit-badge{display:none;}');
+  });
+
+  it('keeps kit-card copy restrained and puts the product expander directly after the outcome', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('.kit-name{font-family:\'Bebas Neue\',sans-serif;font-size:40px;');
+    expect(kits).toContain('.kit-decision-title{font-family:\'Bebas Neue\',sans-serif;font-size:22px;');
+    expect(kits).toContain('See all ${products.filter(p => !p.comingSoon).length} products');
+    expect(kits).toContain('.kit-products-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:rgba(46,109,164,.16);');
+  });
+
+  it('puts the seven-versus-nine-piece distinction on the kit imagery', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('kit-comparison-overlay');
+    expect(kits).toContain('7-PIECE KIT');
+    expect(kits).toContain('9-PIECE KIT');
+    expect(kits).toContain('The complete clean');
+    expect(kits).toContain('Adds body oil + clay bowl');
+  });
+
+  it('keeps the complete desktop kit choice in the first viewport', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('.kit-slide{flex:0 0 100%;scroll-snap-align:center;height:185px;');
+    expect(kits).toContain('.kit-slide img{width:auto;height:330px;max-width:none;object-fit:contain;display:block;filter:brightness(1.18) contrast(1.04);}');
+    expect(kits).toContain('kit-card-actions');
+    expect(kits).not.toContain('kit-prices');
+    expect(kits).not.toContain('kits-footnote');
+    expect(kits).not.toContain('offerActive');
   });
 
   it('makes RITUAL feel like the editorial hero kit while GROUND remains a quiet alternative', () => {
     const kits = component('KitComparison');
 
     expect(kits).toContain('grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)');
-    expect(kits).toContain('kit-card.featured{transform:translateY(-18px)');
-    expect(kits).toContain('kit-card:not(.featured){opacity:.82');
+    expect(kits).toContain('kit-card.featured{transform:none;');
+    expect(kits).toContain('kit-card:not(.featured){opacity:1;filter:none;}');
     expect(kits).toContain('background:radial-gradient(circle at 50% 36%');
     expect(kits).toContain('kit-cta.active{background:var(--bone)');
     expect(kits).not.toContain('box-shadow:0 30px 90px rgba(0,0,0,.22)');

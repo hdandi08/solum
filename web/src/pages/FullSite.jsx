@@ -92,9 +92,9 @@ export default function FullSite() {
     <>
       <Nav />
       <Hero />
+      <PressSection />
       <Marquee />
       <ProblemSection />
-      <PressSection />
       <KitComparison />
       <RitualInAction />
       <ProductLineup />

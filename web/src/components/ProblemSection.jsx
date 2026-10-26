@@ -1,53 +1,35 @@
-import { capture } from '../lib/analytics.js';
-
 const CSS = `
-.problem-section{background:linear-gradient(180deg,var(--black),#0b0d11);border-top:1px solid var(--line);padding:88px 48px;}
+.problem-section{background:linear-gradient(180deg,var(--black),#0b0d11);border-top:1px solid var(--line);padding:clamp(56px,6vw,76px) 48px;}
 .problem-inner{max-width:1200px;margin:0 auto;}
-.problem-editorial{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:58px;align-items:start;}
-.problem-head{max-width:660px;margin-bottom:0;position:sticky;top:104px;}
-.problem-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:16px;}
-.problem-head h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,4vw,60px);letter-spacing:.06em;color:var(--bone);line-height:1.04;margin-bottom:16px;}
-.problem-head p{font-size:17px;font-weight:300;color:var(--mist);line-height:1.7;}
-.problem-truth{border:1px solid rgba(240,236,226,.12);background:rgba(24,28,36,.42);padding:24px 26px;margin:0 0 18px;}
-.problem-truth p{font-size:16px;font-weight:300;color:var(--mist);line-height:1.65;margin:0 0 10px;}
-.problem-truth p:last-child{margin-bottom:0;}
-.problem-truth strong{color:var(--bone);font-weight:600;}
-.problem-method{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(240,236,226,.12);margin-bottom:18px;}
-.problem-method-panel{padding:18px 20px;border-left:1px solid rgba(240,236,226,.1);}
-.problem-method-panel:first-child{border-left:none;}
-.problem-method-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:700;margin-bottom:9px;}
-.problem-method-copy{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--bone);line-height:.96;}
-.problem-diagnosis{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);}
-.problem-diagnosis-item{background:rgba(24,28,36,.82);padding:22px 20px;min-height:126px;}
-.problem-diagnosis-num{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(74,143,199,.9);font-weight:700;margin-bottom:18px;}
-.problem-diagnosis-item h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--bone);line-height:1.2;margin-bottom:10px;}
-.problem-diagnosis-item p{font-size:15px;font-weight:300;color:var(--mist);line-height:1.6;}
-.problem-fix{background:rgba(18,35,58,.42);border:1px solid rgba(74,143,199,.42);padding:32px;margin-top:18px;}
-.problem-fix p{font-size:17px;font-weight:300;color:var(--bone);line-height:1.7;}
-.problem-fix strong{font-weight:600;}
-.problem-cta-row{margin-top:20px;display:flex;}
-@media(max-width:600px){.problem-cta-row .btn-primary{width:100%;text-align:center;}}
-@media(max-width:600px){
+.problem-header{max-width:820px;}
+.problem-kicker{margin:0 0 14px;color:var(--blit);font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;}
+.problem-header h2{margin:0;font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,3.4vw,44px);font-weight:400;letter-spacing:.055em;line-height:.92;color:var(--bone);}
+.problem-rule{width:56px;height:1px;margin:18px 0 0;background:linear-gradient(90deg,var(--blit),transparent);}
+.problem-comparison{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:26px;border:1px solid rgba(240,236,226,.16);background:rgba(240,236,226,.16);}
+.problem-panel{min-height:270px;padding:clamp(22px,2.4vw,32px);background:#0d1015;}
+.problem-panel.solum{background:linear-gradient(140deg,rgba(26,74,120,.58),rgba(13,16,21,.96));}
+.problem-panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.problem-label{display:block;color:var(--blit);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;}
+.problem-status{width:28px;height:28px;flex:0 0 28px;padding:5px;border:1px solid currentColor;}
+.problem-status.old{color:#c85b5b;}
+.problem-status.solum{color:var(--blit);}
+.problem-old-words{margin:0;font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,3.8vw,48px);font-weight:400;letter-spacing:.05em;line-height:.82;color:var(--bone);}
+.problem-old-words span{color:rgba(240,236,226,.42);}
+.problem-panel-copy{max-width:270px;margin:18px 0 0;color:var(--mist);font-size:16px;font-weight:300;line-height:1.42;}
+.problem-plan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:450px;}
+.problem-plan-step{padding:11px 10px;border:1px solid rgba(74,143,199,.54);font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,1.8vw,28px);font-weight:400;letter-spacing:.055em;line-height:.9;color:var(--bone);}
+.problem-sequence-copy{margin:16px 0 0;font-size:14px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:rgba(240,236,226,.54);}
+.problem-outcome{max-width:300px;margin:16px 0 0;font-size:clamp(20px,1.7vw,25px);font-weight:300;line-height:1.1;color:var(--bone);}
+@media(max-width:760px){
   .problem-section{padding:58px 20px;}
-  .problem-editorial{grid-template-columns:1fr;gap:28px;}
-  .problem-head{position:static;}
-  .problem-diagnosis,.problem-method{grid-template-columns:1fr;}
-  .problem-method-panel{border-left:none;border-top:1px solid rgba(240,236,226,.1);}
-  .problem-method-panel:first-child{border-top:none;}
-  .problem-truth{padding:20px;margin-bottom:20px;}
-  .problem-diagnosis-item{padding:20px;min-height:auto;}
-  .problem-fix{padding:24px 20px;}
-  .problem-fix p{font-size:15px;}
+  .problem-comparison{grid-template-columns:1fr;margin-top:30px;}
+  .problem-panel{min-height:0;padding:28px 24px;}
+  .problem-panel-top{margin-bottom:22px;}
+  .problem-old-words{font-size:44px;}
+  .problem-panel-copy{margin-top:20px;font-size:16px;}
+  .problem-plan-step{font-size:25px;padding:12px 10px;}
 }
 `;
-
-const DIAGNOSIS = [
-  ['Barrier-safe clean', 'Sensitive body wash cleans without leaving skin tight or stripped.'],
-  ['Back and body scrubbed', 'The mitt and back cloth reach the areas hands miss.'],
-  ['Intimate clean', 'A dedicated cloth gives sensitive zones a more deliberate clean.'],
-  ['Scalp reset', 'The massager works buildup loose at the root.'],
-  ['Clean that lasts', 'The full sequence cleans, scrubs, resets and finishes so your whole body feels properly clean for longer.'],
-];
 
 export default function ProblemSection() {
   return (
@@ -55,44 +37,37 @@ export default function ProblemSection() {
       <style>{CSS}</style>
       <section className="problem-section" id="problem" data-track="problem">
         <div className="problem-inner">
-          <div className="problem-editorial">
-            <div className="problem-head reveal">
-              <div className="problem-tag">Why the old shower fails</div>
-              <h2>Most men wash the easy parts and hope the rest is fine.</h2>
-              <p>The problem is not effort. It is coverage, sequence and finish.</p>
+          <div className="problem-header reveal">
+            <div className="problem-kicker">The difference</div>
+            <h2>The ten minutes you already spend in the shower.<br />A better system for your body.</h2>
+            <div className="problem-rule" />
+          </div>
+          <div className="problem-comparison">
+            <div className="problem-panel old reveal">
+              <div className="problem-panel-top">
+                <span className="problem-label">What most men do</span>
+                <svg className="problem-status old" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M7 7l10 10M17 7L7 17" stroke="currentColor" strokeWidth="2" />
+                </svg>
+              </div>
+              <p className="problem-old-words">One bottle.<br /><span>Hands.</span><br /><span>Hot water.</span></p>
+              <p className="problem-panel-copy">Cleans the easy parts. The rest is left to chance.</p>
             </div>
-            <div>
-              <div className="problem-truth reveal">
-                <p><strong>One bottle. Hot water. Hands.</strong></p>
-                <p>That leaves sensitive skin over-stripped, the back under-scrubbed, the scalp heavy and the finish missing.</p>
+            <div className="problem-panel solum reveal">
+              <div className="problem-panel-top">
+                <span className="problem-label">The SOLUM plan</span>
+                <svg className="problem-status solum" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m5 12 4.2 4.2L19 6.5" stroke="currentColor" strokeWidth="2" />
+                </svg>
               </div>
-              <div className="problem-method reveal">
-                <div className="problem-method-panel">
-                  <div className="problem-method-label">The old method</div>
-                  <div className="problem-method-copy">Rinse and hope.</div>
-                </div>
-                <div className="problem-method-panel">
-                  <div className="problem-method-label">The SOLUM method</div>
-                  <div className="problem-method-copy">Cleanse. Scrub. Reset. Finish.</div>
-                </div>
+              <div className="problem-plan" aria-label="Cleanse. Reach. Reset. Finish.">
+                <span className="problem-plan-step">Cleanse</span>
+                <span className="problem-plan-step">Reach</span>
+                <span className="problem-plan-step">Reset</span>
+                <span className="problem-plan-step">Finish</span>
               </div>
-              <div className="problem-diagnosis reveal">
-                {DIAGNOSIS.map(([title, body], index) => (
-                  <div key={title} className="problem-diagnosis-item">
-                    <div className="problem-diagnosis-num">{String(index + 1).padStart(2, '0')}</div>
-                    <h3>{title}</h3>
-                    <p>{body}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="problem-fix reveal">
-                <p>Body care has been treated like a product shelf. <strong>SOLUM gives you the pieces and the method: what to use, where to use it, and how to finish so clean lasts.</strong></p>
-              </div>
-              <div className="problem-cta-row reveal">
-                <a href="#kits" className="btn-primary" onClick={() => capture('problem_cta_clicked')}>
-                  Choose Your Kit
-                </a>
-              </div>
+              <p className="problem-sequence-copy">Cleanse. Reach. Reset. Finish.</p>
+              <p className="problem-outcome">A guided, deeper clean that lasts.</p>
             </div>
           </div>
         </div>

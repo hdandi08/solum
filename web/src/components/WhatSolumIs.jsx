@@ -1,8 +1,8 @@
 // "What SOLUM is" acts as post-kit education, after proof, price and contents are already clear.
 const CSS = `
-.wsi-section{background:var(--char);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 24px;}
+.wsi-section{background:var(--char);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:72px 24px;}
 .wsi-inner{max-width:1200px;margin:0 auto;}
-.wsi-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,4.5vw,52px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:44px;}
+.wsi-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,4vw,48px);letter-spacing:.05em;color:var(--bone);line-height:1;text-align:center;margin-bottom:36px;}
 .wsi-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
 .wsi-pillar{background:var(--char);padding:36px 30px;display:flex;flex-direction:column;gap:12px;}
 .wsi-ic{width:48px;height:48px;display:block;margin-bottom:2px;}

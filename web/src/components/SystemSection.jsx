@@ -1,10 +1,10 @@
 import { capture } from '../lib/analytics.js';
 
 const CSS = `
-.system-section{background:var(--black);padding:72px 0;border-top:1px solid var(--line);}
+.system-section{background:var(--black);padding:64px 0;border-top:1px solid var(--line);}
 .system-inner{max-width:1120px;margin:0 auto;padding:0 48px;}
 .system-kicker{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:14px;}
-.system-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,4.5vw,58px);letter-spacing:.05em;color:var(--bone);line-height:.98;margin:0 0 14px;}
+.system-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,4vw,50px);letter-spacing:.05em;color:var(--bone);line-height:.98;margin:0 0 12px;}
 .system-sub{max-width:560px;color:rgba(240,236,226,.68);font-size:16px;line-height:1.55;font-weight:300;margin:0 0 30px;}
 .sequence-proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid rgba(240,236,226,.12);background:rgba(8,9,11,.42);}
 .sequence-card{min-height:250px;padding:26px;border-left:1px solid rgba(240,236,226,.1);display:flex;flex-direction:column;justify-content:space-between;gap:22px;}

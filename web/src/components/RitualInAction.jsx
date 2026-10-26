@@ -58,11 +58,17 @@ function posterFor(num) {
 }
 
 const CSS = `
-.ria-section{background:var(--black);border-top:1px solid var(--line);padding:80px 0;overflow:hidden;}
-.ria-head-wrap{max-width:760px;margin:0 auto 38px;padding:0 24px;}
+.ria-section{background:var(--black);border-top:1px solid var(--line);padding:72px 0;overflow:hidden;}
+.ria-head-wrap{max-width:760px;margin:0 auto 28px;padding:0 24px;}
 .ria-eyebrow{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;text-align:center;margin-bottom:14px;}
-.ria-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,64px);letter-spacing:.04em;color:var(--bone);line-height:.95;text-align:center;margin-bottom:12px;}
+.ria-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4.2vw,54px);letter-spacing:.04em;color:var(--bone);line-height:.95;text-align:center;margin-bottom:12px;}
 .ria-sub{font-size:15px;font-weight:300;color:var(--stone);text-align:center;margin:0 auto;max-width:480px;line-height:1.6;}
+.ria-cadence-summary{max-width:760px;margin:0 auto 28px;padding:0 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;}
+.ria-cadence-summary-item{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 16px;background:rgba(24,28,36,.7);border:1px solid rgba(240,236,226,.12);}
+.ria-cadence-summary-item.weekly{border-color:rgba(46,109,164,.42);}
+.ria-cadence-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.055em;line-height:1;color:var(--bone);}
+.ria-cadence-time{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;color:var(--blit);text-align:right;}
+.ria-cadence-summary-item.weekly .ria-cadence-time{color:var(--blue);}
 
 .ria-ritual-stack{display:grid;gap:58px;}
 .ria-ritual-block{display:grid;gap:24px;}
@@ -131,6 +137,8 @@ const CSS = `
 @media(max-width:768px){
   .ria-section{padding:60px 0;}
   .ria-head-wrap{margin-bottom:24px;}
+  .ria-cadence-summary{grid-template-columns:1fr;gap:8px;margin-bottom:24px;}
+  .ria-cadence-summary-item{padding:14px 16px;}
   .ria-ritual-stack{gap:48px;}
   .ria-ritual-overview{grid-template-columns:1fr;gap:12px;}
   .ria-ritual-card{padding:18px;}
@@ -451,6 +459,15 @@ export default function RitualInAction() {
           <div className="ria-eyebrow reveal">Daily and weekly</div>
           <h2 className="ria-head reveal">See the ritual before the products.</h2>
           <p className="ria-sub reveal">First see the method. Then the product list makes sense.</p>
+        </div>
+
+        <div className="ria-cadence-summary" aria-label="Daily and weekly ritual cadence">
+          {RITUALS.map(({ key, title, cadence }) => (
+            <div className={`ria-cadence-summary-item ${key}`} key={key}>
+              <span className="ria-cadence-title">{title}</span>
+              <span className="ria-cadence-time">{cadence}</span>
+            </div>
+          ))}
         </div>
 
         <div className="ria-ritual-stack">

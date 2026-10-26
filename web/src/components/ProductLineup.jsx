@@ -5,11 +5,11 @@ import { capture } from '../lib/analytics.js';
 
 const CSS = `
 /* ── Section ───────────────────────────────────── */
-.products-section{background:var(--black);padding:80px 0;border-top:1px solid var(--line);}
-.products-header{max-width:1400px;margin:0 auto 48px;padding:0 48px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap;}
+.products-section{background:var(--black);padding:68px 0;border-top:1px solid var(--line);}
+.products-header{max-width:1400px;margin:0 auto 32px;padding:0 48px;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;}
 .p-sec-left{}
 .p-sec-tag{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:12px;}
-.p-sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5vw,72px);letter-spacing:.04em;color:var(--bone);line-height:.92;margin:0;}
+.p-sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,4.2vw,54px);letter-spacing:.04em;color:var(--bone);line-height:.92;margin:0;}
 .p-sec-sub{font-size:15px;color:var(--stone);font-weight:300;line-height:1.65;max-width:300px;text-align:right;}
 
 /* ── Grid ──────────────────────────────────────── */
