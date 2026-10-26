@@ -2,7 +2,7 @@
 
 ## Intent
 
-Every live paid first-box order must create an independently trackable customer confirmation and founder notification. A failed Resend request must fail the Stripe webhook so Stripe retries it; a successful request must be recorded before that message is skipped on a replay. Development and Stripe test-mode purchases must remain silent.
+Every paid first-box order must create an independently trackable customer confirmation and founder notification. A failed Resend request must fail the Stripe webhook so Stripe retries it; a successful request must be recorded before that message is skipped on a replay. The dedicated development project sends labelled test emails; production Stripe test-mode purchases remain silent.
 
 ## Scope
 
@@ -13,7 +13,7 @@ Every live paid first-box order must create an independently trackable customer 
 
 ## Non-goals
 
-- Do not send emails for test-mode payments.
+- Do not send emails for production Stripe test-mode payments.
 - Do not change order copy, Stripe payment processing, AWIN attribution, or non-email analytics.
 - Do not create a new asynchronous email worker in this change; Stripe's webhook retry remains the retry driver.
 
@@ -23,11 +23,11 @@ Every live paid first-box order must create an independently trackable customer 
 
 Both Resend calls require a successful HTTP response. The requests include stable `Idempotency-Key` headers based on the order ID and message role. Resend protects repeated retries within its documented 24-hour idempotency period; the persisted sent timestamp protects all later retries.
 
-All first-box handlers continue to use `shouldSendExternalPurchaseSideEffects` to reject test-mode effects. The founder notification is no longer conditional on a customer email being present; only the customer confirmation is. Existing-order webhook replays resume message delivery instead of returning before it.
+All first-box handlers continue to use `shouldSendExternalPurchaseSideEffects` to reject test-mode AWIN and analytics effects. The dedicated development Supabase project is the sole exception for order emails; both development subjects receive a `[DEV]` prefix. The founder notification is no longer conditional on a customer email being present; only the customer confirmation is. Existing-order webhook replays resume message delivery instead of returning before it.
 
 ## Acceptance criteria
 
-1. Test-mode orders produce neither external email.
+1. Production Stripe test-mode orders produce neither external email, while development Stripe test-mode orders send both applicable emails with `[DEV]` subjects.
 2. A live order with a customer email attempts and persists both messages.
 3. A live order without a customer email still attempts and persists the founder notification.
 4. A failure after one message succeeds leaves only the failed message pending; a replay does not resend the successful one.

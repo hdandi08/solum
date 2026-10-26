@@ -7,6 +7,23 @@ type AcceptedEmail = {
   resendId: string | null;
 };
 
+export async function requireAcceptedResendResponse(
+  response: Response,
+  messageRole: string,
+): Promise<AcceptedEmail> {
+  const body = await response.text();
+  if (!response.ok) {
+    throw new Error(`resend_email_rejected:${messageRole}:${response.status}`);
+  }
+
+  try {
+    const parsed = JSON.parse(body) as { id?: unknown };
+    return { resendId: typeof parsed.id === "string" ? parsed.id : null };
+  } catch {
+    return { resendId: null };
+  }
+}
+
 export type OrderEmailDeliveryInput = {
   customerEmail?: string | null;
   state: OrderEmailDeliveryState;

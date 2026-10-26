@@ -33,20 +33,35 @@ const AWIN_CHANNELS = ["aw", "display", "ppc", "email"] as const;
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const DEVELOPMENT_PROJECT_REF = "rodvvmfzkyjsqbufkjbc";
 
+function isDevelopmentProject(supabaseUrl: string | undefined): boolean {
+  try {
+    const url = new URL(supabaseUrl ?? "");
+    return url.protocol === "https:" &&
+      url.hostname === `${DEVELOPMENT_PROJECT_REF}.supabase.co`;
+  } catch {
+    return false;
+  }
+}
+
+export function resolveOrderEmailDeliveryPolicy(
+  livemode: boolean | undefined,
+  supabaseUrl: string | undefined,
+): { send: boolean; subjectPrefix: string } {
+  const development = isDevelopmentProject(supabaseUrl);
+  if (livemode === true) {
+    return { send: true, subjectPrefix: development ? "[DEV] " : "" };
+  }
+  return development
+    ? { send: true, subjectPrefix: "[DEV] " }
+    : { send: false, subjectPrefix: "" };
+}
+
 export function resolveDevelopmentAcceptanceSecret(
   supabaseUrl: string | undefined,
   candidate: string | undefined,
 ): string | undefined {
   if (typeof candidate !== "string" || candidate.length < 32) return undefined;
-  try {
-    const url = new URL(supabaseUrl ?? "");
-    return url.protocol === "https:" &&
-        url.hostname === `${DEVELOPMENT_PROJECT_REF}.supabase.co`
-      ? candidate
-      : undefined;
-  } catch {
-    return undefined;
-  }
+  return isDevelopmentProject(supabaseUrl) ? candidate : undefined;
 }
 
 export async function verifyStripeWebhookWithDevelopmentFallback<T>(input: {

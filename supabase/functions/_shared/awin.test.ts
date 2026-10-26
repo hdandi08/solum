@@ -188,6 +188,7 @@ Deno.test('duplicate PaymentIntent enqueue is one encrypted outbox row', async (
     financialBasisVersion: 'solum-commission-v1',
     currency: 'GBP',
     commissionGroup: 'DEFAULT',
+    customerAcquisition: 'NEW',
     channel: 'aw',
     awc: '129171_click',
   };
@@ -241,6 +242,7 @@ Deno.test('eligible outbox persistence failure throws only a sanitized retryable
       financialBasisVersion: 'solum-commission-v1',
       currency: 'GBP',
       commissionGroup: 'DEFAULT',
+      customerAcquisition: 'NEW',
       channel: 'aw',
       awc: '129171_click',
     }, 'development-secret-development-secret'),

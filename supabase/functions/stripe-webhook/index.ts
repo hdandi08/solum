@@ -3,8 +3,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
 import { calculateAwinCommissionableAmount, classifyThenEnqueueAwinConversion, paymentIntentCreatedAt } from '../_shared/awinCommission.ts';
 import {
+  deliverOrderEmailNotifications,
+  requireAcceptedResendResponse,
+  type OrderEmailDeliveryState,
+} from '../_shared/orderEmailDelivery.ts';
+import {
   classifyAwinEligibility,
   paymentIntentPurchaseSideEffectsAttempted,
+  resolveOrderEmailDeliveryPolicy,
   shouldSendExternalPurchaseSideEffects,
   validatedIntegerMetadata,
   validatedVoucher,
@@ -133,9 +139,11 @@ async function sendConfirmationEmail(
   isOneTime = false,
   dispatchDate?: string,
   arrivalDate?: string,
+  subjectPrefix = '',
+  idempotencyKey?: string,
 ) {
   const resendKey = Deno.env.get('RESEND_API_KEY');
-  if (!resendKey) { console.warn('RESEND_API_KEY not set — skipping email'); return; }
+  if (!resendKey) throw new Error('resend_email_not_configured:customer_confirmation');
 
   const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
 
@@ -232,16 +240,21 @@ async function sendConfirmationEmail(
 </body>
 </html>`;
 
-  await fetch('https://api.resend.com/emails', {
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    headers: {
+      'Authorization': `Bearer ${resendKey}`,
+      'Content-Type': 'application/json',
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    },
     body: JSON.stringify({
       from: 'SOLUM <no-reply@orders.bysolum.co.uk>',
       to: email,
-      subject: `Order confirmed. Your ${kitName} Kit is on its way.`,
+      subject: `${subjectPrefix}Order confirmed. Your ${kitName} Kit is on its way.`,
       html,
     }),
-  }).catch(e => console.error('Resend error:', e));
+  });
+  return await requireAcceptedResendResponse(response, 'customer_confirmation');
 }
 
 async function sendAdminNotification(
@@ -249,25 +262,30 @@ async function sendAdminNotification(
   orderRef: string,
   kitId: string,
   amountPence: number,
+  subjectPrefix = '',
+  idempotencyKey?: string,
 ) {
-  try {
-    console.log('admin_notification_start', { orderRef, firstName });
-    const resendKey = Deno.env.get('RESEND_API_KEY');
-    if (!resendKey) { console.error('admin_notification_no_resend_key'); return; }
+  console.log('admin_notification_start', { orderRef, firstName });
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  if (!resendKey) throw new Error('resend_email_not_configured:admin_notification');
 
-    const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
-    const amount = `£${(amountPence / 100).toFixed(2)}`;
-    const now = new Date();
-    const dateTime = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)} UTC`;
+  const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+  const amount = `£${(amountPence / 100).toFixed(2)}`;
+  const now = new Date();
+  const dateTime = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)} UTC`;
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'SOLUM Orders <no-reply@orders.bysolum.co.uk>',
-        to: 'harsha@bysolum.com',
-        subject: `New order — ${firstName} · ${kitName} · #${orderRef}`,
-        html: `<!DOCTYPE html><html lang="en"><body bgcolor="#08090B" style="margin:0;padding:32px;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${resendKey}`,
+      'Content-Type': 'application/json',
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    },
+    body: JSON.stringify({
+      from: 'SOLUM Orders <no-reply@orders.bysolum.co.uk>',
+      to: 'harsha@bysolum.com',
+      subject: `${subjectPrefix}New order — ${firstName} · ${kitName} · #${orderRef}`,
+      html: `<!DOCTYPE html><html lang="en"><body bgcolor="#08090B" style="margin:0;padding:32px;background-color:#08090B;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <p style="margin:0 0 24px;font-size:20px;font-weight:700;color:#F0ECE2;letter-spacing:0.05em;">NEW ORDER</p>
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:400px;">
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;width:120px;">Order</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:16px;font-weight:700;letter-spacing:0.08em;">#${orderRef}</td></tr>
@@ -277,12 +295,104 @@ async function sendAdminNotification(
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Date</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.6);font-size:13px;">${dateTime}</td></tr>
 </table>
 </body></html>`,
-      }),
-    });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) console.error('admin_notification_resend_error', res.status);
-    else console.log('admin_notification_sent', { orderRef, resendId: body.id });
-  } catch(e) { console.error('admin_notification_catch', e); }
+    }),
+  });
+  const result = await requireAcceptedResendResponse(response, 'admin_notification');
+  console.log('admin_notification_sent', { orderRef, resendId: result.resendId });
+  return result;
+}
+
+type StoredOrderEmailDeliveryState = OrderEmailDeliveryState & { id: string };
+
+async function deliverPaidOrderEmails(
+  db: ReturnType<typeof createClient>,
+  input: {
+    orderId: string;
+    livemode: boolean | undefined;
+    customerEmail?: string | null;
+    firstName: string;
+    kitId: string;
+    orderRef: string;
+    amountPence: number;
+    isOneTime: boolean;
+    dispatchDate?: string;
+    arrivalDate?: string;
+  },
+) {
+  const policy = resolveOrderEmailDeliveryPolicy(
+    input.livemode,
+    Deno.env.get('SUPABASE_URL'),
+  );
+  if (!policy.send) return;
+
+  const { data: storedOrder, error: storedOrderError } = await db
+    .from('orders')
+    .select('id, customer_confirmation_email_sent_at, admin_notification_email_sent_at')
+    .eq('id', input.orderId)
+    .single();
+  if (storedOrderError || !storedOrder) {
+    throw new Error(`order_email_delivery_state_read_failed: ${storedOrderError?.message ?? 'missing order'}`);
+  }
+
+  const state = {
+    id: storedOrder.id,
+    customerConfirmationSentAt: storedOrder.customer_confirmation_email_sent_at,
+    adminNotificationSentAt: storedOrder.admin_notification_email_sent_at,
+  } as StoredOrderEmailDeliveryState;
+
+  await deliverOrderEmailNotifications({
+    customerEmail: input.customerEmail,
+    state,
+    sendCustomerConfirmation: () => sendConfirmationEmail(
+      input.customerEmail?.trim().toLowerCase() ?? '',
+      input.firstName,
+      input.kitId,
+      input.orderRef,
+      input.isOneTime,
+      input.dispatchDate,
+      input.arrivalDate,
+      policy.subjectPrefix,
+      `order-confirmation/${input.orderId}`,
+    ),
+    markCustomerConfirmationSent: async (resendId) => {
+      const sentAt = new Date().toISOString();
+      const { data, error } = await db.from('orders')
+        .update({
+          customer_confirmation_email_sent_at: sentAt,
+          customer_confirmation_email_resend_id: resendId,
+        })
+        .eq('id', input.orderId)
+        .select('id')
+        .maybeSingle();
+      if (error || !data) {
+        throw new Error(`customer_confirmation_email_record_failed: ${error?.message ?? 'missing order'}`);
+      }
+      state.customerConfirmationSentAt = sentAt;
+    },
+    sendAdminNotification: () => sendAdminNotification(
+      input.firstName,
+      input.orderRef,
+      input.kitId,
+      input.amountPence,
+      policy.subjectPrefix,
+      `founder-order-notification/${input.orderId}`,
+    ),
+    markAdminNotificationSent: async (resendId) => {
+      const sentAt = new Date().toISOString();
+      const { data, error } = await db.from('orders')
+        .update({
+          admin_notification_email_sent_at: sentAt,
+          admin_notification_email_resend_id: resendId,
+        })
+        .eq('id', input.orderId)
+        .select('id')
+        .maybeSingle();
+      if (error || !data) {
+        throw new Error(`admin_notification_email_record_failed: ${error?.message ?? 'missing order'}`);
+      }
+      state.adminNotificationSentAt = sentAt;
+    },
+  });
 }
 
 async function logEvent(
@@ -577,7 +687,7 @@ async function handleOneTimeOrderFromPI(
   claim: PaymentIntentClaim,
 ) {
   const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, fbp, fbc, awc, awin_channel } = pi.metadata ?? {};
-  const email = metaEmail?.trim().toLowerCase();
+  const email = (pi.receipt_email ?? metaEmail)?.trim().toLowerCase();
   const stripe_customer_id = pi.customer as string;
 
   if (!pi.id) throw new Error('one_time_order_from_pi_missing_id');
@@ -688,9 +798,21 @@ async function handleOneTimeOrderFromPI(
     });
   }
 
-  // The durable claim marker, not order novelty, is the at-most-once gate.
-  // An enqueue failure happens before this marker, so a replay against an
-  // existing order can still make the required attempts.
+  await deliverPaidOrderEmails(supabase, {
+    orderId: canonicalOrder.id,
+    livemode: pi.livemode,
+    customerEmail: email,
+    firstName: first_name ?? 'there',
+    kitId: kit_id ?? '',
+    orderRef: pi.id.slice(-8).toUpperCase(),
+    amountPence: pi.amount,
+    isOneTime: true,
+    dispatchDate: dispatch_date,
+    arrivalDate: arrival_date,
+  });
+
+  // The durable claim marker, not order novelty, is the at-most-once gate for
+  // non-email purchase side effects. Email delivery has its own durable state.
   if (email && shouldSendExternalPurchaseSideEffects({
     livemode: pi.livemode,
     orderAlreadyExists: existingOrder !== null,
@@ -698,9 +820,6 @@ async function handleOneTimeOrderFromPI(
       paymentIntentPurchaseSideEffectsAttempted(claim.data),
   })) {
     await markPaymentIntentPurchaseSideEffectsAttempted(supabase, claim);
-    const orderRef = pi.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true, dispatch_date, arrival_date);
-    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, ttclid, ttp });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id, fbp, fbc });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: pi.amount, source, piId: pi.id, host: site_host || undefined });
@@ -735,32 +854,33 @@ async function handleOneTimeOrder(
   const paymentIntentId = session.payment_intent as string;
   if (!paymentIntentId) throw new Error('one_time_order_missing_payment_intent');
 
-  // Idempotency: skip if this payment_intent was already processed
+  // Existing orders may still have pending email delivery after a webhook retry.
   const { data: existingOrder } = await supabase
     .from('orders')
     .select('id')
     .eq('stripe_payment_id', paymentIntentId)
     .eq('order_type', 'first_box')
     .maybeSingle();
-  if (existingOrder) return;
 
-  // Insert order with source, no subscription_id
-  const { data: order, error: orderErr } = await supabase.from('orders').insert({
-    customer_id: customer.id,
-    subscription_id: null,
-    stripe_payment_id: paymentIntentId,
-    kit_id,
-    order_type: 'first_box',
-    box_number: null,
-    amount_pence: session.amount_total ?? 0,
-    status: 'paid',
-    source,
-  }).select('id').single();
-
-  if (orderErr) throw new Error(`one_time_order_insert_failed: ${orderErr.message}`);
+  let order = existingOrder;
+  if (!order) {
+    const { data: newOrder, error: orderErr } = await supabase.from('orders').insert({
+      customer_id: customer.id,
+      subscription_id: null,
+      stripe_payment_id: paymentIntentId,
+      kit_id,
+      order_type: 'first_box',
+      box_number: null,
+      amount_pence: session.amount_total ?? 0,
+      status: 'paid',
+      source,
+    }).select('id').single();
+    if (orderErr || !newOrder) throw new Error(`one_time_order_insert_failed: ${orderErr?.message ?? 'missing order'}`);
+    order = newOrder;
+  }
 
   // Deduct inventory
-  if (kit_id && order?.id) {
+  if (!existingOrder && kit_id && order?.id) {
     await deductInventory(supabase, kit_id, 'first_box', order.id);
     await deductKitInventory(supabase, order.id, kit_id);
   }
@@ -770,11 +890,21 @@ async function handleOneTimeOrder(
     .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
     .eq('stripe_session_id', session.id);
 
-  // Send confirmation email + admin notification + TikTok server-side event
-  if (email && order && shouldSendExternalPurchaseSideEffects(session.livemode)) {
-    const orderRef = session.id.slice(-8).toUpperCase();
-    await sendConfirmationEmail(email, first_name ?? 'there', kit_id ?? '', orderRef, true);
-    await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
+  if (order) {
+    await deliverPaidOrderEmails(supabase, {
+      orderId: order.id,
+      livemode: session.livemode,
+      customerEmail: email,
+      firstName: first_name ?? 'there',
+      kitId: kit_id ?? '',
+      orderRef: session.id.slice(-8).toUpperCase(),
+      amountPence: session.amount_total ?? 0,
+      isOneTime: true,
+    });
+  }
+
+  // Keep non-email external side effects restricted to live, customer-identified orders.
+  if (email && order && !existingOrder && shouldSendExternalPurchaseSideEffects(session.livemode)) {
     await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
     await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: paymentIntentId });
     await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source, piId: paymentIntentId, host: site_host || undefined });
@@ -955,7 +1085,7 @@ Deno.serve(async (req) => {
         }
 
         // Log first-box payment attempt
-        if (session.payment_status === 'paid' && customer) {
+        if (!existingOrder && session.payment_status === 'paid' && customer) {
           await supabase.from('payment_attempts').insert({
             customer_id: customer.id,
             order_id: firstBoxOrderId,
@@ -968,7 +1098,7 @@ Deno.serve(async (req) => {
         }
 
         // Deduct first-box inventory
-        if (kit_id && sub?.id) {
+        if (!existingOrder && kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
           if (firstBoxOrderId) await deductKitInventory(supabase, firstBoxOrderId, kit_id);
         }
@@ -978,11 +1108,21 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_session_id', session.id);
 
-        // Send confirmation email + admin notification + TikTok server-side event — only on first processing
+        if (firstBoxOrderId) {
+          await deliverPaidOrderEmails(supabase, {
+            orderId: firstBoxOrderId,
+            livemode: session.livemode,
+            customerEmail: email,
+            firstName: first_name ?? 'there',
+            kitId: kit_id ?? '',
+            orderRef: session.id.slice(-8).toUpperCase(),
+            amountPence: session.amount_total ?? 0,
+            isOneTime: false,
+          });
+        }
+
+        // Keep non-email external side effects restricted to the first live processing.
         if (email && !existingOrder && shouldSendExternalPurchaseSideEffects(session.livemode)) {
-          const orderRef = session.id.slice(-8).toUpperCase();
-          await sendConfirmationEmail(email, first_name ?? 'there', kit_id, orderRef, false);
-          await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', session.amount_total ?? 0);
           await sendTikTokPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
           await sendMetaPurchaseEvent({ email, phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: session.amount_total ?? 0, eventId: session.payment_intent as string ?? session.id });
           await sendPosthogPurchase({ email, kitId: kit_id, amountPence: session.amount_total ?? 0, source: 'subscription', piId: session.payment_intent as string ?? session.id });
@@ -1157,7 +1297,7 @@ Deno.serve(async (req) => {
         }
 
         // Deduct inventory
-        if (kit_id && sub?.id) {
+        if (!existingOrder && kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
           if (subFirstBoxOrderId) await deductKitInventory(supabase, subFirstBoxOrderId, kit_id);
         }
@@ -1167,11 +1307,21 @@ Deno.serve(async (req) => {
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_customer_id', stripe_customer_id);
 
-        // Send confirmation email + admin notification + TikTok server-side event
+        if (subFirstBoxOrderId) {
+          await deliverPaidOrderEmails(supabase, {
+            orderId: subFirstBoxOrderId,
+            livemode: pi.livemode,
+            customerEmail: email?.trim().toLowerCase(),
+            firstName: first_name ?? 'there',
+            kitId: kit_id ?? '',
+            orderRef: pi.id.slice(-8).toUpperCase(),
+            amountPence: pi.amount,
+            isOneTime: false,
+          });
+        }
+
+        // Keep non-email external side effects restricted to the first live processing.
         if (!existingOrder && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
-          const orderRef = pi.id.slice(-8).toUpperCase();
-          await sendConfirmationEmail(email?.trim().toLowerCase() ?? '', first_name ?? 'there', kit_id ?? '', orderRef, false);
-          await sendAdminNotification(first_name ?? 'there', orderRef, kit_id ?? '', pi.amount);
           await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
           await sendMetaPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
           await sendPosthogPurchase({ email: email?.trim().toLowerCase(), kitId: kit_id, amountPence: pi.amount, source: 'subscription', piId: pi.id });

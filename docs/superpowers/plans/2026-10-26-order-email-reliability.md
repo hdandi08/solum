@@ -4,7 +4,7 @@
 
 **Goal:** Make live first-box confirmation and founder emails observable, retry-safe, and independent of an optional customer email.
 
-**Architecture:** Persist one delivery status for each of the two order-created emails on `orders`. The Stripe webhook calls a shared coordinator that only sends unrecorded messages and records each accepted provider response. Resend HTTP failures escape to Stripe for retry, while stable provider idempotency keys prevent duplicate sends during retries.
+**Architecture:** Persist one delivery status for each of the two order-created emails on `orders`. The Stripe webhook calls a shared coordinator that only sends unrecorded messages and records each accepted provider response. Resend HTTP failures escape to Stripe for retry, while stable provider idempotency keys prevent duplicate sends during retries. The development Supabase project is allowed to send labelled test emails; production test-mode payments remain silent.
 
 **Tech Stack:** Supabase Postgres migrations, Supabase Edge Functions (Deno/TypeScript), Stripe webhooks, Resend HTTP API, Deno tests.
 
@@ -12,7 +12,8 @@
 
 ## Global Constraints
 
-- Stripe test-mode purchases must not send customer, founder, AWIN, or analytics side effects.
+- Production Stripe test-mode purchases must not send customer, founder, AWIN, or analytics side effects.
+- The development Supabase project may send the customer and founder test emails, and both subjects must start with `[DEV]`.
 - Live customer confirmation sender remains `SOLUM <no-reply@orders.bysolum.co.uk>`.
 - Live founder notification recipient remains `harsha@bysolum.com`.
 - Do not expose secret values in source, logs, commits, or test output.
@@ -25,6 +26,7 @@
 - Resend returns a non-2xx response: the webhook returns a failure for Stripe retry.
 - A webhook replay sees an existing order: it resumes pending messages instead of returning early.
 - Repeated delivery attempts carry a deterministic but distinct Resend idempotency key per message role.
+- Development emails are allowed only for the known development Supabase project and always carry the `[DEV]` subject prefix.
 
 ### Task 1: Persist and coordinate first-box order emails
 
@@ -70,7 +72,7 @@ Expected: PASS.
 
 - [ ] **Step 1: Write a failing provider-response test**
 
-Prove a rejected Resend response does not become a sent delivery record.
+Prove a rejected Resend response does not become a sent delivery record, and that dev-only test emails receive the `[DEV]` subject prefix while production test-mode emails remain suppressed.
 
 - [ ] **Step 2: Run the focused test and verify it fails**
 
@@ -80,7 +82,7 @@ Expected: FAIL because the rejected-response behavior is not implemented.
 
 - [ ] **Step 3: Wire the coordinator into each live first-box handler**
 
-Validate Resend responses, use deterministic customer and founder idempotency keys, persist the returned Resend IDs, and resume delivery for existing orders. Keep test-mode guards unchanged.
+Validate Resend responses, use deterministic customer and founder idempotency keys, persist the returned Resend IDs, and resume delivery for existing orders. Keep production test-mode guards in place; permit only the known development project to send `[DEV]`-prefixed test emails.
 
 - [ ] **Step 4: Run focused and related tests**
 

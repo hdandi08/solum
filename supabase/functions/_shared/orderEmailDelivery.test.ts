@@ -1,11 +1,10 @@
-import {
-  assertEquals,
-  assertRejects,
-} from "jsr:@std/assert";
+import { assertEquals, assertRejects } from "jsr:@std/assert";
 import {
   deliverOrderEmailNotifications,
   type OrderEmailDeliveryState,
 } from "./orderEmailDelivery.ts";
+import * as orderEmailDelivery from "./orderEmailDelivery.ts";
+import * as purchaseSafety from "./purchaseSafety.ts";
 
 type DeliveryHarness = {
   state: OrderEmailDeliveryState;
@@ -97,4 +96,66 @@ Deno.test("does not resend either already-recorded order message on a webhook re
   await deliverOrderEmailNotifications(harness.createInput());
 
   assertEquals(harness.attempts, []);
+});
+
+Deno.test("does not record a customer confirmation when Resend rejects the request", async () => {
+  const requireAcceptedResponse = (
+    orderEmailDelivery as unknown as {
+      requireAcceptedResendResponse: (
+        response: Response,
+        messageRole: string,
+      ) => Promise<{ resendId: string | null }>;
+    }
+  ).requireAcceptedResendResponse;
+  const harness = createHarness({ customerEmail: "customer@example.com" });
+
+  await assertRejects(
+    () =>
+      deliverOrderEmailNotifications({
+        ...harness.createInput(),
+        sendCustomerConfirmation: () =>
+          requireAcceptedResponse(
+            new Response("sender domain not verified", { status: 422 }),
+            "customer_confirmation",
+          ),
+      }),
+    Error,
+    "resend_email_rejected:customer_confirmation:422",
+  );
+
+  assertEquals(harness.state.customerConfirmationSentAt, null);
+  assertEquals(harness.state.adminNotificationSentAt, null);
+});
+
+Deno.test("allows labelled test order emails only from the dedicated development project", () => {
+  const resolveOrderEmailDeliveryPolicy = (
+    purchaseSafety as unknown as {
+      resolveOrderEmailDeliveryPolicy: (
+        livemode: boolean | undefined,
+        supabaseUrl: string | undefined,
+      ) => { send: boolean; subjectPrefix: string };
+    }
+  ).resolveOrderEmailDeliveryPolicy;
+
+  assertEquals(
+    resolveOrderEmailDeliveryPolicy(
+      false,
+      "https://rodvvmfzkyjsqbufkjbc.supabase.co",
+    ),
+    { send: true, subjectPrefix: "[DEV] " },
+  );
+  assertEquals(
+    resolveOrderEmailDeliveryPolicy(
+      false,
+      "https://gvfptmjluxpngfjendbi.supabase.co",
+    ),
+    { send: false, subjectPrefix: "" },
+  );
+  assertEquals(
+    resolveOrderEmailDeliveryPolicy(
+      true,
+      "https://gvfptmjluxpngfjendbi.supabase.co",
+    ),
+    { send: true, subjectPrefix: "" },
+  );
 });
