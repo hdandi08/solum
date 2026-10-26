@@ -153,6 +153,37 @@ const CSS = `
 .by-stock-pill{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);border:1px solid rgba(46,109,164,0.35);padding:5px 10px;}
 .by-stock-dot{width:5px;height:5px;border-radius:50%;background:var(--blit);animation:bydot 2s ease infinite;}
 @keyframes bydot{0%,100%{opacity:1;}50%{opacity:.3;}}
+@media(min-width:901px){
+  .by-intro{margin-bottom:16px;}
+  .by-intro-eyebrow{margin-bottom:6px;}
+  .by-intro-head{font-size:24px;line-height:1.18;}
+  .by-intro-sub{font-size:14px;}
+  .by-intro-reassurance{margin-top:4px;}
+  .by-kits{margin-bottom:16px;}
+  .by-kit{padding:16px;}
+  .by-kit-img,.by-kit-result,.by-kit-mini-ledger{display:none;}
+  .by-kit-badge{margin-bottom:5px;}
+  .by-kit-name{font-size:26px;}
+  .by-kit-outcome{font-size:14px;margin-bottom:2px;}
+  .by-kit-contents{font-size:12px;margin-bottom:10px;}
+  .by-kit-stock{margin-top:0;font-size:11px;}
+  .by-kit-price{font-size:32px;}
+  .by-kit-cta{padding:10px 16px;}
+  .by-demo{display:none;}
+  .by-kit-confirm{padding:10px 14px;margin-bottom:16px;}
+  .by-kit-confirm-name{font-size:20px;}
+  .by-kit-confirm-meta{font-size:12px;}
+  .by-press-proof{display:none;}
+  .by-press-proof{padding:10px 12px;margin-bottom:8px;}
+  .by-press-proof-kicker{font-size:9px;margin-bottom:2px;}
+  .by-press-proof-quote{font-size:13px;}
+  .co-form-trust{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;padding:10px 12px;margin-bottom:12px;}
+  .co-form-trust-line{font-size:12px;}
+  .by-express-consent{margin-top:7px;}
+  .by-express-or{margin:12px 0 16px;}
+  .by-express-wrap + .co-progress{display:none;}
+  .co-progress{margin-bottom:24px;}
+}
 .by-soldout-page{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);min-height:calc(100vh - 64px);align-items:start;padding-top:64px;}
 .by-soldout-left{background:var(--black);padding:48px 40px;}
 .by-soldout-right{background:var(--char);padding:48px 40px;display:flex;flex-direction:column;gap:0;}
@@ -740,9 +771,9 @@ export default function BuyPage() {
   // link would point at a page the visitor has never seen.
   const isDirectLanding = (window.history.state?.idx ?? 0) === 0;
 
-  // Warm arrival: navigated here in-site with a kit already chosen (homepage
-  // kit CTA passes ?kit=). The page's job shrinks to confirm + pay — the full
-  // kit re-decision UI stays collapsed behind "Change kit".
+  // Warm arrivals get a shorter orientation. Any explicit kit in the URL is
+  // already a meaningful decision, including direct links from ads, so the
+  // selector stays collapsed until the customer asks to change it.
   const isWarmArrival = !isDirectLanding && !!preselect;
 
   // Kit CTAs and the sticky bar scroll to wallets + the details form.
@@ -760,7 +791,7 @@ export default function BuyPage() {
   const [soldoutSaved, setSoldoutSaved] = useState(false);
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
-  const [kitPickerOpen, setKitPickerOpen]       = useState(!isWarmArrival);
+  const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);
 
   const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
   const [iabContinued, setIabContinued] = useState(() => {

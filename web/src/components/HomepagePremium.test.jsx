@@ -48,20 +48,20 @@ describe('premium homepage direction', () => {
     expect(hero).not.toContain('kitWorth');
   });
 
-  it('keeps desktop hero copy clear of the fixed header', () => {
+  it('keeps the desktop hero in one viewport without clipping the fixed header', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('.hero{flex-direction:row;height:auto;min-height:calc(100svh + 88px);overflow:visible;align-items:stretch;}');
-    expect(hero).toContain('.hero-cols{flex:0 0 48%;min-height:calc(100svh + 88px);padding:clamp(124px,14vh,152px) 48px 112px;justify-content:flex-start;}');
-    expect(hero).toContain('.hero-visual{flex:0 0 52%;width:52%;height:auto;max-height:none;min-height:calc(100svh + 88px);}');
+    expect(hero).toContain('.hero{flex-direction:row;height:100svh;min-height:0;overflow:hidden;align-items:stretch;}');
+    expect(hero).toContain('.hero-cols{flex:0 0 52%;min-height:0;padding:clamp(82px,11vh,104px) 48px 40px;justify-content:flex-start;}');
+    expect(hero).toContain('.hero-visual{flex:0 0 48%;width:48%;height:100%;max-height:none;min-height:0;}');
   });
 
-  it('keeps desktop hero actions above the moving strip', () => {
+  it('uses a readable desktop headline scale and compact supporting proof', () => {
     const hero = component('Hero');
 
-    expect(hero).toContain('padding:clamp(124px,14vh,152px) 48px 112px');
-    expect(hero).not.toContain('height:100svh;min-height:640px;');
-    expect(hero).not.toContain('padding:clamp(144px,16vh,176px) 48px 56px');
+    expect(hero).toContain('.hero-title{font-size:clamp(52px,4.5vw,72px);line-height:.92;margin-bottom:16px;}');
+    expect(hero).toContain('.hero-editorial-note{display:none;}');
+    expect(hero).toContain('.hero-proof-strip{grid-template-columns:auto 1fr;column-gap:14px;row-gap:2px;margin-top:14px;padding-top:12px;}');
   });
 
   it('uses a matte editorial hero rather than tech-grid decoration', () => {
