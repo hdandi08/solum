@@ -95,6 +95,11 @@ export async function buildExpressPaymentIntentBody({
 
   return {
     buyer: { email: form.email, firstName },
-    body,
+    body: {
+      ...body,
+      // The wallet supplies shipping during client-side confirmation. Mark this
+      // so the server doesn't lock the PaymentIntent shipping field first.
+      payment_flow: 'express_wallet',
+    },
   };
 }

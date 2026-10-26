@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
 import { normalizeOrderSource, resolveAwinCheckoutAttribution } from '../_shared/awin.ts';
 import { boundedTrackingId, dynamicPaymentMethodOptions } from '../_shared/paymentMethods.ts';
+import { firstBoxPaymentIntentShipping } from '../_shared/firstBoxShipping.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 
@@ -36,6 +37,7 @@ Deno.serve(async (req) => {
     const {
       first_name, last_name, source, phone, site_host, line1, line2, city,
       postcode, ttclid, ttp, fbp, fbc, awc, awin_channel, awin_attribution_token,
+      payment_flow,
     } = body;
 
     if (!KIT_PENCE[kit_id!]) {
@@ -69,6 +71,14 @@ Deno.serve(async (req) => {
 
     const dispatch = getDispatchDate();
     const arrival  = estDeliveryDate(dispatch);
+    const shipping = firstBoxPaymentIntentShipping({
+      firstName: first_name,
+      lastName: last_name,
+      line1,
+      line2,
+      city,
+      postcode,
+    }, { deferToWallet: payment_flow === 'express_wallet' });
 
     // Create or retrieve Stripe customer
     const existing = await stripe.customers.list({ email, limit: 1 });
@@ -86,16 +96,7 @@ Deno.serve(async (req) => {
       currency: 'gbp',
       ...dynamicPaymentMethodOptions(),
       customer: customer.id,
-      shipping: {
-        name: [first_name, last_name].filter(Boolean).join(' '),
-        address: {
-          line1,
-          ...(line2 ? { line2 } : {}),
-          city,
-          postal_code: postcode,
-          country: 'GB',
-        },
-      },
+      ...(shipping ? { shipping } : {}),
       description: `SOLUM ${kitName} — One-time First Box`,
       metadata: {
         kit_id:       kit_id!,

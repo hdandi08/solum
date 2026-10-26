@@ -108,6 +108,7 @@ describe('buildExpressPaymentIntentBody', () => {
         city: 'London',
         county: 'Greater London',
         postcode: 'SW1A 1AA',
+        payment_flow: 'express_wallet',
       },
     });
   });
@@ -125,6 +126,7 @@ describe('buildExpressPaymentIntentBody', () => {
       kit_id: 'ground',
       awin_channel: 'aw',
       awin_attribution_token: 'opaque-token',
+      payment_flow: 'express_wallet',
     });
     expect(result.body).not.toHaveProperty('awc');
   });
