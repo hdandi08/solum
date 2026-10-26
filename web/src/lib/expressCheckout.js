@@ -9,12 +9,6 @@ export const RESTORED_EXPRESS_WALLETS = Object.freeze({
   klarna: 'never',
 });
 
-export const RESTORED_STRIPE_PAYMENT_METHOD_TYPES = Object.freeze([
-  'card',
-  'link',
-  'paypal',
-]);
-
 export const EXPRESS_CHECKOUT_EVENTS = Object.freeze({
   availability: 'express_availability',
   clicked: 'express_clicked',
@@ -52,7 +46,6 @@ export function expressElementsOptions({ amountPence, appearance }) {
     mode: 'payment',
     amount: amountPence,
     currency: 'gbp',
-    paymentMethodTypes: [...RESTORED_STRIPE_PAYMENT_METHOD_TYPES],
     appearance,
   };
 }

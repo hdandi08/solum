@@ -38,7 +38,7 @@ describe('Express Checkout configuration', () => {
     });
   });
 
-  it('offers every previously enabled wallet while keeping card-compatible types', () => {
+  it('leaves Apple Pay availability to Stripe alongside the other wallets', () => {
     expect(expressCheckoutElementOptions()).toEqual({
       buttonHeight: 48,
       emailRequired: true,
@@ -63,7 +63,6 @@ describe('Express Checkout configuration', () => {
       mode: 'payment',
       amount: 8500,
       currency: 'gbp',
-      paymentMethodTypes: ['card', 'link', 'paypal'],
       appearance: { theme: 'night' },
     });
   });
