@@ -360,6 +360,12 @@ describe('premium homepage direction', () => {
     expect(kits).toContain('.kit-card.featured .kit-badge{display:none;}');
   });
 
+  it('keeps the enlarged desktop kit imagery out of the mobile gallery', () => {
+    const kits = component('KitComparison');
+
+    expect(kits).toContain('.kit-slide img{width:100%;height:100%;max-width:100%;object-fit:contain;}');
+  });
+
   it('keeps kit-card copy restrained and puts the product expander directly after the outcome', () => {
     const kits = component('KitComparison');
 

@@ -38,6 +38,7 @@ const CSS = `
 @media(max-width:768px){
   .kit-gallery{width:calc(100% + 48px);margin:-28px -24px 0;}
   .kit-slide{height:auto;aspect-ratio:4/3;}
+  .kit-slide img{width:100%;height:100%;max-width:100%;object-fit:contain;}
 }
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
 .kit-badge.popular{background:rgba(74,143,199,.14);color:var(--blit);border:1px solid rgba(74,143,199,.36);}
