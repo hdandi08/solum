@@ -140,7 +140,12 @@ const CSS = `
   .ria-cadence-summary{grid-template-columns:1fr;gap:8px;margin-bottom:24px;}
   .ria-cadence-summary-item{padding:14px 16px;}
   .ria-ritual-stack{gap:48px;}
-  .ria-ritual-overview{grid-template-columns:1fr;gap:12px;}
+  .ria-ritual-block{grid-template-columns:24px minmax(0,1fr) 24px;gap:12px 0;}
+  .ria-ritual-overview{display:contents;}
+  .ria-ritual-card{grid-column:2;grid-row:1;}
+  .ria-gallery{grid-column:1/-1;grid-row:2;}
+  .ria-ritual-sequence{grid-column:2;grid-row:3;}
+  .ria-dots{grid-column:1/-1;grid-row:4;}
   .ria-ritual-card{padding:18px;}
   .ria-ritual-top{flex-direction:column;gap:8px;margin-bottom:14px;}
   .ria-ritual-cadence{text-align:left;white-space:normal;}
@@ -355,8 +360,8 @@ function RitualRail({ ritual }) {
 
   return (
     <article className={ritual.blockClass} ref={railRef}>
-      <div className="ria-ritual-overview reveal">
-        <div className="ria-ritual-card">
+      <div className="ria-ritual-overview">
+        <div className="ria-ritual-card reveal">
           <div className="ria-ritual-top">
             <h3 className="ria-ritual-title">{ritual.title}</h3>
             <span className="ria-ritual-cadence">{ritual.cadence}</span>
@@ -364,7 +369,7 @@ function RitualRail({ ritual }) {
           <p className="ria-ritual-summary">{ritual.summary}</p>
           <p className="ria-ritual-promise">{ritual.promise}</p>
         </div>
-        <ol className="ria-ritual-sequence">
+        <ol className="ria-ritual-sequence reveal">
           {ritual.steps.map((step) => (
             <li className="ria-ritual-step" key={`${step.num}-${step.name}`}>
               <span className="ria-step-num">{step.num}</span>

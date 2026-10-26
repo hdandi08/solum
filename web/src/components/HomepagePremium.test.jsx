@@ -366,6 +366,15 @@ describe('premium homepage direction', () => {
     expect(kits).toContain('.kit-slide img{width:100%;height:100%;max-width:100%;object-fit:contain;}');
   });
 
+  it('puts each ritual video before its detailed mobile step list', () => {
+    const ritual = component('RitualInAction');
+
+    expect(ritual).toContain('.ria-ritual-overview{display:contents;}');
+    expect(ritual).toContain('.ria-ritual-card{grid-column:2;grid-row:1;}');
+    expect(ritual).toContain('.ria-gallery{grid-column:1/-1;grid-row:2;}');
+    expect(ritual).toContain('.ria-ritual-sequence{grid-column:2;grid-row:3;}');
+  });
+
   it('keeps kit-card copy restrained and puts the product expander directly after the outcome', () => {
     const kits = component('KitComparison');
 
