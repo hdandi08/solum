@@ -1,10 +1,34 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { capture } from '../../lib/analytics.js';
 import { markRitualProgress } from '../../lib/qualifiedVisitTracker.js';
 import { DAILY_VIDEO, DAILY_POSTER, WEEKLY_VIDEO, WEEKLY_POSTER, WEEKLY_READY, RITUALS, GOLD } from '../../data/ritualVideo.js';
+import { selectRitualVideoSource } from './ritualVideoSource.js';
 
 const VIDEOS  = { daily: DAILY_VIDEO,  weekly: WEEKLY_VIDEO };
 const POSTERS = { daily: DAILY_POSTER, weekly: WEEKLY_POSTER };
+const MOBILE_VIDEO_QUERY = '(max-width: 768px)';
+
+function useIsMobileRitualViewport() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_VIDEO_QUERY).matches,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_VIDEO_QUERY);
+    const update = () => setIsMobile(mediaQuery.matches);
+
+    update();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', update);
+      return () => mediaQuery.removeEventListener('change', update);
+    }
+
+    mediaQuery.addListener(update);
+    return () => mediaQuery.removeListener(update);
+  }, []);
+
+  return isMobile;
+}
 
 const CSS = `
 /* ── Section shell ─────────────────────────────── */
@@ -152,6 +176,7 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
   const [active, setActive] = useState('daily');
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
+  const isMobile = useIsMobileRitualViewport();
   const videoRef = useRef(null);
   const progressFired = useRef(new Set());
   const other = active === 'daily' ? 'weekly' : 'daily';
@@ -201,6 +226,8 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
   const showVideo = active === 'daily' || WEEKLY_READY;
   const video = VIDEOS[active];
   const poster = POSTERS[active];
+  const videoSrc = selectRitualVideoSource(video, isMobile);
+  const videoPoster = isMobile ? poster.mobile : poster.desktop;
 
   return (
     <>
@@ -225,19 +252,17 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
                 {showVideo ? (
                   <>
                     <video
-                      key={active}
+                      key={`${active}-${videoSrc}`}
                       ref={videoRef}
                       className="rv-video"
-                      poster={poster.desktop}
+                      src={videoSrc}
+                      poster={videoPoster}
                       controls={playing}
                       preload="metadata"
                       playsInline
                       onTimeUpdate={onTimeUpdate}
                       onEnded={() => { setPlaying(false); setEnded(true); }}
-                    >
-                      <source src={video.mobile} media="(max-width:768px)" />
-                      <source src={video.desktop} />
-                    </video>
+                    />
                     {!playing && !ended && (
                       <button className="rv-poster" onClick={play} aria-label={`Play the ${active} ritual film`}>
                         <span className="rv-poster-img rv-pi-d" style={{ backgroundImage: `url(${poster.desktop})` }} />
