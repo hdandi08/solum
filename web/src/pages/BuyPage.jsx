@@ -17,6 +17,7 @@ import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowse
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
+import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
 import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import { videoFor } from '../data/productMedia.js';
@@ -761,7 +762,7 @@ function MittDemo() {
 }
 
 export default function BuyPage() {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
 
   const source    = normalizeCheckoutSource(params.get('source'));
   const preselect = params.get('kit');
@@ -790,6 +791,8 @@ export default function BuyPage() {
   const [clientSecret, setClientSecret] = useState(null);
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
+  const [waitlistRequested, setWaitlistRequested] = useState(false);
+  const [switchError, setSwitchError] = useState('');
   const waitlistInFlight = useRef(false);
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
@@ -865,24 +868,37 @@ export default function BuyPage() {
 
   const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
   const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
+  const alternativeKit = KITS.find(kit => kit.id !== selectedKit && !kit.comingSoon && !kit.hidden && inventory?.[kit.id]?.available === true);
 
   function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
   async function showSoldOut(buyerForm = form) {
-    if (waitlistInFlight.current) return;
-    waitlistInFlight.current = true;
     // Wallet metadata also contains nullable fields. Preserve the editable
     // form's string values so a rejected wallet email can be corrected.
     setForm(Object.fromEntries(Object.keys(form).map(key => [key, buyerForm[key] ?? ''])));
-    setInventory(current => ({ ...current, [selectedKit]: { available: false, count: 0 } }));
+    setInventory(null);
     setSoldoutSaved(false);
+    setWaitlistRequested(false);
+    setSwitchError('');
     setError('');
     setLoading(true);
     setStep('soldout');
     jumpTop();
     capture('soldout_detected', { kit: selectedKit, source });
+    let fresh = null;
+    try { fresh = await readCheckoutInventory(SUPABASE_URL, authHeaders); } catch { /* never recommend unverified stock */ }
+    setInventory({ ...fresh, [selectedKit]: { available: false, count: 0 } });
+    setLoading(false);
+  }
+
+  async function joinSoldOutWaitlist() {
+    if (waitlistInFlight.current || loading) return;
+    waitlistInFlight.current = true;
+    setWaitlistRequested(true);
+    setLoading(true);
+    setError('');
     try {
-      await saveStockWaitlist(SUPABASE_URL, authHeaders, buyerForm, selectedKit);
+      await saveStockWaitlist(SUPABASE_URL, authHeaders, form, selectedKit);
       setSoldoutSaved(true);
     } catch (err) {
       setError(err.name === 'TimeoutError'
@@ -892,6 +908,37 @@ export default function BuyPage() {
       waitlistInFlight.current = false;
       setLoading(false);
     }
+  }
+
+  async function switchKit(kitId) {
+    if (loading) return;
+    setLoading(true);
+    setSwitchError('');
+    try {
+      const fresh = await readCheckoutInventory(SUPABASE_URL, authHeaders);
+      setInventory(fresh);
+      if (fresh[kitId]?.available !== true) {
+        setSwitchError(`${kitId.toUpperCase()} has just sold out or its availability could not be confirmed. You can still join the waitlist.`);
+        return;
+      }
+      setSelectedKit(kitId);
+      const next = new URLSearchParams(params);
+      next.set('kit', kitId);
+      next.delete('resume');
+      setParams(next, { replace: true });
+      setClientSecret(null);
+      setPayInfo(null);
+      try { sessionStorage.removeItem('solum_payment_retry'); } catch { /* unavailable */ }
+      setError('');
+      setSoldoutSaved(false);
+      setWaitlistRequested(false);
+      setKitPickerOpen(false);
+      setStep('details');
+      capture('soldout_kit_switched', { from: selectedKit, kit: kitId, source });
+      jumpTop();
+    } catch {
+      setSwitchError('We could not check availability. Please try switching again shortly.');
+    } finally { setLoading(false); }
   }
 
   // ── Step 1: details validation ────────────────────────────────────────────
@@ -1047,29 +1094,34 @@ export default function BuyPage() {
               <span className="by-soldout-badge-dot" />
               Sold Out
             </div>
-            <div className="by-soldout-title">Oh No.<br />We're Sorry.</div>
+            <div className="by-soldout-title">{activeKit?.name} is sold out.</div>
             <div className="by-soldout-kit">
               SOLUM {activeKit?.name} — {activeKit?.firstBoxPrice ? `£${activeKit.firstBoxPrice}` : ''} · One-Time Kit
             </div>
             <div className="by-soldout-apology">
               <div className="by-soldout-apology-head">
-                You got this far and we let you down. This kit has sold out.
+                {alternativeKit ? 'Another way to start your ritual.' : 'We are working on the next restock.'}
               </div>
               <div className="by-soldout-apology-body">
-                The first batch went faster than expected. We are working on the next restock now.
-                Join the list for an email when it is back in stock.
+                {alternativeKit ? 'Choose the available kit below, or get notified when your original choice returns.' : 'Leave your details on the waitlist for an email when this kit returns.'}
               </div>
             </div>
+            <AlternativeKitOffer kit={alternativeKit} onSwitch={switchKit} busy={loading} />
+            {switchError && <p role="alert" className="co-error">{switchError}</p>}
             <div className="by-soldout-saved">
               {soldoutSaved && <div className="by-soldout-saved-tick">✓</div>}
               <div className="by-soldout-saved-text" aria-live="polite">
                 {soldoutSaved ? <>
                   <strong>You're on the list.</strong>
                   We've saved your details and will email {form.email} when stock is back.
+                </> : !waitlistRequested ? <>
+                  <strong>Prefer {activeKit?.name}?</strong>
+                  <p>Get an email when it returns. No payment required.</p>
+                  <button type="button" className="co-back-btn" disabled={loading} onClick={joinSoldOutWaitlist}>Notify me when {activeKit?.name} returns</button>
                 </> : loading ? <strong>Saving your details…</strong> : <>
                   <strong>We could not confirm your signup.</strong>
                   <p role="alert">{error}</p>
-                  <button type="button" className="co-submit" onClick={() => showSoldOut()}>Try again</button>
+                  <button type="button" className="co-submit" onClick={joinSoldOutWaitlist}>Try again</button>
                   <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); jumpTop(); }}>Change email</button>
                 </>}
               </div>
@@ -1089,7 +1141,7 @@ export default function BuyPage() {
             <div className="by-founder-message">
               "I'm genuinely sorry. You did everything right and we ran out. I built SOLUM because I believe
               in what it does — and running out of stock on people who want it is the worst feeling.
-              I'm personally working on the restock. <em>You will hear from me the moment it's ready.</em>"
+              I'm personally working on the restock. <em>Join the waitlist and we'll email you when it's ready.</em>"
             </div>
             <div className="by-founder-sig">— Harsha · harsha@bysolum.co.uk</div>
             <a
@@ -1210,6 +1262,12 @@ export default function BuyPage() {
                   </button>
                 </div>
               )}
+
+              {step === 'details' && inventory?.[selectedKit]?.available === false && <>
+                <p className="co-error">{activeKit?.name} is currently sold out.</p>
+                <AlternativeKitOffer kit={alternativeKit} onSwitch={switchKit} busy={loading} />
+                {switchError && <p role="alert" className="co-error">{switchError}</p>}
+              </>}
 
               {/* Kit selector — shown on step 1 only. AddToCart is gated on
                   in-site arrival: cold ad clicks landing straight on /buy must

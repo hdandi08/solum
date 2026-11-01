@@ -9,7 +9,12 @@ endpoints use the same gate, including the legacy subscription endpoints.
 
 The buy page refreshes availability when details are submitted and handles a later
 sold-out response while entering payment. Wallet checkout closes its payment sheet
-and uses the same sold-out flow. Waitlist confirmation requires a successful save
+and uses the same sold-out flow. If another kit is available, checkout offers it
+with its price and the product difference. Switching rechecks stock, preserves
+buyer details, clears previous payment retry state and returns to details to review
+the new kit. Wallet customers start a fresh payment for the newly selected kit.
+Waitlist signup is optional and only starts after the customer clicks to join.
+Waitlist confirmation requires a successful save
 or an explicit existing-signup response. Failed signup offers retry and email
 correction. Dev waitlist emails have a `[DEV]` subject prefix.
 
@@ -28,9 +33,13 @@ The initial dev snapshot on 1 November 2026 was GROUND 250 and RITUAL 250.
 For manual acceptance, GROUND is temporarily set to zero on **dev only**, leaving
 RITUAL available. Production counts are not changed.
 
-1. Open `/buy?kit=ground`, enter details and continue. Expect Sold Out and a saved
-   signup confirmation. No card form or payment should be created.
-2. Repeat with the same email. Expect the existing signup to be acknowledged,
+1. Open `/buy?kit=ground`. Expect a RITUAL alternative with £85 one-time pricing.
+   Enter details and continue: expect Sold Out, the same alternative and an
+   optional GROUND waitlist. No signup or payment should happen automatically.
+   Select **Switch to RITUAL · £85**: details must remain filled, the URL and
+   selected kit must change to RITUAL, and its checkout must continue normally.
+2. Return to sold-out GROUND and explicitly choose **Notify me when GROUND returns**.
+   Expect a saved signup. Repeat with the same email. Expect the existing signup to be acknowledged,
    without another waitlist email.
 3. Open `/buy?kit=ritual`. Expect normal details, delivery, and payment steps.
    Use Stripe's test card `4242 4242 4242 4242`, a future expiry and any CVC to
@@ -38,7 +47,9 @@ RITUAL available. Production counts are not changed.
    customer/founder emails. This exercise creates a test order and can decrement
    dev RITUAL stock.
 4. On a supported device, try Apple Pay for the sold-out GROUND kit. Expect the
-   wallet to report unavailability, followed by the saved waitlist state.
+   wallet to report unavailability, followed by the RITUAL alternative and optional
+   GROUND waitlist. Switching must show the £85 RITUAL price and start a fresh
+   wallet payment; no automatic payment or signup may happen.
 5. Optionally block `join-waitlist` in browser developer tools and repeat GROUND.
    Expect a failure message, never “You're on the list”. Unblock and select
    **Try again**. **Change email** must return to editable details.

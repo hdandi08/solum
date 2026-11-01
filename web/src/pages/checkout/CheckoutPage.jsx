@@ -14,6 +14,7 @@ import SolumWordmark from '../../components/SolumWordmark.jsx';
 import './checkout.css';
 import { jumpTop } from '../../lib/scroll.js';
 import { readCheckoutInventory, saveStockWaitlist } from '../../lib/checkoutStock.js';
+import AlternativeKitOffer from '../../components/AlternativeKitOffer.jsx';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -97,7 +98,7 @@ function ProgressBar({ step }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const kitId    = params.get('kit');
   const kit      = KITS.find(k => k.id === kitId);
@@ -135,15 +136,16 @@ export default function CheckoutPage() {
   const [activeKitId, setActiveKitId]   = useState(kitId);
 
   const [inventoryAvailable, setInventoryAvailable] = useState(null);
-  const [waitlistForm, setWaitlistForm]   = useState({ first_name: '', last_name: '', email: '' });
+  const [inventory, setInventory] = useState(null);
+  const [switchError, setSwitchError] = useState('');
   const [waitlistState, setWaitlistState] = useState('idle');
   const [waitlistKitId, setWaitlistKitId] = useState(kitId);
 
   useEffect(() => {
     if (!kit) return;
     readCheckoutInventory(SUPABASE_URL, { apikey: ANON_KEY })
-      .then(kits => setInventoryAvailable(kits[kit.id]?.available ?? null))
-      .catch(() => setInventoryAvailable(null));
+      .then(kits => { setInventory(kits); setInventoryAvailable(kits[kit.id]?.available ?? null); })
+      .catch(() => { setInventory(null); setInventoryAvailable(null); });
   }, [kit?.id]); // eslint-disable-line
 
   if (!kit || kit.comingSoon) { navigate('/#kits'); return null; }
@@ -151,6 +153,7 @@ export default function CheckoutPage() {
   const activeKit  = KITS.find(k => k.id === activeKitId) ?? kit;
   const ritualKit  = KITS.find(k => k.id === 'ritual');
   const waitlistKit = KITS.find(k => k.id === waitlistKitId) ?? kit;
+  const alternativeKit = KITS.find(candidate => candidate.id !== waitlistKitId && !candidate.comingSoon && !candidate.hidden && inventory?.[candidate.id]?.available === true);
 
   const dispatch    = getDispatchDate();
   const arrival     = estDeliveryDate(dispatch);
@@ -159,6 +162,37 @@ export default function CheckoutPage() {
   const refillArrive = addDays(firstCharge, 4);
 
   function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+  async function switchKit(nextKitId) {
+    if (loading || waitlistState === 'submitting') return;
+    setLoading(true);
+    setSwitchError('');
+    try {
+      const fresh = await readCheckoutInventory(SUPABASE_URL, { apikey: ANON_KEY });
+      setInventory(fresh);
+      if (fresh[nextKitId]?.available !== true) {
+        setSwitchError(`${nextKitId.toUpperCase()} has just sold out or its availability could not be confirmed. You can still join the waitlist.`);
+        return;
+      }
+      setActiveKitId(nextKitId);
+      setWaitlistKitId(nextKitId);
+      setWaitlistState('idle');
+      setInventoryAvailable(true);
+      setInterstitial(null);
+      setClientSecret(null);
+      setPayInfo(null);
+      setError('');
+      setStep('details');
+      try { sessionStorage.removeItem('solum_payment_retry'); } catch { /* unavailable */ }
+      const next = new URLSearchParams(params);
+      next.set('kit', nextKitId);
+      next.delete('resume');
+      setParams(next, { replace: true });
+      jumpTop();
+    } catch {
+      setSwitchError('We could not check availability. Please try switching again shortly.');
+    } finally { setLoading(false); }
+  }
 
   // ── Step navigation ───────────────────────────────────────────────────────
 
@@ -247,9 +281,13 @@ export default function CheckoutPage() {
       if (res.status === 409 && data.error === 'sold_out') {
         setWaitlistKitId(kId);
         setActiveKitId(kId);
-        setWaitlistForm({ first_name: form.first_name, last_name: form.last_name, email: form.email });
         setInventoryAvailable(false);
+        setInventory(null);
         jumpTop();
+        try {
+          const fresh = await readCheckoutInventory(SUPABASE_URL, { apikey: ANON_KEY });
+          setInventory({ ...fresh, [kId]: { available: false, count: 0 } });
+        } catch { /* recommendations require a successful fresh lookup */ }
         return;
       }
       if (res.status === 409 && data.error === 'existing_subscriber') {
@@ -280,11 +318,12 @@ export default function CheckoutPage() {
 
   async function handleWaitlist(e) {
     e.preventDefault();
-    const emailVal = waitlistForm.email.trim();
+    if (loading || waitlistState === 'submitting') return;
+    const emailVal = form.email.trim();
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
     setWaitlistState('submitting');
     try {
-      await saveStockWaitlist(SUPABASE_URL, { apikey: ANON_KEY }, waitlistForm, waitlistKitId);
+      await saveStockWaitlist(SUPABASE_URL, { apikey: ANON_KEY }, form, waitlistKitId);
       setWaitlistState('done');
     } catch { setWaitlistState('error'); }
   }
@@ -456,6 +495,8 @@ export default function CheckoutPage() {
 
             {inventoryAvailable === false ? (
               <div className="co-waitlist">
+                <AlternativeKitOffer kit={alternativeKit} onSwitch={switchKit} busy={loading || waitlistState === 'submitting'} subscription />
+                {switchError && <p className="co-error" role="alert">{switchError}</p>}
                 {waitlistState === 'done' ? (
                   <div className="co-waitlist-done">
                     <div className="co-waitlist-done-tick">✓</div>
@@ -478,8 +519,8 @@ export default function CheckoutPage() {
                           <label className="co-label">First Name</label>
                           <input
                             className="co-input"
-                            value={waitlistForm.first_name}
-                            onChange={e => setWaitlistForm(f => ({ ...f, first_name: e.target.value }))}
+                            value={form.first_name}
+                            onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
                             placeholder="James"
                           />
                         </div>
@@ -487,8 +528,8 @@ export default function CheckoutPage() {
                           <label className="co-label">Last Name</label>
                           <input
                             className="co-input"
-                            value={waitlistForm.last_name}
-                            onChange={e => setWaitlistForm(f => ({ ...f, last_name: e.target.value }))}
+                            value={form.last_name}
+                            onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
                             placeholder="Smith"
                           />
                         </div>
@@ -498,8 +539,8 @@ export default function CheckoutPage() {
                         <input
                           className="co-input"
                           type="email"
-                          value={waitlistForm.email}
-                          onChange={e => setWaitlistForm(f => ({ ...f, email: e.target.value }))}
+                          value={form.email}
+                          onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                           placeholder="james@example.com"
                           required
                         />
@@ -510,7 +551,7 @@ export default function CheckoutPage() {
                       <button
                         type="submit"
                         className="co-waitlist-submit"
-                        disabled={waitlistState === 'submitting'}
+                        disabled={loading || waitlistState === 'submitting'}
                       >
                         {waitlistState === 'submitting' ? 'Saving…' : 'Notify Me When Available →'}
                       </button>
