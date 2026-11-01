@@ -1069,7 +1069,7 @@ export default function BuyPage() {
                 </> : loading ? <strong>Saving your details…</strong> : <>
                   <strong>We could not confirm your signup.</strong>
                   <p role="alert">{error}</p>
-                  <button type="button" className="co-btn" onClick={() => showSoldOut()}>Try again</button>
+                  <button type="button" className="co-submit" onClick={() => showSoldOut()}>Try again</button>
                   <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); jumpTop(); }}>Change email</button>
                 </>}
               </div>
