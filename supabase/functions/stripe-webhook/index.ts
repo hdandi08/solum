@@ -1,3 +1,4 @@
+import {ensureCheckoutSubscription} from '../_shared/checkoutSubscription.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { sendPosthogPurchase } from '../_shared/posthog.ts';
@@ -74,61 +75,14 @@ async function deductInventory(
   }
 }
 
-// Decrement the kit-level available_count for a paid FIRST-BOX order.
-// Idempotent + race-safe: the conditional UPDATE is the gate — only the first
-// caller to flip inventory_kit_deducted wins, and only it adjusts the count.
-// Never throws past here — inventory must not block order processing.
-async function deductKitInventory(
-  db: ReturnType<typeof createClient>,
-  orderId: string,
-  kitId: string,
-) {
-  try {
-    const { data: gated } = await db
-      .from('orders')
-      .update({ inventory_kit_deducted: true })
-      .eq('id', orderId)
-      .eq('inventory_kit_deducted', false)
-      .select('kit_id')
-      .maybeSingle();
-    if (!gated) return; // already deducted (retry / duplicate handler) — no-op
-    const { data: newCount, error } = await db.rpc('adjust_kit_inventory', {
-      p_kit_id: kitId,
-      p_delta: -1,
-    });
-    if (error) console.error('kit_inventory_deduct_error', error.message, { orderId, kitId });
-    else console.log('KIT_INVENTORY_DEDUCT', JSON.stringify({ orderId, kitId, newCount }));
-  } catch (err) {
-    console.error('kit_inventory_deduct_error', err, { orderId, kitId });
-  }
+// Inventory state and order flags commit in the same database transaction.
+async function deductKitInventory(db: ReturnType<typeof createClient>, orderId: string, _kitId: string, resourceId?: string) {
+  const { error } = await db.rpc('finalise_checkout_inventory', {p_order_id:orderId,p_resource_id:resourceId ?? null});
+  if(error) throw new Error(`kit_inventory_finalisation_failed: ${error.message}`);
 }
-
-// Increment the kit-level available_count when we fully refund a first-box order.
-// Gate requires the order was actually deducted and not already restocked.
-async function restockKitInventory(
-  db: ReturnType<typeof createClient>,
-  orderId: string,
-  kitId: string,
-) {
-  try {
-    const { data: gated } = await db
-      .from('orders')
-      .update({ inventory_kit_restocked: true })
-      .eq('id', orderId)
-      .eq('inventory_kit_deducted', true)
-      .eq('inventory_kit_restocked', false)
-      .select('kit_id')
-      .maybeSingle();
-    if (!gated) return; // never deducted, or already restocked — no-op
-    const { data: newCount, error } = await db.rpc('adjust_kit_inventory', {
-      p_kit_id: kitId,
-      p_delta: 1,
-    });
-    if (error) console.error('kit_inventory_restock_error', error.message, { orderId, kitId });
-    else console.log('KIT_INVENTORY_RESTOCK', JSON.stringify({ orderId, kitId, newCount }));
-  } catch (err) {
-    console.error('kit_inventory_restock_error', err, { orderId, kitId });
-  }
+async function restockKitInventory(db: ReturnType<typeof createClient>, orderId: string, _kitId: string) {
+  const { error } = await db.rpc('restock_checkout_inventory', {p_order_id:orderId});
+  if(error) throw new Error(`kit_inventory_restock_failed: ${error.message}`);
 }
 
 async function sendConfirmationEmail(
@@ -327,12 +281,14 @@ async function deliverPaidOrderEmails(
 
   const { data: storedOrder, error: storedOrderError } = await db
     .from('orders')
-    .select('id, customer_confirmation_email_sent_at, admin_notification_email_sent_at')
+    .select('id, status, customer_confirmation_email_sent_at, admin_notification_email_sent_at')
     .eq('id', input.orderId)
     .single();
   if (storedOrderError || !storedOrder) {
     throw new Error(`order_email_delivery_state_read_failed: ${storedOrderError?.message ?? 'missing order'}`);
   }
+
+  if(storedOrder.status === 'refunded') return;
 
   const state = {
     id: storedOrder.id,
@@ -734,7 +690,7 @@ async function handleOneTimeOrderFromPI(
 
     if (kit_id) {
       await deductInventory(supabase, kit_id, 'first_box', newOrder.id);
-      await deductKitInventory(supabase, newOrder.id, kit_id);
+
     }
 
     await supabase.from('leads')
@@ -743,6 +699,7 @@ async function handleOneTimeOrderFromPI(
   }
   if (!customerId) throw new Error('one_time_pi_order_missing_customer');
   if (!order) throw new Error('one_time_pi_order_missing_order');
+  if (kit_id) await deductKitInventory(supabase, order.id, kit_id, pi.id);
   const canonicalOrder = order as unknown as { id: string; created_at: string };
 
   // Store shipping address from pi.shipping before non-critical delivery events.
@@ -882,8 +839,10 @@ async function handleOneTimeOrder(
   // Deduct inventory
   if (!existingOrder && kit_id && order?.id) {
     await deductInventory(supabase, kit_id, 'first_box', order.id);
-    await deductKitInventory(supabase, order.id, kit_id);
+
   }
+
+  if (kit_id && order?.id) await deductKitInventory(supabase, order.id, kit_id, session.id);
 
   // Mark lead completed
   await supabase.from('leads')
@@ -958,8 +917,10 @@ Deno.serve(async (req) => {
   try {
     switch (event.type) {
 
+      case 'checkout.session.async_payment_succeeded':
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
+        if(session.payment_status !== 'paid') break;
         const { kit_id, first_name, last_name, birth_year, birth_month, first_charge_ts, monthly_pence } = session.metadata ?? {};
         const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
         const phone = session.customer_details?.phone ?? null;
@@ -976,30 +937,10 @@ Deno.serve(async (req) => {
         if (!stripe_subscription_id && session.payment_intent) {
           try {
             const pi = await stripe.paymentIntents.retrieve(session.payment_intent as string);
-            const paymentMethodId = pi.payment_method as string;
-
-            const recurringPrice = await stripe.prices.create({
-              currency: 'gbp',
-              unit_amount: parseInt(monthly_pence ?? '4800'),
-              recurring: { interval: 'month' },
-              product_data: { name: `SOLUM ${KIT_NAMES[kit_id ?? ''] ?? (kit_id ?? '').toUpperCase()} — Monthly Refill` },
-            });
-
-            const trialEnd = first_charge_ts
-              ? parseInt(first_charge_ts)
-              : Math.floor(Date.now() / 1000) + 30 * 24 * 3600;
-
-            const stripeSub = await stripe.subscriptions.create({
-              customer: stripe_customer_id,
-              items: [{ price: recurringPrice.id }],
-              trial_end: trialEnd,
-              default_payment_method: paymentMethodId,
-              metadata: { kit_id: kit_id ?? '', birth_year: birth_year?.toString() ?? '', birth_month: birth_month?.toString() ?? '' },
-            });
-            stripe_subscription_id = stripeSub.id;
+            stripe_subscription_id = await ensureCheckoutSubscription(supabase,stripe,pi,session.metadata ?? {});
           } catch (subErr) {
             console.error('SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
-            // Don't throw — order is still recorded, admin can fix manually
+            throw subErr;
           }
         }
 
@@ -1065,13 +1006,13 @@ Deno.serve(async (req) => {
         const { data: existingOrder } = await supabase
           .from('orders')
           .select('id')
-          .eq('subscription_id', sub?.id)
+          .eq('stripe_payment_id', session.payment_intent as string)
           .eq('order_type', 'first_box')
           .maybeSingle();
 
         let firstBoxOrderId: string | null = existingOrder?.id ?? null;
         if (!existingOrder) {
-          const { data: newOrder } = await supabase.from('orders').insert({
+          const { data: newOrder, error: firstBoxInsertError } = await supabase.from('orders').insert({
             customer_id: customer.id,
             subscription_id: sub?.id,
             stripe_payment_id: session.payment_intent as string,
@@ -1081,7 +1022,8 @@ Deno.serve(async (req) => {
             amount_pence: session.amount_total ?? 0,
             status: 'paid',
           }).select('id').single();
-          firstBoxOrderId = newOrder?.id ?? null;
+          if(firstBoxInsertError || !newOrder) throw new Error('first_box_order_insert_failed');
+          firstBoxOrderId = newOrder.id;
         }
 
         // Log first-box payment attempt
@@ -1100,10 +1042,12 @@ Deno.serve(async (req) => {
         // Deduct first-box inventory
         if (!existingOrder && kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
-          if (firstBoxOrderId) await deductKitInventory(supabase, firstBoxOrderId, kit_id);
+
         }
 
         // Mark lead as completed
+        if (firstBoxOrderId && kit_id) await deductKitInventory(supabase, firstBoxOrderId, kit_id, session.id);
+
         await supabase.from('leads')
           .update({ checkout_status: 'completed', updated_at: new Date().toISOString() })
           .eq('stripe_session_id', session.id);
@@ -1156,6 +1100,8 @@ Deno.serve(async (req) => {
       case 'payment_intent.succeeded': {
         // Fires for integrated checkout (non-redirect flow using PaymentElement)
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        if (pi.metadata?.checkout_flow === 'hosted') break;
 
         // Only process intents created by our checkout (has kit_id metadata)
         if (!pi.metadata?.kit_id) break;
@@ -1214,26 +1160,10 @@ Deno.serve(async (req) => {
         // Create Stripe subscription using saved card
         let stripe_subscription_id: string | null = null;
         try {
-          const paymentMethodId = pi.payment_method as string;
-          const recurringPrice = await stripe.prices.create({
-            currency: 'gbp',
-            unit_amount: parseInt(monthly_pence ?? '4800'),
-            recurring: { interval: 'month' },
-            product_data: { name: `SOLUM ${KIT_NAMES[kit_id ?? ''] ?? (kit_id ?? '').toUpperCase()} — Monthly Refill` },
-          });
-          const trialEnd = first_charge_ts
-            ? parseInt(first_charge_ts)
-            : Math.floor(Date.now() / 1000) + 30 * 24 * 3600;
-          const stripeSub = await stripe.subscriptions.create({
-            customer: stripe_customer_id,
-            items: [{ price: recurringPrice.id }],
-            trial_end: trialEnd,
-            default_payment_method: paymentMethodId,
-            metadata: { kit_id: kit_id ?? '', birth_year, birth_month },
-          });
-          stripe_subscription_id = stripeSub.id;
+          stripe_subscription_id = await ensureCheckoutSubscription(supabase,stripe,pi,pi.metadata);
         } catch (subErr) {
           console.error('PI_SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
+          throw subErr;
         }
 
         // Look up prior subscriptions for numbering
@@ -1283,7 +1213,7 @@ Deno.serve(async (req) => {
 
         let subFirstBoxOrderId: string | null = existingOrder?.id ?? null;
         if (!existingOrder) {
-          const { data: newSubOrder } = await supabase.from('orders').insert({
+          const { data: newSubOrder, error: subOrderInsertError } = await supabase.from('orders').insert({
             customer_id: customer.id,
             subscription_id: sub?.id,
             stripe_payment_id: pi.id,
@@ -1293,13 +1223,14 @@ Deno.serve(async (req) => {
             amount_pence: pi.amount,
             status: 'paid',
           }).select('id').single();
-          subFirstBoxOrderId = newSubOrder?.id ?? null;
+          if(subOrderInsertError || !newSubOrder) throw new Error('subscription_order_insert_failed');
+          subFirstBoxOrderId = newSubOrder.id;
         }
 
         // Deduct inventory
         if (!existingOrder && kit_id && sub?.id) {
           await deductInventory(supabase, kit_id, 'first_box', sub.id);
-          if (subFirstBoxOrderId) await deductKitInventory(supabase, subFirstBoxOrderId, kit_id);
+
         }
 
         // Mark lead completed
@@ -1321,6 +1252,8 @@ Deno.serve(async (req) => {
         }
 
         // Keep non-email external side effects restricted to the first live processing.
+        if (subFirstBoxOrderId && kit_id) await deductKitInventory(supabase, subFirstBoxOrderId, kit_id, pi.id);
+
         if (!existingOrder && shouldSendExternalPurchaseSideEffects(pi.livemode)) {
           await sendTikTokPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
           await sendMetaPurchaseEvent({ email: email?.trim().toLowerCase(), phone, kitId: kit_id, kitName: KIT_NAMES[kit_id ?? ''] ?? 'SOLUM', amountPence: pi.amount, eventId: pi.id });
@@ -1591,6 +1524,18 @@ Deno.serve(async (req) => {
         break;
       }
 
+      case 'checkout.session.async_payment_failed': {
+        const session=event.data.object as Stripe.Checkout.Session;
+        if(session.metadata?.stock_reservation==='v1') {
+          const current=await stripe.checkout.sessions.retrieve(session.id);
+          if(current.payment_status!=='paid') {
+            const {error}=await supabase.rpc('settle_checkout_reservation',{p_resource_id:session.id,p_outcome:'released'});
+            if(error) throw new Error('async_failed_reservation_release_failed');
+          }
+        }
+        break;
+      }
+
       case 'checkout.session.expired': {
         // High-intent abandonment — went to Stripe, didn't complete
         const session = event.data.object as Stripe.Checkout.Session;
@@ -1645,18 +1590,12 @@ Deno.serve(async (req) => {
         // Guard against a null payment_intent: matching orders by IS NULL could
         // mass-update unrelated NULL-keyed rows and mis-restock kit inventory.
         if (!charge.payment_intent) break;
-        const { data: refundedOrder } = await supabase
-          .from('orders')
-          .update({ status: 'refunded' })
-          .eq('stripe_payment_id', charge.payment_intent as string)
-          .select('id, kit_id, order_type')
-          .maybeSingle();
-
-        // Restock the kit count only on a FULL refund of a first-box order.
         const isFullRefund = charge.amount_refunded === charge.amount;
-        if (isFullRefund && refundedOrder?.order_type === 'first_box' && refundedOrder.kit_id) {
-          await restockKitInventory(supabase, refundedOrder.id, refundedOrder.kit_id);
+        if(isFullRefund) {
+          const {error}=await supabase.rpc('record_checkout_full_refund',{p_payment_id:charge.payment_intent as string});
+          if(error) throw new Error('full_refund_record_failed');
         }
+        const {data:refundedOrder}=await supabase.from('orders').select('id').eq('stripe_payment_id',charge.payment_intent as string).maybeSingle();
 
         await logEvent(supabase, event.id, event.type, null, {
           amount_refunded_pence: charge.amount_refunded,

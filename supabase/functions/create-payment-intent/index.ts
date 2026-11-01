@@ -1,3 +1,4 @@
+import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -26,8 +27,8 @@ const corsHeaders = {
 };
 
 
-function getFirstChargeDate(): Date {
-  const d = new Date(); d.setDate(d.getDate() + 30); d.setHours(0, 0, 0, 0); return d;
+function getFirstChargeDate(start?: string): Date {
+  const d = new Date(start ?? Date.now()); d.setDate(d.getDate() + 30); d.setHours(0, 0, 0, 0); return d;
 }
 
 function getRefillShipDate(charge: Date): Date {
@@ -67,16 +68,18 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
     }
 
-    const stockError = await checkoutStockError(supabase, kit_id!);
+    const stockError = reservationsEnabled() ? null : await checkoutStockError(supabase, kit_id!);
     if (stockError) {
       return new Response(JSON.stringify(stockError.body), {
         status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const dispatch     = getDispatchDate();
+    const attempt = await prepareCheckoutAttempt(supabase, 'payment_intent', body);
+
+    const dispatch     = getDispatchDate(checkoutAttemptTime(attempt));
     const arrival      = estDeliveryDate(dispatch);
-    const firstCharge  = getFirstChargeDate();
+    const firstCharge  = getFirstChargeDate(attempt.created_at);
     const refillShip   = getRefillShipDate(firstCharge);
     const refillArrive = getRefillArrivalDate(firstCharge);
 
@@ -114,6 +117,8 @@ Deno.serve(async (req) => {
           metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
         });
 
+    customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+
     // Compute total amount
     let amount = kit.first_box_pence;
     for (const addonKey of selectedAddons) {
@@ -121,7 +126,7 @@ Deno.serve(async (req) => {
     }
 
     // Create PaymentIntent — saves card for future subscription billing
-    const pi = await stripe.paymentIntents.create({
+    const pi = await createReservedPayment(supabase, stripe, 'payment_intent', kit_id!, attempt, {
       amount,
       currency: 'gbp',
       customer: customer.id,
@@ -166,6 +171,8 @@ Deno.serve(async (req) => {
     }, { onConflict: 'stripe_session_id' });
 
     return new Response(JSON.stringify({
+      reservation_expires_at: pi.reservation_expires_at,
+      reservation_server_now: new Date().toISOString(),
       client_secret:     pi.client_secret,
       dispatch_date:     fmtDay(dispatch),
       arrival_date:      fmtDay(arrival),
@@ -179,6 +186,7 @@ Deno.serve(async (req) => {
     });
 
   } catch (err) {
+    if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
     console.error('CREATE_PAYMENT_INTENT_ERROR', err.message, { kit_id, email });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.com.' }),

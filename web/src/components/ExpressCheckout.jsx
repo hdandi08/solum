@@ -1,3 +1,4 @@
+import {localiseReservation,withReservationAttempt,clearReservationAttempt,canConfirmReservation} from '../lib/reservation.js';
 import { ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import {
   capture,
@@ -63,10 +64,11 @@ export default function ExpressCheckout({
       const response = await fetch(`${supabaseUrl}/functions/v1/create-first-box-payment-intent`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(await withReservationAttempt(body,'express')),
       });
-      const data = await response.json();
+      const data = localiseReservation(await response.json());
       if (!response.ok) {
+        if(data.error==='reservation_expired') clearReservationAttempt('express');
         capture(EXPRESS_CHECKOUT_EVENTS.error, {
           kit: kitId,
           source,
@@ -82,6 +84,12 @@ export default function ExpressCheckout({
         return;
       }
 
+      if(!canConfirmReservation(data.reservation_expires_at)) {
+        clearReservationAttempt('express');
+        notifyExpressPaymentFailed(event,'Your reservation has ended. Please try again.');
+        onError('Your reservation has ended. Please try again.');
+        return;
+      }
       identify(buyer.email, { first_name: buyer.firstName, kit: kitId, source });
       capture(EXPRESS_CHECKOUT_EVENTS.initiated, {
         kit: kitId,
@@ -122,6 +130,7 @@ export default function ExpressCheckout({
         return;
       }
       if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        clearReservationAttempt('express');
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;

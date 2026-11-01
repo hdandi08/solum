@@ -1,3 +1,4 @@
+import {localiseReservation,withReservationAttempt,clearReservationAttempt,releaseReservation} from '../../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
@@ -108,16 +109,16 @@ export default function CheckoutPage() {
 
   // Restore state after a failed redirect-based payment (Revolut Pay etc.)
   useEffect(() => {
-    if (params.get('resume') !== '1') return;
     try {
       const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
       if (!saved.clientSecret || !saved.form) return;
+      if (params.get('resume') !== '1' && !(saved.flow === 'subscription' && saved.payInfo?.reservation_expires_at && saved.kit === kitId)) return;
       setForm(saved.form);
       setPayInfo(saved.payInfo);
       setClientSecret(saved.clientSecret);
       if (saved.kit) setActiveKitId(saved.kit);
       setStep('payment');
-      sessionStorage.removeItem('solum_payment_retry');
+      if (!saved.payInfo?.reservation_expires_at) sessionStorage.removeItem('solum_payment_retry');
     } catch {}
   }, []); // eslint-disable-line
 
@@ -271,7 +272,7 @@ export default function CheckoutPage() {
           apikey: ANON_KEY,
           Authorization: `Bearer ${ANON_KEY}`,
         },
-        body: JSON.stringify({
+        body: JSON.stringify(await withReservationAttempt({
           kit_id:      kId,
           email:       form.email.trim(),
           first_name:  form.first_name.trim(),
@@ -285,9 +286,10 @@ export default function CheckoutPage() {
           county:      form.county.trim() || null,
           postcode:    form.postcode.trim(),
           addons,
-        }),
+        }, 'subscription')),
       });
-      const data = await res.json();
+      const data = localiseReservation(await res.json());
+      if (data.error === 'reservation_expired') clearReservationAttempt('subscription');
       if (res.status === 409 && data.error === 'sold_out') {
         setWaitlistKitId(kId);
         setActiveKitId(kId);
@@ -316,7 +318,7 @@ export default function CheckoutPage() {
       jumpTop();
       try {
         sessionStorage.setItem('solum_payment_retry', JSON.stringify({
-          clientSecret: data.client_secret, payInfo: data, form, kit: kId,
+          clientSecret: data.client_secret, payInfo: data, form, kit: kId, flow: 'subscription',
         }));
       } catch {}
     } catch (err) {
@@ -324,6 +326,11 @@ export default function CheckoutPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function leavePayment(nextStep) {
+    await releaseReservation(SUPABASE_URL,{apikey:ANON_KEY,Authorization:`Bearer ${ANON_KEY}`},payInfo);
+    clearReservationAttempt('subscription'); setClientSecret(null); setPayInfo(null); setStep(nextStep); jumpTop();
   }
 
   async function handleWaitlist(e) {
@@ -487,8 +494,9 @@ export default function CheckoutPage() {
                 activeKit={activeKit}
                 payInfo={payInfo}
                 form={form}
-                onBack={() => { setStep('delivery'); jumpTop(); }}
-                onEditDetails={() => { setStep('details'); jumpTop(); }}
+                onRestart={() => leavePayment('delivery')}
+                onBack={() => leavePayment('delivery')}
+                onEditDetails={() => leavePayment('details')}
               />
             </div>
             <OrderSummary {...summaryProps} />

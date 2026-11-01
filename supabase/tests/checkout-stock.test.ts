@@ -91,3 +91,40 @@ for (const [name, endpoint] of handlers) {
     });
   }
 }
+
+for(const [name,endpoint] of handlers) {
+  for(const state of ['held','sold_out']) Deno.test(`${name}: reservation ${state} controls exposure of payment credentials`,async()=>{
+    Deno.env.set('CHECKOUT_RESERVATIONS_ENABLED','true');
+    const previous=testFetch; const calls:string[]=[];
+    const pi={id:'pi_fixture',status:'requires_payment_method',client_secret:'pi_fixture_secret_test',livemode:false};
+    const session={id:'cs_fixture',status:'open',payment_status:'unpaid',url:'https://checkout.stripe.com/test-fixture'};
+    testFetch=async(input,init)=>{
+      const request=new Request(input,init),url=new URL(request.url); calls.push(`${request.method} ${url.pathname}`);
+      if(url.hostname==='stock-test.supabase.co') {
+        if(url.pathname.endsWith('/rpc/prepare_checkout_attempt')) return Response.json({created_at:new Date().toISOString(),customer_id:'cus_fixture'});
+        if(url.pathname.endsWith('/rpc/reserve_checkout_stock')) return Response.json({state,expires_at:new Date(Date.now()+720000).toISOString()});
+        if(url.pathname.endsWith('/customers')) return Response.json([]);
+        if(url.pathname.endsWith('/leads')) return Response.json({});
+      }
+      if(url.hostname==='api.stripe.com') {
+        if(url.pathname==='/v1/customers') return Response.json({data:[{id:'cus_fixture'}]});
+        if(url.pathname==='/v1/payment_intents' || url.pathname==='/v1/checkout/sessions') {
+          assertEquals(request.headers.get('idempotency-key')?.startsWith('stock-'),true);
+          return Response.json(url.pathname.endsWith('sessions')?session:pi);
+        }
+        if(url.pathname.endsWith('/cancel')) return Response.json({...pi,status:'canceled'});
+        if(url.pathname.endsWith('/expire')) return Response.json({...session,status:'expired'});
+        if(url.pathname==='/v1/payment_intents/pi_fixture') return Response.json(pi);
+        if(url.pathname==='/v1/checkout/sessions/cs_fixture') return Response.json(session);
+      }
+      throw Error(`Unexpected test transport: ${url.pathname}`);
+    };
+    try {
+      const response=await endpoint(new Request('http://localhost/checkout',{method:'POST',body:JSON.stringify({kit_id:'ritual',email:'harsha@ecompilers.com',first_name:'Harsha',reservation_request_id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'})}));
+      const body=await response.json();
+      assertEquals(response.status,state==='held'?200:409);
+      if(state==='held') assertEquals(typeof body.reservation_expires_at,'string');
+      else {assertEquals(body.error,'sold_out');assertEquals(body.client_secret,undefined);assertEquals(body.url,undefined);assertEquals(calls.some(c=>c.endsWith('/cancel')||c.endsWith('/expire')),true);}
+    } finally {testFetch=previous;Deno.env.delete('CHECKOUT_RESERVATIONS_ENABLED');}
+  });
+}

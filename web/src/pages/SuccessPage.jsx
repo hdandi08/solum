@@ -1,3 +1,4 @@
+import {clearReservationAttempt} from '../lib/reservation.js';
 import { useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
@@ -78,6 +79,7 @@ export default function SuccessPage() {
   // Fire purchase events only on genuine success
   useEffect(() => {
     if (paymentFailed) return;
+    if(rawRef) { clearReservationAttempt('buy'); clearReservationAttempt('subscription'); clearReservationAttempt('express'); }
 
     const guardKey = `solum_purchase_fired_${rawRef || 'unknown'}`;
     if (sessionStorage.getItem(guardKey)) return;

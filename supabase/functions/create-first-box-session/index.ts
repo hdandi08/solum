@@ -1,3 +1,4 @@
+import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -46,12 +47,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const stockError = await checkoutStockError(supabase, kit_id!);
+    const stockError = reservationsEnabled() ? null : await checkoutStockError(supabase, kit_id!);
     if (stockError) {
       return new Response(JSON.stringify(stockError.body), {
         status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const attempt = await prepareCheckoutAttempt(supabase, 'checkout_session', body);
 
     const isPremium = PREMIUM_SOURCES.includes(source ?? '');
     const amountPence = KIT_BASE_PENCE[kit_id!] + (isPremium ? 1000 : 0);
@@ -67,16 +70,18 @@ Deno.serve(async (req) => {
           name: [first_name, last_name].filter(Boolean).join(' ') || undefined,
         });
 
-    const price = await stripe.prices.create({
+    customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+
+    const priceData = {
       currency: 'gbp',
       unit_amount: amountPence,
       product_data: { name: `SOLUM ${kitName} Kit` },
-    });
+    };
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await createReservedPayment(supabase, stripe, 'checkout_session', kit_id!, attempt, {
       customer: customer.id,
       mode: 'payment',
-      line_items: [{ price: price.id, quantity: 1 }],
+      line_items: [{ price_data: priceData, quantity: 1 }],
       phone_number_collection: { enabled: true },
       shipping_address_collection: { allowed_countries: ['GB'] },
       success_url,
@@ -101,11 +106,12 @@ Deno.serve(async (req) => {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'stripe_session_id' });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: session.url, reservation_expires_at: session.reservation_expires_at, reservation_server_now: new Date().toISOString() }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (err) {
+    if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
     console.error('SOLUM_FIRST_BOX_ERROR', JSON.stringify({ message: err.message, kit_id, email }));
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.co.uk.' }),

@@ -1,7 +1,9 @@
+import ReservationTimer, {useReservationDeadline} from '../../components/ReservationTimer.jsx';
+import {canConfirmReservation,clearReservationAttempt} from '../../lib/reservation.js';
 import { useState, useRef } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDetails }) {
+export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDetails, onRestart }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
@@ -10,9 +12,17 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
   const [paymentType, setPaymentType] = useState('card');
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  const remaining = useReservationDeadline(payInfo.reservation_expires_at);
+
+  async function editPayment(action) {
+    if(submitting.current) return;
+    submitting.current=true; setLoading(true); setError('');
+    try {await action();} catch(error) {setError(error.message);} finally {submitting.current=false;setLoading(false);}
+  }
+
   async function handlePay(e) {
     e.preventDefault();
-    if (!stripe || !elements || submitting.current) return;
+    if (!stripe || !elements || submitting.current || !canConfirmReservation(payInfo.reservation_expires_at)) return;
     submitting.current = true;
     setLoading(true);
     setError('');
@@ -53,6 +63,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        clearReservationAttempt('subscription');
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
@@ -79,7 +90,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
       <div className="co-email-confirm">
         <span className="co-email-confirm-label">Paying as</span>
         <span className="co-email-confirm-value">{form.email}</span>
-        <button type="button" className="co-email-confirm-edit" onClick={onEditDetails}>Wrong? Edit ›</button>
+        <button type="button" className="co-email-confirm-edit" disabled={loading} onClick={() => editPayment(onEditDetails)}>Wrong? Edit ›</button>
       </div>
 
       {/* Order summary pill — two clearly separated charges */}
@@ -107,6 +118,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
         </div>
       </div>
 
+      <ReservationTimer remaining={remaining} busy={loading} onRestart={() => editPayment(onRestart)} />
       <div className="co-payment-element-wrap">
         <PaymentElement
           onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
@@ -133,7 +145,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
         </span>
       </label>
 
-      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted}>
+      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted || remaining === 0}>
         {loading ? 'Processing…' : `Pay £${totalPrice} Now →`}
       </button>
 
@@ -143,7 +155,7 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
         <span className="co-trust-row-brand">Stripe</span>
       </div>
 
-      <button type="button" className="co-back-btn" onClick={onBack}>
+      <button type="button" className="co-back-btn" disabled={loading} onClick={() => editPayment(onBack)}>
         ← Back to delivery
       </button>
     </form>

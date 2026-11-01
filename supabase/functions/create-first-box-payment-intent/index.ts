@@ -1,3 +1,4 @@
+import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -47,12 +48,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const stockError = await checkoutStockError(supabase, kit_id!);
+    const stockError = reservationsEnabled() ? null : await checkoutStockError(supabase, kit_id!);
     if (stockError) {
       return new Response(JSON.stringify(stockError.body), {
         status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const attempt = await prepareCheckoutAttempt(supabase, 'payment_intent', body);
 
     const effectiveSource = normalizeOrderSource(source);
     const awinAttribution = await resolveAwinCheckoutAttribution({
@@ -64,7 +67,7 @@ Deno.serve(async (req) => {
     const amount = KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
-    const dispatch = getDispatchDate();
+    const dispatch = getDispatchDate(checkoutAttemptTime(attempt));
     const arrival  = estDeliveryDate(dispatch);
     const shipping = firstBoxPaymentIntentShipping({
       firstName: first_name,
@@ -85,8 +88,10 @@ Deno.serve(async (req) => {
           phone: phone ?? undefined,
         });
 
+    customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+
     // One-time PaymentIntent — no setup_future_usage, no subscription
-    const pi = await stripe.paymentIntents.create({
+    const pi = await createReservedPayment(supabase, stripe, 'payment_intent', kit_id!, attempt, {
       amount,
       currency: 'gbp',
       ...dynamicPaymentMethodOptions(),
@@ -125,6 +130,8 @@ Deno.serve(async (req) => {
     }, { onConflict: 'stripe_session_id' });
 
     return new Response(JSON.stringify({
+      reservation_expires_at: pi.reservation_expires_at,
+      reservation_server_now: new Date().toISOString(),
       client_secret:  pi.client_secret,
       dispatch_date:  fmtDay(dispatch),
       arrival_date:   fmtDay(arrival),
@@ -134,7 +141,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch {
+  } catch (err) {
+    if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
     console.error('FIRST_BOX_PAYMENT_INTENT_ERROR', { kit_id });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.co.uk.' }),

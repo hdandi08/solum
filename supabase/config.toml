@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.awin-conversion-worker]
 verify_jwt = false
+
+[functions.checkout-reservation-worker]
+verify_jwt = false # Authenticated with dedicated worker bearer secret, never the anon key.
+
+[functions.release-checkout-reservation]
+verify_jwt = true

@@ -1,3 +1,5 @@
+import ReservationTimer, { useReservationDeadline } from '../components/ReservationTimer.jsx';
+import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
@@ -569,7 +571,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
 
 // ── Step 3: Payment ───────────────────────────────────────────────────────────
 
-function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDetails }) {
+function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDetails, onRestart }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
@@ -577,10 +579,17 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
   const [error, setError]                 = useState('');
   const [paymentType, setPaymentType]     = useState('card');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const remaining = useReservationDeadline(payInfo.reservation_expires_at);
+
+  async function editPayment(action) {
+    if(submitting.current) return;
+    submitting.current=true; setLoading(true); setError('');
+    try {await action();} catch(error) {setError(error.message);} finally {submitting.current=false;setLoading(false);}
+  }
 
   async function handlePay(e) {
     e.preventDefault();
-    if (!stripe || !elements || submitting.current) return;
+    if (!stripe || !elements || submitting.current || !canConfirmReservation(payInfo.reservation_expires_at)) return;
     submitting.current = true;
     setLoading(true);
     setError('');
@@ -624,6 +633,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: errText(confirmError.message) });
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        clearReservationAttempt('buy');
         successParams.set('ref', paymentIntent.id);
         window.location.href = `/success?${successParams.toString()}`;
         return;
@@ -648,7 +658,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       <div className="co-email-confirm">
         <span className="co-email-confirm-label">Paying as</span>
         <span className="co-email-confirm-value">{form.email}</span>
-        <button type="button" className="co-email-confirm-edit" onClick={onEditDetails}>Wrong? Edit ›</button>
+        <button type="button" className="co-email-confirm-edit" disabled={loading} onClick={() => editPayment(onEditDetails)}>Wrong? Edit ›</button>
       </div>
 
       <div className="co-order-pill">
@@ -662,6 +672,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         </div>
       </div>
 
+      <ReservationTimer remaining={remaining} busy={loading} onRestart={() => editPayment(onRestart)} />
       <div className="co-payment-element-wrap">
         <PaymentElement
           onChange={(e) => setPaymentType(e.value?.type ?? 'card')}
@@ -688,7 +699,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         </span>
       </label>
 
-      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted} data-testid="pay-btn">
+      <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted || remaining === 0} data-testid="pay-btn">
         {loading ? 'Processing…' : `Pay £${price} Now →`}
       </button>
 
@@ -698,7 +709,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         <span className="co-trust-row-brand">Stripe</span>
       </div>
 
-      <button type="button" className="co-back-btn" onClick={onBack}>
+      <button type="button" className="co-back-btn" disabled={loading} onClick={() => editPayment(onBack)}>
         ← Back to delivery
       </button>
     </form>
@@ -823,17 +834,17 @@ export default function BuyPage() {
 
   // Restore state after a failed redirect-based card payment.
   useEffect(() => {
-    if (params.get('resume') !== '1') return;
     try {
       const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
       if (!saved.clientSecret || !saved.form) return;
+      if (params.get('resume') !== '1' && !(saved.flow === 'buy' && saved.payInfo?.reservation_expires_at && (!params.get('kit') || saved.kit === params.get('kit')))) return;
       setForm(saved.form);
       setPayInfo(saved.payInfo);
       setClientSecret(saved.clientSecret);
       if (saved.kit) setSelectedKit(saved.kit);
       setStep('payment');
       jumpTop();
-      sessionStorage.removeItem('solum_payment_retry');
+      if (!saved.payInfo?.reservation_expires_at) sessionStorage.removeItem('solum_payment_retry');
     } catch {}
   }, []); // eslint-disable-line
 
@@ -1019,10 +1030,11 @@ export default function BuyPage() {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-first-box-payment-intent`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(await withReservationAttempt(requestBody, 'buy')),
       });
-      const data = await res.json();
+      const data = localiseReservation(await res.json());
       if (!res.ok) {
+        if (data.error === 'reservation_expired') clearReservationAttempt('buy');
         if (res.status === 409 && data.error === 'sold_out') {
           await showSoldOut(form, 'payment');
           return;
@@ -1047,7 +1059,7 @@ export default function BuyPage() {
       jumpTop();
       try {
         sessionStorage.setItem('solum_payment_retry', JSON.stringify({
-          clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, source,
+          clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, source, flow: 'buy',
         }));
       } catch {}
     } catch {
@@ -1056,6 +1068,11 @@ export default function BuyPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function leavePayment(nextStep) {
+    await releaseReservation(SUPABASE_URL,authHeaders,payInfo);
+    clearReservationAttempt('buy'); setClientSecret(null); setPayInfo(null); setStep(nextStep); jumpTop();
   }
 
   // ── Shared header + summary props ─────────────────────────────────────────
@@ -1201,8 +1218,9 @@ export default function BuyPage() {
                 payInfo={payInfo}
                 form={form}
                 source={source}
-                onBack={() => { setStep('delivery'); jumpTop(); }}
-                onEditDetails={() => { setStep('details'); jumpTop(); }}
+                onRestart={() => leavePayment('delivery')}
+                onBack={() => leavePayment('delivery')}
+                onEditDetails={() => leavePayment('details')}
               />
             </div>
             <BuyOrderSummary {...headerProps} />

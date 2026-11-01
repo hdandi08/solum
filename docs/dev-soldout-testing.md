@@ -115,3 +115,53 @@ For manual analytics acceptance on dev, use a normal browser (automated browsers
 suppress analytics), open sold-out GROUND, switch to RITUAL, then separately join
 the GROUND waitlist. Confirm the events appear in the DEV charts and the lead in
 Supabase. Repeating signup should produce `result=existing`, not another lead.
+
+## Reservation rollout (dev only, 1 November 2026)
+
+The next slice adds a **12-minute server-backed hold** when payment starts, for
+both card and express checkout. Browsing/details alone do not reserve stock.
+The browser displays the returned deadline; refresh does not extend it. Editing
+buyer/delivery details first cancels the owned payment and releases its hold,
+then keeps the form filled for the replacement attempt. On expiry, payment is
+disabled and **Check availability again** starts recovery without deleting details.
+
+The cleanup worker runs every minute. It returns stock only after Stripe confirms
+cancellation/Checkout expiry; processing payments remain held. Direct card
+payments requiring authentication get five additional minutes before cancellation.
+The worker may release stock after the displayed countdown ends, because it must
+first obtain a definitive Stripe result. Duplicate worker/webhook/refund delivery
+cannot adjust the count twice. Full refunds arriving before order creation are
+persisted and reconciled during finalisation. Hosted asynchronous payments only
+fulfil when paid. Subscription creation uses durable payment-to-subscription links.
+
+`CHECKOUT_RESERVATIONS_ENABLED` gates creation; cleanup and finalisation remain
+active for existing holds even if the flag is turned off. Do not turn the flag off
+as a complete oversell-safe rollback while held/payable resources exist. Production
+rollout, capacity testing, preorder and physical-stock reconciliation remain deferred.
+
+Manual checks after deployment is confirmed:
+1. Use RITUAL on dev and `harsha@ecompilers.com`. Continue to payment and confirm
+   **Your kit is reserved for 12:00** counts down. Refresh: timer must continue.
+2. Select **Wrong? Edit** or **Back to delivery**. Details remain filled. Continuing
+   creates a fresh payment after the old one is cancelled/released.
+3. Let the timer expire without payment. Pay must be disabled. Select **Check
+   availability again** and continue with the retained details.
+4. Complete a separate dev test card payment. Confirm one order, one kit consumed,
+   and customer/founder `[DEV]` confirmations. A successful payment must not be
+   restocked when its original timer expires. A real Apple Pay device test is
+   still required; automated browser tests do not authenticate a wallet.
+5. GROUND remains the sold-out test kit and still offers RITUAL plus optional
+   waitlist. Waitlist contact fields remain name, email and optional phone.
+
+Automated validation includes disposable database fixture kits (12 simultaneous
+requests for one unit), duplicate reserve/release/finalisation/refund, full refund
+before order creation, unique first-box payment and anon/authenticated permission
+checks. Tests remove only their own fixture records and never reset real kit stock.
+Run the isolated browser config; regular Playwright setup still resets dev stock.
+
+New DB objects: `checkout_reservations`, `checkout_attempts`,
+`checkout_full_refunds`, `checkout_subscription_links`; all service-role-only.
+Attempts store a request hash, server timestamp and Stripe customer ID, not buyer
+contact/address fields. Reservation rows store resource IDs, kit, state and deadline.
+The operational stock dashboard remains a separate client event view, not the
+reservation accounting ledger.

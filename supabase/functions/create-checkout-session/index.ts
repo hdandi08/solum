@@ -1,3 +1,4 @@
+import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -37,8 +38,8 @@ const corsHeaders = {
 // First recurring charge = 30 days from purchase, then every 30 days.
 
 /** First recurring charge = 30 days from now. */
-function getFirstChargeDate(): Date {
-  const d = new Date();
+function getFirstChargeDate(start?: string): Date {
+  const d = new Date(start ?? Date.now());
   d.setDate(d.getDate() + 30);
   d.setHours(0, 0, 0, 0);
   return d;
@@ -105,17 +106,19 @@ Deno.serve(async (req) => {
     const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
 
-    const stockError = await checkoutStockError(supabase, kit_id!);
+    const stockError = reservationsEnabled() ? null : await checkoutStockError(supabase, kit_id!);
     if (stockError) {
       return new Response(JSON.stringify(stockError.body), {
         status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    const attempt = await prepareCheckoutAttempt(supabase, 'checkout_session', body);
+
     // Shipping & billing schedule
-    const dispatch     = getDispatchDate();
+    const dispatch     = getDispatchDate(checkoutAttemptTime(attempt));
     const arrival      = estDeliveryDate(dispatch);
-    const firstCharge  = getFirstChargeDate();
+    const firstCharge  = getFirstChargeDate(attempt.created_at);
     const refillShip   = getRefillShipDate(firstCharge);
     const refillArrive = getRefillArrivalDate(firstCharge);
 
@@ -152,27 +155,29 @@ Deno.serve(async (req) => {
           metadata: { kit_id, birth_year: birth_year?.toString(), birth_month: birth_month?.toString() },
         });
 
+    customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+
     // One-time first box price — name includes dispatch date so it's clear on the Stripe form
-    const firstBoxPrice = await stripe.prices.create({
+    const firstBoxPrice = {
       currency: 'gbp',
       unit_amount: kit.first_box_pence,
       product_data: { name: `SOLUM ${kit.name} — First Box · ships ${fmtDay(dispatch)}, arrives ${fmtDay(arrival)}` },
-    });
+    };
 
     // Build add-on line items (one-time, charged with first box)
-    const addonLineItems: { price: string; quantity: number }[] = [];
+    const addonLineItems: any[] = [];
     for (const addonKey of selectedAddons) {
       const addon = ADDONS[addonKey];
       if (!addon) continue;
-      const addonPrice = await stripe.prices.create({
+      const addonPrice = {
         currency: 'gbp',
         unit_amount: addon.pence,
         product_data: { name: addon.name },
-      });
-      addonLineItems.push({ price: addonPrice.id, quantity: 1 });
+      };
+      addonLineItems.push({ price_data: addonPrice, quantity: 1 });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await createReservedPayment(supabase, stripe, 'checkout_session', kit_id!, attempt, {
       customer: customer.id,
       mode: 'payment',
       payment_intent_data: {
@@ -180,7 +185,7 @@ Deno.serve(async (req) => {
         metadata: { kit_id },
       },
       line_items: [
-        { price: firstBoxPrice.id, quantity: 1 },
+        { price_data: firstBoxPrice, quantity: 1 },
         ...addonLineItems,
       ],
       custom_text: {
@@ -224,11 +229,12 @@ Deno.serve(async (req) => {
       updated_at:         new Date().toISOString(),
     }, { onConflict: 'stripe_session_id' });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: session.url, reservation_expires_at: session.reservation_expires_at, reservation_server_now: new Date().toISOString() }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (err) {
+    if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
     await alertError(err.message, { kit_id, email, stack: err.stack });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.com.' }),
