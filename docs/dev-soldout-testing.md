@@ -183,3 +183,26 @@ No payment was confirmed by those smoke tests. A complete card order and physica
 Apple Pay acceptance remain manual checks before any production promotion.
 The 359 audited legacy unpaid test intents were cancelled before activation;
 none was processing. The authenticated dev cleanup cron is active every minute.
+
+## Master code promotion (1 November 2026)
+
+The user confirmed the dev card-page countdown and refresh behaviour, then
+requested the master push. Pre-push verification passed: 220 frontend unit tests,
+49 checkout/waitlist/reservation/subscription/webhook tests, 36 isolated desktop
+and mobile browser tests against dev, and the production frontend build.
+The added browser check follows a fresh details/delivery submission and asserts
+the timer is fully inside the mobile payment viewport using mocked payment data.
+
+This promotion publishes the frontend and commits the backend implementation;
+Amplify does not deploy Supabase functions or migrations. The production preflight
+found no reservation tables/migrations and no duplicate first-box payment IDs.
+Production inventory remains GROUND 70 and RITUAL 188. No production database,
+Stripe resource, secret or function was changed during this code promotion.
+
+Production reservation activation remains a separate cutover: apply the three
+reservation migrations, deploy the dependent endpoints/webhook/worker, configure
+the authenticated cleanup cron, audit pre-existing payable Stripe resources, and
+only then enable creation of holds. Complete card and physical Apple Pay payment
+acceptance remains outstanding; countdown acceptance does not prove payment
+completion. Until that cutover, production has no reservation timer or atomic
+stock holds, even though the frontend supports them.

@@ -1,5 +1,27 @@
 import {test,expect} from '@playwright/test';
 
+test('fresh card checkout shows its server reservation timer within the payment viewport',async({page})=>{
+  await page.route('https://cloudflare-dns.com/**',r=>r.fulfill({json:{Status:0,Answer:[{type:15,data:'mail.example.com'}]}}));
+  await page.route('**/functions/v1/**',r=>{
+    const endpoint=new URL(r.request().url()).pathname.split('/').pop();
+    if(endpoint==='get-inventory-status') return r.fulfill({json:{kits:{ritual:{available:true,count:250},ground:{available:true,count:250}}}});
+    if(endpoint==='create-first-box-payment-intent') return r.fulfill({json:{client_secret:'pi_test123_secret_test123',reservation_expires_at:new Date(Date.now()+720000).toISOString(),reservation_server_now:new Date().toISOString(),amount_pence:6500,dispatch_date:'Tue 3 Nov'}});
+    return r.fulfill({json:{}});
+  });
+  await page.goto('/buy?kit=ground');
+  await page.getByPlaceholder('James',{exact:true}).fill('Harsha');
+  await page.getByPlaceholder('james@example.com').fill('harsha@ecompilers.com');
+  await page.getByTestId('continue-btn').click();
+  await page.getByPlaceholder('14 Example Street').fill('10 Test Street');
+  await page.getByPlaceholder('London',{exact:true}).fill('London');
+  await page.getByPlaceholder('SW1A 1AA').fill('SW1A 1AA');
+  await page.getByTestId('delivery-form').getByRole('button',{name:/continue/i}).click();
+  const timer=page.getByTestId('reservation-timer');
+  await expect(timer).toBeVisible();
+  await expect(timer).toContainText('Your kit is reserved for');
+  await expect(timer).toBeInViewport({ratio:1});
+});
+
 async function restoredCheckout(page, {route='/buy', expired=false}={}) {
   await page.route('**/functions/v1/get-inventory-status',r=>r.fulfill({json:{kits:{ritual:{available:false,count:0},ground:{available:true,count:70}}}}));
   await page.addInitScript(({expired})=>{
