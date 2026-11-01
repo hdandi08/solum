@@ -10,6 +10,7 @@ import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, t
 import { captureAwinAttribution, normalizeCheckoutSource } from '../lib/awinAttribution.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
 import { checkEmailDomain } from '../lib/emailMx.js';
+import { readCheckoutInventory, saveStockWaitlist } from '../lib/checkoutStock.js';
 import { buildFirstBoxPaymentIntentBody } from '../lib/firstBoxPaymentIntent.js';
 import { expressElementsOptions } from '../lib/expressCheckout.js';
 import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowser.js';
@@ -789,6 +790,7 @@ export default function BuyPage() {
   const [clientSecret, setClientSecret] = useState(null);
   const [payInfo, setPayInfo]           = useState(null);
   const [soldoutSaved, setSoldoutSaved] = useState(false);
+  const waitlistInFlight = useRef(false);
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
   const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);
@@ -840,10 +842,9 @@ export default function BuyPage() {
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    fetch(`${SUPABASE_URL}/functions/v1/get-inventory-status`, { headers: authHeaders })
-      .then(r => r.json())
-      .then(d => setInventory(d.kits ?? {}))
-      .catch(() => setInventory({}));
+    readCheckoutInventory(SUPABASE_URL, authHeaders)
+      .then(setInventory)
+      .catch(() => setInventory(null));
   }, []); // eslint-disable-line
 
   // Ticks every 30s so the cutoff countdown and dispatch date stay honest
@@ -866,6 +867,32 @@ export default function BuyPage() {
   const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
 
   function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+  async function showSoldOut(buyerForm = form) {
+    if (waitlistInFlight.current) return;
+    waitlistInFlight.current = true;
+    // Wallet metadata also contains nullable fields. Preserve the editable
+    // form's string values so a rejected wallet email can be corrected.
+    setForm(Object.fromEntries(Object.keys(form).map(key => [key, buyerForm[key] ?? ''])));
+    setInventory(current => ({ ...current, [selectedKit]: { available: false, count: 0 } }));
+    setSoldoutSaved(false);
+    setError('');
+    setLoading(true);
+    setStep('soldout');
+    jumpTop();
+    capture('soldout_detected', { kit: selectedKit, source });
+    try {
+      await saveStockWaitlist(SUPABASE_URL, authHeaders, buyerForm, selectedKit);
+      setSoldoutSaved(true);
+    } catch (err) {
+      setError(err.name === 'TimeoutError'
+        ? 'We could not confirm your signup. Please try again.'
+        : err.message || 'We could not save your details. Please try again.');
+    } finally {
+      waitlistInFlight.current = false;
+      setLoading(false);
+    }
+  }
 
   // ── Step 1: details validation ────────────────────────────────────────────
 
@@ -893,35 +920,19 @@ export default function BuyPage() {
       setError(`We couldn't find a mail server for ${domain}. Please double-check your email.`);
       setLoading(false); return;
     }
-    setLoading(false);
-
-    const kitSoldOut = inventory !== null && !inventory[selectedKit]?.available;
+    // Refresh stale display data; an outage is unknown, never "sold out".
+    // The server checks again before creating a payment.
+    let latestInventory = null;
+    try { latestInventory = await readCheckoutInventory(SUPABASE_URL, authHeaders); } catch { /* authoritative check at payment */ }
+    setInventory(latestInventory);
+    const kitSoldOut = latestInventory?.[selectedKit]?.available === false;
     if (kitSoldOut) {
-      setLoading(true);
-      try {
-        await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
-          body: JSON.stringify({
-            email:      emailVal.toLowerCase(),
-            first_name: form.first_name.trim() || null,
-            last_name:  form.last_name.trim()  || null,
-            phone:      form.phone.trim()      || null,
-            source:     `buy-soldout-${selectedKit}`,
-          }),
-        });
-        setSoldoutSaved(true);
-      } catch {
-        setSoldoutSaved(false);
-      }
-      capture('soldout_detected', { kit: selectedKit, source });
-      setStep('soldout');
-      jumpTop();
-      setLoading(false);
+      await showSoldOut();
       return;
     }
 
     capture('checkout_details_submitted', { kit: selectedKit, source });
+    setLoading(false);
     setStep('delivery');
     jumpTop();
   }
@@ -954,6 +965,10 @@ export default function BuyPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 409 && data.error === 'sold_out') {
+          await showSoldOut();
+          return;
+        }
         capture('checkout_error', { kit: selectedKit, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
         setError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
@@ -1007,6 +1022,7 @@ export default function BuyPage() {
           supabaseUrl={SUPABASE_URL}
           authHeaders={authHeaders}
           onError={setError}
+          onSoldOut={showSoldOut}
           onAvailability={(available) => {
             setExpressAvailable(available);
             setExpressReady(true);
@@ -1041,14 +1057,21 @@ export default function BuyPage() {
               </div>
               <div className="by-soldout-apology-body">
                 The first batch went faster than expected. We are working on the next restock now.
-                You will be the first to know the moment it is back.
+                Join the list for an email when it is back in stock.
               </div>
             </div>
             <div className="by-soldout-saved">
-              <div className="by-soldout-saved-tick">✓</div>
-              <div className="by-soldout-saved-text">
-                <strong>You're on the list.</strong>
-                We've saved your details and will email {form.email} the moment stock is back. No action needed.
+              {soldoutSaved && <div className="by-soldout-saved-tick">✓</div>}
+              <div className="by-soldout-saved-text" aria-live="polite">
+                {soldoutSaved ? <>
+                  <strong>You're on the list.</strong>
+                  We've saved your details and will email {form.email} when stock is back.
+                </> : loading ? <strong>Saving your details…</strong> : <>
+                  <strong>We could not confirm your signup.</strong>
+                  <p role="alert">{error}</p>
+                  <button type="button" className="co-btn" onClick={() => showSoldOut()}>Try again</button>
+                  <button type="button" className="co-back-btn" onClick={() => { setError(''); setStep('details'); jumpTop(); }}>Change email</button>
+                </>}
               </div>
             </div>
             <a href="/" className="by-soldout-home">← Back to bysolum.co.uk</a>

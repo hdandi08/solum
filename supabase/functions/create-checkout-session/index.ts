@@ -1,3 +1,4 @@
+import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 import { getDispatchDate, estDeliveryDate } from '../_shared/dispatch.mjs';
@@ -103,6 +104,13 @@ Deno.serve(async (req) => {
 
     const kit = KIT_PRICES[kit_id!];
     if (!kit) return new Response(JSON.stringify({ error: 'Invalid kit_id' }), { status: 400, headers: corsHeaders });
+
+    const stockError = await checkoutStockError(supabase, kit_id!);
+    if (stockError) {
+      return new Response(JSON.stringify(stockError.body), {
+        status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Shipping & billing schedule
     const dispatch     = getDispatchDate();

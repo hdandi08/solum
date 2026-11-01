@@ -27,6 +27,7 @@ export default function ExpressCheckout({
   supabaseUrl,
   authHeaders,
   onError,
+  onSoldOut,
   onAvailability,
 }) {
   const stripe = useStripe();
@@ -73,6 +74,10 @@ export default function ExpressCheckout({
           message: errText(data.message ?? data.error),
         });
         notifyExpressPaymentFailed(event, data.message ?? data.error ?? 'Payment could not be started.');
+        if (response.status === 409 && data.error === 'sold_out' && onSoldOut) {
+          await onSoldOut(body);
+          return;
+        }
         onError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
         return;
       }

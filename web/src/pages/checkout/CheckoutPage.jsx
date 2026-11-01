@@ -13,6 +13,7 @@ import StepPayment from './StepPayment.jsx';
 import SolumWordmark from '../../components/SolumWordmark.jsx';
 import './checkout.css';
 import { jumpTop } from '../../lib/scroll.js';
+import { readCheckoutInventory, saveStockWaitlist } from '../../lib/checkoutStock.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -136,21 +137,20 @@ export default function CheckoutPage() {
   const [inventoryAvailable, setInventoryAvailable] = useState(null);
   const [waitlistForm, setWaitlistForm]   = useState({ first_name: '', last_name: '', email: '' });
   const [waitlistState, setWaitlistState] = useState('idle');
+  const [waitlistKitId, setWaitlistKitId] = useState(kitId);
 
   useEffect(() => {
     if (!kit) return;
-    fetch(`${SUPABASE_URL}/functions/v1/get-inventory-status`, {
-      headers: { apikey: ANON_KEY },
-    })
-      .then(r => r.json())
-      .then(data => setInventoryAvailable(data?.kits?.[kit.id] !== false))
-      .catch(() => setInventoryAvailable(true));
+    readCheckoutInventory(SUPABASE_URL, { apikey: ANON_KEY })
+      .then(kits => setInventoryAvailable(kits[kit.id]?.available ?? null))
+      .catch(() => setInventoryAvailable(null));
   }, [kit?.id]); // eslint-disable-line
 
   if (!kit || kit.comingSoon) { navigate('/#kits'); return null; }
 
   const activeKit  = KITS.find(k => k.id === activeKitId) ?? kit;
   const ritualKit  = KITS.find(k => k.id === 'ritual');
+  const waitlistKit = KITS.find(k => k.id === waitlistKitId) ?? kit;
 
   const dispatch    = getDispatchDate();
   const arrival     = estDeliveryDate(dispatch);
@@ -244,6 +244,14 @@ export default function CheckoutPage() {
         }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.error === 'sold_out') {
+        setWaitlistKitId(kId);
+        setActiveKitId(kId);
+        setWaitlistForm({ first_name: form.first_name, last_name: form.last_name, email: form.email });
+        setInventoryAvailable(false);
+        jumpTop();
+        return;
+      }
       if (res.status === 409 && data.error === 'existing_subscriber') {
         setError(
           'You already have an active subscription with this email. ' +
@@ -252,7 +260,7 @@ export default function CheckoutPage() {
         setLoading(false);
         return;
       }
-      if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+      if (!res.ok) throw new Error(data.message || data.error || 'Something went wrong. Please try again.');
       setClientSecret(data.client_secret);
       setPayInfo(data);
       setActiveKitId(kId);
@@ -276,17 +284,7 @@ export default function CheckoutPage() {
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
     setWaitlistState('submitting');
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/join-waitlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
-        body: JSON.stringify({
-          email:      emailVal,
-          first_name: waitlistForm.first_name.trim() || null,
-          last_name:  waitlistForm.last_name.trim()  || null,
-          kit_id:     kit.id,
-        }),
-      });
-      if (!res.ok) throw new Error();
+      await saveStockWaitlist(SUPABASE_URL, { apikey: ANON_KEY }, waitlistForm, waitlistKitId);
       setWaitlistState('done');
     } catch { setWaitlistState('error'); }
   }
@@ -463,8 +461,7 @@ export default function CheckoutPage() {
                     <div className="co-waitlist-done-tick">✓</div>
                     <div className="co-waitlist-done-title">You're on the list.</div>
                     <div className="co-waitlist-done-body">
-                      We'll email you the moment {kit.name} is back in stock.
-                      Usually within a week.
+                      We'll email you when {waitlistKit.name} is back in stock.
                     </div>
                   </div>
                 ) : (
@@ -472,7 +469,7 @@ export default function CheckoutPage() {
                     <div className="co-waitlist-eyebrow">Sold Out</div>
                     <div className="co-waitlist-title">Get notified<br />when it's back.</div>
                     <div className="co-waitlist-body">
-                      {kit.name} is temporarily out of stock. Leave your details and we'll
+                      {waitlistKit.name} is temporarily out of stock. Leave your details and we'll
                       email you the moment it's available.
                     </div>
                     <form onSubmit={handleWaitlist} noValidate>

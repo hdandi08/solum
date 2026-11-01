@@ -1,3 +1,4 @@
+import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
 
@@ -45,17 +46,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Server-side stock check — prevent payment for a sold-out kit
-    const { data: inv } = await supabase
-      .from('kit_inventory')
-      .select('available_count')
-      .eq('kit_id', kit_id)
-      .maybeSingle();
-    if (inv !== null && inv.available_count <= 0) {
-      return new Response(
-        JSON.stringify({ error: 'sold_out', message: 'This kit is currently sold out.' }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+    const stockError = await checkoutStockError(supabase, kit_id!);
+    if (stockError) {
+      return new Response(JSON.stringify(stockError.body), {
+        status: stockError.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const isPremium = PREMIUM_SOURCES.includes(source ?? '');
