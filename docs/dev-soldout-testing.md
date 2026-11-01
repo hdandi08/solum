@@ -139,7 +139,13 @@ active for existing holds even if the flag is turned off. Do not turn the flag o
 as a complete oversell-safe rollback while held/payable resources exist. Production
 rollout, capacity testing, preorder and physical-stock reconciliation remain deferred.
 
-Manual checks after deployment is confirmed:
+Current deployment: dev Amplify job **337**, commit `80b66df`, succeeded.
+Reservations are enabled on dev. Both GROUND and RITUAL were already at 250
+when this rollout was checked; no real-kit count was reset. The earlier GROUND=0
+fixture described above is historical. Live-service smoke tests acquired and
+released their own RITUAL holds, leaving it at 250.
+
+Manual checks:
 1. Use RITUAL on dev and `harsha@ecompilers.com`. Continue to payment and confirm
    **Your kit is reserved for 12:00** counts down. Refresh: timer must continue.
 2. Select **Wrong? Edit** or **Back to delivery**. Details remain filled. Continuing
@@ -150,8 +156,9 @@ Manual checks after deployment is confirmed:
    and customer/founder `[DEV]` confirmations. A successful payment must not be
    restocked when its original timer expires. A real Apple Pay device test is
    still required; automated browser tests do not authenticate a wallet.
-5. GROUND remains the sold-out test kit and still offers RITUAL plus optional
-   waitlist. Waitlist contact fields remain name, email and optional phone.
+5. The sold-out alternative/waitlist path is covered by the isolated automated
+   tests. Both live dev kits are currently available. Waitlist contact fields
+   remain name, email and optional phone.
 
 Automated validation includes disposable database fixture kits (12 simultaneous
 requests for one unit), duplicate reserve/release/finalisation/refund, full refund
@@ -165,3 +172,14 @@ Attempts store a request hash, server timestamp and Stripe customer ID, not buye
 contact/address fields. Reservation rows store resource IDs, kit, state and deadline.
 The operational stock dashboard remains a separate client event view, not the
 reservation accounting ledger.
+
+Deployment evidence: 220 frontend unit tests and build passed; 67 checkout,
+reservation, refund/subscription helper, email and AWIN checks passed, plus five
+wallet/shipping regression checks and five signed-webhook lifecycle checks. All 34 isolated desktop/mobile browser tests
+passed against the deployed dev site. Actual dev Stripe test intents proved same
+request reuse, wrong-secret rejection, idempotent release, stale-attempt rejection
+and worker expiry. Actual hosted test sessions proved retry reuse and expiry.
+No payment was confirmed by those smoke tests. A complete card order and physical
+Apple Pay acceptance remain manual checks before any production promotion.
+The 359 audited legacy unpaid test intents were cancelled before activation;
+none was processing. The authenticated dev cleanup cron is active every minute.
