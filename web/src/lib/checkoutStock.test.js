@@ -15,12 +15,12 @@ it.each([
 
 it('recognizes a confirmed existing waitlist signup on retry', async () => {
   vi.stubGlobal('fetch', async () => Response.json({ code: 'already_on_waitlist' }, { status: 409 }));
-  await expect(save()).resolves.toBeUndefined();
+  await expect(save()).resolves.toEqual({ status: 'existing' });
 });
 
 it('requires an explicit successful save', async () => {
   vi.stubGlobal('fetch', async () => Response.json({ success: true }));
-  await expect(save()).resolves.toBeUndefined();
+  await expect(save()).resolves.toEqual({ status: 'created' });
 });
 
 it('authenticates waitlist saves from callers that supply only the anon API key', async () => {
@@ -29,7 +29,7 @@ it('authenticates waitlist saves from callers that supply only the anon API key'
       ? Response.json({ success: true })
       : Response.json({ error: 'Missing authorization header' }, { status: 401 });
   });
-  await expect(saveStockWaitlist('https://example.com', { apikey: 'anon-test-key' }, { email: 'harsha@ecompilers.com' }, 'ritual')).resolves.toBeUndefined();
+  await expect(saveStockWaitlist('https://example.com', { apikey: 'anon-test-key' }, { email: 'harsha@ecompilers.com' }, 'ritual')).resolves.toEqual({ status: 'created' });
 });
 
 it('rejects unsuccessful inventory responses even if they contain kits', async () => {

@@ -89,3 +89,29 @@ teardown reset dev inventory and test data. The isolated stock suite does neithe
 The next slice is atomic reservations, safe Stripe cancellation before release,
 idempotent finalisation and concurrent last-kit/expiry tests. A read gate alone
 must not be described as protection against overselling.
+
+## Stock recovery analytics
+
+Dashboard: https://eu.posthog.com/project/166881/dashboard/1075274
+
+Production and DEV charts use explicit host filters. Browser event counts are
+operational signals, not the authoritative lead count: blockers, ad blockers,
+closed tabs and retries can affect them. Contact records remain in Supabase
+`leads` after an explicit waitlist signup. This flow submits only name, email,
+optional phone and the kit-specific source; it does not submit delivery addresses.
+An existing waitlist record is acknowledged without creating another lead.
+
+Events: `soldout_viewed` (once per kit per page mount), `soldout_detected`
+(checkout blocked), `soldout_kit_switched`, `soldout_waitlist_attempted`,
+`soldout_waitlist_saved`, `soldout_waitlist_failed`. Saved responses carry
+`result=created|existing`. New events include environment and checkout flow.
+Contact fields and raw error messages are excluded from these custom payloads.
+Existing analytics identification/session-recording behaviour is unchanged.
+New events begin on deployment; no historical backfill. Kit switches are not
+purchases. The Data Catalog scope is unavailable through the current connector;
+these charts are operational, not approved canonical metrics.
+
+For manual analytics acceptance on dev, use a normal browser (automated browsers
+suppress analytics), open sold-out GROUND, switch to RITUAL, then separately join
+the GROUND waitlist. Confirm the events appear in the DEV charts and the lead in
+Supabase. Repeating signup should produce `result=existing`, not another lead.

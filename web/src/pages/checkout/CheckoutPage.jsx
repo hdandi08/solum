@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -15,6 +15,7 @@ import './checkout.css';
 import { jumpTop } from '../../lib/scroll.js';
 import { readCheckoutInventory, saveStockWaitlist } from '../../lib/checkoutStock.js';
 import AlternativeKitOffer from '../../components/AlternativeKitOffer.jsx';
+import { captureStockEvent } from '../../lib/stockAnalytics.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -148,6 +149,14 @@ export default function CheckoutPage() {
       .catch(() => { setInventory(null); setInventoryAvailable(null); });
   }, [kit?.id]); // eslint-disable-line
 
+  const trackedSoldout = useRef(new Set());
+  useEffect(() => {
+    if (inventoryAvailable !== false || trackedSoldout.current.has(waitlistKitId)) return;
+    trackedSoldout.current.add(waitlistKitId);
+    captureStockEvent('soldout_viewed', { kit: waitlistKitId, checkout_flow: 'subscription' });
+    captureStockEvent('soldout_detected', { kit: waitlistKitId, checkout_flow: 'subscription', stage: step === 'details' ? 'details' : 'payment', details_shared: Boolean(form.email.trim()) });
+  }, [inventoryAvailable, waitlistKitId, step, form.email]);
+
   if (!kit || kit.comingSoon) { navigate('/#kits'); return null; }
 
   const activeKit  = KITS.find(k => k.id === activeKitId) ?? kit;
@@ -174,6 +183,7 @@ export default function CheckoutPage() {
         setSwitchError(`${nextKitId.toUpperCase()} has just sold out or its availability could not be confirmed. You can still join the waitlist.`);
         return;
       }
+      captureStockEvent('soldout_kit_switched', { from: waitlistKitId, kit: nextKitId, checkout_flow: 'subscription' });
       setActiveKitId(nextKitId);
       setWaitlistKitId(nextKitId);
       setWaitlistState('idle');
@@ -323,9 +333,14 @@ export default function CheckoutPage() {
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) return;
     setWaitlistState('submitting');
     try {
-      await saveStockWaitlist(SUPABASE_URL, { apikey: ANON_KEY }, form, waitlistKitId);
+      captureStockEvent('soldout_waitlist_attempted', { kit: waitlistKitId, checkout_flow: 'subscription' });
+      const result = await saveStockWaitlist(SUPABASE_URL, { apikey: ANON_KEY }, form, waitlistKitId);
       setWaitlistState('done');
-    } catch { setWaitlistState('error'); }
+      captureStockEvent('soldout_waitlist_saved', { kit: waitlistKitId, checkout_flow: 'subscription', result: result.status });
+    } catch (err) {
+      captureStockEvent('soldout_waitlist_failed', { kit: waitlistKitId, checkout_flow: 'subscription', reason: err.name === 'TimeoutError' ? 'timeout' : 'request_failed' });
+      setWaitlistState('error');
+    }
   }
 
   // ── Shared props ──────────────────────────────────────────────────────────

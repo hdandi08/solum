@@ -18,6 +18,7 @@ import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
 import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
+import { captureStockEvent } from '../lib/stockAnalytics.js';
 import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
 import InAppBrowserBanner from '../components/InAppBrowserBanner.jsx';
 import { videoFor } from '../data/productMedia.js';
@@ -794,6 +795,7 @@ export default function BuyPage() {
   const [waitlistRequested, setWaitlistRequested] = useState(false);
   const [switchError, setSwitchError] = useState('');
   const waitlistInFlight = useRef(false);
+  const viewedSoldoutKits = useRef(new Set());
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
   const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);
@@ -870,9 +872,15 @@ export default function BuyPage() {
   const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
   const alternativeKit = KITS.find(kit => kit.id !== selectedKit && !kit.comingSoon && !kit.hidden && inventory?.[kit.id]?.available === true);
 
+  useEffect(() => {
+    if (inventory?.[selectedKit]?.available !== false || viewedSoldoutKits.current.has(selectedKit)) return;
+    viewedSoldoutKits.current.add(selectedKit);
+    captureStockEvent('soldout_viewed', { kit: selectedKit, checkout_flow: 'one_time' });
+  }, [inventory, selectedKit]);
+
   function onChange(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
-  async function showSoldOut(buyerForm = form) {
+  async function showSoldOut(buyerForm = form, stage = 'details') {
     // Wallet metadata also contains nullable fields. Preserve the editable
     // form's string values so a rejected wallet email can be corrected.
     setForm(Object.fromEntries(Object.keys(form).map(key => [key, buyerForm[key] ?? ''])));
@@ -884,7 +892,7 @@ export default function BuyPage() {
     setLoading(true);
     setStep('soldout');
     jumpTop();
-    capture('soldout_detected', { kit: selectedKit, source });
+    captureStockEvent('soldout_detected', { kit: selectedKit, checkout_flow: 'one_time', stage, details_shared: Boolean(buyerForm.email?.trim()) });
     let fresh = null;
     try { fresh = await readCheckoutInventory(SUPABASE_URL, authHeaders); } catch { /* never recommend unverified stock */ }
     setInventory({ ...fresh, [selectedKit]: { available: false, count: 0 } });
@@ -898,9 +906,12 @@ export default function BuyPage() {
     setLoading(true);
     setError('');
     try {
-      await saveStockWaitlist(SUPABASE_URL, authHeaders, form, selectedKit);
+      captureStockEvent('soldout_waitlist_attempted', { kit: selectedKit, checkout_flow: 'one_time' });
+      const result = await saveStockWaitlist(SUPABASE_URL, authHeaders, form, selectedKit);
       setSoldoutSaved(true);
+      captureStockEvent('soldout_waitlist_saved', { kit: selectedKit, checkout_flow: 'one_time', result: result.status });
     } catch (err) {
+      captureStockEvent('soldout_waitlist_failed', { kit: selectedKit, checkout_flow: 'one_time', reason: err.name === 'TimeoutError' ? 'timeout' : 'request_failed' });
       setError(err.name === 'TimeoutError'
         ? 'We could not confirm your signup. Please try again.'
         : err.message || 'We could not save your details. Please try again.');
@@ -934,7 +945,7 @@ export default function BuyPage() {
       setWaitlistRequested(false);
       setKitPickerOpen(false);
       setStep('details');
-      capture('soldout_kit_switched', { from: selectedKit, kit: kitId, source });
+      captureStockEvent('soldout_kit_switched', { from: selectedKit, kit: kitId, checkout_flow: 'one_time' });
       jumpTop();
     } catch {
       setSwitchError('We could not check availability. Please try switching again shortly.');
@@ -1013,7 +1024,7 @@ export default function BuyPage() {
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 409 && data.error === 'sold_out') {
-          await showSoldOut();
+          await showSoldOut(form, 'payment');
           return;
         }
         capture('checkout_error', { kit: selectedKit, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
@@ -1069,7 +1080,7 @@ export default function BuyPage() {
           supabaseUrl={SUPABASE_URL}
           authHeaders={authHeaders}
           onError={setError}
-          onSoldOut={showSoldOut}
+          onSoldOut={buyer => showSoldOut(buyer, 'express')}
           onAvailability={(available) => {
             setExpressAvailable(available);
             setExpressReady(true);

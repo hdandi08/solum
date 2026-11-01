@@ -25,8 +25,9 @@ export async function saveStockWaitlist(url, headers, form, kitId) {
     }),
   });
   const data = await response.json();
-  if (response.status === 409 && data.code === 'already_on_waitlist') return;
+  if (response.status === 409 && data.code === 'already_on_waitlist') return { status: 'existing' };
   if (!response.ok || data.success !== true) {
     throw new Error(data.error || 'We could not save your details. Please try again.');
   }
+  return { status: 'created' };
 }
