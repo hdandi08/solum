@@ -103,6 +103,24 @@ const CSS = `
 @media(min-width:769px){
   .kit-card.featured .kit-badge{display:none;}
 }
+/* Leave room for the fixed navigation when a shopper jumps to the kits. */
+@media(min-width:769px){
+ .kits-section{padding:clamp(24px,5svh,48px) 48px;min-height:calc(100svh - 76px - var(--offerbar-h));}
+}
+@media(max-width:768px){
+ .kits-section{min-height:0;padding:24px 0 36px;}
+ .kits-header{padding:0 24px;margin-bottom:18px;border-top:0;}
+ .kits-header p{font-size:16px;line-height:1.4;margin-top:10px;}
+ .kit-card{padding:20px;width:100%;max-width:100%;scroll-margin-top:calc(76px + var(--offerbar-h));}
+ .kit-gallery{width:calc(100% + 40px);margin:-20px -20px 0;}
+ .kit-slide{height:clamp(140px,calc(100svh - 450px),260px);aspect-ratio:auto;}
+ .kit-name{font-size:34px;}
+ .kit-card-decision{margin-bottom:12px;}
+ .kit-decision-title{font-size:19px;line-height:1.1;}
+ .kit-card-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;}
+ .kit-cta,.kit-products-toggle{min-height:44px;padding:12px 8px;font-size:12px;letter-spacing:1px;}
+}
+
 `;
 
 const KIT_DECISIONS = {
