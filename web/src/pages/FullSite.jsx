@@ -92,7 +92,6 @@ export default function FullSite() {
     <>
       <Nav />
       <Hero />
-      <PressSection />
       <Marquee />
       <ProblemSection />
       <KitComparison />
@@ -102,8 +101,8 @@ export default function FullSite() {
       <SystemSection />
       <HomeCTABand />
       <UnboxingFilm />
-      <FAQ />
       <FounderSection />
+      <PressSection />
       <FullBleedBand
         image="/products/feature/identity.webp"
         eyebrow="The Standard"
@@ -112,6 +111,7 @@ export default function FullSite() {
       />
       <CredibilityStrip />
       <ProvenanceSection />
+      <FAQ />
       <CTASection />
       <SolumFooter />
       <ABDevPanel />

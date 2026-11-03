@@ -8,6 +8,9 @@ import { markOfferReached } from '../lib/qualifiedVisitTracker.js';
 
 const CSS = `
 .kits-section{background:linear-gradient(180deg,#090b0f,var(--black));padding:clamp(48px,5vw,64px) 48px;border-top:1px solid var(--line);min-height:calc(100svh - 62px);display:flex;align-items:center;}
+.kit-award-image{position:absolute;top:14px;right:14px;z-index:3;width:68px;height:68px;border-radius:50%;overflow:hidden;background:#000;box-shadow:0 2px 12px rgba(0,0,0,.4);pointer-events:none;}
+.kit-slide .kit-award-image img{position:absolute;width:151%;height:151%;max-width:none;left:-25.5%;top:-25.5%;object-fit:contain;filter:none;}
+@media(max-width:768px){.kit-award-image{width:76px;height:76px;}}
 .kits-inner{width:100%;max-width:1240px;margin:0 auto;}
 .kits-header{margin:0 auto 20px;max-width:920px;border-top:1px solid rgba(240,236,226,.14);padding-top:20px;}
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4.2vw,52px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
@@ -122,7 +125,7 @@ const KIT_IMAGE_COMPARISONS = {
   },
 };
 
-function KitGallery({ name, slides, comparison }) {
+function KitGallery({ name, slides, comparison, awardWinner = false }) {
   const ref = useRef(null);
   const [active, setActive] = useState(0);
   const onScroll = () => {
@@ -144,6 +147,11 @@ function KitGallery({ name, slides, comparison }) {
                 <span className="kit-comparison-count">{comparison.count}</span>
                 <span className="kit-comparison-detail">{comparison.detail}</span>
               </div>
+            )}
+            {i === 0 && awardWinner && (
+              <span className="kit-award-image">
+                <img src="/awards/esquire-grooming-awards-2026-winner.png" alt="RITUAL: The Best Grooming Kit, Esquire Grooming Awards 2026 Winner" width="1632" height="1612" loading="lazy" />
+              </span>
             )}
             <div className="kit-slide-label">
               <span className="kit-slide-kind">{slide.kind}</span>
@@ -224,9 +232,9 @@ export default function KitComparison() {
               return (
                 <div key={kit.id} className={`kit-card${kit.popular ? ' featured' : ''}${kit.comingSoon ? ' coming' : ''}${openKits.has(kit.id) ? ' products-open' : ''}`}>
                   {kitSlides.length > 0 && (
-                    <KitGallery name={kit.name} slides={kitSlides} comparison={KIT_IMAGE_COMPARISONS[kit.id]} />
+                    <KitGallery name={kit.name} slides={kitSlides} comparison={KIT_IMAGE_COMPARISONS[kit.id]} awardWinner={kit.id === 'ritual'} />
                   )}
-                  {kit.popular    && <span className="kit-badge popular">Most Popular</span>}
+                  {kit.popular && kit.id !== 'ritual' && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
                   <div className="kit-name-row">
                     <div className="kit-name">{kit.name}</div>

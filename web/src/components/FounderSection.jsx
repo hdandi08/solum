@@ -22,7 +22,7 @@ export default function FounderSection() {
             <div className="founder-note-name">Harsha, Founder · London</div>
           </div>
           <p className="founder-note-quote">
-            "I spent years thinking body care was just body wash and shampoo. Still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning — especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming. It doesn't."
+            "I spent years thinking body care was just body wash and shampoo. Still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning, especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming. It doesn't."
           </p>
         </div>
       </section>

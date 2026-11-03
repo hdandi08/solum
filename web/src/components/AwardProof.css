@@ -1,0 +1,14 @@
+.award-proof{display:flex;align-items:center;gap:22px;color:var(--bone);text-shadow:none;}
+.award-proof-seal{position:relative;display:block;width:112px;height:112px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#000;}
+.award-proof-seal img{position:absolute;width:151%;height:151%;max-width:none;left:-25.5%;top:-25.5%;object-fit:contain;}
+.award-proof-copy{display:flex;flex-direction:column;gap:6px;}
+.award-proof-winner{font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blit);text-transform:uppercase;}
+.award-proof-copy strong{font-family:'Barlow Condensed',sans-serif;font-size:28px;line-height:1.1;font-weight:600;}
+.award-proof-copy>span:last-child{font-size:15px;font-weight:300;color:var(--mist);}
+.award-proof-compact{gap:12px;}
+.award-proof-compact .award-proof-seal{width:56px;height:56px;}
+.award-proof-compact .award-proof-copy{gap:3px;}
+.award-proof-compact .award-proof-copy strong{font-size:19px;}
+.award-proof-compact .award-proof-winner{font-size:10px;letter-spacing:1.5px;}
+.award-proof-compact .award-proof-copy>span:last-child{font-size:12px;}
+@media(max-width:639px){.award-proof{gap:14px;}.award-proof-seal{width:82px;height:82px;}.award-proof-copy strong{font-size:23px;}.award-proof-copy>span:last-child{font-size:13px;}}

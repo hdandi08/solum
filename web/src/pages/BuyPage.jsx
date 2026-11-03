@@ -18,6 +18,7 @@ import { expressElementsOptions } from '../lib/expressCheckout.js';
 import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowser.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
+import AwardProof from '../components/AwardProof.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
 import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
 import { captureStockEvent } from '../lib/stockAnalytics.js';
@@ -229,6 +230,21 @@ const CSS = `
 /* Kit-contents thumbnail hover-zoom (overrides checkout.css 32x40 defaults) */
 .co-product-list .co-product-thumb,.co-product-list .co-product-thumb-ph{width:40px;height:52px;cursor:zoom-in;}
 .co-product-preview-fixed{position:fixed;width:220px;height:275px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.6);z-index:2000;pointer-events:none;}
+.by-checkout-award{margin-bottom:20px;}
+.by-summary-total{display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 8px;font-size:18px;color:var(--bone);}
+.by-summary-total strong{font-family:'Bebas Neue',sans-serif;font-size:44px;font-weight:400;}
+.by-more{border-top:1px solid var(--line);padding:16px 0;margin-top:12px;color:var(--mist);font-size:15px;line-height:1.5;}
+.by-more summary{cursor:pointer;color:var(--bone);font-weight:600;}
+.by-more summary:focus-visible{outline:2px solid var(--blit);outline-offset:5px;}
+.by-more[open] summary{margin-bottom:16px;}
+.by-more a{color:var(--bone);text-decoration:underline;}
+.by-more p{margin-top:12px;}
+.co-summary-hero{max-height:200px;object-fit:cover;}
+.by-kit-confirm{margin-bottom:18px;}
+.by-intro{margin-bottom:18px;}
+.by-intro-sub{font-size:15px;}
+@media(max-width:768px){.by-kits .by-kit-img{height:120px;}.by-kits{gap:12px;}.by-kit{padding:16px;}.by-kit-outcome{font-size:16px;}.by-checkout-award{margin-bottom:18px;}}
+
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -357,7 +373,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
         </button>
         {onCta && (
           <button type="button" className="co-mobile-cta" onClick={onCta}>
-            Buy →
+            Continue
           </button>
         )}
       </div>
@@ -405,14 +421,12 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
                   {p.name}
                   {p.outcome?.tileAfter && <span className="co-mobile-product-outcome">{p.outcome.tileAfter}</span>}
                 </span>
-                {p.value > 0 && <span className="co-mobile-product-worth">£{p.value}</span>}
+
                 {p.media?.still && <span className="co-mobile-product-zoom" aria-hidden="true">⤢</span>}
               </button>
             ))}
           </div>
-          <div className="co-worth-total">
-            <s>£{kitWorth(kit)} of product</s> · yours for £{price}
-          </div>
+
           <div className="co-mobile-trust">
             <div className="co-mobile-trust-line">📦 Royal Mail Tracked 48 · {offerActive() ? <><s style={{ color: 'var(--stone)' }}>£5.95</s> <span style={{ color: '#4a8fc7', fontWeight: 600 }}>FREE</span></> : 'Free'} · UK only</div>
             <div className="co-mobile-trust-line">🔒 Secured by Stripe · encrypted end to end</div>
@@ -452,120 +466,34 @@ function BuyCheckoutNav() {
 
 // ── Desktop right panel ───────────────────────────────────────────────────────
 
-function BuyOrderSummary({ kit, price, dispatch, arrival, inventory }) {
-  const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
-  const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
-  const [previewSrc, setPreviewSrc] = useState(null);
-  const [previewPos, setPreviewPos] = useState({ top: 0, left: 0 });
-
-  const showPreview = (e, src) => {
-    if (!src) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const previewW = 220;
-    const previewH = 275;
-    // Place the preview above the thumb so it never covers the product name
-    // (which sits to the right of the thumb on the same row).
-    const left = Math.min(window.innerWidth - previewW - 12, Math.max(12, rect.left));
-    const top = Math.max(12, rect.top - previewH - 12);
-    setPreviewPos({ top, left });
-    setPreviewSrc(src);
-  };
-  const hidePreview = () => setPreviewSrc(null);
-
+function BuyOrderSummary({ kit, price, dispatch, arrival }) {
+  const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   return (
-    <div className="co-right">
+    <aside className="co-right" aria-label="Order summary">
       {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
       <div className="co-kit-name">{kit.name}</div>
-      {kit.outcome && <div className="co-outcome">{kit.outcome}</div>}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
-        <span className="co-price-worth"><s>£{kitWorth(kit)}</s></span>
-        <span className="co-price-main">£{price}</span>
-        <span className="co-price-label">one-time</span>
-      </div>
-      <div className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</div>
-      {offerActive() ? (
-        <div className="co-price-sub" style={{ marginTop: 3 }}>
-          Royal Mail Tracked 48 · <s style={{ color: 'var(--stone)' }}>£5.95</s>{' '}
-          <span style={{ color: '#2E6DA4', fontWeight: 600 }}>FREE</span> · UK only
+      <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
+      <p className="co-price-sub">One-time purchase · Free UK delivery</p>
+      <p className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</p>
+      <details className="by-more">
+        <summary>What's included · {products.length} items</summary>
+        <div className="co-product-list">
+          {products.map(p => (
+            <div key={p.num} className="co-product">
+              {p.media?.still && <img src={p.media.still} alt="" className="co-product-thumb" loading="lazy" />}
+              <span className="co-product-num">{p.num}</span><span>{p.name}{p.size ? ` · ${p.size}` : ''}</span>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="co-price-sub" style={{ marginTop: 3 }}>Royal Mail Tracked 48 · Free · UK only</div>
-      )}
-
-      <div className="co-divider" />
-
-      <div className="co-promise">
-        <div className="co-promise-title">Before You Buy</div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</span>
-        </div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>Ritual guide included in the box · QR code to bysolum.co.uk/ritual</span>
-        </div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>Secured by Stripe · your card details never touch our servers</span>
-        </div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>14-day returns · <a href="/terms#s7" className="co-returns-link">T&amp;Cs apply</a></span>
-        </div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>Questions? Call <a href="tel:03330502313" className="co-returns-link" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a> · Mon–Fri 9–5</span>
-        </div>
-        <div className="co-promise-item">
-          <span className="co-promise-check">◆</span>
-          <span>Bysolum Limited · Company No. 17117056</span>
-        </div>
-      </div>
-
-      <div className="co-divider" />
-
-      <div className="co-panel-label">What's in your box</div>
-      <div className="co-product-list">
-        {products.map(p => (
-          <div key={p.num} className={`co-product${p.comingSoon ? ' dimmed' : ''}`}>
-            {p.media?.still
-              ? (
-                <img
-                  src={p.media.still}
-                  alt={p.name}
-                  className="co-product-thumb"
-                  loading="lazy"
-                  onMouseEnter={(e) => showPreview(e, p.media.still)}
-                  onMouseLeave={hidePreview}
-                />
-              )
-              : <div className="co-product-thumb-ph" />
-            }
-            <span className="co-product-num">{p.num}</span>
-            <span className="co-product-name-wrap">
-              <span>{p.name}{p.comingSoon ? ' *' : ''}</span>
-              {p.outcome?.tileAfter && <span className="co-product-outcome">{p.outcome.tileAfter}</span>}
-            </span>
-            {p.value > 0 && !p.comingSoon && <span className="co-product-worth">£{p.value}</span>}
-          </div>
-        ))}
-      </div>
-      <div className="co-worth-total">
-        <s>£{kitWorth(kit)} of product</s> · yours for £{price}
-      </div>
-      {products.some(p => p.comingSoon) && (
-        <div className="co-soon-note">* Coming soon — included when available</div>
-      )}
-      {previewSrc && (
-        <img
-          src={previewSrc}
-          alt=""
-          aria-hidden="true"
-          className="co-product-preview-fixed"
-          style={{ top: previewPos.top, left: previewPos.left }}
-        />
-      )}
-    </div>
+        <p className="co-price-sub">Step-by-step ritual guide included.</p>
+      </details>
+      <details className="by-more">
+        <summary>Delivery, returns and help</summary>
+        <p>Free UK delivery with Royal Mail Tracked 48.</p>
+        <p>14-day returns. <a href="/terms#s7">View conditions</a></p>
+        <p>Questions? <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a> · Mon to Fri, 9 to 5</p>
+      </details>
+    </aside>
   );
 }
 
@@ -1257,19 +1185,19 @@ export default function BuyPage() {
                   arrivals already read the homepage, so just confirm and move. */}
               {step === 'details' && (
                 <div className="by-intro">
-                  <span className="by-intro-eyebrow">Men's Body Care</span>
+                  <div className="by-checkout-award"><AwardProof compact /></div>
                   {isWarmArrival ? (
                     <>
-                      <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
-                      <p className="by-intro-sub">Every product numbered, every step timed. The exact routine is on the card in your box.</p>
+                      <h1 className="by-intro-head">Complete your order.</h1>
+                      <p className="by-intro-sub">Your selected kit, ready for your daily routine and weekly reset.</p>
                     </>
                   ) : (
                     <>
-                      <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
-                      <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
+                      <h1 className="by-intro-head">Your body. Done right.</h1>
+                      <p className="by-intro-sub">A complete body-care kit with a guided daily routine and weekly reset.</p>
                     </>
                   )}
-                  <p className="by-intro-sub by-intro-reassurance"><strong>Not a subscription.</strong> No refill starts today.</p>
+                  <p className="by-intro-sub by-intro-reassurance"><strong>One-time purchase. No subscription.</strong></p>
                 </div>
               )}
 
@@ -1279,7 +1207,7 @@ export default function BuyPage() {
                 <div className="by-kit-confirm" data-testid="kit-confirm">
                   <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
-                    <span className="by-kit-confirm-meta">£{price} one-time · £{kitWorth(activeKit)} of product + the step-by-step routine inside · free UK delivery</span>
+                    <span className="by-kit-confirm-meta">£{price} total · Free UK delivery</span>
                   </div>
                   <button
                     type="button"
@@ -1327,23 +1255,8 @@ export default function BuyPage() {
                         <div className="by-kit-name">{kit?.name}</div>
                         <div className="by-kit-outcome">{kitOutcome?.label ?? kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box</div>
-                        {kitOutcome && <div className="by-kit-result">{kitOutcome.body} {kitOutcome.detail}</div>}
-                        <div className="by-kit-mini-ledger" aria-label={`${kit?.name} ritual summary`}>
-                          <div className="by-kit-mini-cell">
-                            <div className="by-kit-mini-label">Daily: 10 min</div>
-                            <div className="by-kit-mini-copy">Wash, scalp, mitt, back, lotion.</div>
-                          </div>
-                          <div className="by-kit-mini-cell">
-                            <div className="by-kit-mini-label">Weekly: 22 min</div>
-                            <div className="by-kit-mini-copy">Clay reset replaces the daily ritual.</div>
-                          </div>
-                          <div className="by-kit-mini-cell">
-                            <div className="by-kit-mini-label">Argan finish</div>
-                            <div className="by-kit-mini-copy">
-                              {id === 'ritual' ? <strong>Included.</strong> : 'RITUAL adds it.'}
-                            </div>
-                          </div>
-                        </div>
+
+
                         {isFirstBatch && (
                           inventory?.[id]?.count > 0 && inventory[id].count <= 30
                             ? <div className="by-kit-stock">Only {inventory[id].count} left in the first batch</div>
@@ -1351,7 +1264,7 @@ export default function BuyPage() {
                         )}
                         <div className="by-kit-buyrow">
                           <div>
-                            <div className="by-kit-worth">£{kitWorth(kit)} of product</div>
+
                             <div className="by-kit-price">£{KIT_PRICES[id]}</div>
                             <div className="by-kit-price-label">one-time</div>
                             {isFirstBatch && (
@@ -1374,36 +1287,7 @@ export default function BuyPage() {
 
               {/* Demo loop: for cold visitors it sits right after the kit choice;
                   warm arrivals get it below the details form. */}
-              {step === 'details' && kitPickerOpen && <MittDemo />}
-
-              {/* Trust strip just before the payment decision — Baymard: surprise
-                  costs are the #1 abandonment cause, so "free · no hidden costs"
-                  is the last thing read before choosing how to pay. The top
-                  OfferBar already covers the very top of the page. */}
-              {step === 'details' && (
-                <a
-                  className="by-press-proof"
-                  href="https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => capture('buy_press_clicked', { source: 'luxury_lifestyle_magazine' })}
-                >
-                  <span>
-                    <span className="by-press-proof-kicker">Featured by Luxury Lifestyle Magazine</span>
-                    <span className="by-press-proof-quote">“Pioneering a new era of men’s body care”</span>
-                  </span>
-                  <span className="by-press-proof-arrow" aria-hidden="true">↗</span>
-                </a>
-              )}
-
-              {step === 'details' && (
-                <div className="co-form-trust">
-                  <div className="co-form-trust-line">📦 {cutoffText} · ships {fmtDay(dispatch)}</div>
-                  <div className="co-form-trust-line">🚚 Free UK delivery · no hidden costs</div>
-                  <div className="co-form-trust-line">✓ 14-day returns · 🔒 Secured by Stripe</div>
-                  <div className="co-form-trust-line">📞 Questions? <a href="tel:03330502313" onClick={() => capture('buy_phone_clicked')}>0333 050 2313</a></div>
-                </div>
-              )}
+              {step === 'details' && kitPickerOpen && <details className="by-more"><summary>See how the ritual works</summary><MittDemo /></details>}
 
               {step === 'details' && (
                 <div className="by-express-wrap" ref={formStartRef} data-testid="express-checkout">
@@ -1485,7 +1369,7 @@ export default function BuyPage() {
               )}
 
               {/* Warm arrivals get the demo below the form (see above) */}
-              {step === 'details' && !kitPickerOpen && <MittDemo />}
+
 
               {/* Step 2: Delivery */}
               {step === 'delivery' && (

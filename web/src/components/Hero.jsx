@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AwardProof from './AwardProof.jsx';
 import { useVariant, trackGoal } from '../hooks/useVariant';
 import { BANNER } from '../data/productMedia.js';
 
@@ -101,6 +102,48 @@ const CSS = `
   .hero-box-img{object-position:center center;}
   .hero-visual-caption{display:block;position:absolute;bottom:16px;right:20px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.4);font-weight:500;z-index:1;}
 }
+.hero-award{margin-bottom:32px;}
+.hero-award .award-proof-compact{gap:24px;align-items:center;}
+.hero-award .award-proof-compact .award-proof-seal{width:164px;height:164px;}
+.hero-award .award-proof-compact .award-proof-copy{gap:10px;}
+.hero-award .award-proof-compact .award-proof-winner{font-size:13px;letter-spacing:2px;}
+.hero-award .award-proof-compact .award-proof-copy strong{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,3.6vw,54px);line-height:1;letter-spacing:.025em;font-weight:400;}
+.hero-award .award-proof-compact .award-proof-copy>span:last-child{font-size:17px;line-height:1.3;}
+.hero-purchase-note{font-size:14px;font-weight:400;color:var(--mist);margin-top:16px;letter-spacing:.3px;}
+@media(min-width:960px){
+ .hero-editorial-frame{border:0;padding:clamp(22px,4vh,48px) 0;background:transparent;box-shadow:none;justify-content:center;}
+ .hero-title{font-size:clamp(30px,2.6vw,40px);line-height:1.08;margin-bottom:18px;max-width:470px;}
+ .hero-subline{font-size:18px;line-height:1.5;max-width:430px;margin-bottom:24px;}
+ .hero-visual{border-left:1px solid var(--line);}
+}
+@media(max-width:959px){
+ .hero-cols{padding-bottom:40px;background:linear-gradient(to top,rgba(8,9,11,.97),rgba(8,9,11,.76) 48%,rgba(8,9,11,.12));}
+ .hero-award{margin-bottom:28px;}
+ .hero-award .award-proof-compact{gap:16px;}
+ .hero-award .award-proof-compact .award-proof-seal{width:120px;height:120px;}
+ .hero-award .award-proof-compact .award-proof-copy{gap:7px;}
+ .hero-award .award-proof-compact .award-proof-copy strong{font-size:36px;}
+ .hero-award .award-proof-compact .award-proof-winner{font-size:11px;}
+ .hero-award .award-proof-compact .award-proof-copy>span:last-child{font-size:14px;}
+ .hero-title{font-size:30px;line-height:1.1;max-width:440px;margin-bottom:16px;}
+ .hero-subline{font-size:16px;line-height:1.5;max-width:390px;margin-bottom:20px;}
+ .hero-purchase-note{font-size:13px;margin-top:12px;}
+}
+@media(max-width:359px){
+ .hero-award .award-proof-compact{gap:14px;}
+ .hero-award .award-proof-compact .award-proof-seal{width:100px;height:100px;}
+ .hero-award .award-proof-compact .award-proof-copy strong{font-size:29px;}
+ .hero-title{font-size:27px;}
+}
+@media(max-height:700px) and (max-width:959px){
+ .hero-cols{padding-top:90px;padding-bottom:28px;}
+ .hero-award{margin-bottom:20px;}
+ .hero-award .award-proof-compact .award-proof-seal{width:100px;height:100px;}
+ .hero-award .award-proof-compact .award-proof-copy strong{font-size:30px;}
+ .hero-title{font-size:27px;}
+ .hero-subline{font-size:15px;margin-bottom:16px;}
+}
+
 `;
 
 export default function Hero() {
@@ -114,6 +157,7 @@ export default function Hero() {
         <div className="hero-cols">
           <div className="hero-content">
             <div className="hero-editorial-frame">
+              <div className="hero-award"><AwardProof compact /></div>
               <h1 className="hero-title">
                 The shower ritual men were never given.
               </h1>
@@ -131,23 +175,8 @@ export default function Hero() {
                   Start Your Ritual
                 </a>
               </div>
-              <div className="hero-press-proof">
-                <a
-                  className="hero-press-link"
-                  href="https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>
-                    <span className="hero-press-label">As featured in</span>
-                    <span className="hero-press-publication">Luxury<span>Lifestyle Magazine</span></span>
-                  </span>
-                    <span>
-                      <span className="hero-press-quote">“Pioneering a new era of men’s body care”</span>
-                    <span className="hero-press-read">Read the feature</span>
-                  </span>
-                </a>
-              </div>
+              <p className="hero-purchase-note">One-time purchase · Free UK delivery</p>
+
             </div>
           </div>
         </div>

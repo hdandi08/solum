@@ -76,8 +76,8 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('hero-editorial-frame');
     expect(hero).toContain('hero-subline');
     expect(hero).toContain('hero-press-proof');
-    expect(hero).toContain('Luxury<span>Lifestyle Magazine</span>');
-    expect(hero).toContain('Pioneering a new era of men’s body care');
+    expect(hero).toContain('<AwardProof compact />');
+    expect(component('AwardProof')).toContain('The Best Grooming Kit');
     expect(hero).not.toContain('<blockquote');
     expect(hero).not.toContain('The ritual your shower was missing');
     expect(hero).not.toContain('hero-ghost');
@@ -247,11 +247,13 @@ describe('premium homepage direction', () => {
     expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
   });
 
-  it('puts the press feature directly after the hero, before the category education', () => {
+  it('keeps the buying journey ahead of supporting press and closes with FAQs', () => {
     const home = page('FullSite');
 
     expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<Marquee />'));
+    expect(home.indexOf('<FounderSection />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<FAQ />'));
+    expect(home.indexOf('<FAQ />')).toBeLessThan(home.indexOf('<CTASection />'));
     expect(home.indexOf('<Marquee />')).toBeLessThan(home.indexOf('<ProblemSection />'));
     expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
     expect(home.indexOf('<KitComparison />')).toBeLessThan(home.indexOf('<RitualInAction />'));
@@ -437,12 +439,9 @@ describe('premium homepage direction', () => {
     const buy = page('BuyPage');
 
     expect(buy).toContain('BUY_KIT_OUTCOMES');
-    expect(buy).toContain('Not a subscription');
-    expect(buy).toContain('No refill starts today.');
+    expect(buy).toContain('One-time purchase. No subscription.');
+    expect(buy).not.toContain('No refill starts today.');
     expect(buy).toContain('by-kit-mini-ledger');
-    expect(buy).toContain('Daily: 10 min');
-    expect(buy).toContain('Weekly: 22 min');
-    expect(buy).toContain('Argan finish');
     expect(buy).toContain('Clean foundation');
     expect(buy).toContain('Includes the 10-min daily ritual and 22-min weekly deep reset for less odour, smoother skin and a back that is finally cleaned properly.');
     expect(buy).toContain('Complete ritual');

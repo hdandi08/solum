@@ -16,7 +16,7 @@ describe('homepage press proof', () => {
     expect(source).not.toMatch(/World['’]s First/i);
   });
 
-  it('shows verified publication proof before the kit offer', () => {
+  it('keeps authentic supporting press after the product explanation', () => {
     const press = component('PressSection');
     const home = page('FullSite');
 
@@ -27,7 +27,7 @@ describe('homepage press proof', () => {
     expect(press).toContain('https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/');
     expect(press).toContain('https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care');
     expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<Marquee />'));
+    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<PressSection />'));
     expect(home.indexOf('<Marquee />')).toBeLessThan(home.indexOf('<ProblemSection />'));
     expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
   });
@@ -38,17 +38,12 @@ describe('homepage press proof', () => {
     expect(press).toContain('@media(min-width:960px){.press-section{display:none;}}');
   });
 
-  it('keeps /buy press proof compact and close to the payment decision', () => {
+  it('keeps the award compact and ahead of express checkout', () => {
     const buy = page('BuyPage');
-    const proofIndex = buy.indexOf('className="by-press-proof"');
-    const trustIndex = buy.indexOf('<div className="co-form-trust">');
+    const proofIndex = buy.indexOf('<AwardProof compact />');
     const expressIndex = buy.indexOf('<div className="by-express-wrap"');
-
     expect(proofIndex).toBeGreaterThan(-1);
-    expect(buy).toContain('Featured by Luxury Lifestyle Magazine');
-    expect(buy).toContain('Pioneering a new era of men’s body care');
-    expect(buy).not.toContain('<PressSection />');
-    expect(proofIndex).toBeLessThan(trustIndex);
     expect(proofIndex).toBeLessThan(expressIndex);
+    expect(buy).not.toContain('Featured by Luxury Lifestyle Magazine');
   });
 });
