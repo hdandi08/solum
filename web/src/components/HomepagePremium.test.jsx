@@ -212,11 +212,11 @@ describe('premium homepage direction', () => {
     const ritual = component('RitualInAction');
     const guide = dataFile('guide');
 
-    expect(system).toContain('Why the order matters');
-    expect(system).toContain('The result comes from sequence.');
-    expect(system).toContain('One bottle, hands, hot water.');
-    expect(system).toContain('Scalp first. Wash. Reach the back. Reset weekly. Finish damp.');
-    expect(system).toContain('Cleaner roots, a properly reached back, smoother skin and a calmer finish after towelling.');
+    expect(system).toContain('The SOLUM standard');
+    expect(system).toContain('Better products. One complete ritual.');
+    expect(system).toContain('Formulas with purpose.');
+    expect(system).toContain('Tools that make the difference.');
+    expect(system).toContain('Pure ingredients. Proper finish.');
     expect(system).not.toContain('Nobody ever gave you');
     expect(system).not.toContain('ritual-ledger');
     expect(ritual).toContain('First see the method. Then the product list makes sense.');
@@ -307,15 +307,15 @@ describe('premium homepage direction', () => {
     expect(ritual).not.toContain('activeRitual');
   });
 
-  it('uses a quieter sequence explanation instead of the old dense ritual ledger', () => {
+  it('explains product quality, tools and ingredients within the complete ritual', () => {
     const system = component('SystemSection');
 
     expect(system).toContain('sequence-proof');
-    expect(system).toContain('Why the order matters');
-    expect(system).toContain('Old shower');
-    expect(system).toContain('SOLUM sequence');
-    expect(system).toContain('What changes');
-    expect(system).toContain('The daily ritual maintains. The weekly ritual resets.');
+    expect(system).toContain('The SOLUM standard');
+    expect(system).toContain("label: 'Formulas'");
+    expect(system).toContain("label: 'Tools'");
+    expect(system).toContain("label: 'Ingredients'");
+    expect(system).toContain('Every product has a job. The ritual brings them together.');
     expect(system).not.toContain('The Ritual Ledger');
     expect(system).not.toContain('03 works after clay');
     expect(system).not.toContain('body-diagram');

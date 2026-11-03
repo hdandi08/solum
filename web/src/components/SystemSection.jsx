@@ -16,7 +16,8 @@ const CSS = `
 .sequence-card.old .sequence-label{color:rgba(240,236,226,.46);}
 .sequence-copy{font-family:'Bebas Neue',sans-serif;font-size:clamp(27px,3vw,38px);letter-spacing:.05em;color:var(--bone);line-height:1;}
 .sequence-note{font-size:14px;color:rgba(240,236,226,.64);font-weight:300;line-height:1.5;margin:0;}
-.sequence-cta{margin-top:30px;display:flex;justify-content:flex-start;}
+.sequence-closing{margin:24px 0 0;color:var(--mist);font-size:16px;line-height:1.5;font-weight:300;}
+.sequence-cta{margin-top:20px;display:flex;justify-content:flex-start;}
 @media(max-width:768px){
   .system-section{padding:56px 0;}
   .system-inner{padding:0 24px;}
@@ -30,21 +31,21 @@ const CSS = `
 const SEQUENCE_CARDS = [
   {
     className: 'old',
-    label: 'Old shower',
-    copy: 'One bottle, hands, hot water.',
-    note: 'It can feel clean for a moment while the back, scalp and rougher skin stay under-served.',
+    label: 'Formulas',
+    copy: 'Formulas with purpose.',
+    note: 'Sulphate-free amino acid body wash cleans without the tight after-feel. Fast-absorbing lotion leaves skin comfortable.',
   },
   {
     className: 'new',
-    label: 'SOLUM sequence',
-    copy: 'Scalp first. Wash. Reach the back. Reset weekly. Finish damp.',
-    note: 'The daily ritual maintains. The weekly ritual resets. The order is the point.',
+    label: 'Tools',
+    copy: 'Tools that make the difference.',
+    note: 'The exfoliating mitt lifts surface buildup. The back cloth reaches properly. Flexible silicone pins work through scalp buildup.',
   },
   {
     className: 'result',
-    label: 'What changes',
-    copy: 'Cleaner roots, a properly reached back, smoother skin and a calmer finish after towelling.',
-    note: 'Products matter, but the system is what makes each product make sense.',
+    label: 'Ingredients',
+    copy: 'Pure ingredients. Proper finish.',
+    note: 'Mineral-rich Moroccan clay for the weekly reset. Single-ingredient, certified organic argan oil for a soft, comfortable finish.',
   },
 ];
 
@@ -54,10 +55,10 @@ export default function SystemSection() {
       <style>{CSS}</style>
       <section className="system-section" id="system">
         <div className="system-inner">
-          <div className="system-kicker reveal">Why the order matters</div>
-          <h2 className="system-title reveal">The result comes from sequence.</h2>
+          <div className="system-kicker reveal">The SOLUM standard</div>
+          <h2 className="system-title reveal">Better products. One complete ritual.</h2>
           <p className="system-sub reveal">
-            SOLUM is not a shelf of products. It is a daily and weekly order for the parts of the body most routines miss.
+            Body care developed for SOLUM, tools that reach what hands miss, and a daily and weekly routine built for men.
           </p>
           <div className="sequence-proof reveal">
             {SEQUENCE_CARDS.map((card) => (
@@ -68,6 +69,7 @@ export default function SystemSection() {
               </article>
             ))}
           </div>
+          <p className="sequence-closing reveal">Every product has a job. The ritual brings them together.</p>
           <div className="sequence-cta reveal">
             <a href="#kits" className="btn-primary" onClick={() => capture('system_cta_clicked')}>Choose your kit</a>
           </div>
