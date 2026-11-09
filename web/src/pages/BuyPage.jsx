@@ -1200,8 +1200,8 @@ export default function BuyPage() {
                     </>
                   ) : (
                     <>
-                      <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
-                      <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
+                      <h1 className="by-intro-head">{selectedKit === 'ritual' ? 'Award-winning body care.' : 'Complete body care.'} A better clean from your daily shower.</h1>
+                      <p className="by-intro-sub">Quality products, the right tools and clear daily and weekly rituals. Everything in one kit. Built for men.</p>
                     </>
                   )}
                 </div>
