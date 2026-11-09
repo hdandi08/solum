@@ -100,9 +100,9 @@ export default function FullSite() {
       <ProductLineup />
       <WhatSolumIs />
       <SystemSection />
+      <FounderSection />
       <HomeCTABand />
       <UnboxingFilm />
-      <FounderSection />
       <FullBleedBand
         image="/products/feature/identity.webp"
         eyebrow="The Standard"

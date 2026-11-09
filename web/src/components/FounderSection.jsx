@@ -22,7 +22,7 @@ export default function FounderSection() {
             <div className="founder-note-name">Harsha, Founder · London</div>
           </div>
           <p className="founder-note-quote">
-            "I spent years thinking body care was just body wash and shampoo. Still dealing with odour returning, dry skin, an itchy unclean scalp, areas I wasn't properly cleaning, especially with a busy routine and regular training. No one ever explained what to actually do. Everything in grooming focused on the face. The rest of the body was ignored. And I assumed proper body care had to be time consuming. It doesn't."
+            “I spent years thinking body care was just body wash and shampoo. Between work and training, I wanted a clean that lasted, but I couldn’t find a complete routine built for men. Much of what I found felt like an extension of women’s ranges. I wanted something considered for men from the start, from the scent to how the products worked together. Inspired by my travels, I built SOLUM to bring quality products, the right tools and a clear ritual together in one kit. A better clean, in the time you already spend in the shower.”
           </p>
         </div>
       </section>
