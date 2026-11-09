@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SOLUM — OG Image 1200×630</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>SOLUM Link Preview · 1200×630</title>
+<style>
+@font-face{font-family:'Bebas Neue';font-weight:400;src:url('../web/public/fonts/bebas-neue-400.woff2') format('woff2');}
+@font-face{font-family:'Barlow Condensed';font-weight:300;src:url('../web/public/fonts/barlow-condensed-300.woff2') format('woff2');}
+@font-face{font-family:'Barlow Condensed';font-weight:500;src:url('../web/public/fonts/barlow-condensed-500.woff2') format('woff2');}
+@font-face{font-family:'Barlow Condensed';font-weight:600;src:url('../web/public/fonts/barlow-condensed-600.woff2') format('woff2');}
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -113,12 +118,10 @@
   }
 
   .wordmark {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 180px;
-    letter-spacing: 0.12em;
-    color: var(--bone);
-    line-height: 0.85;
     display: block;
+    width: 500px;
+    height: auto;
+    margin: 12px 0 4px -18px;
   }
 
   .divider {
@@ -158,7 +161,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     z-index: 3;
     width: 340px;
   }
@@ -262,9 +265,9 @@
 <body>
 
 <div class="toolbar">
-  <span class="toolbar-label">OG Image · 1200 × 630px · Save as og-image.jpg → /web/public/</span>
+  <span class="toolbar-label">OG Image · 1200 × 630px · Current wordmark · og-image-2026-11.jpg</span>
   <span id="dl-msg">Downloading...</span>
-  <button class="btn btn-bone" onclick="download()">Download PNG</button>
+  <button class="btn btn-bone" onclick="download()">Download JPG</button>
 </div>
 
 <div id="og">
@@ -276,9 +279,9 @@
   <!-- Left -->
   <div class="col-left">
     <span class="eyebrow">Men's Body Care · UK</span>
-    <span class="wordmark">SOLUM</span>
+    <img class="wordmark" src="../web/public/solum-wordmark-clean.svg" alt="SOLUM">
     <div class="divider"></div>
-    <div class="descriptor">8 Products. Two Rituals.<br>Head to Toe.</div>
+    <div class="descriptor">9 Products. Two Rituals.<br>Head to Toe.</div>
     <div class="tagline">Your body. Done right.</div>
   </div>
 
@@ -288,22 +291,23 @@
     <div class="product-row"><span class="p-num">02</span><span class="p-name">Exfoliating Mitt</span></div>
     <div class="product-row"><span class="p-num">03</span><span class="p-name">Back Scrub Cloth</span></div>
     <div class="product-row"><span class="p-num">04</span><span class="p-name">Scalp Massager</span></div>
-    <div class="product-row"><span class="p-num">05</span><span class="p-name">Rhassoul Clay Mask</span></div>
+    <div class="product-row"><span class="p-num">05</span><span class="p-name">Atlas Clay Mask</span></div>
     <div class="product-row"><span class="p-num">06</span><span class="p-name">Argan Body Oil</span></div>
     <div class="product-row"><span class="p-num">07</span><span class="p-name">Body Lotion</span></div>
-    <div class="product-row"><span class="p-num">08</span><span class="p-name">Bamboo Cloth</span></div>
+    <div class="product-row"><span class="p-num">08</span><span class="p-name">Intimate Cleansing Cloth</span></div>
+    <div class="product-row"><span class="p-num">11</span><span class="p-name">Clay Mixing Bowl</span></div>
   </div>
 
   <div class="url">bysolum.co.uk</div>
-  <div class="kit-line">Ground · Ritual · Sovereign</div>
+  <div class="kit-line">Ground · Ritual</div>
 </div>
 
 <div class="instructions">
   <div class="instr-title">How to use</div>
   <div class="instr-body">
-    <strong>1.</strong> Click "Download PNG" — saves as <strong>SOLUM-og-image.png</strong><br>
-    <strong>2.</strong> Convert to JPG if needed (Preview → Export, or squoosh.app)<br>
-    <strong>3.</strong> Save as <strong>og-image.jpg</strong> and drop into <strong>/web/public/og-image.jpg</strong><br>
+    <strong>1.</strong> Click "Download JPG" — saves as <strong>og-image-2026-11.jpg</strong><br>
+    <strong>2.</strong> Keep the exported image at 1200 × 630 pixels<br>
+    <strong>3.</strong> Save as <strong>og-image-2026-11.jpg</strong> and drop into <strong>/web/public/og-image-2026-11.jpg</strong><br>
     <strong>4.</strong> Deploy — link previews on Instagram DMs, WhatsApp, iMessage will use this image automatically
   </div>
 </div>
@@ -314,7 +318,7 @@ async function download() {
   msg.style.display = 'inline';
   const el = document.getElementById('og');
   const canvas = await html2canvas(el, {
-    scale: 2,
+    scale: 1,
     useCORS: true,
     allowTaint: true,
     backgroundColor: '#08090B',
@@ -323,8 +327,8 @@ async function download() {
     height: 630,
   });
   const link = document.createElement('a');
-  link.download = 'SOLUM-og-image.png';
-  link.href = canvas.toDataURL('image/png');
+  link.download = 'og-image-2026-11.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
   link.click();
   msg.style.display = 'none';
 }
