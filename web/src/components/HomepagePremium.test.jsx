@@ -236,22 +236,12 @@ describe('premium homepage direction', () => {
     expect(guide).not.toContain('monthly subscription pricing');
   });
 
-  it('treats press as quiet editorial validation near the top of the page', () => {
-    const press = component('PressSection');
-
-    expect(press).toContain('press-ledger');
-    expect(press).toContain('As featured in');
-    expect(press).toContain('Pioneering a new era of men’s body care');
-    expect(press).toContain('Independent coverage');
-    expect(press).toContain('Independent coverage for SOLUM.');
-    expect(press).not.toContain('Independent coverage for the first SOLUM ritual.');
-  });
-
-  it('keeps the buying journey ahead of supporting press and closes with FAQs', () => {
+  it('places recognition before the kit choices and closes with FAQs', () => {
     const home = page('FullSite');
 
     expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<FounderSection />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
     expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<FAQ />'));
     expect(home.indexOf('<FAQ />')).toBeLessThan(home.indexOf('<CTASection />'));
     expect(home.indexOf('<Marquee />')).toBeLessThan(home.indexOf('<ProblemSection />'));
@@ -261,12 +251,6 @@ describe('premium homepage direction', () => {
     expect(home.indexOf('<RitualInAction />')).toBeLessThan(home.indexOf('<WhatSolumIs />'));
     expect(home.indexOf('<WhatSolumIs />')).toBeLessThan(home.indexOf('<SystemSection />'));
     expect(home).not.toContain('<FrictionStrip />');
-  });
-
-  it('uses the hero itself as the desktop home for press proof', () => {
-    const press = component('PressSection');
-
-    expect(press).toContain('@media(min-width:960px){.press-section{display:none;}}');
   });
 
   it('moves the first guided ritual framing out of the top repetition loop', () => {

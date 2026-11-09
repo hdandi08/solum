@@ -94,6 +94,7 @@ export default function FullSite() {
       <Hero />
       <Marquee />
       <ProblemSection />
+      <PressSection />
       <KitComparison />
       <RitualInAction />
       <ProductLineup />
@@ -102,7 +103,6 @@ export default function FullSite() {
       <HomeCTABand />
       <UnboxingFilm />
       <FounderSection />
-      <PressSection />
       <FullBleedBand
         image="/products/feature/identity.webp"
         eyebrow="The Standard"

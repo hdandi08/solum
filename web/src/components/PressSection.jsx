@@ -1,8 +1,17 @@
+import AwardProof from './AwardProof.jsx';
+
 const PRESS = [
   {
     name: 'Luxury Lifestyle Magazine',
     quote: 'Pioneering a new era of men’s body care',
     url: 'https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/',
+    tier: 'support',
+  },
+  {
+    name: 'T3',
+    logo: '/press/t3-logo.svg',
+    quote: 'a structured approach to body care',
+    url: 'https://www.t3.com/home-living/grooming/5-essential-grooming-products-every-bearded-man-wants-for-christmas',
     tier: 'lead',
   },
   {
@@ -20,6 +29,7 @@ const CSS = `
 .press-kicker{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--blit);}
 .press-head{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5.4vw,74px);line-height:.92;letter-spacing:.055em;color:var(--bone);margin:0;max-width:720px;}
 .press-copy{max-width:520px;margin:0;color:rgba(240,236,226,.68);font-size:16px;font-weight:300;line-height:1.65;}
+.press-award{padding:20px 0;border-bottom:1px solid var(--line);}
 .press-feature{display:grid;grid-template-columns:1fr;gap:22px;padding:28px 0;color:inherit;text-decoration:none;}
 .press-feature:focus-visible,.press-link:focus-visible{outline:2px solid var(--blit);outline-offset:4px;}
 .press-logo-main{font-family:Georgia,serif;font-size:clamp(38px,7vw,86px);font-weight:700;letter-spacing:-.055em;line-height:.82;color:var(--bone);}
@@ -29,15 +39,16 @@ const CSS = `
 .press-read{display:inline-flex;margin-top:18px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--blit);}
 .press-support{border-top:1px solid var(--line);padding:18px 0;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;color:rgba(240,236,226,.64);font-size:14px;font-weight:300;letter-spacing:.4px;}
 .press-support-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,.45);}
-.press-link{color:var(--bone);text-decoration:none;border-bottom:1px solid rgba(74,143,199,.45);padding-bottom:2px;}
+.press-link{display:inline-flex;align-items:center;gap:12px;color:var(--bone);text-decoration:none;border-bottom:1px solid rgba(74,143,199,.45);padding-bottom:2px;}
 .press-link:hover{border-color:var(--blit);}
+.press-lead-logo{display:block;width:160px;height:160px;object-fit:contain;}
+.press-publication-logo{display:block;width:64px;height:64px;object-fit:contain;flex-shrink:0;}
 @media(min-width:840px){
   .press-section{padding:70px 48px;}
-  .press-intro{grid-template-columns:.95fr 1.05fr;align-items:end;padding:30px 0 26px;}
+  .press-intro{grid-template-columns:1fr;align-items:end;padding:30px 0 26px;}
   .press-copy{justify-self:end;}
   .press-feature{grid-template-columns:.78fr 1.22fr;gap:56px;padding:38px 0 42px;}
 }
-@media(min-width:960px){.press-section{display:none;}}
 @media(max-width:620px){
   .press-section{padding:42px 20px 46px;}
   .press-head{font-size:38px;}
@@ -55,18 +66,14 @@ export default function PressSection() {
       <section className="press-section" id="press" data-track="press">
         <div className="press-ledger reveal">
           <div className="press-intro">
-            <div>
-              <div className="press-kicker">As featured in</div>
-              <h2 className="press-head">Independent coverage for SOLUM.</h2>
-            </div>
-            <p className="press-copy">
-              Early press places SOLUM inside the wider men’s body-care shift. Proof first, then the kit.
-            </p>
+            <h2 className="press-head">Awards and press.</h2>
+          </div>
+          <div className="press-award" aria-label="Esquire Grooming Awards 2026 winner">
+            <AwardProof compact />
           </div>
           <a className="press-feature" href={lead.url} target="_blank" rel="noreferrer">
             <div className="press-logo" aria-label={lead.name}>
-              <div className="press-logo-main">Luxury<br />Lifestyle</div>
-              <span className="press-logo-sub">Magazine</span>
+              {lead.logo ? <img className="press-lead-logo" src={lead.logo} alt={lead.name} width="160" height="160" /> : <div className="press-logo-main">{lead.name}</div>}
             </div>
             <div className="press-quote-wrap">
               <blockquote className="press-quote">“{lead.quote}”</blockquote>
@@ -74,10 +81,11 @@ export default function PressSection() {
             </div>
           </a>
           <div className="press-support">
-            <span className="press-support-label">Independent coverage</span>
+            <span className="press-support-label">Also featured in</span>
             {support.map((item) => (
               <a key={item.name} className="press-link" href={item.url} target="_blank" rel="noreferrer">
-                {item.name}: “{item.quote}”
+                {item.logo && <img className="press-publication-logo" src={item.logo} alt={item.name} width="64" height="64" />}
+                <span>{!item.logo && `${item.name}: `}“{item.quote}”</span>
               </a>
             ))}
           </div>

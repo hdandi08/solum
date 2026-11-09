@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { describe, expect, it, vi } from 'vitest';
+import PressSection from './PressSection.jsx';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -16,7 +19,7 @@ describe('homepage press proof', () => {
     expect(source).not.toMatch(/World['’]s First/i);
   });
 
-  it('keeps authentic supporting press after the product explanation', () => {
+  it('keeps authentic press coverage before the kit choices', () => {
     const press = component('PressSection');
     const home = page('FullSite');
 
@@ -27,15 +30,20 @@ describe('homepage press proof', () => {
     expect(press).toContain('https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/');
     expect(press).toContain('https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care');
     expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));
-    expect(home.indexOf('<ProductLineup />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<PressSection />'));
+    expect(home.indexOf('<PressSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
     expect(home.indexOf('<Marquee />')).toBeLessThan(home.indexOf('<ProblemSection />'));
     expect(home.indexOf('<ProblemSection />')).toBeLessThan(home.indexOf('<KitComparison />'));
   });
 
-  it('hides the standalone press section on desktop because proof belongs in the hero', () => {
-    const press = component('PressSection');
-
-    expect(press).toContain('@media(min-width:960px){.press-section{display:none;}}');
+  it('renders links to all three published press features', () => {
+    vi.stubGlobal('React', React);
+    try {
+      const markup = renderToStaticMarkup(React.createElement(PressSection));
+      expect(markup).toContain('href="https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/"');
+      expect(markup).toContain('href="https://www.t3.com/home-living/grooming/5-essential-grooming-products-every-bearded-man-wants-for-christmas"');
+      expect(markup).toContain('href="https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care"');
+    } finally { vi.unstubAllGlobals(); }
   });
 
   it('keeps the award compact and ahead of express checkout', () => {
