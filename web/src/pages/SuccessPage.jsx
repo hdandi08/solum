@@ -1,6 +1,8 @@
 import {clearReservationAttempt} from '../lib/reservation.js';
-import { useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { resolvePurchaseConfirmation, claimPurchaseEvent } from '../lib/purchaseConfirmation.js';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { KITS } from '../data/kits.js';
 import { identify, fbPurchase, gadsPurchase, ttqIdentify, ttqCompletePayment } from '../lib/analytics.js';
 
@@ -55,49 +57,66 @@ const ONE_TIME_SOURCES = ['first_batch', 'gift', 'tiktok_shop'];
 
 export default function SuccessPage() {
   const [params] = useSearchParams();
-  const kitId        = params.get('kit');
+  const { state } = useLocation();
+  const inlineResult = state?.paymentResult;
+  const [confirmation, setConfirmation] = useState({ status: 'checking' });
+  const requestedKit = params.get('kit');
+  const kitId = confirmation.purchase?.kitId ?? requestedKit;
+  const clientSecret = params.get('payment_intent_client_secret');
   const redirectStatus = params.get('redirect_status'); // set by Stripe on redirect-based payments
   // payment_intent is appended by Stripe after a redirect; ref is set by us for inline payments
   const rawRef       = params.get('ref') ?? params.get('payment_intent') ?? '';
   const source       = params.get('source') ?? '';
   const dispatchDate = params.get('dispatch') ?? '';
   const arrivalDate  = params.get('arrival') ?? '';
-  const amountPence  = parseInt(params.get('amount') ?? '0', 10);
   const kit      = KITS.find(k => k.id === kitId);
   const kitName  = kit?.name ?? 'SOLUM';
   const orderRef = rawRef ? rawRef.slice(-8).toUpperCase() : null;
   const isOneTime = ONE_TIME_SOURCES.includes(source);
-  const amountGbp = amountPence > 0 ? amountPence / 100 : null;
 
   // Payment failed or was cancelled by the user on a redirect-based method (Revolut Pay etc.)
-  const paymentFailed = redirectStatus === 'failed' || redirectStatus === 'canceled';
+  const paymentFailed = confirmation.status === 'failed' || (confirmation.status === 'unverified' && ['failed', 'canceled'].includes(redirectStatus));
 
   const retryUrl = isOneTime
     ? `/buy?${kitId ? `kit=${kitId}&` : ''}resume=1`
     : `/checkout?${kitId ? `kit=${kitId}&` : ''}resume=1`;
 
-  // Fire purchase events only on genuine success
   useEffect(() => {
-    if (paymentFailed) return;
-    if(rawRef) { clearReservationAttempt('buy'); clearReservationAttempt('subscription'); clearReservationAttempt('express'); }
-
-    const guardKey = `solum_purchase_fired_${rawRef || 'unknown'}`;
-    if (sessionStorage.getItem(guardKey)) return;
-    sessionStorage.setItem(guardKey, '1');
-
-    const buyerEmail = sessionStorage.getItem('solum_buyer_email');
-    if (buyerEmail) {
-      identify(buyerEmail, { kit: kitId, source });
-      ttqIdentify(buyerEmail);
-      try { sessionStorage.removeItem('solum_buyer_email'); } catch { /* ignore unavailable storage */ }
+    let cancelled = false;
+    let timer;
+    let attempts = 0;
+    async function checkPayment() {
+      let stripe;
+      try { if (clientSecret) stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY); } catch { /* Show the unverified state. */ }
+      const result = await resolvePurchaseConfirmation({ reference: rawRef, clientSecret, kitId: requestedKit, stripe, inlineResult });
+      if (cancelled) return;
+      setConfirmation(result);
+      if (result.status === 'processing' && clientSecret && ++attempts < 10) timer = setTimeout(checkPayment, 3000);
     }
+    checkPayment();
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [rawRef, clientSecret, requestedKit, inlineResult]);
 
-    // PostHog 'purchase' is fired server-side from the Stripe webhook (single source — avoids client/server double-count).
-
-    if (amountGbp) fbPurchase(kitId ?? 'unknown', amountGbp, rawRef);
-    if (amountGbp) gadsPurchase(amountGbp, rawRef, buyerEmail);
-    if (amountGbp) ttqCompletePayment(kitId ?? 'unknown', kitName, amountGbp, rawRef);
-  }, []); // eslint-disable-line
+  useEffect(() => {
+    if (confirmation.status !== 'confirmed') return;
+    clearReservationAttempt('buy');
+    clearReservationAttempt('subscription');
+    clearReservationAttempt('express');
+    // Test payments never become live advertising conversions.
+    if (!confirmation.purchase.livemode || !claimPurchaseEvent(confirmation)) return;
+    const { eventId, value, kitId: confirmedKit } = confirmation.purchase;
+    let buyerEmail;
+    try { buyerEmail = sessionStorage.getItem('solum_buyer_email'); } catch { /* Unavailable storage. */ }
+    if (buyerEmail) {
+      identify(buyerEmail, { kit: confirmedKit, source });
+      ttqIdentify(buyerEmail);
+      try { sessionStorage.removeItem('solum_buyer_email'); } catch { /* Unavailable storage. */ }
+    }
+    // The webhook uses the same PaymentIntent ID for Meta deduplication.
+    fbPurchase(confirmedKit, value, eventId);
+    gadsPurchase(value, eventId, buyerEmail);
+    ttqCompletePayment(confirmedKit, kitName, value, eventId);
+  }, [confirmation, source, kitName]);
 
   if (paymentFailed) {
     return (
@@ -121,6 +140,30 @@ export default function SuccessPage() {
             <div className="su-actions">
               <a href={retryUrl} className="su-btn-primary">Try Again →</a>
             </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (confirmation.status !== 'confirmed') {
+    const checking = confirmation.status === 'checking';
+    const processing = confirmation.status === 'processing';
+    return (
+      <>
+        <style>{CSS}</style>
+        <div className="su-page">
+          <div className="su-inner" role="status">
+            <div className="su-eyebrow">{checking ? 'One moment' : 'Payment confirmation'}</div>
+            <h1 className="su-heading" style={{ fontSize: 'clamp(36px,6vw,64px)' }}>
+              {checking ? 'Checking your payment.' : processing ? 'Payment processing.' : 'Check your confirmation email.'}
+            </h1>
+            <p className="su-ritual-copy">
+              {checking ? 'We’re checking the payment before confirming your order.' : processing
+                ? 'Your payment is still being processed. We’ll email your confirmation once it completes. Please wait for that email before placing another order.'
+                : 'We couldn’t confirm payment in this browser. Please check your email for your order confirmation before trying again.'}
+            </p>
+            {!checking && <a href="mailto:contact@bysolum.com" className="su-btn-ghost">Contact SOLUM</a>}
           </div>
         </div>
       </>

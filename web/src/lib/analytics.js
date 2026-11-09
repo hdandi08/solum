@@ -1,6 +1,6 @@
 import posthog from 'posthog-js';
 import { detectInAppBrowser } from './inAppBrowser';
-import { readCookie, deriveFbc, newEventId, preferBridgeValue } from './metaCapi.js';
+import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
 import { isAutomatedBrowser } from './analyticsEnvironment.js';
 
 const KEY  = import.meta.env.VITE_POSTHOG_KEY;
@@ -8,6 +8,7 @@ const HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
 const ANALYTICS_DISABLED = isAutomatedBrowser();
 
 export function initAnalytics() {
+  if (!ANALYTICS_DISABLED) getMetaIds();
   if (!KEY || ANALYTICS_DISABLED) return;
 
   // Session continuity across an in-app-browser break-out: if we were reopened
@@ -119,13 +120,31 @@ function sendMetaCapi(eventName, eventId, payload = {}) {
   } catch { /* fire-and-forget — never break the UI for tracking */ }
 }
 
+let retainedMetaIds;
+const META_ATTRIBUTION_KEY = 'solum_meta_attribution_v1';
+const boundedMetaId = value => typeof value === 'string' && value.length <= 500 && !/\s/.test(value) ? value || undefined : undefined;
+
 export function getMetaIds() {
   let params;
   try { params = new URLSearchParams(window.location.search); } catch { params = new URLSearchParams(); }
-  return {
-    fbp: preferBridgeValue(params.get('fbp'), readCookie('_fbp')),
-    fbc: deriveFbc(preferBridgeValue(params.get('fbc'), readCookie('_fbc')), params.get('fbclid')) ?? undefined,
-  };
+  if (!retainedMetaIds) {
+    try { retainedMetaIds = JSON.parse(sessionStorage.getItem(META_ATTRIBUTION_KEY) ?? '{}') ?? {}; } catch { retainedMetaIds = {}; }
+  }
+  let cookieFbc, cookieFbp;
+  try { cookieFbc = boundedMetaId(readCookie('_fbc')); cookieFbp = boundedMetaId(readCookie('_fbp')); } catch { /* Ignore malformed cookies. */ }
+  const click = boundedMetaId(params.get('fbclid'));
+  const bridgeFbc = boundedMetaId(params.get('fbc'));
+  const bridgeFbp = boundedMetaId(params.get('fbp'));
+  let fbc = bridgeFbc;
+  if (!fbc && click) {
+    fbc = retainedMetaIds.fbclid === click ? boundedMetaId(retainedMetaIds.fbc) : undefined;
+    fbc ||= cookieFbc?.endsWith(`.${click}`) ? cookieFbc : deriveFbc(null, click);
+  }
+  fbc ||= boundedMetaId(retainedMetaIds.fbc) || cookieFbc;
+  const fbp = bridgeFbp || boundedMetaId(retainedMetaIds.fbp) || cookieFbp;
+  retainedMetaIds = { fbc, fbp, fbclid: click || retainedMetaIds.fbclid };
+  try { sessionStorage.setItem(META_ATTRIBUTION_KEY, JSON.stringify(retainedMetaIds)); } catch { /* Keep the in-memory copy when storage is blocked. */ }
+  return { fbp, fbc };
 }
 
 // eventId must be unique per lead — allows Meta to deduplicate if CAPI is ever added

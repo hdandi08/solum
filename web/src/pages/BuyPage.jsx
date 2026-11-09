@@ -1,7 +1,8 @@
+import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
 import ReservationTimer, { useReservationDeadline } from '../components/ReservationTimer.jsx';
 import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS, kitWorth } from '../data/kits.js';
@@ -515,6 +516,8 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
     try {await action();} catch(error) {setError(error.message);} finally {submitting.current=false;setLoading(false);}
   }
 
+  const navigate = useNavigate();
+
   async function handlePay(e) {
     e.preventDefault();
     if (!stripe || !elements || submitting.current || !canConfirmReservation(payInfo.reservation_expires_at)) return;
@@ -561,9 +564,10 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: errText(confirmError.message) });
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id);
         clearReservationAttempt('buy');
         successParams.set('ref', paymentIntent.id);
-        window.location.href = `/success?${successParams.toString()}`;
+        navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
         return;
       } else {
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: `unexpected status ${paymentIntent?.status}` });

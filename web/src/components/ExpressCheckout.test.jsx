@@ -2,6 +2,8 @@ import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ExpressCheckout from './ExpressCheckout.jsx';
 
+vi.mock('react-router-dom', () => ({ useNavigate: () => () => {} }));
+
 const stripe = vi.hoisted(() => ({ confirmPayment: vi.fn() }));
 vi.mock('@stripe/react-stripe-js', () => ({
   useStripe: () => stripe,

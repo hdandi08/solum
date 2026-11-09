@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
 import {localiseReservation,withReservationAttempt,clearReservationAttempt,canConfirmReservation} from '../lib/reservation.js';
 import { ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import {
@@ -31,6 +33,7 @@ export default function ExpressCheckout({
   onSoldOut,
   onAvailability,
 }) {
+  const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -130,9 +133,10 @@ export default function ExpressCheckout({
         return;
       }
       if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        const paymentResult = rememberPaymentResult(paymentIntent, kitId);
         clearReservationAttempt('express');
         successParams.set('ref', paymentIntent.id);
-        window.location.href = `/success?${successParams.toString()}`;
+        navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
         return;
       }
       capture(EXPRESS_CHECKOUT_EVENTS.error, {

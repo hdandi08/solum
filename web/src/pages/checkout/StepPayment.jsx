@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom';
+import { rememberPaymentResult } from '../../lib/purchaseConfirmation.js';
 import ReservationTimer, {useReservationDeadline} from '../../components/ReservationTimer.jsx';
 import {canConfirmReservation,clearReservationAttempt} from '../../lib/reservation.js';
 import { useState, useRef } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDetails, onRestart }) {
+  const navigate = useNavigate();
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
@@ -63,9 +66,10 @@ export default function StepPayment({ activeKit, payInfo, form, onBack, onEditDe
       if (confirmError) {
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id);
         clearReservationAttempt('subscription');
         successParams.set('ref', paymentIntent.id);
-        window.location.href = `/success?${successParams.toString()}`;
+        navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
         return;
       } else {
         setError('Something went wrong. Please try again or contact contact@bysolum.com.');
