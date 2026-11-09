@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   buildExpressPaymentIntentBody,
+  startExpressLoadTracking,
   EXPRESS_CHECKOUT_EVENTS,
   expressCheckoutElementOptions,
   expressElementsOptions,
@@ -31,6 +32,8 @@ const walletEvent = {
 describe('Express Checkout configuration', () => {
   it('keeps the established PostHog event names available to the restored flow', () => {
     expect(EXPRESS_CHECKOUT_EVENTS).toEqual({
+      loading: 'express_loading',
+      slow: 'express_slow',
       availability: 'express_availability',
       clicked: 'express_clicked',
       cancelled: 'express_cancelled',
@@ -55,7 +58,7 @@ describe('Express Checkout configuration', () => {
       }],
       paymentMethods: {
         applePay: 'always',
-        googlePay: 'auto',
+        googlePay: 'always',
         link: 'auto',
         paypal: 'auto',
         amazonPay: 'never',
@@ -141,5 +144,39 @@ describe('buildExpressPaymentIntentBody', () => {
       payment_flow: 'express_wallet',
     });
     expect(result.body).not.toHaveProperty('awc');
+  });
+});
+
+
+describe('express loading telemetry', () => {
+  afterEach(() => vi.useRealTimers());
+  it('records a slow load even when wallets never become ready', () => {
+    vi.useFakeTimers();
+    let clock = 1000;
+    const capture = vi.fn();
+    const load = startExpressLoadTracking({ capture, kit: 'ritual', source: 'first_batch', now: () => clock });
+    expect(capture).toHaveBeenCalledWith('express_loading', { kit: 'ritual', source: 'first_batch' });
+    clock = 5000;
+    vi.advanceTimersByTime(4000);
+    expect(capture).toHaveBeenCalledWith('express_slow', { kit: 'ritual', source: 'first_batch', load_ms: 4000 });
+    load.stop();
+  });
+  it('does not report a ready wallet as slow', () => {
+    vi.useFakeTimers();
+    let clock = 1000;
+    const capture = vi.fn();
+    const load = startExpressLoadTracking({ capture, kit: 'ground', source: 'first_batch', now: () => clock });
+    clock = 1800;
+    expect(load.finish()).toEqual({ load_ms: 800, page_elapsed_ms: 1800 });
+    vi.advanceTimersByTime(5000);
+    expect(capture).not.toHaveBeenCalledWith('express_slow', expect.anything());
+  });
+  it('cancels pending telemetry when checkout unmounts', () => {
+    vi.useFakeTimers();
+    const capture = vi.fn();
+    const load = startExpressLoadTracking({ capture, kit: 'ritual', source: 'first_batch', now: () => 1000 });
+    load.stop();
+    vi.advanceTimersByTime(5000);
+    expect(capture).toHaveBeenCalledTimes(1);
   });
 });

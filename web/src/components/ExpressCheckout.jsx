@@ -20,6 +20,7 @@ import {
   expressCheckoutElementOptions,
   expressWalletAvailability,
   notifyExpressPaymentFailed,
+  startExpressLoadTracking,
 } from '../lib/expressCheckout.js';
 
 const errText = (message) => String(message ?? '').slice(0, 200);
@@ -36,8 +37,12 @@ export default function ExpressCheckout({
   onAvailability,
   onLoadError,
 }) {
-  const mountedAt = useRef(null);
-  useEffect(() => { mountedAt.current = performance.now(); }, []);
+  const loadMonitor = useRef(null);
+  useEffect(() => {
+    const monitor = startExpressLoadTracking({ capture, kit: kitId, source });
+    loadMonitor.current = monitor;
+    return () => monitor.stop();
+  }, [kitId, source]);
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -166,8 +171,7 @@ export default function ExpressCheckout({
         const wallets = expressWalletAvailability(availablePaymentMethods);
         capture(EXPRESS_CHECKOUT_EVENTS.availability, {
           ...wallets, kit: kitId, source,
-          load_ms: Math.round(performance.now() - mountedAt.current),
-          page_elapsed_ms: Math.round(performance.now()),
+          ...loadMonitor.current?.finish(),
         });
         onAvailability(wallets.available);
       }}
@@ -177,7 +181,7 @@ export default function ExpressCheckout({
         onAvailability(wallets.available);
       }}
       onLoadError={({ error }) => {
-        capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'load', code: error?.code, load_ms: Math.round(performance.now() - mountedAt.current) });
+        capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'load', code: error?.code, ...loadMonitor.current?.finish() });
         onAvailability(false);
         onLoadError?.();
       }}

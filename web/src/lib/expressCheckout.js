@@ -2,7 +2,7 @@ import { buildFirstBoxPaymentIntentBody } from './firstBoxPaymentIntent.js';
 
 export const RESTORED_EXPRESS_WALLETS = Object.freeze({
   applePay: 'always',
-  googlePay: 'auto',
+  googlePay: 'always',
   link: 'auto',
   paypal: 'auto',
   amazonPay: 'never',
@@ -10,12 +10,30 @@ export const RESTORED_EXPRESS_WALLETS = Object.freeze({
 });
 
 export const EXPRESS_CHECKOUT_EVENTS = Object.freeze({
+  loading: 'express_loading',
+  slow: 'express_slow',
   availability: 'express_availability',
   clicked: 'express_clicked',
   cancelled: 'express_cancelled',
   error: 'express_error',
   initiated: 'checkout_initiated',
 });
+
+export function startExpressLoadTracking({ capture, kit, source, now = () => performance.now() }) {
+  const started = now();
+  const context = { kit, source };
+  capture(EXPRESS_CHECKOUT_EVENTS.loading, context);
+  const timer = setTimeout(() => {
+    capture(EXPRESS_CHECKOUT_EVENTS.slow, { ...context, load_ms: Math.round(now() - started) });
+  }, 4000);
+  return {
+    finish() {
+      clearTimeout(timer);
+      return { load_ms: Math.round(now() - started), page_elapsed_ms: Math.round(now()) };
+    },
+    stop() { clearTimeout(timer); },
+  };
+}
 
 export function expressCheckoutElementOptions() {
   return {

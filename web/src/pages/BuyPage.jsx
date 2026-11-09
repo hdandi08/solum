@@ -21,6 +21,7 @@ import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
 import CheckoutProof from '../components/CheckoutProof.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
+import { CheckoutDispatch, ExpressCheckoutConsent, ExpressCheckoutIntro } from '../components/ExpressCheckoutInfo.jsx';
 import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
 import { captureStockEvent } from '../lib/stockAnalytics.js';
 import IabCheckoutGate from '../components/IabCheckoutGate.jsx';
@@ -99,9 +100,6 @@ const CSS = `
 @keyframes byShimmer{to{background-position:-200% 0;}}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
-.by-express-consent{font-size:12px;color:var(--stone);font-weight:300;line-height:1.5;text-align:center;margin:12px 4px 0;}
-.by-express-consent a{color:var(--blit);text-decoration:none;}
-.by-express-consent a:hover{text-decoration:underline;}
 .by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
 .by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
@@ -1216,6 +1214,7 @@ export default function BuyPage() {
                   <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
                     <span className="by-kit-confirm-meta">£{price} total · Free UK delivery</span>
+                    {!iabGate && <CheckoutDispatch dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch} />}
                   </div>
                   <button
                     type="button"
@@ -1305,6 +1304,7 @@ export default function BuyPage() {
                       kit={selectedKit}
                       kitName={activeKit?.name ?? selectedKit}
                       price={price}
+                      dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch}
                       source={source}
                       onContinue={continueInApp}
                       expressReady={expressReady}
@@ -1315,15 +1315,12 @@ export default function BuyPage() {
                   ) : (
                     <>
                       <InAppBrowserBanner variant="inline" />
+                      {kitPickerOpen && <CheckoutDispatch dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch} />}
+                      <ExpressCheckoutIntro />
                       {expressCheckoutElement}
                       {expressAvailable && (
                         <>
-                          <div className="by-express-consent">
-                            By continuing with express checkout, you agree to our{' '}
-                            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
-                            {' '}and{' '}
-                            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-                          </div>
+                          <ExpressCheckoutConsent />
                           <div className="by-express-or"><span>or pay by card</span></div>
                         </>
                       )}

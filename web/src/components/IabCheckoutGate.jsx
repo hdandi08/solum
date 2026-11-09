@@ -12,6 +12,7 @@ import { capture, getMetaIds, getTikTokIds } from '../lib/analytics.js';
 import { captureAwinAttribution } from '../lib/awinAttribution.js';
 import './InAppBrowserBanner.css';
 import './IabCheckoutGate.css';
+import { CheckoutDispatch, ExpressCheckoutConsent, ExpressCheckoutIntro } from './ExpressCheckoutInfo.jsx';
 
 const SHOWN_KEY = 'solum_iab_gate_shown';
 const APP_NAMES = {
@@ -24,7 +25,7 @@ const APP_NAMES = {
   none: 'this app',
 };
 
-export default function IabCheckoutGate({ kit, kitName, price, source, onContinue, expressReady, expressAvailable, children }) {
+export default function IabCheckoutGate({ kit, kitName, price, dispatch, source, onContinue, expressReady, expressAvailable, children }) {
   const app = detectInAppBrowser();
   const platform = detectPlatform();
   const [showOverlay, setShowOverlay] = useState(false);
@@ -62,14 +63,13 @@ export default function IabCheckoutGate({ kit, kitName, price, source, onContinu
   return (
     <div className="iabg-card">
       <div className="iabg-selection">{summary.selection}</div>
+      <CheckoutDispatch dispatch={dispatch} />
       <div className="iabg-delivery">{summary.delivery}</div>
-      <div className="iabg-title">Choose how you pay</div>
-      <p className="iabg-body">
-        {summary.support}
-      </p>
+      <ExpressCheckoutIntro />
       <div className="iabg-express" aria-label="Available quick-pay options">
         {children}
       </div>
+      {expressAvailable && <ExpressCheckoutConsent />}
       {expressReady && !expressAvailable && (
         <p className="iabg-unavailable">No quick-pay option was detected in {APP_NAMES[app] ?? 'this app'}.</p>
       )}
