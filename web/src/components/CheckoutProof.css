@@ -1,6 +1,9 @@
 .checkout-proof{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-bottom:18px;}
-.checkout-proof-press{margin:0;font-size:13px;font-weight:400;line-height:1.5;color:var(--stone);}
+.checkout-proof-publications{display:flex;flex-wrap:wrap;align-items:center;gap:12px;color:var(--stone);font-size:12px;line-height:1.5;}
 .checkout-proof-label{font-weight:300;}
-.checkout-proof-press a{color:var(--mist);text-decoration:none;border-bottom:1px solid var(--lineb);white-space:nowrap;}
-.checkout-proof-press a:hover{color:var(--bone);border-color:var(--blit);}
-.checkout-proof-press a:focus-visible{outline:2px solid var(--blit);outline-offset:4px;}
+.checkout-proof-publications a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;text-decoration:none;}
+.checkout-proof-publications a:focus-visible{outline:2px solid var(--blit);outline-offset:4px;}
+.checkout-publication-logo{display:block;width:104px;height:32px;object-fit:contain;}
+.checkout-publication-logo[alt="T3"]{width:44px;object-fit:cover;}
+.checkout-publication-logo[alt="Luxury Lifestyle Magazine"]{height:40px;}
+.checkout-publication-logo[alt="Carl Thompson"]{filter:invert(1);}

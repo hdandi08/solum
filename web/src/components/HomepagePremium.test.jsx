@@ -423,7 +423,6 @@ describe('premium homepage direction', () => {
     const buy = page('BuyPage');
 
     expect(buy).toContain('BUY_KIT_OUTCOMES');
-    expect(buy).toContain('One-time purchase. No subscription.');
     expect(buy).not.toContain('No refill starts today.');
     expect(buy).toContain('by-kit-mini-ledger');
     expect(buy).toContain('Clean foundation');

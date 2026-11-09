@@ -1191,16 +1191,15 @@ export default function BuyPage() {
                   <CheckoutProof kitId={selectedKit} />
                   {isWarmArrival ? (
                     <>
-                      <h1 className="by-intro-head">Complete your order.</h1>
-                      <p className="by-intro-sub">Your selected kit, ready for your daily routine and weekly reset.</p>
+                      <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
+                      <p className="by-intro-sub">Every product numbered, every step timed. The exact routine is on the card in your box.</p>
                     </>
                   ) : (
                     <>
-                      <h1 className="by-intro-head">Your body. Done right.</h1>
-                      <p className="by-intro-sub">A complete body-care kit with a guided daily routine and weekly reset.</p>
+                      <h1 className="by-intro-head">You shower every day. Your body still isn't properly clean.</h1>
+                      <p className="by-intro-sub">One kit fixes it, head to toe. 10 minutes a day. We show you exactly how.</p>
                     </>
                   )}
-                  <p className="by-intro-sub by-intro-reassurance"><strong>One-time purchase. No subscription.</strong></p>
                 </div>
               )}
 
