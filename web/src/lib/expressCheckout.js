@@ -1,7 +1,7 @@
 import { buildFirstBoxPaymentIntentBody } from './firstBoxPaymentIntent.js';
 
 export const RESTORED_EXPRESS_WALLETS = Object.freeze({
-  applePay: 'auto',
+  applePay: 'always',
   googlePay: 'auto',
   link: 'auto',
   paypal: 'auto',
@@ -20,6 +20,8 @@ export const EXPRESS_CHECKOUT_EVENTS = Object.freeze({
 export function expressCheckoutElementOptions() {
   return {
     buttonHeight: 48,
+    layout: { maxColumns: 2, overflow: 'never' },
+    paymentMethodOrder: ['apple_pay', 'google_pay', 'link', 'paypal'],
     emailRequired: true,
     shippingAddressRequired: true,
     phoneNumberRequired: false,
@@ -30,6 +32,18 @@ export function expressCheckoutElementOptions() {
       amount: 0,
     }],
     paymentMethods: { ...RESTORED_EXPRESS_WALLETS },
+  };
+}
+
+export function expressWalletAvailability(methods = {}) {
+  // ready uses booleans; availablepaymentmethodschange uses { available }.
+  const available = value => value === true || value?.available === true;
+  return {
+    available: Object.values(methods ?? {}).some(available),
+    apple_pay: available(methods?.applePay),
+    google_pay: available(methods?.googlePay),
+    link: available(methods?.link),
+    paypal: available(methods?.paypal),
   };
 }
 

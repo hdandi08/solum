@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { useVariant } from '../hooks/useVariant';
 import SolumWordmark from './SolumWordmark';
 
@@ -95,9 +94,21 @@ export default function Nav() {
   }, [menuOpen]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
-    return () => subscription.unsubscribe();
+    let active = true;
+    let subscription;
+    // Account state must not hold up the hero or its purchase button.
+    const timer = setTimeout(() => {
+      import('../lib/supabase.js').then(({ supabase }) => {
+        if (!active) return;
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (active) setUser(session?.user ?? null);
+        });
+        subscription = supabase.auth.onAuthStateChange((_e, session) => {
+          if (active) setUser(session?.user ?? null);
+        }).data.subscription;
+      }).catch(() => {});
+    }, 1000);
+    return () => { active = false; clearTimeout(timer); subscription?.unsubscribe(); };
   }, []);
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import ReservationTimer, { useReservationDeadline } from '../components/Reservat
 import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
+import { stripePromise } from '../lib/stripe.js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
@@ -31,9 +31,6 @@ import { jumpTop } from '../lib/scroll.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const STRIPE_KEY   = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
-const stripePromise = loadStripe(STRIPE_KEY);
 
 const KIT_PRICES = { ground: 65, ritual: 85 };
 const BUY_KIT_OUTCOMES = {
@@ -96,7 +93,9 @@ const CSS = `
 .by-intro-reassurance{margin-top:8px;color:rgba(240,236,226,.76);}
 .by-intro-reassurance strong{color:var(--bone);font-weight:600;}
 .by-express-wrap{margin-bottom:8px;scroll-margin-top:calc(84px + var(--offerbar-h));}
-.by-express-skel{height:48px;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
+.by-express-slot{position:relative;min-height:48px;}
+.by-express-status{margin:0 0 10px;color:var(--stone);font-size:13px;line-height:1.4;}
+.by-express-skel{position:absolute;inset:0;height:48px;pointer-events:none;background:linear-gradient(90deg,var(--char) 25%,#232936 50%,var(--char) 75%);background-size:200% 100%;animation:byShimmer 1.2s linear infinite;border-radius:6px;margin-bottom:8px;}
 @keyframes byShimmer{to{background-position:-200% 0;}}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
@@ -739,7 +738,8 @@ export default function BuyPage() {
   const waitlistInFlight = useRef(false);
   const viewedSoldoutKits = useRef(new Set());
   const [expressAvailable, setExpressAvailable] = useState(false);
-  const [expressReady, setExpressReady] = useState(false);
+  const [expressStatus, setExpressStatus] = useState('loading');
+  const expressReady = ['ready', 'unavailable', 'error'].includes(expressStatus);
   const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);
 
   const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
@@ -750,6 +750,7 @@ export default function BuyPage() {
   const continueInApp = () => {
     try { sessionStorage.setItem(IAB_CONTINUE_KEY, '1'); } catch { /* unavailable */ }
     setIabContinued(true);
+    requestAnimationFrame(() => formStartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
   const authHeaders = { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` };
@@ -758,8 +759,8 @@ export default function BuyPage() {
   // this browser supports. Never leave a permanent skeleton if scripts fail.
   useEffect(() => {
     setExpressAvailable(false);
-    setExpressReady(false);
-    const timeout = setTimeout(() => setExpressReady(true), 6000);
+    setExpressStatus('loading');
+    const timeout = setTimeout(() => setExpressStatus(status => status === 'loading' ? 'slow' : status), 4000);
     return () => clearTimeout(timeout);
   }, [selectedKit]);
 
@@ -1011,7 +1012,10 @@ export default function BuyPage() {
   const headerProps = { kit: activeKit, price, dispatch, arrival, inventory };
   const expressCheckoutElement = (
     <>
-      {!expressReady && <div className="by-express-skel" aria-hidden="true" />}
+      {expressStatus === 'slow' && <p className="by-express-status" role="status">Express checkout is taking a little longer. You can continue with card payment.</p>}
+      {expressStatus === 'error' && !iabGate && <p className="by-express-status" role="status">Express checkout could not load. You can continue with your details below.</p>}
+      <div className="by-express-slot" aria-busy={expressStatus === 'loading'}>
+      {expressStatus === 'loading' && <div className="by-express-skel" role="status" aria-label="Loading express checkout" />}
       <Elements
         key={selectedKit}
         stripe={stripePromise}
@@ -1031,10 +1035,12 @@ export default function BuyPage() {
           onSoldOut={buyer => showSoldOut(buyer, 'express')}
           onAvailability={(available) => {
             setExpressAvailable(available);
-            setExpressReady(true);
+            setExpressStatus(available ? 'ready' : 'unavailable');
           }}
+          onLoadError={() => setExpressStatus('error')}
         />
       </Elements>
+      </div>
     </>
   );
 

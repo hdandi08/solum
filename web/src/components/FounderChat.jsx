@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase.js';
 
 const DISMISS_KEY = 'founder_chat_dismissed';
 const FULL_DISMISS_KEY = 'founder_chat_full_dismissed';
@@ -233,6 +232,7 @@ export default function FounderChat() {
     setMessages(next);
     setLoad(true);
     try {
+      const { supabase } = await import('../lib/supabase.js');
       const { data, error } = await supabase.functions.invoke('founder-chat', {
         body: {
           message:    msg,

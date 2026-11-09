@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
 import {localiseReservation,withReservationAttempt,clearReservationAttempt,canConfirmReservation} from '../lib/reservation.js';
@@ -17,6 +18,7 @@ import {
   buildExpressPaymentIntentBody,
   EXPRESS_CHECKOUT_EVENTS,
   expressCheckoutElementOptions,
+  expressWalletAvailability,
   notifyExpressPaymentFailed,
 } from '../lib/expressCheckout.js';
 
@@ -32,7 +34,10 @@ export default function ExpressCheckout({
   onError,
   onSoldOut,
   onAvailability,
+  onLoadError,
 }) {
+  const mountedAt = useRef(null);
+  useEffect(() => { mountedAt.current = performance.now(); }, []);
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -158,17 +163,23 @@ export default function ExpressCheckout({
     <ExpressCheckoutElement
       options={expressCheckoutElementOptions()}
       onReady={({ availablePaymentMethods }) => {
-        const wallets = availablePaymentMethods ?? {};
+        const wallets = expressWalletAvailability(availablePaymentMethods);
         capture(EXPRESS_CHECKOUT_EVENTS.availability, {
-          available: !!availablePaymentMethods,
-          apple_pay: !!wallets.applePay,
-          google_pay: !!wallets.googlePay,
-          link: !!wallets.link,
-          paypal: !!wallets.paypal,
-          kit: kitId,
-          source,
+          ...wallets, kit: kitId, source,
+          load_ms: Math.round(performance.now() - mountedAt.current),
+          page_elapsed_ms: Math.round(performance.now()),
         });
-        onAvailability(!!availablePaymentMethods);
+        onAvailability(wallets.available);
+      }}
+      onAvailablePaymentMethodsChange={({ paymentMethods }) => {
+        const wallets = expressWalletAvailability(paymentMethods);
+        capture(EXPRESS_CHECKOUT_EVENTS.availability, { ...wallets, kit: kitId, source, reason: 'changed' });
+        onAvailability(wallets.available);
+      }}
+      onLoadError={({ error }) => {
+        capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'load', code: error?.code, load_ms: Math.round(performance.now() - mountedAt.current) });
+        onAvailability(false);
+        onLoadError?.();
       }}
       onClick={(event) => {
         capture(EXPRESS_CHECKOUT_EVENTS.clicked, {

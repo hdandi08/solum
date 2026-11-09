@@ -28,7 +28,7 @@ const CSS = `
 .hero-cols{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:88px 24px 48px;gap:0;}
 .hero-content{width:100%;max-width:620px;}
 .hero-editorial-frame{border:1px solid rgba(240,236,226,.14);border-top:2px solid rgba(240,236,226,.28);padding:26px 24px 24px;background:rgba(8,9,11,.32);box-shadow:0 26px 70px rgba(0,0,0,.18);}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6.2vw,88px);line-height:.9;letter-spacing:0.045em;color:var(--bone);margin-bottom:24px;animation:fadeUp .8s ease .75s both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6.2vw,88px);line-height:.9;letter-spacing:0.045em;color:var(--bone);margin-bottom:24px;}
 
 /* ── Animated word swap ────────────────────────────── */
 .swap-container{display:inline-grid;position:relative;}
@@ -42,13 +42,13 @@ const CSS = `
 
 .hero-line{width:56px;height:1px;background:linear-gradient(to right,var(--blue),transparent);margin-bottom:20px;animation:lineIn 1s ease 1s both;transform-origin:left;}
 @keyframes lineIn{from{transform:scaleX(0);opacity:0;}to{transform:scaleX(1);opacity:1;}}
-.hero-subline{font-size:18px;font-weight:300;letter-spacing:.25px;color:var(--mist);line-height:1.6;margin-bottom:30px;max-width:500px;animation:fadeUp .8s ease .9s both;}
-.hero-actions{display:flex;flex-direction:column;gap:14px;animation:fadeUp .8s ease 1.05s both;}
+.hero-subline{font-size:18px;font-weight:300;letter-spacing:.25px;color:var(--mist);line-height:1.6;margin-bottom:30px;max-width:500px;}
+.hero-actions{display:flex;flex-direction:column;gap:14px;}
 .btn-primary{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.12em;background:var(--bone);color:var(--black);padding:18px 40px;text-decoration:none;display:block;text-align:center;transition:background .2s,transform .15s;}
 .btn-primary:hover{background:#fff;transform:translateY(-1px);}
 .hero-press-proof{display:none;}
 /* Mobile: image on top, full width */
-.hero-visual{position:relative;width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;animation:fadeUp .8s ease .5s both;}
+.hero-visual{position:relative;width:100%;height:56vw;min-height:220px;max-height:380px;overflow:hidden;flex-shrink:0;}
 .hero-box-img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;}
 .hero-visual-caption{display:none;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}

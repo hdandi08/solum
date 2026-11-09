@@ -4,6 +4,7 @@ import {
   EXPRESS_CHECKOUT_EVENTS,
   expressCheckoutElementOptions,
   expressElementsOptions,
+  expressWalletAvailability,
   notifyExpressPaymentFailed,
 } from './expressCheckout.js';
 
@@ -38,9 +39,11 @@ describe('Express Checkout configuration', () => {
     });
   });
 
-  it('leaves Apple Pay availability to Stripe alongside the other wallets', () => {
+  it('requests Apple Pay on every supported platform without an overflow menu', () => {
     expect(expressCheckoutElementOptions()).toEqual({
       buttonHeight: 48,
+      layout: { maxColumns: 2, overflow: 'never' },
+      paymentMethodOrder: ['apple_pay', 'google_pay', 'link', 'paypal'],
       emailRequired: true,
       shippingAddressRequired: true,
       phoneNumberRequired: false,
@@ -51,7 +54,7 @@ describe('Express Checkout configuration', () => {
         amount: 0,
       }],
       paymentMethods: {
-        applePay: 'auto',
+        applePay: 'always',
         googlePay: 'auto',
         link: 'auto',
         paypal: 'auto',
@@ -65,6 +68,15 @@ describe('Express Checkout configuration', () => {
       currency: 'gbp',
       appearance: { theme: 'night' },
     });
+  });
+
+  it('does not treat an empty or false wallet map as available', () => {
+    expect(expressWalletAvailability(undefined).available).toBe(false);
+    expect(expressWalletAvailability({}).available).toBe(false);
+    expect(expressWalletAvailability({ applePay: false, link: false }).available).toBe(false);
+    expect(expressWalletAvailability({ applePay: true })).toMatchObject({ available: true, apple_pay: true });
+    expect(expressWalletAvailability({ applePay: { available: false } }).available).toBe(false);
+    expect(expressWalletAvailability({ applePay: { available: true } })).toMatchObject({ available: true, apple_pay: true });
   });
 
   it('closes an unsuccessful Stripe wallet sheet with a bounded public message', () => {

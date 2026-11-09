@@ -1,14 +1,16 @@
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ExpressCheckout from './ExpressCheckout.jsx';
 
 vi.mock('react-router-dom', () => ({ useNavigate: () => () => {} }));
 
+const rendered = vi.hoisted(() => ({ props: null }));
 const stripe = vi.hoisted(() => ({ confirmPayment: vi.fn() }));
 vi.mock('@stripe/react-stripe-js', () => ({
   useStripe: () => stripe,
   useElements: () => ({ submit: async () => ({}) }),
-  ExpressCheckoutElement: () => null,
+  ExpressCheckoutElement: (props) => { rendered.props = props; return null; },
 }));
 vi.mock('../lib/analytics.js', () => ({
   capture: () => {}, fbInitiateCheckout: () => {}, identify: () => {},
@@ -28,12 +30,12 @@ describe('wallet stock rejection', () => {
     vi.stubGlobal('fetch', vi.fn(async () => Response.json({ error: 'sold_out', message: 'This kit is currently sold out.' }, { status: 409 })));
     const onSoldOut = vi.fn();
     const paymentFailed = vi.fn();
-    const element = ExpressCheckout({
+    renderToStaticMarkup(<ExpressCheckout {...{
       kitId: 'ritual', kitName: 'RITUAL', price: 85, source: 'first_batch',
       supabaseUrl: 'https://example.com', authHeaders: {}, onError: vi.fn(),
       onSoldOut, onAvailability: vi.fn(),
-    });
-    await element.props.onConfirm({
+    }} />);
+    await rendered.props.onConfirm({
       expressPaymentType: 'apple_pay', paymentFailed,
       billingDetails: { email: 'harsha@ecompilers.com', name: 'Harsha Dandi' },
       shippingAddress: { name: 'Harsha Dandi', address: { line1: '10 Test Street', city: 'London', postal_code: 'SW1A 1AA' } },
@@ -41,5 +43,21 @@ describe('wallet stock rejection', () => {
     expect(paymentFailed).toHaveBeenCalledOnce();
     expect(onSoldOut).toHaveBeenCalledWith(expect.objectContaining({ email: 'harsha@ecompilers.com', first_name: 'Harsha', kit_id: 'ritual' }));
     expect(stripe.confirmPayment).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('wallet loading', () => {
+  it('updates availability when Stripe exposes a wallet after ready and recovers from load errors', () => {
+    vi.stubGlobal('React', React);
+    const onAvailability = vi.fn();
+    const onLoadError = vi.fn();
+    renderToStaticMarkup(<ExpressCheckout kitId="ritual" onAvailability={onAvailability} onLoadError={onLoadError} />);
+    rendered.props.onReady({ availablePaymentMethods: { applePay: false, link: false } });
+    rendered.props.onAvailablePaymentMethodsChange({ paymentMethods: { applePay: { available: true } } });
+    expect(onAvailability.mock.calls).toEqual([[false], [true]]);
+    rendered.props.onLoadError({ error: { code: 'network_error' } });
+    expect(onAvailability).toHaveBeenLastCalledWith(false);
+    expect(onLoadError).toHaveBeenCalledOnce();
   });
 });

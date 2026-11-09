@@ -6,12 +6,19 @@ import { captureAwinAttribution } from './lib/awinAttribution';
 import { captureLandingAwc } from './lib/awinCookieBridge';
 import { ensureAwinMasterTag, mustReloadWithoutAwin, shouldLoadAwinMasterTag } from './lib/awinMasterTag';
 import OfferBar from './components/OfferBar.jsx';
-import FullSite from './pages/FullSite';
 import './styles/global.css';
 
-// Ad traffic lands on / — keep FullSite eager so the homepage paints from the
-// main bundle. Everything else (incl. Stripe via BuyPage/CheckoutPage) loads
-// only when its route is visited.
+// Keep each landing route independent: checkout must not download the homepage.
+const loadHomePage = () => import('./pages/FullSite');
+const loadBuyPage = () => import('./pages/BuyPage');
+const FullSite = lazy(loadHomePage);
+// Begin route and Stripe downloads together, before React renders the route.
+if (window.location.pathname === '/buy') {
+  void loadBuyPage().catch(() => {});
+  void import('./lib/stripe.js').catch(() => {});
+} else if (['/', '/full'].includes(window.location.pathname)) {
+  void loadHomePage().catch(() => {});
+}
 const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
 const SuccessPage = lazy(() => import('./pages/SuccessPage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
@@ -24,7 +31,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const CreatorsApplyPage = lazy(() => import('./pages/CreatorsApplyPage'));
-const BuyPage = lazy(() => import('./pages/BuyPage'));
+const BuyPage = lazy(loadBuyPage);
 const EmailPreviewPage = lazy(() => import('./pages/EmailPreviewPage'));
 const ProductPage = lazy(() => import('./pages/ProductPage.jsx'));
 
