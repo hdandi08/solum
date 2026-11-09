@@ -19,7 +19,7 @@ import { expressElementsOptions } from '../lib/expressCheckout.js';
 import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowser.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
-import AwardProof from '../components/AwardProof.jsx';
+import CheckoutProof from '../components/CheckoutProof.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
 import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
 import { captureStockEvent } from '../lib/stockAnalytics.js';
@@ -231,7 +231,6 @@ const CSS = `
 /* Kit-contents thumbnail hover-zoom (overrides checkout.css 32x40 defaults) */
 .co-product-list .co-product-thumb,.co-product-list .co-product-thumb-ph{width:40px;height:52px;cursor:zoom-in;}
 .co-product-preview-fixed{position:fixed;width:220px;height:275px;object-fit:cover;object-position:center;background:var(--dark);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.6);z-index:2000;pointer-events:none;}
-.by-checkout-award{margin-bottom:20px;}
 .by-summary-total{display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 8px;font-size:18px;color:var(--bone);}
 .by-summary-total strong{font-family:'Bebas Neue',sans-serif;font-size:44px;font-weight:400;}
 .by-more{border-top:1px solid var(--line);padding:16px 0;margin-top:12px;color:var(--mist);font-size:15px;line-height:1.5;}
@@ -244,7 +243,7 @@ const CSS = `
 .by-kit-confirm{margin-bottom:18px;}
 .by-intro{margin-bottom:18px;}
 .by-intro-sub{font-size:15px;}
-@media(max-width:768px){.by-kits .by-kit-img{height:120px;}.by-kits{gap:12px;}.by-kit{padding:16px;}.by-kit-outcome{font-size:16px;}.by-checkout-award{margin-bottom:18px;}}
+@media(max-width:768px){.by-kits .by-kit-img{height:120px;}.by-kits{gap:12px;}.by-kit{padding:16px;}.by-kit-outcome{font-size:16px;}}
 
 `;
 
@@ -1189,7 +1188,7 @@ export default function BuyPage() {
                   arrivals already read the homepage, so just confirm and move. */}
               {step === 'details' && (
                 <div className="by-intro">
-                  <div className="by-checkout-award"><AwardProof compact /></div>
+                  <CheckoutProof kitId={selectedKit} />
                   {isWarmArrival ? (
                     <>
                       <h1 className="by-intro-head">Complete your order.</h1>

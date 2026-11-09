@@ -9,6 +9,11 @@ import { dirname, resolve } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const component = (name) => readFileSync(resolve(__dirname, `${name}.jsx`), 'utf8');
 const page = (name) => readFileSync(resolve(__dirname, '../pages', `${name}.jsx`), 'utf8');
+const renderPress = () => {
+  vi.stubGlobal('React', React);
+  try { return renderToStaticMarkup(React.createElement(PressSection)); }
+  finally { vi.unstubAllGlobals(); }
+};
 
 describe('homepage press proof', () => {
   it('uses a direct body ritual claim without repeating first guided language', () => {
@@ -20,7 +25,7 @@ describe('homepage press proof', () => {
   });
 
   it('keeps authentic press coverage before the kit choices', () => {
-    const press = component('PressSection');
+    const press = renderPress();
     const home = page('FullSite');
 
     expect(press).toContain('Luxury Lifestyle Magazine');
@@ -46,9 +51,9 @@ describe('homepage press proof', () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it('keeps the award compact and ahead of express checkout', () => {
+  it('keeps compact checkout recognition ahead of express checkout', () => {
     const buy = page('BuyPage');
-    const proofIndex = buy.indexOf('<AwardProof compact />');
+    const proofIndex = buy.indexOf('<CheckoutProof kitId={selectedKit} />');
     const expressIndex = buy.indexOf('<div className="by-express-wrap"');
     expect(proofIndex).toBeGreaterThan(-1);
     expect(proofIndex).toBeLessThan(expressIndex);

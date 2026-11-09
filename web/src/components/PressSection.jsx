@@ -1,26 +1,7 @@
 import AwardProof from './AwardProof.jsx';
 
-const PRESS = [
-  {
-    name: 'Luxury Lifestyle Magazine',
-    quote: 'Pioneering a new era of men’s body care',
-    url: 'https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/',
-    tier: 'support',
-  },
-  {
-    name: 'T3',
-    logo: '/press/t3-logo.svg',
-    quote: 'a structured approach to body care',
-    url: 'https://www.t3.com/home-living/grooming/5-essential-grooming-products-every-bearded-man-wants-for-christmas',
-    tier: 'lead',
-  },
-  {
-    name: 'Carl Thompson',
-    quote: 'rethinking body care',
-    url: 'https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care',
-    tier: 'support',
-  },
-];
+import { PRESS } from '../data/press.js';
+
 
 const CSS = `
 .press-section{background:linear-gradient(180deg,var(--black),#090b0f);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:54px 24px 58px;}
