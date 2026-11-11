@@ -32,6 +32,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const CreatorsApplyPage = lazy(() => import('./pages/CreatorsApplyPage'));
 const BuyPage = lazy(loadBuyPage);
+const GiftPage = lazy(() => import('./pages/GiftPage.jsx'));
 const EmailPreviewPage = lazy(() => import('./pages/EmailPreviewPage'));
 const ProductPage = lazy(() => import('./pages/ProductPage.jsx'));
 
@@ -139,6 +140,7 @@ export default function App() {
           <Route path="/full" element={<FullSite />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/buy" element={<BuyPage />} />
+          <Route path="/gift" element={<GiftPage />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/ritual" element={<RitualPage />} />

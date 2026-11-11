@@ -315,7 +315,9 @@ describe('premium homepage direction', () => {
     expect(kits).not.toContain('kit-decision-matrix');
     expect(kits).not.toContain('kits-footnote');
     expect(kits).not.toContain('First batch · 250 kits');
-    expect(kits).toContain('Buy {kit.name} · £{kit.firstBoxPrice}');
+    // The rendered default Buy label is covered by GiftPage.test.jsx; the shared
+    // selector accepts a gifting CTA without duplicating the purchase flow.
+    expect(kits).toContain("ctaVerb = 'Buy'");
     expect(kits).not.toContain('Get {kit.name}');
     expect(kits).not.toContain("You're not buying products.");
   });

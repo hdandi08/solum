@@ -146,7 +146,13 @@ const CSS = `
 
 `;
 
-export default function Hero() {
+export default function Hero({
+  title = 'The shower ritual men were never given.',
+  description = 'A guided, deeper clean for your scalp, back, intimate areas and everything in between, with a clean finish that lasts.',
+  ctaLabel = 'Start Your Ritual',
+  purchaseNote = 'One-time purchase · Free UK delivery',
+  image,
+} = {}) {
   const videoReady = useHeroVideoReady();
   const ctaVariant = useVariant('hero-cta-copy');
 
@@ -159,11 +165,11 @@ export default function Hero() {
             <div className="hero-editorial-frame">
               <div className="hero-award"><AwardProof compact /></div>
               <h1 className="hero-title">
-                The shower ritual men were never given.
+                {title}
               </h1>
               <div className="hero-line" />
               <p className="hero-subline">
-                A guided, deeper clean for your scalp, back, intimate areas and everything in between, with a clean finish that lasts.
+                {description}
               </p>
               <div className="hero-actions">
                 {/* Scrolls to the kit cards (now ~fold 3) so cold traffic sees product + price before /buy */}
@@ -172,16 +178,16 @@ export default function Hero() {
                   className="btn-primary"
                   onClick={() => trackGoal('hero_cta_clicked', { variant: ctaVariant })}
                 >
-                  Start Your Ritual
+                  {ctaLabel}
                 </a>
               </div>
-              <p className="hero-purchase-note">One-time purchase · Free UK delivery</p>
+              <p className="hero-purchase-note">{purchaseNote}</p>
 
             </div>
           </div>
         </div>
         <div className="hero-visual">
-          {videoReady ? (
+          {videoReady && !image ? (
             <video
               className="hero-box-img"
               poster={SMALL_SCREEN ? BANNER.mobilePoster : BANNER.poster}
@@ -199,8 +205,8 @@ export default function Hero() {
             // LCP element on mobile — srcset matches the preload in index.html so the
             // browser reuses the already-fetched rendition instead of a second download.
             <img
-              src={BANNER.poster}
-              srcSet={`${BANNER.mobilePoster} 960w, ${BANNER.poster} 1920w`}
+              src={image?.src ?? BANNER.poster}
+              srcSet={image?.srcSet ?? `${BANNER.mobilePoster} 960w, ${BANNER.poster} 1920w`}
               sizes="(max-width: 959px) 100vw, 52vw"
               fetchPriority="high"
               alt=""

@@ -197,7 +197,12 @@ function KitGallery({ name, slides, comparison, awardWinner = false }) {
   );
 }
 
-export default function KitComparison() {
+export default function KitComparison({
+  title = 'GROUND or RITUAL.',
+  description = 'Both give you a complete body clean. RITUAL adds body oil for the weekly finish.',
+  ctaVerb = 'Buy',
+  checkoutParams = {},
+} = {}) {
   const navigate = useNavigate();
   const [openKits, setOpenKits] = useState(new Set());
   const toggle = (id) => setOpenKits(prev => {
@@ -223,12 +228,13 @@ export default function KitComparison() {
       <section className="kits-section" id="kits">
         <div className="kits-inner">
           <div className="kits-header reveal">
-            <h2>GROUND or RITUAL.</h2>
-            <p>Both give you a complete body clean. RITUAL adds body oil for the weekly finish.</p>
+            <h2>{title}</h2>
+            <p>{description}</p>
           </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {
               const products = PRODUCTS.filter(p => kit.productNums.includes(p.num));
+              const buyHref = `/buy?${new URLSearchParams({ ...checkoutParams, kit: kit.id })}`;
               const isSovereign = kit.id === 'sovereign';
               const decision = KIT_DECISIONS[kit.id];
               const productSlides = products.filter(p => !p.comingSoon && p.media?.still).map((p) => ({
@@ -273,14 +279,14 @@ export default function KitComparison() {
                     ) : (
                       <button
                         className="kit-cta active"
-                        data-buy-cta={`/buy?kit=${kit.id}`}
+                        data-buy-cta={buyHref}
                         onClick={() => {
                           capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
                           trackAddToCart(kit.id);
-                          navigate(`/buy?kit=${kit.id}`);
+                          navigate(buyHref);
                         }}
                       >
-                        Buy {kit.name} · £{kit.firstBoxPrice}
+                        {ctaVerb} {kit.name} · £{kit.firstBoxPrice}
                       </button>
                     )}
                   </div>
