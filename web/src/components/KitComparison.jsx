@@ -46,6 +46,7 @@ const CSS = `
 .kit-badge{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;font-weight:700;}
 .kit-badge.popular{background:rgba(74,143,199,.14);color:var(--blit);border:1px solid rgba(74,143,199,.36);}
 .kit-badge.soon{background:var(--char);color:var(--stone);border:1px solid var(--lineb);}
+.kit-award-label{display:block;color:var(--blit);font-size:14px;font-weight:600;margin:0 0 10px;}
 .kit-name-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:10px;}
 .kit-name{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.065em;color:var(--bone);line-height:.96;}
 .kit-card-price{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.035em;color:var(--bone);line-height:1;white-space:nowrap;}
@@ -254,6 +255,7 @@ export default function KitComparison() {
                   )}
                   {kit.popular && kit.id !== 'ritual' && <span className="kit-badge popular">Most Popular</span>}
                   {kit.comingSoon && <span className="kit-badge soon">Coming Soon</span>}
+                  {kit.id === 'ritual' && <span className="kit-award-label">Award-winning kit</span>}
                   <div className="kit-name-row">
                     <div className="kit-name">{kit.name}</div>
                     <span className="kit-card-price">£{kit.firstBoxPrice}</span>

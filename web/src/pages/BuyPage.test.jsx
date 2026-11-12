@@ -7,10 +7,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const buyPage = () => readFileSync(resolve(__dirname, 'BuyPage.jsx'), 'utf8');
 
 describe('desktop checkout first fold', () => {
-  it('keeps a kit chosen in the URL compact so payment starts in the first view', () => {
+  it('keeps ad landings compact so payment starts in the first view', () => {
     const page = buyPage();
 
-    expect(page).toContain("const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);");
+    expect(page).toContain("const [kitPickerOpen, setKitPickerOpen]       = useState(false);");
     expect(page).toContain('@media(min-width:901px){');
     expect(page).toContain('.by-kits{margin-bottom:16px;}');
     expect(page).toContain('.by-kit-img,.by-kit-result,.by-kit-mini-ledger{display:none;}');

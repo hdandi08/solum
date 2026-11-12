@@ -155,10 +155,10 @@ export function fbLead(eventId, email) {
 
 // Fires when someone lands on the /buy page and views kit options.
 // content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
-export function fbViewContent(kitId) {
+export function fbViewContent(kitId, value = kitId === 'ground' ? 65 : 85) {
   const eventId = newEventId();
-  fbq('track', 'ViewContent', { content_ids: [kitId], content_type: 'product', content_name: kitId }, { eventID: eventId });
-  sendMetaCapi('ViewContent', eventId, { kit_id: kitId });
+  fbq('track', 'ViewContent', { content_ids: [kitId], content_type: 'product', content_name: kitId, value, currency: 'GBP' }, { eventID: eventId });
+  sendMetaCapi('ViewContent', eventId, { kit_id: kitId, value });
 }
 
 // Fires when a user clicks a kit Buy Now / select button (checkout begins)

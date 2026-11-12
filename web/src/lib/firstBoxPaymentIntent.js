@@ -1,3 +1,4 @@
+import { captureCampaignAttribution } from './campaignAttribution.js';
 import { resolveAwinPaymentIntentMetadata } from './awinAttribution.js';
 
 export async function buildFirstBoxPaymentIntentBody({
@@ -9,6 +10,7 @@ export async function buildFirstBoxPaymentIntentBody({
   metaIds = {},
   attribution = {},
 }, tokenResolver) {
+  const campaign = captureCampaignAttribution();
   const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, tokenResolver);
   return {
     kit_id: kitId,
@@ -21,6 +23,7 @@ export async function buildFirstBoxPaymentIntentBody({
     ...tikTokIds,
     ...metaIds,
     ...awinMetadata,
+    ...(Object.keys(campaign).length ? { campaign_attribution: campaign } : {}),
     line1: form.line1.trim(),
     line2: form.line2.trim() || null,
     city: form.city.trim(),

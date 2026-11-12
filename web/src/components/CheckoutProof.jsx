@@ -4,10 +4,10 @@ import './CheckoutProof.css';
 
 const publications = [...PRESS.filter(item => item.tier === 'lead'), ...PRESS.filter(item => item.tier !== 'lead')];
 
-export default function CheckoutProof({ kitId }) {
+export default function CheckoutProof({ kitId, prominent = false }) {
   return (
-    <div className="checkout-proof" aria-label="Awards and press">
-      <AwardProof compact kitName={kitId === 'ritual' ? undefined : 'RITUAL'} />
+    <div className={`checkout-proof${prominent ? ' checkout-proof-prominent' : ''}`} aria-label="Awards and press">
+      <AwardProof compact={!prominent} kitName={kitId === 'ritual' ? undefined : 'RITUAL'} />
       <div className="checkout-proof-publications" aria-label="Published press features">
         <span className="checkout-proof-label">Featured in</span>
         {publications.map(item => (

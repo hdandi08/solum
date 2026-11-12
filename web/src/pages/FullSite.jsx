@@ -6,6 +6,7 @@ import Marquee from '../components/Marquee.jsx';
 import RitualInAction from '../components/RitualInAction.jsx';
 import HomeCTABand from '../components/HomeCTABand.jsx';
 import KitComparison from '../components/KitComparison.jsx';
+import WhatsInside from '../components/WhatsInside.jsx';
 import SystemSection from '../components/SystemSection.jsx';
 import ProductLineup from '../components/ProductLineup.jsx';
 import UnboxingFilm from '../components/UnboxingFilm.jsx';
@@ -96,6 +97,7 @@ export default function FullSite() {
       <ProblemSection />
       <PressSection />
       <KitComparison />
+      <WhatsInside />
       <RitualInAction />
       <ProductLineup />
       <WhatSolumIs />

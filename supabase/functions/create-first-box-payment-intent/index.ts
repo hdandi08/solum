@@ -1,3 +1,4 @@
+import { campaignMetadata } from '../_shared/campaignAttribution.mjs';
 import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
@@ -99,6 +100,7 @@ Deno.serve(async (req) => {
       ...(shipping ? { shipping } : {}),
       description: `SOLUM ${kitName} — One-time First Box`,
       metadata: {
+        ...campaignMetadata(body.campaign_attribution),
         kit_id:       kit_id!,
         email:        email!,
         first_name:   first_name  ?? '',

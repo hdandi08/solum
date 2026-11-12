@@ -1,3 +1,5 @@
+import { captureCampaignAttribution } from '../lib/campaignAttribution.js';
+import { resolveBuyKit } from '../lib/buyLanding.js';
 import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
 import ReservationTimer, { useReservationDeadline } from '../components/ReservationTimer.jsx';
 import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
@@ -86,6 +88,18 @@ function isValidUKPhone(raw) {
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
 const CSS = `
+.by-intro .checkout-proof-prominent{margin-bottom:20px;}
+.by-intro .checkout-proof-prominent .award-proof-seal{width:96px;height:96px;}
+.by-intro .checkout-proof-prominent .award-proof-copy strong{font-size:28px;}
+.by-intro .checkout-proof-prominent .award-proof-copy>span:last-child{font-size:15px;}
+.by-intro .checkout-proof-prominent .award-proof-winner{font-size:12px;}
+.by-intro .by-intro-value{font-size:15px;font-weight:500;color:var(--blit);margin-top:10px;line-height:1.4;}
+@media(max-width:768px){
+.by-intro .checkout-proof-prominent .award-proof-seal{width:82px;height:82px;}
+.by-intro .checkout-proof-prominent .award-proof-copy strong{font-size:24px;}
+.by-intro .checkout-proof-prominent{margin-bottom:16px;}
+}
+
 .by-intro{margin-bottom:24px;}
 .by-intro-eyebrow{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:700;display:block;margin-bottom:10px;}
 .by-intro-head{font-size:26px;font-weight:600;color:var(--bone);line-height:1.25;margin:0 0 6px;max-width:540px;}
@@ -101,9 +115,12 @@ const CSS = `
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
+.by-kit-award-label{display:block;font-size:13px;font-weight:600;color:var(--blit);letter-spacing:.3px;margin:4px 0 6px;}
+.by-kit-confirm-info{display:flex;align-items:center;gap:14px;min-width:0;}
+.by-kit-confirm-photo{display:block;object-fit:contain;flex-shrink:0;}
 .by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
-.by-kit-confirm-change{background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
+.by-kit-confirm-change{white-space:nowrap;background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
 .by-kit-confirm-change:hover{color:var(--bone);border-color:var(--stone);}
 .co-form-trust{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--stone);border:1px solid var(--line);padding:12px 16px;margin:0 0 14px;}
 .co-form-trust-line:first-child{color:var(--bone);font-weight:500;}
@@ -469,6 +486,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival }) {
     <aside className="co-right" aria-label="Order summary">
       {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
       <div className="co-kit-name">{kit.name}</div>
+      {kit.id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
       <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
       <p className="co-price-sub">One-time purchase · Free UK delivery</p>
       <p className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</p>
@@ -704,8 +722,9 @@ function MittDemo() {
 export default function BuyPage() {
   const [params, setParams] = useSearchParams();
 
+  const landingViewed = useRef(false);
   const source    = normalizeCheckoutSource(params.get('source'));
-  const preselect = params.get('kit');
+  const preselect = resolveBuyKit(params.get('kit'));
   const isFirstBatch = source === 'first_batch';
 
   // React Router's history writes an idx into history.state; 0 means /buy is
@@ -716,7 +735,6 @@ export default function BuyPage() {
   // Warm arrivals get a shorter orientation. Any explicit kit in the URL is
   // already a meaningful decision, including direct links from ads, so the
   // selector stays collapsed until the customer asks to change it.
-  const isWarmArrival = !isDirectLanding && !!preselect;
 
   // Kit CTAs and the sticky bar scroll to wallets + the details form.
   const formStartRef = useRef(null);
@@ -738,7 +756,7 @@ export default function BuyPage() {
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [expressStatus, setExpressStatus] = useState('loading');
   const expressReady = ['ready', 'unavailable', 'error'].includes(expressStatus);
-  const [kitPickerOpen, setKitPickerOpen]       = useState(() => !preselect);
+  const [kitPickerOpen, setKitPickerOpen]       = useState(false);
 
   const IAB_CONTINUE_KEY = 'solum_iab_gate_continue';
   const [iabContinued, setIabContinued] = useState(() => {
@@ -782,9 +800,12 @@ export default function BuyPage() {
   useEffect(() => { jumpTop(); }, []);
 
   useEffect(() => {
+    if (landingViewed.current) return;
+    landingViewed.current = true;
+    captureCampaignAttribution();
     capture('buy_page_viewed', { source, preselect: preselect ?? 'none' });
-    fbViewContent(preselect ?? 'ground');
-    ttqViewContent(preselect ?? 'ground', 'SOLUM Kit', 65);
+    fbViewContent(preselect ?? 'ritual', KIT_PRICES[preselect ?? 'ritual']);
+    ttqViewContent(preselect ?? 'ritual', 'SOLUM Kit', KIT_PRICES[preselect ?? 'ritual']);
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -1188,22 +1209,13 @@ export default function BuyPage() {
                   strip; delivery starts with its progress marker. */}
               {step === 'delivery' && <ProgressBar step="delivery" />}
 
-              {/* Step-1 intro. Cold landings get the orientation pitch; warm
-                  arrivals already read the homepage, so just confirm and move. */}
+              {/* Establish proof and the product promise without gating checkout. */}
               {step === 'details' && (
                 <div className="by-intro">
-                  <CheckoutProof kitId={selectedKit} />
-                  {isWarmArrival ? (
-                    <>
-                      <h1 className="by-intro-head">Good choice. Let's get it to your door.</h1>
-                      <p className="by-intro-sub">Every product numbered, every step timed. The exact routine is on the card in your box.</p>
-                    </>
-                  ) : (
-                    <>
-                      <h1 className="by-intro-head">{selectedKit === 'ritual' ? 'Award-winning body care.' : 'Complete body care.'} A better clean from your daily shower.</h1>
-                      <p className="by-intro-sub">Quality products, the right tools and clear daily and weekly rituals. Everything in one kit. Built for men.</p>
-                    </>
-                  )}
+                  <CheckoutProof kitId={selectedKit} prominent />
+                  <h1 className="by-intro-head">{selectedKit === 'ritual' ? 'The award-winning kit for a proper whole-body clean.' : 'A complete kit for a proper whole-body clean.'}</h1>
+                  <p className="by-intro-sub">{selectedKit === 'ritual' ? 'Nine' : 'Seven'} essentials for your body, back, scalp and intimate care. A guided daily routine and weekly reset, so you know what to use, where and in what order. No guesswork.</p>
+                  {selectedKit === 'ritual' && <p className="by-intro-value">4 weeks of daily care · Tools you keep</p>}
                 </div>
               )}
 
@@ -1211,10 +1223,14 @@ export default function BuyPage() {
                   of re-opening the whole decision */}
               {step === 'details' && !kitPickerOpen && (
                 <div className="by-kit-confirm" data-testid="kit-confirm">
-                  <div>
+                  <div className="by-kit-confirm-info">
+                    {activeKit?.image && <img className="by-kit-confirm-photo" src={activeKit.image.replace('.webp', '@600.webp')} alt={`SOLUM ${activeKit.name} kit in its presentation box`} width="72" height="86" />}
+                    <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
+                    {selectedKit === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
                     <span className="by-kit-confirm-meta">£{price} total · Free UK delivery</span>
                     {!iabGate && <CheckoutDispatch dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch} />}
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -1233,12 +1249,10 @@ export default function BuyPage() {
                 {switchError && <p role="alert" className="co-error">{switchError}</p>}
               </>}
 
-              {/* Kit selector — shown on step 1 only. AddToCart is gated on
-                  in-site arrival: cold ad clicks landing straight on /buy must
-                  not feed Meta's AddToCart optimisation. */}
+              {/* Explicit kit choices track AddToCart; loading the page does not. */}
               {step === 'details' && kitPickerOpen && (
                 <div className="by-kits" data-testid="kit-selector">
-                  {(preselect === 'ground' ? ['ground', 'ritual'] : ['ritual', 'ground']).map((id, i) => {
+                  {['ritual', 'ground'].map((id, i) => {
                     const kit = KITS.find(k => k.id === id);
                     const contentsCount = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon).length;
                     const kitOutcome = BUY_KIT_OUTCOMES[id];
@@ -1247,7 +1261,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => { setSelectedKit(id); if (!isDirectLanding) trackAddToCart(id); }}
+                        onClick={() => { setSelectedKit(id); trackAddToCart(id); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         {kit?.image && (
@@ -1260,6 +1274,7 @@ export default function BuyPage() {
                           />
                         )}
                         <div className="by-kit-name">{kit?.name}</div>
+                        {id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
                         <div className="by-kit-outcome">{kitOutcome?.label ?? kit?.outcome}</div>
                         <div className="by-kit-contents">{contentsCount} products in the box</div>
 
@@ -1281,7 +1296,7 @@ export default function BuyPage() {
                           <button
                             type="button"
                             className="by-kit-cta"
-                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); if (!isDirectLanding) trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
+                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
                           >
                             Buy {kit?.name} →
                           </button>

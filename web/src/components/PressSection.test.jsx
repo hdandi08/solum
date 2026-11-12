@@ -51,9 +51,9 @@ describe('homepage press proof', () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it('keeps compact checkout recognition ahead of express checkout', () => {
+  it('keeps prominent checkout recognition ahead of express checkout', () => {
     const buy = page('BuyPage');
-    const proofIndex = buy.indexOf('<CheckoutProof kitId={selectedKit} />');
+    const proofIndex = buy.indexOf('<CheckoutProof kitId={selectedKit} prominent />');
     const expressIndex = buy.indexOf('<div className="by-express-wrap"');
     expect(proofIndex).toBeGreaterThan(-1);
     expect(proofIndex).toBeLessThan(expressIndex);

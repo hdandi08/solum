@@ -36,3 +36,14 @@ describe('Meta attribution continuity', () => {
     const { getMetaIds } = await import('./analytics.js'); getMetaIds(); window.location.search = '?kit=ritual'; expect(getMetaIds().fbc).toMatch(/\.ad-click$/);
   });
 });
+
+ it('includes the viewed kit price and GBP with a shared Pixel/CAPI event ID', async () => {
+    environment(); const sent = []; const pixel = [];
+    window.fbq = (...args) => pixel.push(args);
+    vi.stubGlobal('fetch', async (_url, options) => { sent.push(JSON.parse(options.body)); });
+    const { fbViewContent } = await import('./analytics.js');
+    fbViewContent('ritual', 85);
+    expect(pixel[0][2]).toMatchObject({ content_ids: ['ritual'], value: 85, currency: 'GBP' });
+    expect(sent[0]).toMatchObject({ event_name: 'ViewContent', value: 85 });
+    expect(pixel[0][3].eventID).toBe(sent[0].event_id);
+  });
