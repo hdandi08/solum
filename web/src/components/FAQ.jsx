@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { capture } from '../lib/analytics.js';
 
 const CSS = `
@@ -64,10 +64,11 @@ const FAQS = [
   },
 ];
 
-export default function FAQ() {
+export default function FAQ({ items = FAQS, title = <>Common<br />Questions.</> } = {}) {
+  const faqId = useId();
   const [openFaq, setOpenFaq] = useState(null);
   const toggle = (i) => {
-    if (openFaq !== i) capture('faq_opened', { question: FAQS[i].q });
+    if (openFaq !== i) capture('faq_opened', { question: items[i].q });
     setOpenFaq(openFaq === i ? null : i);
   };
 
@@ -78,15 +79,15 @@ export default function FAQ() {
         <div className="faq-inner">
           <div className="faq-header reveal">
             <div className="fq-sec-tag">Questions</div>
-            <h2>Common<br />Questions.</h2>
+            <h2>{title}</h2>
           </div>
-          {FAQS.map((f, i) => (
+          {items.map((f, i) => (
             <div key={i} className={`faq-item${openFaq === i ? ' open' : ''}`}>
-              <button className="faq-q" onClick={() => toggle(i)}>
+              <button type="button" id={`${faqId}-question-${i}`} className="faq-q" aria-expanded={openFaq === i} aria-controls={`${faqId}-answer-${i}`} onClick={() => toggle(i)}>
                 {f.q}
                 <span className="faq-toggle">+</span>
               </button>
-              <div className="faq-a">{f.a}</div>
+              <div className="faq-a" id={`${faqId}-answer-${i}`} role="region" aria-labelledby={`${faqId}-question-${i}`} hidden={openFaq !== i}>{f.a}</div>
             </div>
           ))}
           <div className="faq-ask reveal">

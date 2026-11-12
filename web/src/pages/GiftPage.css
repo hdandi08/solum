@@ -1,0 +1,51 @@
+.gift-page{background:var(--black);color:var(--bone);cursor:auto;}
+.gift-page main{padding-top:0;}
+.gift-page .hero{height:calc(100svh - var(--offerbar-h));min-height:0;}
+.gift-page .hero-cols{min-height:0;}
+.gift-page a,.gift-page button{touch-action:manipulation;}
+.gift-page a:focus-visible,.gift-page button:focus-visible{outline:2px solid var(--blit);outline-offset:5px;}
+.gift-skip{position:fixed;top:8px;left:16px;z-index:1000;transform:translateY(-180%);background:var(--bone);color:var(--black);padding:12px 20px;}
+.gift-skip:focus{transform:translateY(0);}
+.gift-page h1,.gift-page h2{font-family:'Bebas Neue',sans-serif;font-weight:400;}
+.gift-button{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:15px 34px;background:var(--bone);color:var(--black);text-decoration:none;font-size:18px;font-weight:600;}
+.gift-button:hover{background:#fff;}
+.gift-purchase-note{font-size:15px;color:var(--stone);line-height:1.5;margin-top:14px;}
+.gift-text-link{display:inline-block;color:var(--bone);font-size:18px;font-weight:500;text-underline-offset:6px;text-decoration-thickness:1px;}
+.gift-text-link:hover{color:var(--blit);}
+.gift-promise{display:flex;justify-content:center;gap:clamp(28px,7vw,110px);padding:24px;background:var(--bone);color:var(--black);font-size:18px;font-weight:500;}
+.gift-section{max-width:1280px;margin:auto;padding:88px 48px;}
+.gift-story{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,90px);align-items:center;}
+.gift-page h2{font-size:clamp(42px,4.5vw,68px);line-height:1;letter-spacing:.025em;}
+.gift-story-copy>p{font-size:20px;font-weight:300;color:var(--mist);line-height:1.6;margin-top:22px;max-width:440px;}
+.gift-details{margin:26px 0;}
+.gift-details>div{border-top:1px solid var(--lineb);padding:15px 0;display:grid;grid-template-columns:85px 1fr;gap:12px;}
+.gift-details dt{font-size:17px;font-weight:600;}
+.gift-details dd{font-size:17px;line-height:1.45;font-weight:300;color:var(--stone);}
+.gift-close{text-align:center;padding:80px 24px 90px;border-top:1px solid var(--lineb);}
+.gift-close>p:first-child{color:var(--stone);font-size:19px;font-weight:300;margin-bottom:20px;}
+.gift-close h2{font-size:clamp(48px,7vw,90px);margin-bottom:28px;}
+#gift-questions{scroll-margin-top:calc(80px + var(--offerbar-h));}
+.gift-page .kits-section{min-height:0;}
+.gift-page .kits-header{max-width:1040px;}
+.gift-page .kits-header p{max-width:640px;}
+.gift-page .faq-item.open .faq-a{max-height:none;}
+.gift-page .solum-footer{padding-bottom:90px;}
+@media(max-width:1000px) and (min-width:769px){.gift-page .nav-links{gap:18px;}.gift-page .nav-links a{letter-spacing:2px;}.gift-page .nav-right{gap:16px;}.gift-page nav{padding:0 24px;}}
+@media(max-width:768px){
+ .gift-promise{flex-direction:column;gap:9px;padding:22px 24px;font-size:17px;}
+ .gift-section{padding:48px 24px;}
+ .gift-story{grid-template-columns:1fr;gap:30px;}
+ .gift-page h2{font-size:45px;}
+ .gift-close{padding:56px 24px 64px;}
+ .gift-close h2{font-size:54px;}
+ .gift-page footer.solum-footer{padding:40px 24px 90px;}
+ .gift-page .footer-bottom>span:last-child{flex-wrap:wrap;justify-content:center;}
+ .gift-page .kit-card.featured{order:0;}
+}
+@media(prefers-reduced-motion:reduce){.gift-page *, .gift-page *::before,.gift-page *::after{animation:none!important;transition:none!important;}html:has(.gift-page){scroll-behavior:auto;}}
+
+.gift-page .press-publication-logo{width:104px;height:40px;object-fit:contain;}
+.gift-page .press-publication-logo[alt="Carl Thompson"]{filter:invert(1);}
+.gift-page .wsi-section{padding:48px 24px;}
+.gift-page .wsi-pillar{padding:24px;}
+.gift-page .wsi-body{font-size:17px;}

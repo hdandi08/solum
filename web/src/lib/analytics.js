@@ -1,4 +1,5 @@
 import posthog from 'posthog-js';
+import { getLandingExperience } from './landingExperience.js';
 import { detectInAppBrowser } from './inAppBrowser';
 import { readCookie, deriveFbc, newEventId } from './metaCapi.js';
 import { isAutomatedBrowser } from './analyticsEnvironment.js';
@@ -39,6 +40,11 @@ export function initAnalytics() {
     // /buy, /product/* etc. were never counted (Web Analytics undercounted them).
     capture_pageview: 'history_change',
     capture_pageleave: true,
+    // Includes automatic pageviews and clicks as well as explicit funnel events.
+    before_send: (event) => {
+      if (event) event.properties = { ...event.properties, ...getLandingExperience() };
+      return event;
+    },
     person_profiles: 'identified_only',
     // Surveys: none configured — skip the surveys.js fetch entirely.
     disable_surveys: true,
@@ -75,7 +81,7 @@ export function initAnalytics() {
 
 export function capture(event, props = {}) {
   if (!ANALYTICS_DISABLED && posthog.__loaded) {
-    posthog.capture(event, props);
+    posthog.capture(event, { ...getLandingExperience(), ...props });
   }
 }
 

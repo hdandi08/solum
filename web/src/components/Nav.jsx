@@ -75,14 +75,14 @@ const NAV_LINKS = [
   ['/contact',      'Contact'],
 ];
 
-export default function Nav() {
+export default function Nav({ links = NAV_LINKS, ctaText, localSections = false } = {}) {
   const [activeNav, setActiveNav]   = useState('');
   const [menuOpen, setMenuOpen]     = useState(false);
   const [user, setUser]             = useState(null);
   const { pathname }                = useLocation();
   const ctaVariant                  = useVariant('hero-cta-copy');
-  const ctaLabel                    = CTA_COPY[ctaVariant] ?? CTA_COPY.control;
-  const onHomePage                  = pathname === '/full' || pathname === '/';
+  const ctaLabel                    = ctaText ?? CTA_COPY[ctaVariant] ?? CTA_COPY.control;
+  const onHomePage                  = localSections || pathname === '/full' || pathname === '/';
 
   const resolve = (href) => href.startsWith('#') && !onHomePage ? `/${href}` : href;
   const close   = ()     => setMenuOpen(false);
@@ -131,7 +131,7 @@ export default function Nav() {
 
         {/* desktop links */}
         <ul className="nav-links">
-          {NAV_LINKS.map(([href, label]) => (
+          {links.map(([href, label]) => (
             <li key={href}>
               <a href={resolve(href)} className={activeNav === href.slice(1) ? 'active-link' : ''}>{label}</a>
             </li>
@@ -162,15 +162,17 @@ export default function Nav() {
           className={`nav-hamburger${menuOpen ? ' open' : ''}`}
           onClick={() => setMenuOpen(o => !o)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          aria-controls="nav-mobile-menu"
         >
           <span /><span /><span />
         </button>
       </nav>
 
       {/* mobile drawer */}
-      <div className={`nav-drawer${menuOpen ? ' open' : ''}`}>
+      <div id="nav-mobile-menu" className={`nav-drawer${menuOpen ? ' open' : ''}`} inert={!menuOpen}>
         <ul className="nav-drawer-links">
-          {NAV_LINKS.map(([href, label]) => (
+          {links.map(([href, label]) => (
             <li key={href}>
               <a
                 href={resolve(href)}

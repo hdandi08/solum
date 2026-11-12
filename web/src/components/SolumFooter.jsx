@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom';
+
 const CSS = `
 footer.solum-footer{background:var(--black);border-top:1px solid var(--line);padding:56px 48px 32px;}
 .footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
@@ -16,6 +18,8 @@ footer.solum-footer{background:var(--black);border-top:1px solid var(--line);pad
 `;
 
 export default function SolumFooter() {
+  const { pathname } = useLocation();
+  const sectionHref = (id) => pathname === '/' || pathname === '/full' ? `#${id}` : `/#${id}`;
   return (
     <>
       <style>{CSS}</style>
@@ -29,17 +33,17 @@ export default function SolumFooter() {
           <div>
             <div className="footer-col-title">The System</div>
             <ul className="footer-links">
-              <li><a href="#kits">Choose Your Kit</a></li>
-              <li><a href="#products">The Products</a></li>
-              <li><a href="#ritual">The Ritual</a></li>
-              <li><a href="#subscription">Refills coming soon</a></li>
+              <li><a href={sectionHref('kits')}>Choose Your Kit</a></li>
+              <li><a href={sectionHref('products')}>The Products</a></li>
+              <li><a href={sectionHref('ritual')}>The Ritual</a></li>
+              <li><a href={sectionHref('subscription')}>Refills coming soon</a></li>
             </ul>
           </div>
           <div>
             <div className="footer-col-title">The Brand</div>
             <ul className="footer-links">
-              <li><a href="#what">Why SOLUM</a></li>
-              <li><a href="#origins">Where It's From</a></li>
+              <li><a href={sectionHref('what')}>Why SOLUM</a></li>
+              <li><a href={sectionHref('origins')}>Where It's From</a></li>
               <li><a href="/guide">The Guide</a></li>
               <li><a href="/creators">Create With Us</a></li>
             </ul>

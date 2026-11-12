@@ -20,15 +20,15 @@ const PILLARS = [
   { n: '03', ic: '/icons/pillar-time.webp', title: 'Ten minutes.', body: 'The whole thing, compressed into the shower you already take. Better skin, no extra time.' },
 ];
 
-export default function WhatSolumIs() {
+export default function WhatSolumIs({ title = 'The Body Ritual Men Were Missing', pillars = PILLARS } = {}) {
   return (
     <>
       <style>{CSS}</style>
       <section className="wsi-section" id="what">
         <div className="wsi-inner">
-          <h2 className="wsi-head reveal">The Body Ritual Men Were Missing</h2>
+          <h2 className="wsi-head reveal">{title}</h2>
           <div className="wsi-grid reveal">
-            {PILLARS.map((p) => (
+            {pillars.map((p) => (
               <div className="wsi-pillar" key={p.n}>
                 <img src={p.ic} className="wsi-ic" alt="" aria-hidden="true" loading="lazy" />
                 <span className="wsi-num">{p.n}</span>

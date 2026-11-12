@@ -152,6 +152,24 @@ const CSS = `
   .ria-ritual-step{grid-template-columns:auto 1fr;align-items:start;}
   .ria-step-outcome{grid-column:2;}
 }
+
+/* A short, interactive preview for gift buyers; the homepage keeps both full rails. */
+.ria-compact .ria-ritual-overview{display:none;}
+.ria-compact .ria-ritual-stack{grid-template-columns:minmax(0,1fr);}
+.ria-compact .ria-ritual-block{display:block;min-width:0;}
+.ria-compact .ria-gallery,.ria-compact .ria-carousel{min-width:0;max-width:100%;}
+.ria-compact .ria-carousel{width:100%;}
+.ria-compact .ria-cadence-summary-item{font-family:inherit;cursor:pointer;}
+.ria-compact .ria-cadence-summary-item[aria-pressed="true"]{border-color:var(--blit);background:rgba(46,109,164,.2);}
+.ria-compact .ria-cadence-summary-item:focus-visible{outline:2px solid var(--blit);outline-offset:3px;}
+.ria-compact .ria-card-media{height:320px;max-height:48svh;width:auto;aspect-ratio:9/16;}
+.ria-compact .ria-card{flex:0 0 auto;max-width:none;}
+.ria-compact .ria-carousel{padding-left:calc(50% - 90px);padding-right:calc(50% - 90px);}
+.ria-compact .ria-dots{margin-top:14px;}
+.ria-compact .ria-ritual-card::before{display:none;}
+.ria-compact .ria-freq.weekly{color:var(--blit);border-color:var(--blue);background:rgba(46,109,164,.12);}
+.ria-preview-link{text-align:center;margin-top:24px;}
+.ria-preview-link a{font-size:18px;color:var(--bone);text-underline-offset:6px;}
 `;
 
 const PLAY = (
@@ -455,29 +473,44 @@ function RitualRail({ ritual }) {
   );
 }
 
-export default function RitualInAction() {
+export default function RitualInAction({
+  title = 'See the ritual before the products.',
+  description = 'First see the method. Then the product list makes sense.',
+  compact = false,
+} = {}) {
+  const [selectedRitual, setSelectedRitual] = useState('daily');
+  const CadenceItem = compact ? 'button' : 'div';
   return (
     <>
       <style>{CSS}</style>
-      <section className="ria-section" id="ritual">
+      <section className={`ria-section${compact ? ' ria-compact' : ''}`} id="ritual">
         <div className="ria-head-wrap">
           <div className="ria-eyebrow reveal">Daily and weekly</div>
-          <h2 className="ria-head reveal">See the ritual before the products.</h2>
-          <p className="ria-sub reveal">First see the method. Then the product list makes sense.</p>
+          <h2 className="ria-head reveal">{title}</h2>
+          <p className="ria-sub reveal">{description}</p>
         </div>
 
         <div className="ria-cadence-summary" aria-label="Daily and weekly ritual cadence">
           {RITUALS.map(({ key, title, cadence }) => (
-            <div className={`ria-cadence-summary-item ${key}`} key={key}>
+            <CadenceItem
+              className={`ria-cadence-summary-item ${key}`} key={key}
+              type={compact ? 'button' : undefined}
+              aria-pressed={compact ? selectedRitual === key : undefined}
+              onClick={compact ? () => {
+                setSelectedRitual(key);
+                capture('ritual_preview_selected', { ritual: key });
+              } : undefined}
+            >
               <span className="ria-cadence-title">{title}</span>
               <span className="ria-cadence-time">{cadence}</span>
-            </div>
+            </CadenceItem>
           ))}
         </div>
 
         <div className="ria-ritual-stack">
-          {RITUALS.map((ritual) => <RitualRail key={ritual.key} ritual={ritual} />)}
+          {(compact ? RITUALS.filter(ritual => ritual.key === selectedRitual) : RITUALS).map((ritual) => <RitualRail key={ritual.key} ritual={ritual} />)}
         </div>
+        {compact && <div className="ria-preview-link"><a href="/ritual">Explore his complete ritual</a></div>}
       </section>
     </>
   );

@@ -37,7 +37,7 @@ const PLAY_ICON = (
   </svg>
 );
 
-export default function UnboxingFilm() {
+export default function UnboxingFilm({ title = <>Head to toe.<br />Cared for.</>, caption } = {}) {
   const [filmPlaying, setFilmPlaying] = useState(false);
   const filmRef = useRef(null);
   const progressFired = useRef(new Set());
@@ -69,7 +69,7 @@ export default function UnboxingFilm() {
         <div className="unbox-inner">
           <div className="unbox-band reveal">
             <div className="unbox-eyebrow">The Unboxing</div>
-            <h2 className="unbox-head">Head to toe.<br />Cared for.</h2>
+            <h2 className="unbox-head">{title}</h2>
             <div className="unbox-grid">
               <div className="unbox-main">
                 {BANNER_FULL.ready ? (
@@ -115,7 +115,7 @@ export default function UnboxingFilm() {
                 </div>
               </div>
             </div>
-            <p className="unbox-caption">Every kit ships as one system. When the refill subscription launches, the consumables that run out will be replenished separately. For now, choose the one-time kit that fits your ritual.</p>
+            <p className="unbox-caption">{caption ?? <>Every kit ships as one system. When the refill subscription launches, the consumables that run out will be replenished separately. For now, choose the one-time kit that fits your ritual.</>}</p>
           </div>
         </div>
       </section>

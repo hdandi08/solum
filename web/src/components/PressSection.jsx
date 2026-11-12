@@ -37,7 +37,7 @@ const CSS = `
 }
 `;
 
-export default function PressSection() {
+export default function PressSection({ showPublicationLogos = false } = {}) {
   const lead = PRESS.find((item) => item.tier === 'lead');
   const support = PRESS.filter((item) => item.tier !== 'lead');
 
@@ -65,7 +65,7 @@ export default function PressSection() {
             <span className="press-support-label">Also featured in</span>
             {support.map((item) => (
               <a key={item.name} className="press-link" href={item.url} target="_blank" rel="noreferrer">
-                {item.logo && <img className="press-publication-logo" src={item.logo} alt={item.name} width="64" height="64" />}
+                {(item.logo || (showPublicationLogos && item.checkoutLogo)) && <img className="press-publication-logo" src={item.logo ?? item.checkoutLogo} alt={item.name} width="104" height="40" />}
                 <span>{!item.logo && `${item.name}: `}“{item.quote}”</span>
               </a>
             ))}
