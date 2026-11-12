@@ -116,8 +116,11 @@ const CSS = `
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
 .by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
 .by-kit-award-label{display:block;font-size:13px;font-weight:600;color:var(--blit);letter-spacing:.3px;margin:4px 0 6px;}
+.by-contents-image{display:block;margin:16px 0;color:var(--bone);font-size:14px;}
+.by-contents-image img{display:block;width:100%;height:auto;margin-bottom:8px;}
 .by-kit-confirm-info{display:flex;align-items:center;gap:14px;min-width:0;}
-.by-kit-confirm-photo{display:block;object-fit:contain;flex-shrink:0;}
+.by-kit-confirm-photo{display:block;object-fit:contain;flex-shrink:0;width:108px;height:135px;}
+.by-kit-confirm-photo-link{display:block;flex-shrink:0;}
 .by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
 .by-kit-confirm-meta{font-size:13px;color:var(--stone);}
 .by-kit-confirm-change{white-space:nowrap;background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
@@ -253,7 +256,7 @@ const CSS = `
 .by-more[open] summary{margin-bottom:16px;}
 .by-more a{color:var(--bone);text-decoration:underline;}
 .by-more p{margin-top:12px;}
-.co-summary-hero{max-height:200px;object-fit:cover;}
+.co-summary-hero{max-height:none;height:auto;aspect-ratio:4/5;object-fit:contain;}
 .by-kit-confirm{margin-bottom:18px;}
 .by-intro{margin-bottom:18px;}
 .by-intro-sub{font-size:15px;}
@@ -291,6 +294,14 @@ function ProgressBar({ step }) {
 }
 
 // ── Mobile header (one-time, no subscription language) ────────────────────────
+
+function KitContentsImage({ kit }) {
+  if (kit.id !== 'ritual') return null;
+  return <a href="/products/kit/ritual-whats-inside.webp" target="_blank" rel="noreferrer" className="by-contents-image" aria-label="View the full-size Ritual Kit contents guide">
+    <img src="/products/kit/ritual-whats-inside.webp" alt="What's inside the SOLUM Ritual Kit: body wash, soft cleansing cloth, back scrub cloth, scalp massager, body lotion, Italy towel mitt, Atlas clay mask, argan body oil, mixing bowl and a step-by-step guide." width="1080" height="1350" loading="lazy" decoding="async" />
+    <span>View full-size kit guide</span>
+  </a>;
+}
 
 function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hideUntilScroll, suppressed = false }) {
   const [open, setOpen] = useState(false);
@@ -419,6 +430,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
           <div className="co-mobile-dispatch">
             Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
           </div>
+          <KitContentsImage kit={kit} />
           <div className="co-mobile-products">
             {products.map(p => (
               <button
@@ -490,8 +502,9 @@ function BuyOrderSummary({ kit, price, dispatch, arrival }) {
       <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
       <p className="co-price-sub">One-time purchase · Free UK delivery</p>
       <p className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</p>
-      <details className="by-more">
-        <summary>What's included · {products.length} items</summary>
+      <details className="by-more" open>
+        <summary>What's inside · {products.length} essentials</summary>
+        <KitContentsImage kit={kit} />
         <div className="co-product-list">
           {products.map(p => (
             <div key={p.num} className="co-product">
@@ -1224,7 +1237,7 @@ export default function BuyPage() {
               {step === 'details' && !kitPickerOpen && (
                 <div className="by-kit-confirm" data-testid="kit-confirm">
                   <div className="by-kit-confirm-info">
-                    {activeKit?.image && <img className="by-kit-confirm-photo" src={activeKit.image.replace('.webp', '@600.webp')} alt={`SOLUM ${activeKit.name} kit in its presentation box`} width="72" height="86" />}
+                    {activeKit?.image && <a className="by-kit-confirm-photo-link" href={activeKit.image} target="_blank" rel="noreferrer" aria-label={`View full-size ${activeKit.name} kit photo`}><img className="by-kit-confirm-photo" src={activeKit.image.replace('.webp', '@600.webp')} alt={`SOLUM ${activeKit.name} kit in its presentation box`} width="108" height="135" /></a>}
                     <div>
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
                     {selectedKit === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
@@ -1388,7 +1401,7 @@ export default function BuyPage() {
                 </form>
               )}
 
-              {/* Warm arrivals get the demo below the form (see above) */}
+
 
 
               {/* Step 2: Delivery */}
