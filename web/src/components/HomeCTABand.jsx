@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { BUY_FROM_SITE } from '../lib/buyLanding.js';
 import { KITS, kitWorth } from '../data/kits.js';
 import { capture } from '../lib/analytics.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
@@ -32,7 +33,7 @@ export default function HomeCTABand() {
   const buy = (kit) => {
     capture('ctaband_buy_clicked', { kit: kit.id });
     trackAddToCart(kit.id);
-    navigate(`/buy?kit=${kit.id}`);
+    navigate(`/buy?kit=${kit.id}`, { state: BUY_FROM_SITE });
   };
 
   return (

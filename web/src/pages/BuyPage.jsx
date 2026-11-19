@@ -22,7 +22,8 @@ import { expressElementsOptions } from '../lib/expressCheckout.js';
 import { nextStickyPriceVisibility, shouldShowIabGate } from '../lib/inAppBrowser.js';
 import SolumWordmark from '../components/SolumWordmark.jsx';
 import FounderChat from '../components/FounderChat.jsx';
-import CheckoutProof from '../components/CheckoutProof.jsx';
+import BuyIntroduction from '../components/BuyIntroduction.jsx';
+import BuyKitConfirmation from '../components/BuyKitConfirmation.jsx';
 import ExpressCheckout from '../components/ExpressCheckout.jsx';
 import { CheckoutDispatch, ExpressCheckoutConsent, ExpressCheckoutIntro } from '../components/ExpressCheckoutInfo.jsx';
 import AlternativeKitOffer from '../components/AlternativeKitOffer.jsx';
@@ -89,17 +90,7 @@ function isValidUKPhone(raw) {
 // ── Inline CSS — kit selector only (everything else reuses checkout.css) ──────
 
 const CSS = `
-.by-intro .checkout-proof-prominent{margin-bottom:20px;}
-.by-intro .checkout-proof-prominent .award-proof-seal{width:96px;height:96px;}
-.by-intro .checkout-proof-prominent .award-proof-copy strong{font-size:28px;}
-.by-intro .checkout-proof-prominent .award-proof-copy>span:last-child{font-size:15px;}
-.by-intro .checkout-proof-prominent .award-proof-winner{font-size:12px;}
 .by-intro .by-intro-value{font-size:15px;font-weight:500;color:var(--blit);margin-top:10px;line-height:1.4;}
-@media(max-width:768px){
-.by-intro .checkout-proof-prominent .award-proof-seal{width:82px;height:82px;}
-.by-intro .checkout-proof-prominent .award-proof-copy strong{font-size:24px;}
-.by-intro .checkout-proof-prominent{margin-bottom:16px;}
-}
 
 .by-intro{margin-bottom:24px;}
 .by-intro-eyebrow{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--blit);font-weight:700;display:block;margin-bottom:10px;}
@@ -115,17 +106,9 @@ const CSS = `
 @keyframes byShimmer{to{background-position:-200% 0;}}
 .by-express-or{display:flex;align-items:center;gap:14px;margin:18px 0 22px;color:var(--stone);font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
 .by-express-or::before,.by-express-or::after{content:'';flex:1;height:1px;background:var(--line);}
-.by-kit-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--char);border:1px solid var(--line);padding:14px 16px;margin-bottom:24px;}
 .by-kit-award-label{display:block;font-size:13px;font-weight:600;color:var(--blit);letter-spacing:.3px;margin:4px 0 6px;}
 .by-contents-image{display:block;margin:16px 0;color:var(--bone);font-size:14px;}
 .by-contents-image img{display:block;width:100%;height:auto;margin-bottom:8px;}
-.by-kit-confirm-info{display:flex;align-items:center;gap:14px;min-width:0;}
-.by-kit-confirm-photo{display:block;object-fit:contain;flex-shrink:0;width:108px;height:135px;}
-.by-kit-confirm-photo-link{display:block;flex-shrink:0;}
-.by-kit-confirm-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--bone);display:block;line-height:1.1;}
-.by-kit-confirm-meta{font-size:13px;color:var(--stone);}
-.by-kit-confirm-change{white-space:nowrap;background:none;border:1px solid var(--line);color:var(--stone);font-size:13px;padding:9px 14px;cursor:pointer;transition:color .15s,border-color .15s;}
-.by-kit-confirm-change:hover{color:var(--bone);border-color:var(--stone);}
 .co-form-trust{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--stone);border:1px solid var(--line);padding:12px 16px;margin:0 0 14px;}
 .co-form-trust-line:first-child{color:var(--bone);font-weight:500;}
 .co-form-trust a{color:inherit;}
@@ -195,9 +178,6 @@ const CSS = `
   .by-kit-price{font-size:32px;}
   .by-kit-cta{padding:10px 16px;}
   .by-demo{display:none;}
-  .by-kit-confirm{padding:10px 14px;margin-bottom:16px;}
-  .by-kit-confirm-name{font-size:20px;}
-  .by-kit-confirm-meta{font-size:12px;}
   .by-press-proof{display:none;}
   .by-press-proof{padding:10px 12px;margin-bottom:8px;}
   .by-press-proof-kicker{font-size:9px;margin-bottom:2px;}
@@ -258,7 +238,7 @@ const CSS = `
 .by-more a{color:var(--bone);text-decoration:underline;}
 .by-more p{margin-top:12px;}
 .co-summary-hero{max-height:none;height:auto;aspect-ratio:4/5;object-fit:contain;}
-.by-kit-confirm{margin-bottom:18px;}
+.buy-order-summary{position:static;height:auto;max-height:none;overflow:visible;}
 .by-intro{margin-bottom:18px;}
 .by-intro-sub{font-size:15px;}
 @media(max-width:768px){.by-kits .by-kit-img{height:120px;}.by-kits{gap:12px;}.by-kit{padding:16px;}.by-kit-outcome{font-size:16px;}}
@@ -493,7 +473,7 @@ function BuyCheckoutNav() {
 function BuyOrderSummary({ kit, price, dispatch, arrival }) {
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   return (
-    <aside className="co-right" aria-label="Order summary">
+    <aside className="co-right buy-order-summary" aria-label="Order summary">
       {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
       <div className="co-kit-name">{kit.name}</div>
       {kit.id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
@@ -743,9 +723,9 @@ export default function BuyPage() {
   // link would point at a page the visitor has never seen.
   const isDirectLanding = typeof window === 'undefined' || (window.history.state?.idx ?? 0) === 0;
 
-  // Warm arrivals get a shorter orientation. Any explicit kit in the URL is
-  // already a meaningful decision, including direct links from ads, so the
-  // selector stays collapsed until the customer asks to change it.
+  // Intro length is determined by explicit on-site navigation state, never
+  // by a kit query parameter: ad links may also preselect a kit.
+  // Keep a preselected kit collapsed until the customer asks to change it.
 
   // Kit CTAs and the sticky bar scroll to wallets + the details form.
   const formStartRef = useRef(null);
@@ -1222,36 +1202,17 @@ export default function BuyPage() {
 
               {/* Establish proof and the product promise without gating checkout. */}
               {step === 'details' && (
-                <div className="by-intro">
-                  <CheckoutProof kitId={selectedKit} prominent />
-                  <h1 className="by-intro-head">{selectedKit === 'ritual' ? 'The award-winning kit for a proper whole-body clean.' : 'A complete kit for a proper whole-body clean.'}</h1>
-                  <p className="by-intro-sub">{selectedKit === 'ritual' ? 'Nine' : 'Seven'} essentials for your body, back, scalp and intimate care. A guided daily routine and weekly reset, so you know what to use, where and in what order. No guesswork.</p>
-                  {selectedKit === 'ritual' && <p className="by-intro-value">4 weeks of daily care · Tools you keep</p>}
-                </div>
+                <BuyIntroduction kitId={selectedKit} />
               )}
 
-              {/* Warm arrivals: chosen kit as a one-line confirmation instead
-                  of re-opening the whole decision */}
+              {/* Confirm the selected kit without reopening the whole decision. */}
               {step === 'details' && !kitPickerOpen && (
-                <div className="by-kit-confirm" data-testid="kit-confirm">
-                  <div className="by-kit-confirm-info">
-                    {activeKit?.image && <a className="by-kit-confirm-photo-link" href={activeKit.image} target="_blank" rel="noreferrer" aria-label={`View full-size ${activeKit.name} kit photo`}><img className="by-kit-confirm-photo" src={activeKit.image.replace('.webp', '@600.webp')} alt={`SOLUM ${activeKit.name} kit in its presentation box`} width="108" height="135" /></a>}
-                    <div>
-                    <span className="by-kit-confirm-name">{activeKit?.name}</span>
-                    {selectedKit === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
-                    <span className="by-kit-confirm-meta">£{price} total · Free UK delivery</span>
-                    {!iabGate && <CheckoutDispatch dispatch={typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch} />}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="by-kit-confirm-change"
-                    data-testid="change-kit"
-                    onClick={() => { setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); }}
-                  >
-                    Change kit
-                  </button>
-                </div>
+                <BuyKitConfirmation
+                  kit={activeKit}
+                  price={price}
+                  dispatch={iabGate || typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
+                  onChange={() => { setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); }}
+                />
               )}
 
               {step === 'details' && inventory?.[selectedKit]?.available === false && <>

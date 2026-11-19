@@ -19,7 +19,7 @@ describe('homepage press proof', () => {
   it('uses a direct body ritual claim without repeating first guided language', () => {
     const source = component('WhatSolumIs');
 
-    expect(source).toContain('The Body Ritual Men Were Missing');
+    expect(source).toContain('Built for men. From the ground up.');
     expect(source).not.toContain('The First Guided');
     expect(source).not.toMatch(/World['’]s First/i);
   });
@@ -51,9 +51,9 @@ describe('homepage press proof', () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it('keeps prominent checkout recognition ahead of express checkout', () => {
+  it('keeps checkout recognition ahead of express checkout', () => {
     const buy = page('BuyPage');
-    const proofIndex = buy.indexOf('<CheckoutProof kitId={selectedKit} prominent />');
+    const proofIndex = buy.indexOf('<BuyIntroduction kitId={selectedKit} />');
     const expressIndex = buy.indexOf('<div className="by-express-wrap"');
     expect(proofIndex).toBeGreaterThan(-1);
     expect(proofIndex).toBeLessThan(expressIndex);

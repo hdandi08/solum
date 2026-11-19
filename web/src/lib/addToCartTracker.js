@@ -1,5 +1,6 @@
 import { capture, fbAddToCart, ttqAddToCart } from './analytics';
 import { resolveAddToCart } from './addToCart';
+import { BUY_FROM_SITE } from './buyLanding.js';
 
 // Fires AddToCart (PostHog + Meta + TikTok) for an EXPLICIT kit button click.
 // Dedup: at most once per kit per session. NEVER call from a page-load effect.
@@ -24,5 +25,5 @@ export function buyClick(e, navigate, href, kitId) {
   trackAddToCart(kitId);
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
   e.preventDefault();
-  navigate(href);
+  navigate(href, { state: BUY_FROM_SITE });
 }

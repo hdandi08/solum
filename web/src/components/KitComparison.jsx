@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BUY_FROM_SITE } from '../lib/buyLanding.js';
 import { KITS, kitWorth } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { capture } from '../lib/analytics.js';
@@ -289,7 +290,7 @@ export default function KitComparison({
                         onClick={() => {
                           capture('kit_cta_clicked', { kit: kit.id, kit_name: kit.name });
                           trackAddToCart(kit.id);
-                          navigate(buyHref);
+                          navigate(buyHref, { state: BUY_FROM_SITE });
                         }}
                       >
                         {ctaVerb} {kit.name} · £{kit.firstBoxPrice}
