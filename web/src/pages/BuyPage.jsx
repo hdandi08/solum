@@ -1,5 +1,5 @@
 import KitQuantityEditor, { KitOrderLines } from '../components/KitQuantityEditor.jsx';
-import { multiKitCheckoutEnabled, multiKitEnvironmentAllowed, normalizeKitItems, kitOrder, paymentKitOrder, kitStockError, saveKitSelection, restoreKitSelection, kitSelectionParam, parseKitSelectionParam } from '../lib/kitOrder.js';
+import { multiKitCheckoutEnabled, multiKitEnvironmentAllowed, normalizeKitItems, kitOrder, changeKitQuantity, paymentKitOrder, kitStockError, saveKitSelection, restoreKitSelection, kitSelectionParam, parseKitSelectionParam } from '../lib/kitOrder.js';
 import { deliverySummary } from '../lib/deliverySummary.js';
 import { captureCampaignAttribution } from '../lib/campaignAttribution.js';
 import { resolveBuyKit } from '../lib/buyLanding.js';
@@ -741,6 +741,7 @@ export default function BuyPage() {
   const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
   const [items, setItems] = useState(() => MULTI_KIT_ENABLED ? (parseKitSelectionParam(params.get('items')) ?? (preselect ? [{ kit_id: preselect, quantity: 1 }] : restoreKitSelection('ritual'))) : [{ kit_id: preselect ?? 'ritual', quantity: 1 }]);
   const [quantityEditorOpen, setQuantityEditorOpen] = useState(false);
+  const [quickOrderError, setQuickOrderError] = useState('');
   const [expressBusy, setExpressBusy] = useState(false);
   const expressAttempt = useRef(null);
   const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
@@ -1070,9 +1071,9 @@ export default function BuyPage() {
     finally { setLoading(false); }
   }
 
-  function applyItems(nextItems) {
+  function applyItems(nextItems, availability = inventory) {
     const next = normalizeKitItems(nextItems);
-    const stockError = kitStockError(next, inventory);
+    const stockError = kitStockError(next, availability);
     if (stockError) throw Error(stockError);
     setItems(next); saveKitSelection(next);
     const primary = next.some(item => item.kit_id === selectedKit) ? selectedKit : next[0].kit_id;
@@ -1080,7 +1081,7 @@ export default function BuyPage() {
     const search = new URLSearchParams(params); search.set('kit', primary); search.delete('resume');
     if (kitOrder(next).totalQuantity > 1) search.set('items', kitSelectionParam(next)); else search.delete('items');
     setParams(search, { replace: true, state: entryState });
-    setQuantityEditorOpen(false); setError('');
+    setQuantityEditorOpen(false); setError(''); setQuickOrderError('');
   }
 
   function selectSingleKit(id) {
@@ -1088,8 +1089,34 @@ export default function BuyPage() {
     resetSingleKit(id);
   }
 
+  function canQuickChange(id, delta) {
+    const next = changeKitQuantity(items,id,delta,expressAttempt.current ? undefined : inventory);
+    return kitSelectionParam(next) !== kitSelectionParam(items);
+  }
+
+  async function quickChange(id, delta) {
+    if (checkoutBusy || !MULTI_KIT_ENABLED) return;
+    const next = changeKitQuantity(items,id,delta);
+    if (kitSelectionParam(next) === kitSelectionParam(items)) return;
+    setLoading(true); setError(''); setQuickOrderError('');
+    try {
+      const hadHold = Boolean(expressAttempt.current);
+      await retireExpressAttempt();
+      let available = inventory;
+      if (hadHold) {
+        available = await readCheckoutInventory(SUPABASE_URL,authHeaders);
+        setInventory(available);
+      }
+      applyItems(next,available);
+    } catch (cause) { setQuickOrderError(cause.message || 'We could not update your quantities. Please try again.'); }
+    finally { setLoading(false); }
+  }
+
+  const quickControls = MULTI_KIT_ENABLED ? { disabled: checkoutBusy, canChange: canQuickChange, onChange: quickChange } : undefined;
+
   function resetSingleKit(id) {
     const selection = [{ kit_id: id, quantity: 1 }];
+    setQuickOrderError('');
     setSelectedKit(id); setItems(selection); saveKitSelection(selection);
     const search = new URLSearchParams(params); search.set('kit', id); search.delete('items'); search.delete('resume');
     setParams(search, { replace: true, state: entryState });
@@ -1289,24 +1316,29 @@ export default function BuyPage() {
               )}
 
               {/* Confirm the selected kit without reopening the whole decision. */}
-              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && order.totalQuantity === 1 && (
+              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && order.items.length === 1 && (
                 <BuyKitConfirmation
-                  kit={activeKit}
+                  kit={KITS.find(kit => kit.id === order.items[0].kit_id)}
                   price={price}
                   dispatch={iabGate || typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
                   onChange={async () => { if (checkoutBusy) return; setLoading(true); try { await retireExpressAttempt(); setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); } catch (cause) { setError(cause.message); } finally { setLoading(false); } }}
                   disabled={checkoutBusy}
+                  quantity={order.totalQuantity}
+                  controls={quickControls}
+                  otherKit={KITS.find(kit => !kit.comingSoon && !kit.hidden && kit.id !== order.items[0].kit_id)}
                 />
               )}
 
-              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && (MULTI_KIT_ENABLED || order.totalQuantity > 1) && (order.totalQuantity > 1
-                ? <section className="kit-grouped-card" data-testid="kits-confirm" aria-label="Selected kits">
+              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && order.items.length > 1 && (
+                  <section className="kit-grouped-card" data-testid="kits-confirm" aria-label="Selected kits">
                     <header><strong>Your kits</strong>{MULTI_KIT_ENABLED && <button type="button" className="kit-order-link" disabled={checkoutBusy} onClick={openQuantityEditor}>Edit</button>}</header>
-                    <KitOrderLines order={order} />
+                    <KitOrderLines order={order} controls={quickControls} />
                     <div className="kit-order-total"><span>Total</span><strong>£{price}</strong></div>
                     <p className="co-price-sub">Free UK delivery</p>
+                    {order.totalQuantity === 5 && <p className="kit-order-limit">Maximum 5 kits per order.</p>}
                   </section>
-                : <button type="button" className="kit-order-link kit-add-another" disabled={checkoutBusy} onClick={openQuantityEditor}>Add another kit</button>)}
+              )}
+              {step === 'details' && !quantityEditorOpen && quickOrderError && <p className="co-error" role="alert">{quickOrderError}</p>}
               {step === 'details' && quantityEditorOpen && error && <p className="co-error" role="alert">{error}</p>}
               {step === 'details' && quantityEditorOpen && <KitQuantityEditor items={items} inventory={inventory} busy={checkoutBusy} onApply={applyItems} onCancel={() => setQuantityEditorOpen(false)} />}
 

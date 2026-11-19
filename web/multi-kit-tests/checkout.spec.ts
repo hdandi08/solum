@@ -1,11 +1,9 @@
 import { setup } from './support';
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 const mixed = [{ kit_id: 'ground', quantity: 1 }, { kit_id: 'ritual', quantity: 2 }];
 async function makeMixed(page: Page) {
-  await page.getByRole('button',{name:'Add another kit',exact:true}).click();
   await page.getByRole('button',{name:'Increase RITUAL quantity'}).click();
   await page.getByRole('button',{name:/Add GROUND kit/}).click();
-  await page.getByRole('button',{name:'Update order',exact:true}).click();
 }
 async function delivery(page: Page) {
   await page.getByTestId('first-name').fill('Test'); await page.getByTestId('email').fill('buyer@example.test');
@@ -13,17 +11,46 @@ async function delivery(page: Page) {
   await page.getByTestId('line1').fill('10 Test Street'); await page.getByTestId('city').fill('London'); await page.getByTestId('postcode').fill('SW1A 1AA');
   await page.getByTestId('delivery-btn').click();
 }
-for (const kit of ['ritual','ground']) test(`default ${kit} stays one kit; editor cancel and limits are safe`, async ({page}) => {
+for (const kit of ['ritual','ground']) test(`default ${kit} has obvious quantity controls beside the price`, async ({page}) => {
   await setup(page,{ritual:2,ground:4}); await page.goto(`/buy?kit=${kit}`);
   await expect(page.getByTestId('kit-confirm')).toContainText(kit.toUpperCase());
   await expect(page.getByTestId('kit-quantity-editor')).toHaveCount(0);
-  await page.getByRole('button',{name:'Add another kit',exact:true}).click();
   await expect(page.getByRole('button',{name:`Decrease ${kit.toUpperCase()} quantity`})).toBeDisabled();
   await page.getByRole('button',{name:`Increase ${kit.toUpperCase()} quantity`}).click();
   if (kit==='ritual') await expect(page.getByRole('button',{name:'Increase RITUAL quantity'})).toBeDisabled();
-  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  await page.getByRole('button',{name:`Decrease ${kit.toUpperCase()} quantity`}).click();
   await expect(page.getByTestId('kit-confirm')).toBeVisible();
   await expect(page.getByTestId('kit-confirm')).toContainText(kit==='ritual'?'£85':'£65');
+  await expect(page.getByTestId('kit-confirm').getByRole('button',{name:`Add ${kit==='ritual'?'GROUND':'RITUAL'} kit`})).toBeVisible();
+  if (kit==='ritual') await page.getByTestId('kit-confirm').screenshot({path:`/tmp/solum-kit-controls-${page.viewportSize()?.width}.png`});
+});
+test('quantity and add-kit controls fit a narrow mobile screen',async({page})=>{
+  await page.setViewportSize({width:320,height:740}); await setup(page); await page.goto('/buy?kit=ground');
+  const card=page.getByTestId('kit-confirm');
+  await expect(card.getByRole('button',{name:'Add RITUAL kit'})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(320);
+  await card.screenshot({path:'/tmp/solum-kit-controls-320.png'});
+  await page.getByRole('button',{name:'Add RITUAL kit'}).click();
+  await expect(page.getByTestId('kits-confirm')).toContainText('£150');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(320);
+});
+test('direct quantity changes release an existing wallet hold and use restored availability',async({page})=>{
+  const counts={ritual:2,ground:1}; const requests=await setup(page,counts); await page.goto('/buy?kit=ritual');
+  await page.evaluate(()=>{window.__declinePayment=true;}); await page.getByTestId('mock-wallet').click();
+  await expect(page.getByTestId('form-error')).toContainText('Try another card.');
+  counts.ritual=0; await page.reload();
+  await page.route('**/functions/v1/release-checkout-reservation',r=>{requests.push({release:true});counts.ritual=2;return r.fulfill({json:{released:true}});});
+  await page.getByRole('button',{name:'Increase RITUAL quantity'}).click();
+  await expect(page.getByTestId('kits-confirm')).toContainText('£170'); expect(requests[1]).toEqual({release:true});
+});
+test('direct add-kit controls keep the order unchanged if an old payment is processing',async({page})=>{
+  await setup(page); await page.goto('/buy?kit=ritual');
+  await page.evaluate(()=>{window.__declinePayment=true;}); await page.getByTestId('mock-wallet').click();
+  await expect(page.getByTestId('form-error')).toContainText('Try another card.');
+  await page.route('**/functions/v1/release-checkout-reservation',r=>r.fulfill({status:409,json:{error:'payment_processing'}}));
+  await page.getByRole('button',{name:'Add GROUND kit'}).click();
+  await expect(page.getByRole('alert')).toHaveText('Your payment is still processing. Please wait before making changes.');
+  await expect(page.getByTestId('kit-confirm')).toContainText('£85');
 });
 test('mixed card checkout shares quantities across summaries, refresh, payment and success',async({page})=>{
   const requests=await setup(page); await page.goto('/buy?kit=ritual'); await makeMixed(page);
@@ -72,12 +99,12 @@ for (const kit of ['ritual','ground']) test(`on-site ${kit} one-kit checkout kee
   expect(requests[0]).toHaveProperty('kit_id',kit); expect(requests[0]).not.toHaveProperty('items');
 });
 test('five-kit limit applies across both kit types',async({page})=>{
-  await setup(page); await page.goto('/buy?kit=ritual'); await page.getByRole('button',{name:'Add another kit',exact:true}).click();
+  await setup(page); await page.goto('/buy?kit=ritual');
   for(let i=0;i<3;i++) await page.getByRole('button',{name:'Increase RITUAL quantity'}).click();
   await page.getByRole('button',{name:/Add GROUND kit/}).click();
   await expect(page.getByRole('button',{name:'Increase RITUAL quantity'})).toBeDisabled();
   await expect(page.getByRole('button',{name:'Increase GROUND quantity'})).toBeDisabled();
-  await expect(page.getByTestId('kit-quantity-editor')).toContainText('Maximum 5 kits per order.');
+  await expect(page.getByTestId('kits-confirm')).toContainText('Maximum 5 kits per order.');
 });
 test('in-app browser shows the grouped order and £235 total',async({page})=>{
   await setup(page); await page.goto('/buy?kit=ritual&forceIab=1'); await makeMixed(page);
