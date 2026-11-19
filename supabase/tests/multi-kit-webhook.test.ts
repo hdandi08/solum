@@ -248,3 +248,13 @@ Deno.test("paid amount/customer/currency mismatch fails before finalization or m
     assertEquals(f.emails.length, 0);
   }
 });
+Deno.test('production live multi-kit webhook finalizes with flags off and rejects test resources',async()=>{
+  Deno.env.set('SUPABASE_URL','https://gvfptmjluxpngfjendbi.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_live_fixture');
+  try{
+    const live={...pi,livemode:true};const f=fixture({verifiedPi:live});
+    assertEquals((await deliver('payment_intent.succeeded',live)).status,200);
+    assertEquals(f.rpc.length,1);assertEquals(f.emails.length,2);
+    assertEquals((await deliver('payment_intent.succeeded',live)).status,200);assertEquals(f.rpc.length,1);
+    const wrong=fixture();assertEquals((await deliver('payment_intent.succeeded',pi)).status,500);assertEquals(wrong.rpc.length,0);assertEquals(wrong.emails.length,0);
+  }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
+});

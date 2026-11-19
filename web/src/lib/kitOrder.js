@@ -3,10 +3,11 @@ export const KIT_UNIT_PENCE = Object.freeze({ ground: 6500, ritual: 8500 });
 export const MAX_KIT_QUANTITY = 5;
 const SELECTION_KEY = 'solum_buy_kit_items';
 const DEV_SUPABASE_URL = 'https://rodvvmfzkyjsqbufkjbc.supabase.co';
+const PROD_SUPABASE_URL = 'https://gvfptmjluxpngfjendbi.supabase.co';
 
 export function multiKitEnvironmentAllowed(env = import.meta.env) {
-  return env.VITE_SUPABASE_URL === DEV_SUPABASE_URL
-    && /^pk_test_\S+$/.test(env.VITE_STRIPE_PUBLISHABLE_KEY ?? '');
+  return (env.VITE_SUPABASE_URL === DEV_SUPABASE_URL && /^pk_test_\S+$/.test(env.VITE_STRIPE_PUBLISHABLE_KEY ?? ''))
+    || (env.VITE_SUPABASE_URL === PROD_SUPABASE_URL && /^pk_live_\S+$/.test(env.VITE_STRIPE_PUBLISHABLE_KEY ?? ''));
 }
 export function multiKitCheckoutEnabled(env = import.meta.env) {
   return env.VITE_MULTI_KIT_CHECKOUT_ENABLED === 'true' && multiKitEnvironmentAllowed(env);

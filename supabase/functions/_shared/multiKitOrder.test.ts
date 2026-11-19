@@ -13,6 +13,9 @@ import {
   verifyMultiKitPayment,
 } from "./multiKitOrder.ts";
 
+Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');
+Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');
+
 const items = [{
   kit_id: "ground",
   quantity: 1,
@@ -78,6 +81,11 @@ Deno.test("multi-kit feature gate fails closed outside exact dev/test/reservatio
     );
   }
 });
+Deno.test("production multi-kit requires the exact production project and live credentials", () => {
+  const env:Record<string,string>={SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co',STRIPE_SECRET_KEY:'sk_live_fixture',CHECKOUT_RESERVATIONS_ENABLED:'true',MULTI_KIT_CHECKOUT_ENABLED:'true'};
+  assertEquals(multiKitCheckoutEnabled(k=>env[k]),true);
+  for(const patch of [{STRIPE_SECRET_KEY:'sk_test_fixture'},{SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co.evil'},{MULTI_KIT_CHECKOUT_ENABLED:'false'},{CHECKOUT_RESERVATIONS_ENABLED:'false'}]) assertEquals(multiKitCheckoutEnabled(k=>({...env,...patch})[k]),false);
+});
 const attempt = {
   id: "11111111-1111-4111-8111-111111111111",
   items,
@@ -112,7 +120,7 @@ Deno.test("immutable attempt uses original request key/customer snapshot on retr
     },
   }]);
 });
-function paymentHarness(state = "held", status = "requires_payment_method") {
+function paymentHarness(state = "held", status = "requires_payment_method", livemode = false) {
   const calls: any[] = [];
   const db = {
     rpc: (name: string, args: any) => {
@@ -133,7 +141,7 @@ function paymentHarness(state = "held", status = "requires_payment_method") {
     customer: "cus_test",
     amount: 23500,
     currency: "gbp",
-    livemode: false,
+    livemode,
   };
   const stripe = {
     paymentIntents: {
@@ -163,6 +171,17 @@ Deno.test("payment is idempotent per immutable attempt and reserves all stock be
     name: "reserve_multi_kit_stock",
     args: { p_attempt_id: attempt.id, p_resource_id: "pi_test" },
   });
+});
+Deno.test('production exposes only live Stripe resources and rejects mode mismatches before reserving',async()=>{
+  Deno.env.set('SUPABASE_URL','https://gvfptmjluxpngfjendbi.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_live_fixture');
+  try{
+    const live=paymentHarness('held','requires_payment_method',true);
+    assertEquals((await createMultiKitPayment(live.db,live.stripe,attempt,{})).livemode,true);
+    const test=paymentHarness();await assertRejects(()=>createMultiKitPayment(test.db,test.stripe,attempt,{}));
+    assertEquals(test.calls.some(call=>call?.name==='reserve_multi_kit_stock'),false);
+  }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
+  const wrong=paymentHarness('held','requires_payment_method',true);await assertRejects(()=>createMultiKitPayment(wrong.db,wrong.stripe,attempt,{}));
+  assertEquals(wrong.calls.some(call=>call?.name==='reserve_multi_kit_stock'),false);
 });
 Deno.test("sold-out/released attempts never expose a secret or reacquire stock; cancel then release safely", async () => {
   for (const state of ["sold_out", "released", "consumed"]) {

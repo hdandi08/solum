@@ -49,7 +49,7 @@ function submit(body: unknown) {
     }),
   );
 }
-Deno.test("items are validated even with multi-kit disabled; production cannot enable quantities", async () => {
+Deno.test("items are validated even with multi-kit disabled; unrecognized environments cannot enable quantities", async () => {
   transport = () =>
     Promise.reject(
       Error("Invalid requests must have no provider side effects"),

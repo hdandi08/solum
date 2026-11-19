@@ -13,6 +13,7 @@ export type KitSelection = {
 };
 const PRICES: Record<string, number> = { ground: 6500, ritual: 8500 };
 const DEV_URL = "https://rodvvmfzkyjsqbufkjbc.supabase.co";
+const PROD_URL = "https://gvfptmjluxpngfjendbi.supabase.co";
 
 // Only browser quantities are accepted. Prices are always constructed here.
 export function canonicalKitItems(input: unknown): KitSelection {
@@ -47,16 +48,19 @@ export function canonicalKitItems(input: unknown): KitSelection {
   };
 }
 
-export function multiKitDevelopmentEnvironment(
+export function multiKitEnvironmentAllowed(
   env: (key: string) => string | undefined = (key) => Deno.env.get(key),
 ) {
-  return env("SUPABASE_URL") === DEV_URL &&
-    !!env("STRIPE_SECRET_KEY")?.startsWith("sk_test_");
+  return (env("SUPABASE_URL") === DEV_URL && !!env("STRIPE_SECRET_KEY")?.startsWith("sk_test_"))
+    || (env("SUPABASE_URL") === PROD_URL && !!env("STRIPE_SECRET_KEY")?.startsWith("sk_live_"));
+}
+export function multiKitPaymentModeAllowed(livemode: unknown) {
+  return multiKitEnvironmentAllowed() && livemode === (Deno.env.get('SUPABASE_URL') === PROD_URL);
 }
 export function multiKitCheckoutEnabled(
   env: (key: string) => string | undefined = (key) => Deno.env.get(key),
 ) {
-  return multiKitDevelopmentEnvironment(env) &&
+  return multiKitEnvironmentAllowed(env) &&
     env("CHECKOUT_RESERVATIONS_ENABLED") === "true" &&
     env("MULTI_KIT_CHECKOUT_ENABLED") === "true";
 }
@@ -171,7 +175,7 @@ export async function createMultiKitPayment(
   if (
     pi.customer !== attempt.stripe_customer_id ||
     pi.amount !== attempt.amount_pence || pi.currency !== "gbp" ||
-    pi.livemode !== false
+    !multiKitPaymentModeAllowed(pi.livemode)
   ) {
     await cancelAndReleaseUnexposed(db, stripe, pi.id);
     throw new ReservationError("inventory_unavailable", 503);

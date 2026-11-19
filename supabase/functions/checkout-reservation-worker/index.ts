@@ -1,4 +1,5 @@
 import Stripe from "https://esm.sh/stripe@14?target=deno";
+import { auditProductionCheckoutResources } from '../_shared/productionCheckoutAudit.ts';
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2?target=deno";
 import {
   auditLegacyDevPayments,
@@ -18,6 +19,10 @@ Deno.serve(async (req) => {
     req.headers.get("authorization") !== `Bearer ${secret}`
   ) return new Response("Unauthorized", { status: 401 });
   const body = await req.json().catch(() => ({}));
+  if(body.action==='audit_legacy_prod'){
+    try{return Response.json({resources:await auditProductionCheckoutResources(stripe)});}
+    catch{return Response.json({error:'production_audit_failed'},{status:409});}
+  }
   if (body.action === "audit_legacy_dev") {
     try {
       return Response.json({

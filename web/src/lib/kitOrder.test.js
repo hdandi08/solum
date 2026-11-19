@@ -24,9 +24,14 @@ describe('kit order', () => {
     expect(kitStockError(mixed, { ritual: { count: 1, available: true } })).toContain('RITUAL');
     expect(kitStockError(mixed, { ritual: { count: 5, available: true }, ground: { count: 1, available: true } })).toBe('');
   });
-  it('requires all three dev safeguards, never enabling on production or a URL lookalike', () => {
+  it('requires a matching dev/test configuration and rejects unknown projects or URL lookalikes', () => {
     expect(multiKitCheckoutEnabled(dev)).toBe(true);
     for (const patch of [{ VITE_MULTI_KIT_CHECKOUT_ENABLED: 'false' }, { VITE_STRIPE_PUBLISHABLE_KEY: 'pk_live_example' }, { VITE_SUPABASE_URL: 'https://rodvvmfzkyjsqbufkjbc.supabase.co.evil.test' }, { VITE_SUPABASE_URL: 'https://production.supabase.co' }]) expect(multiKitCheckoutEnabled({ ...dev, ...patch })).toBe(false);
+  });
+  it('enables only the exact production project with a live key and explicit flag', () => {
+    const prod={...dev,VITE_SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co',VITE_STRIPE_PUBLISHABLE_KEY:'pk_live_fixture'};
+    expect(multiKitCheckoutEnabled(prod)).toBe(true);
+    for(const patch of [{VITE_MULTI_KIT_CHECKOUT_ENABLED:'false'},{VITE_STRIPE_PUBLISHABLE_KEY:'pk_test_fixture'},{VITE_SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co.evil'}]) expect(multiKitCheckoutEnabled({...prod,...patch})).toBe(false);
   });
   it('accepts only a complete matching server snapshot before showing a payable total', () => {
     const order = kitOrder(mixed);

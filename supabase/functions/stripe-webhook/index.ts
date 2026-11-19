@@ -1,4 +1,4 @@
-import { multiKitDevelopmentEnvironment, verifyMultiKitPayment, verifiedMultiKitShipping, multiKitSummary, multiKitEmailLines, type KitItem } from '../_shared/multiKitOrder.ts';
+import { multiKitEnvironmentAllowed, multiKitPaymentModeAllowed, verifyMultiKitPayment, verifiedMultiKitShipping, multiKitSummary, multiKitEmailLines, type KitItem } from '../_shared/multiKitOrder.ts';
 import {ensureCheckoutSubscription} from '../_shared/checkoutSubscription.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -656,9 +656,9 @@ async function handleMultiKitOrderFromPI(
   claim: PaymentIntentClaim,
 ) {
   // In-flight paid attempts remain processable after checkout flags are disabled.
-  if (!multiKitDevelopmentEnvironment()) throw new Error('multi_kit_environment_forbidden');
+  if (!multiKitEnvironmentAllowed()) throw new Error('multi_kit_environment_forbidden');
   const pi = await stripe.paymentIntents.retrieve(eventPi.id);
-  if (pi.livemode !== false || pi.metadata?.checkout_flow !== 'multi_kit_v1') throw new Error('multi_kit_payment_forbidden');
+  if (!multiKitPaymentModeAllowed(pi.livemode) || pi.metadata?.checkout_flow !== 'multi_kit_v1') throw new Error('multi_kit_payment_forbidden');
   const attemptId = pi.metadata?.multi_kit_attempt_id;
   if (!/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(attemptId ?? '')) throw new Error('multi_kit_attempt_required');
   const {data:attempt,error:attemptError} = await db.from('checkout_multi_attempts').select('*').eq('id',attemptId).single();
