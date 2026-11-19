@@ -37,7 +37,7 @@ export function createLandingAwcCapture(store = storeAwcCookie) {
 
 export const captureLandingAwc = createLandingAwcCapture();
 
-export async function resolveAwcToken(fetchImpl = fetch) {
+export async function resolveAwcAttribution(fetchImpl = fetch) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), RESOLVE_TIMEOUT_MS);
   try {
@@ -48,13 +48,15 @@ export async function resolveAwcToken(fetchImpl = fetch) {
       body: '{}',
       signal: controller.signal,
     });
-    if (!response.ok) return undefined;
+    if (!response.ok) return { checked: false };
 
     const body = await response.json();
-    return typeof body.token === 'string' ? body.token : undefined;
+    return typeof body.token === 'string' && body.token.length > 0 ? { checked: true, token: body.token } : body.token === null ? { checked: true } : { checked: false };
   } catch {
-    return undefined;
+    return { checked: false };
   } finally {
     clearTimeout(timeout);
   }
 }
+
+export async function resolveAwcToken(fetchImpl = fetch) { return (await resolveAwcAttribution(fetchImpl)).token; }

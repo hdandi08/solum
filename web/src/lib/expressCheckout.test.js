@@ -180,3 +180,13 @@ describe('express loading telemetry', () => {
     expect(capture).toHaveBeenCalledTimes(1);
   });
 });
+
+it('can reuse an unchanged immutable wallet offer after expiry without authorising a new request',async()=>{
+ const {reusablePromoWalletAttempt}=await import('./expressCheckout.js');
+ const promo={code:'PERSONAL',discount_percent:10,email:'buyer@example.com',visitor_token:'opaque',valid:true,ends_at:'2099-12-01'};
+ const {body}=await buildExpressPaymentIntentBody({event:walletEvent,kitId:'ritual',promo},async()=>undefined);
+ const attempt={promo:{code:'PERSONAL',discount_percent:10},checkout_body:body};
+ expect(reusablePromoWalletAttempt(attempt,{event:walletEvent,kitId:'ritual',promo:{...promo,valid:false,ends_at:'2000-01-01'}})).toBe(true);
+ expect(reusablePromoWalletAttempt(attempt,{event:{...walletEvent,shippingAddress:{...walletEvent.shippingAddress,address:{...walletEvent.shippingAddress.address,line1:'Different address'}}},kitId:'ritual',promo})).toBe(false);
+ expect(()=>reusablePromoWalletAttempt(attempt,{event:{...walletEvent,billingDetails:{...walletEvent.billingDetails,email:'other@example.com'}},kitId:'ritual',promo})).toThrow(/email/i);
+});

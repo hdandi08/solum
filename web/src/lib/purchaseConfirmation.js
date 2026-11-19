@@ -10,16 +10,18 @@ function browserStorage() {
   try { return globalThis.sessionStorage; } catch { return undefined; }
 }
 
-function paymentResult(intent, kitId, items) {
+function paymentResult(intent, kitId, snapshot) {
+  const items = Array.isArray(snapshot) ? snapshot : snapshot?.items;
+  const promo = !Array.isArray(snapshot) && snapshot?.promo ? {...snapshot.promo,subtotal_pence:snapshot.subtotalPence,discount_pence:snapshot.discountPence} : undefined;
   if (!/^pi_[A-Za-z0-9]+$/.test(intent?.id ?? '') || !['ground', 'ritual', 'sovereign'].includes(kitId)) return { status: 'unverified' };
   if (intent.status === 'processing') return { status: 'processing' };
   if (['canceled', 'requires_payment_method'].includes(intent.status)) return { status: 'failed' };
   if (intent.status !== 'succeeded' || intent.currency !== 'gbp' || !Number.isSafeInteger(intent.amount) || intent.amount <= 0) return { status: 'unverified' };
   let order;
   if (items) {
-    try { order = paymentKitOrder({ checkout_flow: 'multi_kit_v1', order_items: items, total_quantity: items.reduce((sum, item) => sum + item.quantity, 0), amount_pence: intent.amount }, items); } catch { return { status: 'unverified' }; }
+    try { order = paymentKitOrder({ checkout_flow: 'multi_kit_v1', promo, order_items: items, total_quantity: items.reduce((sum, item) => sum + item.quantity, 0), amount_pence: intent.amount }, items); } catch { return { status: 'unverified' }; }
   } else if (intent.metadata?.checkout_flow === 'multi_kit_v1') return { status: 'unverified' };
-  if (order?.totalQuantity > 1) return { status: 'confirmed', purchase: { eventId: intent.id, value: intent.amount / 100, kitId: null, items: order.items, totalQuantity: order.totalQuantity, livemode: intent.livemode === true } };
+  if (order && (order.totalQuantity > 1 || order.promo)) return { status: 'confirmed', purchase: { eventId: intent.id, value: intent.amount / 100, kitId: order.totalQuantity > 1 ? null : kitId, ...(order.promo ? {promo:order.promo,subtotalPence:order.subtotalPence,discountPence:order.discountPence} : {}), items: order.items, totalQuantity: order.totalQuantity, livemode: intent.livemode === true } };
   return { status: 'confirmed', purchase: { eventId: intent.id, value: intent.amount / 100, kitId, livemode: intent.livemode === true } };
 }
 

@@ -69,3 +69,17 @@ it('separates safe dev/test recovery capability from enabling new multi-kit orde
   expect(multiKitCheckoutEnabled({...dev,VITE_MULTI_KIT_CHECKOUT_ENABLED:'false'})).toBe(false);
   expect(multiKitEnvironmentAllowed({...dev,VITE_SUPABASE_URL:'https://production.supabase.co'})).toBe(false);
 });
+
+describe('personal Meta offer accounting', () => {
+  const promo = { code: 'SOLUM-PERSONAL', discount_percent: 10 };
+  it('discounts every unit in a mixed order and exposes original subtotal', () => {
+    expect(kitOrder([{kit_id:'ground',quantity:1},{kit_id:'ritual',quantity:2}], promo)).toMatchObject({amountPence:21150,subtotalPence:23500,discountPence:2350,promo,items:[{unit_amount_pence:5850,line_amount_pence:5850},{unit_amount_pence:7650,line_amount_pence:15300}]});
+  });
+  it('verifies a discounted single kit only through durable multi flow and exact financial snapshot', () => {
+    const items = [{kit_id:'ritual',quantity:1}];
+    const response = {checkout_flow:'multi_kit_v1',total_quantity:1,amount_pence:7650,order_items:[{...items[0],unit_amount_pence:7650,line_amount_pence:7650}],promo:{...promo,subtotal_pence:8500,discount_pence:850}};
+    expect(paymentKitOrder(response,items,promo)).toMatchObject({amountPence:7650,subtotalPence:8500,discountPence:850});
+    for(const patch of [{promo:undefined},{promo:{...response.promo,discount_pence:849}},{checkout_flow:undefined},{amount_pence:8500}]) expect(()=>paymentKitOrder({...response,...patch},items,promo)).toThrow();
+    expect(()=>paymentKitOrder({...response,promo:{...response.promo,code:'OTHER'}},items,promo)).toThrow();
+  });
+});

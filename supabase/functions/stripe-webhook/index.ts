@@ -1,3 +1,4 @@
+import { verifyPromoPaidEmail, promoEmailFinancials } from '../_shared/metaPromo.ts';
 import { multiKitEnvironmentAllowed, multiKitPaymentModeAllowed, verifyMultiKitPayment, verifiedMultiKitShipping, multiKitSummary, multiKitEmailLines, type KitItem } from '../_shared/multiKitOrder.ts';
 import {ensureCheckoutSubscription} from '../_shared/checkoutSubscription.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
@@ -87,7 +88,7 @@ async function restockKitInventory(db: ReturnType<typeof createClient<any>>, ord
 }
 
 function escapeEmailText(value: unknown) { return String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!)); }
-type MultiKitEmail = { items: KitItem[]; address: Record<string, any> };
+type MultiKitEmail = { items: KitItem[]; address: Record<string, any>; promo?:{subtotal_pence:number;discount_pence:number} };
 
 async function sendConfirmationEmail(
   email: string,
@@ -160,7 +161,7 @@ async function sendConfirmationEmail(
           </table>
         </td></tr>
 
-        ${multiKit ? `<tr><td style="padding:0 48px 36px;color:#F0ECE2;font-size:15px;line-height:1.8;">${multiKitEmailLines(multiKit.items)}<br><strong>Total: £${(multiKit.items.reduce((sum,item)=>sum+item.line_amount_pence,0)/100).toFixed(2)}</strong><br>Free UK delivery. Your ${multiKit.items.reduce((sum,item)=>sum+item.quantity,0)} kits will be sent in separate parcels.<br><br>${['name','line1','line2','city','postcode','country'].map(key=>multiKit.address[key]).filter(Boolean).map(escapeEmailText).join('<br>')}</td></tr>` : ''}
+        ${multiKit ? `<tr><td style="padding:0 48px 36px;color:#F0ECE2;font-size:15px;line-height:1.8;">${multiKitEmailLines(multiKit.items)}<br>${promoEmailFinancials(multiKit.promo)}<strong>Total: £${(multiKit.items.reduce((sum,item)=>sum+item.line_amount_pence,0)/100).toFixed(2)}</strong><br>Free UK delivery. Your ${multiKit.items.reduce((sum,item)=>sum+item.quantity,0)} kits will be sent in separate parcels.<br><br>${['name','line1','line2','city','postcode','country'].map(key=>multiKit.address[key]).filter(Boolean).map(escapeEmailText).join('<br>')}</td></tr>` : ''}
         <!-- What happens next -->
         <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 48px;">
           <p style="margin:0 0 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">What Happens Next</p>
@@ -251,7 +252,7 @@ async function sendAdminNotification(
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:400px;">
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;width:120px;">Order</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:16px;font-weight:700;letter-spacing:0.08em;">#${orderRef}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Name</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${firstName}</td></tr>
-  <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Kit</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${multiKit ? multiKitEmailLines(multiKit.items) : kitName}</td></tr>
+  <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Kit</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${multiKit ? multiKitEmailLines(multiKit.items)+'<br>'+promoEmailFinancials(multiKit.promo) : kitName}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Amount</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#4A8FC7;font-size:14px;font-weight:700;">${amount}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Date</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.6);font-size:13px;">${dateTime}</td></tr>
 </table>
@@ -666,8 +667,9 @@ async function handleMultiKitOrderFromPI(
   verifyMultiKitPayment(pi,attempt);
   const address = verifiedMultiKitShipping(pi);
   const {email:metaEmail,first_name,last_name,source,phone,site_host,dispatch_date,arrival_date,ttclid,ttp,fbp,fbc,awc,awin_channel} = pi.metadata;
-  const email = (pi.receipt_email ?? metaEmail)?.trim().toLowerCase();
+  const email = (attempt.promo_claim_id ? metaEmail : (pi.receipt_email ?? metaEmail))?.trim().toLowerCase();
   if (!email) throw new Error('multi_kit_customer_email_required');
+  verifyPromoPaidEmail(attempt,email);
   const {data:customer,error:customerError} = await db.from('customers').upsert({email,first_name,last_name:last_name || null,stripe_customer_id:attempt.stripe_customer_id},{onConflict:'email'}).select('id').single();
   if (customerError || !customer) throw new Error('multi_kit_customer_upsert_failed');
   const {data:order,error:orderError} = await db.rpc('finalise_multi_kit_order',{
@@ -719,7 +721,7 @@ async function handleMultiKitOrderFromPI(
   await deliverPaidOrderEmails(db,{
     orderId:order.id,livemode:pi.livemode,customerEmail:email,firstName:escapeEmailText(first_name || 'there'),kitId:'',
     orderRef:pi.id.slice(-8).toUpperCase(),amountPence:order.amount_pence,isOneTime:true,dispatchDate:dispatch_date,arrivalDate:arrival_date,
-    multiKit:{items:order.items,address:order.shipping_address},
+    multiKit:{items:order.items,address:order.shipping_address,...(order.promo ? {promo:order.promo} : {})},
   });
   if (shouldSendExternalPurchaseSideEffects({livemode:pi.livemode,orderAlreadyExists:false,purchaseSideEffectsAttempted:paymentIntentPurchaseSideEffectsAttempted(claim.data)})) {
     await markPaymentIntentPurchaseSideEffectsAttempted(db,claim);

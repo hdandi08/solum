@@ -84,7 +84,7 @@ Deno.test("multi-kit feature gate fails closed outside exact dev/test/reservatio
 Deno.test("production multi-kit requires the exact production project and live credentials", () => {
   const env:Record<string,string>={SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co',STRIPE_SECRET_KEY:'sk_live_fixture',CHECKOUT_RESERVATIONS_ENABLED:'true',MULTI_KIT_CHECKOUT_ENABLED:'true'};
   assertEquals(multiKitCheckoutEnabled(k=>env[k]),true);
-  for(const patch of [{STRIPE_SECRET_KEY:'sk_test_fixture'},{SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co.evil'},{MULTI_KIT_CHECKOUT_ENABLED:'false'},{CHECKOUT_RESERVATIONS_ENABLED:'false'}]) assertEquals(multiKitCheckoutEnabled(k=>({...env,...patch})[k]),false);
+  for(const patch of [{STRIPE_SECRET_KEY:'sk_test_fixture'},{SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co.evil'},{MULTI_KIT_CHECKOUT_ENABLED:'false'},{CHECKOUT_RESERVATIONS_ENABLED:'false'}]) assertEquals(multiKitCheckoutEnabled(k=>({...env,...patch} as Record<string,string|undefined>)[k]),false);
 });
 const attempt = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -267,4 +267,44 @@ Deno.test("kit IDs must be strings rather than coercible object keys", () => {
   for (const kit_id of [["ground"], { toString: () => "ground" }]) {
     assertThrows(() => canonicalKitItems([{ kit_id, quantity: 2 }]));
   }
+});
+Deno.test('promo retrieve failure binds first and records cancellation before stock hold; unknown cancel keeps claim pinned',async()=>{
+ for(const canceled of [true,false]) {
+  const calls:string[]=[];
+  const db={rpc:(name:string,args:any)=>{calls.push(name);return Promise.resolve({data:name==='freeze_meta_promo_payment_params'?args.p_params:null,error:null});}};
+  const stripe={paymentIntents:{create:()=>Promise.resolve({id:'pi_promo'}),retrieve:()=>Promise.reject(Error('network unknown')),cancel:()=>canceled?Promise.resolve({status:'canceled'}):Promise.reject(Error('unknown cancel'))}};
+  await assertRejects(()=>createMultiKitPayment(db,stripe,{...attempt,promo_claim_id:'claim_fixture',promo_email:'fixture@example.test'},{metadata:{email:'fixture@example.test'}}));
+  assertEquals(calls.slice(0,2),['freeze_meta_promo_payment_params','bind_meta_promo_payment']);assertEquals(calls.includes('reserve_multi_kit_stock'),false);assertEquals(calls.includes('release_meta_promo_payment'),canceled);
+ }
+});
+Deno.test('promo payment creation refuses production even when ordinary multi-kit live checkout is enabled',async()=>{
+ Deno.env.set('SUPABASE_URL','https://gvfptmjluxpngfjendbi.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_live_fixture');
+ try {
+  const h=paymentHarness('held','requires_payment_method',true);
+  await assertRejects(()=>createMultiKitPayment(h.db,h.stripe,{...attempt,promo_claim_id:'claim_fixture'},{}));assertEquals(h.calls.length,0);
+ }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
+});
+Deno.test('promo retries freeze original Stripe parameters before any create even after an unknown outcome',async()=>{
+ let original:any=null,created:any=null;
+ const db={rpc:(name:string,args:any)=>{
+  if(name==='freeze_meta_promo_payment_params'){original??=args.p_params;return Promise.resolve({data:original,error:null});}
+  if(name==='reserve_multi_kit_stock')return Promise.resolve({data:{state:'held',expires_at:new Date(Date.now()+600000).toISOString()},error:null});
+  return Promise.resolve({data:null,error:null});
+ }};
+ let lost=true;
+ const stripe={paymentIntents:{create:(params:any)=>{if(created)assertEquals(params,created);created??=params;if(lost){lost=false;return Promise.reject(Error('unknown creation outcome'));}return Promise.resolve({id:'pi_promo'});},retrieve:()=>Promise.resolve({id:'pi_promo',customer:attempt.stripe_customer_id,amount:attempt.amount_pence,currency:'gbp',livemode:false,status:'requires_payment_method',client_secret:'secret'})}};
+ const promo={...attempt,promo_claim_id:'claim_fixture',promo_email:'fixture@example.test'};
+ await assertRejects(()=>createMultiKitPayment(db,stripe,promo,{metadata:{email:'fixture@example.test',fbp:'original'}}));
+ await createMultiKitPayment(db,stripe,promo,{metadata:{email:'fixture@example.test',fbp:'changed'}});
+ assertEquals(original.metadata.fbp,'original');
+});
+Deno.test('promo sold-out and canceled errors retain key when cancellation or durable release is unknown',async()=>{
+ for(const failure of ['cancel','release','canceled-release']){
+  const h=paymentHarness('sold_out',failure==='canceled-release'?'canceled':'requires_payment_method');
+  const rpc=h.db.rpc;
+  h.db.rpc=(name:string,args:any)=>name==='freeze_meta_promo_payment_params'?Promise.resolve({data:args.p_params,error:null}):name==='release_meta_promo_payment'?Promise.resolve({data:null,error:failure==='cancel'?null:{message:'timeout'}} as any):rpc(name,args);
+  if(failure==='cancel')h.stripe.paymentIntents.cancel=()=>Promise.reject(Error('cancel outcome unknown'));
+  const error=await assertRejects(()=>createMultiKitPayment(h.db,h.stripe,{...attempt,promo_claim_id:'claim_fixture',promo_email:'fixture@example.test'}, {metadata:{email:'fixture@example.test'}}));
+  assertEquals((error as any).code,'inventory_unavailable',failure);
+ }
 });

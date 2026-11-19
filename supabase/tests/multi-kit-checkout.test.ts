@@ -180,3 +180,34 @@ Deno.test("quantity one items retain legacy payment route and authoritative kit 
   assertEquals((await res.json()).amount_pence, 6500);
   assertEquals(calls.some((p) => p.includes("multi")), false);
 });
+Deno.test('personal promo one-kit uses durable net-priced attempt; mixed returns original subtotal and saving',async()=>{
+ Deno.env.set('META_PROMO_ENABLED','true');Deno.env.set('META_PROMO_ENTRY_SECRET','fixture-entry-secret');
+ for(const input of [[{kit_id:'ground',quantity:1}],[{kit_id:'ground',quantity:1},{kit_id:'ritual',quantity:2}]]) {
+  const netLines=input.map(i=>({...i,unit_amount_pence:i.kit_id==='ground'?5850:7650,line_amount_pence:(i.kit_id==='ground'?5850:7650)*i.quantity}));
+  const subtotal=input.reduce((sum,i)=>sum+(i.kit_id==='ground'?6500:8500)*i.quantity,0);
+  const net=subtotal*9/10;
+  const promoAttempt={...attempt,items:netLines,total_quantity:input.reduce((sum,i)=>sum+i.quantity,0),amount_pence:net,subtotal_pence:subtotal,discount_pence:subtotal/10,promo_claim_id:'claim_fixture',promo_code:'BF-fixture',promo_email:'fixture@example.test'};
+  transport=async(input,init)=>{
+   const r=new Request(input,init),u=new URL(r.url);
+   if(u.pathname.endsWith('/rpc/record_meta_promo_visit'))return Response.json({eligible:true,blocked:false,visitor_token:'11111111-1111-4111-8111-111111111111'});
+   if(u.pathname==='/v1/customers')return Response.json({data:[{id:'cus_original'}]});
+   if(u.pathname.endsWith('/rpc/prepare_meta_promo_attempt')) {const b=await r.json();assertEquals(b.p_email,'fixture@example.test');assertEquals(b.p_code,'BF-fixture');return Response.json(promoAttempt);}
+   if(u.pathname==='/v1/payment_intents'&&r.method==='POST') {const b=new URLSearchParams(await r.text());assertEquals(b.get('amount'),String(net));assertEquals(b.get('metadata[checkout_flow]'),'multi_kit_v1');return Response.json({id:'pi_promo'});}
+   if(u.pathname.endsWith('/rpc/freeze_meta_promo_payment_params'))return Response.json((await r.json()).p_params);
+   if(u.pathname.endsWith('/rpc/bind_meta_promo_payment'))return Response.json(null);
+   if(u.pathname==='/v1/payment_intents/pi_promo')return Response.json({id:'pi_promo',customer:'cus_original',amount:net,currency:'gbp',status:'requires_payment_method',livemode:false,client_secret:'promo_secret'});
+   if(u.pathname.endsWith('/rpc/reserve_multi_kit_stock'))return Response.json({state:'held',expires_at:new Date(Date.now()+600000).toISOString()});
+   if(u.pathname.endsWith('/leads'))return Response.json({});
+   throw Error(`Unexpected ${u.pathname}`);
+  };
+  const res=await submit({...request,items:input,promo_code:'BF-fixture',promo_visitor_token:'11111111-1111-4111-8111-111111111111',attribution_checked:true});
+  assertEquals(res.status,200);const body=await res.json();assertEquals(body.checkout_flow,'multi_kit_v1');assertEquals(body.amount_pence,net);assertEquals(body.order_items,netLines);assertEquals(body.promo,{code:'BF-fixture',discount_percent:10,subtotal_pence:subtotal,discount_pence:subtotal/10});
+ }
+});
+Deno.test('blocked or disabled promo fails explicitly before any Stripe customer/payment side effect',async()=>{
+ let stripeTouched=false;
+ transport=async(input,init)=>{const r=new Request(input,init),u=new URL(r.url);if(u.hostname==='api.stripe.com')stripeTouched=true;if(u.pathname.endsWith('/rpc/record_meta_promo_visit'))return Response.json({eligible:false,blocked:true});throw Error('No external calls allowed');};
+ const body={...request,promo_code:'BF-fixture',promo_visitor_token:'11111111-1111-4111-8111-111111111111',attribution_checked:true};
+ assertEquals((await submit(body)).status,409);assertEquals(stripeTouched,false);
+ Deno.env.set('META_PROMO_ENABLED','false');assertEquals((await submit(body)).status,409);Deno.env.set('META_PROMO_ENABLED','true');
+});

@@ -2,7 +2,7 @@ import { CheckoutDispatch } from './ExpressCheckoutInfo.jsx';
 import { KitQuantityControl } from './KitQuantityEditor.jsx';
 import './BuyKitConfirmation.css';
 
-export default function BuyKitConfirmation({ kit, price, dispatch, onChange, disabled = false, quantity = 1, controls, otherKit }) {
+export default function BuyKitConfirmation({ kit, price, dispatch, onChange, disabled = false, quantity = 1, controls, otherKit, promo }) {
   return (
     <section className="buy-kit-card" data-testid={quantity > 1 ? 'kits-confirm' : 'kit-confirm'} aria-label={quantity > 1 ? 'Selected kits' : 'Selected kit'}>
       <header className="buy-kit-card-header">
@@ -21,8 +21,8 @@ export default function BuyKitConfirmation({ kit, price, dispatch, onChange, dis
             {kit?.id === 'ritual' && <span className="buy-kit-card-award">Award-winning kit</span>}
           </div>
           <div className="buy-kit-card-payment">
-            <p className="buy-kit-card-price"><strong>£{price}</strong><span>Total</span></p>
-            {quantity > 1 && <p className="buy-kit-card-unit-price">£{kit.firstBoxPrice} each</p>}
+            <p className="buy-kit-card-price"><strong>£{promo ? Number(price).toFixed(2) : price}</strong><span>Total</span></p>
+            {quantity > 1 && <p className="buy-kit-card-unit-price">£{promo ? (kit.firstBoxPrice * .9).toFixed(2) : kit.firstBoxPrice} each</p>}
             {controls && <div className="buy-kit-card-quantity">
               <span>Number of kits</span>
               <KitQuantityControl kitId={kit.id} quantity={quantity} disabled={disabled} canDecrease={controls.canChange(kit.id,-1)} canIncrease={controls.canChange(kit.id,1)} onChange={controls.onChange} />

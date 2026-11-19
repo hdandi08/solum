@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
+    if(Object.hasOwn(body,'promo_code') || Object.hasOwn(body,'promo_visitor_token')) throw new ReservationError('promo_unavailable',409);
     kit_id = body.kit_id;
     email  = body.email;
     const {
@@ -187,7 +188,7 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
-    console.error('CREATE_PAYMENT_INTENT_ERROR', err.message, { kit_id, email });
+    console.error('CREATE_PAYMENT_INTENT_ERROR', err instanceof Error ? err.message : 'unknown', { kit_id, email });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.com.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },

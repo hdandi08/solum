@@ -1,3 +1,5 @@
+import { resolveAwcAttribution } from './awinCookieBridge.js';
+import { promoPaymentFields } from './metaPromo.js';
 import { normalizeKitItems } from './kitOrder.js';
 import { captureCampaignAttribution } from './campaignAttribution.js';
 import { resolveAwinPaymentIntentMetadata } from './awinAttribution.js';
@@ -5,6 +7,7 @@ import { resolveAwinPaymentIntentMetadata } from './awinAttribution.js';
 export async function buildFirstBoxPaymentIntentBody({
   kitId,
   items,
+  promo,
   form,
   source,
   siteHost,
@@ -12,12 +15,17 @@ export async function buildFirstBoxPaymentIntentBody({
   metaIds = {},
   attribution = {},
 }, tokenResolver) {
+  const promoFields = promoPaymentFields(promo, form.email);
   const campaign = captureCampaignAttribution();
-  const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, tokenResolver);
-  const selection = items ? normalizeKitItems(items) : null;
+  const resolution = promo ? (tokenResolver ? {checked:true,token:await tokenResolver()} : await resolveAwcAttribution()) : null;
+  if (promo && !resolution.checked) throw Error('We could not check your offer attribution. Please try again before paying.');
+  const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, promo ? async()=>resolution.token : tokenResolver);
+  const selection = items ? normalizeKitItems(items) : promo ? [{kit_id:kitId,quantity:1}] : null;
   return {
     kit_id: kitId,
-    ...(selection && selection.reduce((sum, item) => sum + item.quantity, 0) > 1 ? { items: selection } : {}),
+    ...promoFields,
+    ...(promo ? { attribution_checked: true, landing_url: globalThis.location?.href } : {}),
+    ...(selection && (promo || selection.reduce((sum, item) => sum + item.quantity, 0) > 1) ? { items: selection } : {}),
     email: form.email.trim().toLowerCase(),
     first_name: form.first_name.trim(),
     last_name: form.last_name.trim() || null,

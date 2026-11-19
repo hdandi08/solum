@@ -103,3 +103,10 @@ it('keeps all attribution and legacy kit_id while adding sorted quantities only 
   expect(body).toEqual({ ...baseBody, awc: '129171_direct', awin_channel: 'aw', items: [{ kit_id: 'ground', quantity: 1 }, { kit_id: 'ritual', quantity: 2 }] });
   expect(await buildFirstBoxPaymentIntentBody({ ...input, items: [{ kit_id: 'ritual', quantity: 1 }] }, async () => null)).not.toHaveProperty('items');
 });
+
+it('threads a claimed personal offer through even one kit and blocks wrong email', async()=>{
+  const promo={code:'PERSONAL',discount_percent:10,email:'buyer@example.com',visitor_token:'opaque',valid:true,ends_at:'2099-12-01'};
+  const body=await buildFirstBoxPaymentIntentBody({...input,promo},async()=>undefined);
+  expect(body).toMatchObject({items:[{kit_id:'ritual',quantity:1}],promo_code:'PERSONAL',promo_visitor_token:'opaque'});
+  await expect(buildFirstBoxPaymentIntentBody({...input,promo:{...promo,email:'wrong@example.com'}},async()=>undefined)).rejects.toThrow(/email/i);
+});

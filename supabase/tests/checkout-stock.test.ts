@@ -128,3 +128,11 @@ for(const [name,endpoint] of handlers) {
     } finally {testFetch=previous;Deno.env.delete('CHECKOUT_RESERVATIONS_ENABLED');}
   });
 }
+Deno.test('unsupported legacy checkout routes reject a supplied promo before any full-price payment or provider call',async()=>{
+ let calls=0;testFetch=()=>{calls++;return Promise.reject(Error('No provider calls allowed'));};
+ for(const name of ['create-first-box-session','create-payment-intent','create-checkout-session']) {
+  const response=await handlers.get(name)!(new Request('http://localhost',{method:'POST',body:JSON.stringify({kit_id:'ground',email:'fixture@example.test',promo_code:'BF-fixture',promo_visitor_token:'11111111-1111-4111-8111-111111111111'})}));
+  assertEquals(response.status,409,name);
+ }
+ assertEquals(calls,0);
+});

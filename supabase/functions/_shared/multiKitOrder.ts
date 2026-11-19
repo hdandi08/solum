@@ -122,17 +122,19 @@ export async function prepareMultiKitAttempt(
   return data;
 }
 
-async function cancelAndReleaseUnexposed(db: any, stripe: any, id: string) {
+async function cancelAndReleaseUnexposed(db: any, stripe: any, id: string, attempt?: any): Promise<boolean> {
   try {
     const cancelled = await stripe.paymentIntents.cancel(id);
-    if (cancelled.status === "canceled") {
-      await db.rpc("settle_checkout_reservation", {
-        p_resource_id: id,
-        p_outcome: "released",
-      });
+    if (cancelled.status !== "canceled") return false;
+    if (attempt?.promo_claim_id) {
+      const released = await db.rpc('release_meta_promo_payment', {p_attempt_id:attempt.id,p_resource_id:id});
+      return !released.error;
     }
+    await db.rpc("settle_checkout_reservation", {p_resource_id:id,p_outcome:"released"});
+    return true;
   } catch {
-    /* A bound hold survives unknown outcomes for durable reconciliation. */
+    // An unknown cancellation or release keeps the original key pinned.
+    return false;
   }
 }
 export async function createMultiKitPayment(
@@ -141,7 +143,10 @@ export async function createMultiKitPayment(
   attempt: any,
   params: any,
 ) {
-  let pi = await stripe.paymentIntents.create({
+  if (attempt.promo_claim_id && (Deno.env.get('SUPABASE_URL') !== DEV_URL || !Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test_') || Date.now() >= Date.parse('2026-12-01T00:00:00Z'))) {
+    throw new ReservationError('promo_unavailable',409);
+  }
+  let intentParams: any = {
     ...params,
     amount: attempt.amount_pence,
     currency: "gbp",
@@ -152,11 +157,24 @@ export async function createMultiKitPayment(
       multi_kit_attempt_id: attempt.id,
       stock_reservation: "v1",
     },
-  }, { idempotencyKey: `multi-kit/${attempt.id}` });
+  };
+  if (attempt.promo_claim_id) {
+    const frozen = await db.rpc('freeze_meta_promo_payment_params', {p_attempt_id:attempt.id,p_params:intentParams});
+    const original = frozen.data;
+    if (frozen.error || !original || original.amount !== attempt.amount_pence || original.currency !== 'gbp' || original.customer !== attempt.stripe_customer_id || original.metadata?.multi_kit_attempt_id !== attempt.id || original.metadata?.checkout_flow !== 'multi_kit_v1' || original.metadata?.email !== attempt.promo_email) {
+      throw new ReservationError('inventory_unavailable',503);
+    }
+    intentParams = original;
+  }
+  let pi = await stripe.paymentIntents.create(intentParams, {idempotencyKey:`multi-kit/${attempt.id}`});
+  if(attempt.promo_claim_id) {
+    const bound=await db.rpc('bind_meta_promo_payment',{p_attempt_id:attempt.id,p_resource_id:pi.id});
+    if(bound.error) throw new ReservationError('promo_unavailable',409);
+  }
   try {
     pi = await stripe.paymentIntents.retrieve(pi.id);
   } catch {
-    await cancelAndReleaseUnexposed(db, stripe, pi.id);
+    await cancelAndReleaseUnexposed(db, stripe, pi.id, attempt);
     throw new ReservationError("inventory_unavailable", 503);
   }
   if (pi.status === "succeeded") {
@@ -166,6 +184,11 @@ export async function createMultiKitPayment(
     throw new ReservationError("payment_processing", 409);
   }
   if (pi.status === "canceled") {
+    if(attempt.promo_claim_id) {
+      let released;
+      try { released=await db.rpc('release_meta_promo_payment',{p_attempt_id:attempt.id,p_resource_id:pi.id}); } catch { throw new ReservationError('inventory_unavailable',503); }
+      if(released.error) throw new ReservationError('inventory_unavailable',503);
+    }
     await db.rpc("settle_checkout_reservation", {
       p_resource_id: pi.id,
       p_outcome: "released",
@@ -177,7 +200,7 @@ export async function createMultiKitPayment(
     pi.amount !== attempt.amount_pence || pi.currency !== "gbp" ||
     !multiKitPaymentModeAllowed(pi.livemode)
   ) {
-    await cancelAndReleaseUnexposed(db, stripe, pi.id);
+    await cancelAndReleaseUnexposed(db, stripe, pi.id, attempt);
     throw new ReservationError("inventory_unavailable", 503);
   }
   let result;
@@ -194,7 +217,7 @@ export async function createMultiKitPayment(
     result?.error || !reservation ||
     !["held", "sold_out", "released", "consumed"].includes(reservation.state)
   ) {
-    await cancelAndReleaseUnexposed(db, stripe, pi.id);
+    await cancelAndReleaseUnexposed(db, stripe, pi.id, attempt);
     throw new ReservationError("inventory_unavailable", 503);
   }
   if (
@@ -202,10 +225,11 @@ export async function createMultiKitPayment(
     !Number.isFinite(Date.parse(reservation.expires_at)) ||
     Date.parse(reservation.expires_at) <= Date.now()
   ) {
-    await cancelAndReleaseUnexposed(db, stripe, pi.id);
+    const retired = await cancelAndReleaseUnexposed(db, stripe, pi.id, attempt);
+    const unknownRetirement = attempt.promo_claim_id && !retired;
     const error = new ReservationError(
-      reservation.state === "sold_out" ? "sold_out" : "reservation_expired",
-      409,
+      unknownRetirement ? "inventory_unavailable" : reservation.state === "sold_out" ? "sold_out" : "reservation_expired",
+      unknownRetirement ? 503 : 409,
     );
     Object.assign(error, {
       kit_id: reservation.kit_id,

@@ -91,7 +91,7 @@ async function deliver(type: string, object: unknown) {
   );
 }
 function fixture(
-  { refund = false, rejectAdminOnce = false, verifiedPi = pi } = {},
+  { refund = false, rejectAdminOnce = false, verifiedPi = pi, storedAttempt = attempt as any } = {},
 ) {
   let claim: any = null,
     order: any = null,
@@ -105,7 +105,7 @@ function fixture(
       return Response.json(verifiedPi);
     }
     if (u.pathname.endsWith("/checkout_multi_attempts")) {
-      return Response.json(attempt);
+      return Response.json(storedAttempt);
     }
     if (u.pathname.endsWith("/events")) {
       if (r.method === "POST") {
@@ -146,15 +146,16 @@ function fixture(
         country: "GB",
         phone: "+441234",
       });
-      assertEquals(args.p_amount_pence, 23500);
+      assertEquals(args.p_amount_pence, storedAttempt.amount_pence);
       assertEquals(args.p_source, "gift");
       order ??= {
         id: "order-fixture",
         created_at: "2026-11-19T00:00:00Z",
         customer_id: "customer-fixture",
-        items: lines,
-        total_quantity: 3,
-        amount_pence: 23500,
+        items: storedAttempt.items,
+        total_quantity: storedAttempt.total_quantity,
+        amount_pence: storedAttempt.amount_pence,
+        ...(storedAttempt.promo_claim_id ? {promo:{code:storedAttempt.promo_code,discount_percent:10,subtotal_pence:storedAttempt.subtotal_pence,discount_pence:storedAttempt.discount_pence}} : {}),
         shipping_address: args.p_address,
         status: earlyRefund ? "refunded" : "paid",
         customer_confirmation_email_sent_at: null,
@@ -257,4 +258,15 @@ Deno.test('production live multi-kit webhook finalizes with flags off and reject
     assertEquals((await deliver('payment_intent.succeeded',live)).status,200);assertEquals(f.rpc.length,1);
     const wrong=fixture();assertEquals((await deliver('payment_intent.succeeded',pi)).status,500);assertEquals(wrong.rpc.length,0);assertEquals(wrong.emails.length,0);
   }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
+});
+
+Deno.test('paid promo finalizes after flags disabled using claimed email despite different mutable wallet receipt_email',async()=>{
+ Deno.env.set('META_PROMO_ENABLED','false');
+ const promoAttempt={...attempt,items:lines.map(i=>({...i,unit_amount_pence:i.unit_amount_pence*9/10,line_amount_pence:i.line_amount_pence*9/10})),amount_pence:21150,subtotal_pence:23500,discount_pence:2350,promo_claim_id:'claim_fixture',promo_code:'BF-fixture',promo_email:'fixture@example.test'};
+ const paid={...pi,amount:21150,amount_received:21150,receipt_email:'different-wallet@example.test'};
+ const f=fixture({verifiedPi:paid,storedAttempt:promoAttempt});
+ assertEquals((await deliver('payment_intent.succeeded',paid)).status,200);assertEquals(f.rpc.length,1);assertEquals(f.emails[0].to,'fixture@example.test');
+ for(const email of f.emails) {assertEquals(email.html.includes('£235.00'),true);assertEquals(email.html.includes('£23.50'),true);assertEquals(email.html.includes('£211.50'),true);assertEquals(email.html.includes('£153.00'),true);}
+ const mismatch=fixture({verifiedPi:{...paid,metadata:{...paid.metadata,email:'wrong@example.test'}},storedAttempt:promoAttempt});
+ assertEquals((await deliver('payment_intent.succeeded',paid)).status,500);assertEquals(mismatch.calls.some(c=>c==='POST /rest/v1/customers'),false);assertEquals(mismatch.rpc.length,0);
 });

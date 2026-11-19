@@ -72,3 +72,13 @@ describe('multi-kit payment recovery', () => {
     expect(await resolvePurchaseConfirmation({ ...input, stripe: { retrievePaymentIntent: async () => ({ paymentIntent: paid }) } })).toEqual({ status: 'unverified' });
   });
 });
+
+it('preserves a discounted snapshot through redirect and refresh after campaign expiry', async()=>{
+ const {rememberPaymentOrder}=await import('./purchaseConfirmation.js');
+ const store=storage();
+ const order={items:[{kit_id:'ground',quantity:1,unit_amount_pence:5850,line_amount_pence:5850},{kit_id:'ritual',quantity:2,unit_amount_pence:7650,line_amount_pence:15300}],totalQuantity:3,amountPence:21150,subtotalPence:23500,discountPence:2350,promo:{code:'PERSONAL',discount_percent:10}};
+ rememberPaymentOrder('pi_paid_secret_test',order,store);
+ const result=await resolvePurchaseConfirmation({reference:'pi_paid',clientSecret:'pi_paid_secret_test',kitId:'ritual',storage:store,stripe:{retrievePaymentIntent:async()=>({paymentIntent:{...paid,amount:21150}})}});
+ expect(result).toMatchObject({status:'confirmed',purchase:{value:211.5,subtotalPence:23500,discountPence:2350,promo:order.promo,items:order.items}});
+ expect(await resolvePurchaseConfirmation({reference:'pi_paid',storage:store})).toEqual(result);
+});

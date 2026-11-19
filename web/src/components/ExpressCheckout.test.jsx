@@ -96,3 +96,13 @@ it('persists a declined wallet attempt for refresh and reuses the unchanged paym
   renderToStaticMarkup(<ExpressCheckout {...props}/>); await rendered.props.onConfirm(event);
   expect(fetch).toHaveBeenCalledOnce(); expect(stripe.confirmPayment).toHaveBeenCalledTimes(2);
 });
+
+it('unlocks the original card recovery after rejecting an alternate wallet without making a payment request',async()=>{
+ vi.stubGlobal('React',React);const onBusyChange=vi.fn();const onError=vi.fn();const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
+ renderToStaticMarkup(<ExpressCheckout kitId="ritual" pendingRecoveryFlow="buy" onBusyChange={onBusyChange} onError={onError} onAvailability={vi.fn()}/>);
+ rendered.props.onClick({expressPaymentType:'apple_pay',resolve:()=>{}});
+ await rendered.props.onConfirm({paymentFailed:vi.fn()});
+ expect(onBusyChange.mock.calls).toEqual([[true],[false]]);
+ expect(onError).toHaveBeenLastCalledWith(expect.stringContaining('original details and card checkout'));
+ expect(fetch).not.toHaveBeenCalled();expect(stripe.confirmPayment).not.toHaveBeenCalled();
+});

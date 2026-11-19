@@ -1,3 +1,4 @@
+import {normalizeKitItems} from './kitOrder.js';
 import { buildFirstBoxPaymentIntentBody } from './firstBoxPaymentIntent.js';
 
 export const RESTORED_EXPRESS_WALLETS = Object.freeze({
@@ -109,6 +110,7 @@ export async function buildExpressPaymentIntentBody({
   event,
   kitId,
   items,
+  promo,
   source,
   siteHost,
   tikTokIds = {},
@@ -119,6 +121,7 @@ export async function buildExpressPaymentIntentBody({
   const body = await buildFirstBoxPaymentIntentBody({
     kitId,
     items,
+    promo,
     form,
     source,
     siteHost,
@@ -136,4 +139,15 @@ export async function buildExpressPaymentIntentBody({
       payment_flow: 'express_wallet',
     },
   };
+}
+
+// A previously issued wallet quote may finish after the campaign ends. Reuse
+// only the exact buyer, delivery and kit snapshot; this never creates a quote.
+export function reusablePromoWalletAttempt(attempt, {event,kitId,items,promo}) {
+  const body=attempt?.checkout_body;
+  if(!attempt?.promo || !body || (promo && promo.code!==attempt.promo.code)) return false;
+  const {form}=walletForm(event);
+  if(form.email!==body.email) throw Error(`Use ${body.email} for your personal offer. Your wallet email must match too.`);
+  const sameDetails=['email','first_name','last_name','phone','line1','line2','city','county','postcode'].every(key=>String(form[key]??'').trim()===String(body[key]??'').trim());
+  return sameDetails && JSON.stringify(normalizeKitItems(items??[{kit_id:kitId,quantity:1}]))===JSON.stringify(normalizeKitItems(body.items));
 }

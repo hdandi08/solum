@@ -1,3 +1,4 @@
+import {MetaPromoSummary} from '../components/metaPromo/MetaPromoProvider.jsx';
 import { KitOrderLines } from '../components/KitQuantityEditor.jsx';
 import {clearReservationAttempt} from '../lib/reservation.js';
 import { useEffect, useState } from 'react';
@@ -63,7 +64,7 @@ export default function SuccessPage() {
   const [confirmation, setConfirmation] = useState({ status: 'checking' });
   const requestedKit = params.get('kit');
   const kitId = confirmation.purchase ? confirmation.purchase.kitId : requestedKit;
-  const purchaseOrder = confirmation.purchase?.items ? { items: confirmation.purchase.items, totalQuantity: confirmation.purchase.totalQuantity } : null;
+  const purchaseOrder = confirmation.purchase?.items ? { ...confirmation.purchase, items: confirmation.purchase.items, totalQuantity: confirmation.purchase.totalQuantity } : null;
   const clientSecret = params.get('payment_intent_client_secret');
   const redirectStatus = params.get('redirect_status'); // set by Stripe on redirect-based payments
   // payment_intent is appended by Stripe after a redirect; ref is set by us for inline payments
@@ -183,9 +184,10 @@ export default function SuccessPage() {
           <div className="su-eyebrow">Order confirmed</div>
           <h1 className="su-heading">Ritual<br />Begins.</h1>
           {purchaseOrder ? <section data-testid="success-order" aria-label="Your paid kits">
-            <div className="su-kit">Your {purchaseOrder.totalQuantity} kits</div>
+            <div className="su-kit">Your {purchaseOrder.totalQuantity} {purchaseOrder.totalQuantity === 1 ? "kit" : "kits"}</div>
             <KitOrderLines order={purchaseOrder} />
-            <div className="kit-order-total"><span>Total paid</span><strong>£{confirmation.purchase.value}</strong></div>
+            <MetaPromoSummary order={purchaseOrder} />
+            <div className="kit-order-total"><span>Total paid</span><strong>£{purchaseOrder.promo ? confirmation.purchase.value.toFixed(2) : confirmation.purchase.value}</strong></div>
             <p className="su-ritual-copy">Free UK delivery · One delivery address</p>
           </section> : <div className="su-kit">{kitName} Kit</div>}
           {orderRef && (

@@ -17,6 +17,7 @@ import {
 import { captureAwinAttribution } from '../lib/awinAttribution.js';
 import {
   buildExpressPaymentIntentBody,
+  reusablePromoWalletAttempt,
   EXPRESS_CHECKOUT_EVENTS,
   expressCheckoutElementOptions,
   expressWalletAvailability,
@@ -29,6 +30,8 @@ const errText = (message) => String(message ?? '').slice(0, 200);
 export default function ExpressCheckout({
   kitId,
   items,
+  promo,
+  pendingRecoveryFlow,
   attemptRef,
   onBusyChange,
   kitName,
@@ -55,6 +58,7 @@ export default function ExpressCheckout({
 
   async function onConfirm(event) {
     if (!stripe || !elements || submitting.current) return;
+    if(pendingRecoveryFlow === 'buy'){const message='Continue with your original details and card checkout to recover your previous payment attempt.';notifyExpressPaymentFailed(event,message);onError(message);onBusyChange?.(false);return;}
     submitting.current = true;
     onBusyChange?.(true);
     onError('');
@@ -66,8 +70,13 @@ export default function ExpressCheckout({
         onError(submitError.message ?? 'Could not start payment.');
         return;
       }
-      const { buyer, body } = await buildExpressPaymentIntentBody({
-        event, kitId, items, source, siteHost: window.location.hostname,
+      const reusePromo = canConfirmReservation(activeAttempt.current?.reservation_expires_at)
+        && reusablePromoWalletAttempt(activeAttempt.current,{event,kitId,items,promo});
+      const { buyer, body } = reusePromo ? {
+        body:activeAttempt.current.checkout_body,
+        buyer:{email:activeAttempt.current.checkout_body.email,firstName:activeAttempt.current.checkout_body.first_name},
+      } : await buildExpressPaymentIntentBody({
+        event, kitId, items, promo, source, siteHost: window.location.hostname,
         tikTokIds: getTikTokIds(), metaIds: getMetaIds(), attribution: captureAwinAttribution(),
       });
       const bodyKey = JSON.stringify(body);
@@ -95,16 +104,16 @@ export default function ExpressCheckout({
           onError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
           return;
         }
-        data = { ...data, checkout_body_key: bodyKey };
+        data = { ...data, checkout_body_key: bodyKey, ...(data.promo ? {checkout_body:body} : {}) };
         activeAttempt.current = data;
         try { sessionStorage.setItem('solum_payment_retry', JSON.stringify({ clientSecret: data.client_secret, payInfo: data, form: body, kit: kitId, items: items ?? [{ kit_id: kitId, quantity: 1 }], source, flow: 'express' })); } catch { /* Keep the attempt in memory when persistence is unavailable. */ }
       }
-      const order = paymentKitOrder(data, items ?? [{ kit_id: kitId, quantity: 1 }]);
+      const order = paymentKitOrder(data, items ?? [{ kit_id: kitId, quantity: 1 }], promo);
       if (!canConfirmReservation(data.reservation_expires_at)) {
         notifyExpressPaymentFailed(event, 'Your reservation has ended. Please try again.');
         onError('Your reservation has ended. Please try again.'); return;
       }
-      rememberPaymentOrder(data.client_secret, order.items);
+      rememberPaymentOrder(data.client_secret, order.promo ? order : order.items);
       const analyticsKit = order.totalQuantity > 1 ? null : kitId;
       const analyticsItems = order.totalQuantity > 1 ? order.items : undefined;
       const value = order.amountPence / 100;
@@ -126,7 +135,7 @@ export default function ExpressCheckout({
         onError(confirmError.message ?? 'Payment failed. Please try again.'); return;
       }
       if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
-        const paymentResult = rememberPaymentResult(paymentIntent, kitId, undefined, order.items);
+        const paymentResult = rememberPaymentResult(paymentIntent, kitId, undefined, order.promo ? order : order.items);
         activeAttempt.current = null;
         clearReservationAttempt('express'); successParams.set('ref', paymentIntent.id);
         navigate(`/success?${successParams.toString()}`, { state: { paymentResult } }); return;

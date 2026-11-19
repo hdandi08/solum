@@ -24,10 +24,12 @@ export function normalizeKitItems(items) {
   return Object.keys(quantities).sort().map(kit_id => ({ kit_id, quantity: quantities[kit_id] }));
 }
 
-export function kitOrder(selection) {
-  const items = normalizeKitItems(selection).map(item => ({ ...item, unit_amount_pence: KIT_UNIT_PENCE[item.kit_id], line_amount_pence: item.quantity * KIT_UNIT_PENCE[item.kit_id] }));
+export function kitOrder(selection, promo) {
+  if (promo && (promo.discount_percent !== 10 || typeof promo.code !== 'string' || !promo.code.trim())) throw Error('The offer could not be verified. Please try again.');
+  const items = normalizeKitItems(selection).map(item => ({ ...item, unit_amount_pence: KIT_UNIT_PENCE[item.kit_id] * (promo ? 0.9 : 1), line_amount_pence: item.quantity * KIT_UNIT_PENCE[item.kit_id] * (promo ? 0.9 : 1) }));
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
-  return { items, totalQuantity, amountPence: items.reduce((sum, item) => sum + item.line_amount_pence, 0), label: totalQuantity > 1 ? `${totalQuantity} kits` : items[0].kit_id.toUpperCase() };
+  const subtotalPence = items.reduce((sum, item) => sum + item.quantity * KIT_UNIT_PENCE[item.kit_id], 0);
+  return { items, totalQuantity, ...(promo ? {subtotalPence, discountPence: subtotalPence / 10, promo: {code: promo.code, discount_percent: 10}} : {}), amountPence: items.reduce((sum, item) => sum + item.line_amount_pence, 0), label: totalQuantity > 1 ? `${totalQuantity} kits` : items[0].kit_id.toUpperCase() };
 }
 
 export function kitStockError(items, inventory) {
@@ -52,9 +54,14 @@ export function changeKitQuantity(items, kitId, delta, inventory) {
   } catch { return current; }
 }
 
-export function paymentKitOrder(payInfo, expectedItems) {
-  const expected = kitOrder(expectedItems);
-  if (expected.totalQuantity === 1 && payInfo?.checkout_flow !== 'multi_kit_v1') {
+export function paymentKitOrder(payInfo, expectedItems, expectedPromo) {
+  // A saved paid snapshot can be verified without an active campaign. At a new
+  // payment boundary callers also supply the claimed code to prevent fallback.
+  const promo = expectedPromo ?? payInfo?.promo;
+  const expected = kitOrder(expectedItems, promo);
+  if (promo && (!payInfo?.promo || payInfo.promo.code !== promo.code || payInfo.promo.discount_percent !== 10
+    || payInfo.promo.subtotal_pence !== expected.subtotalPence || payInfo.promo.discount_pence !== expected.discountPence)) throw Error('The offer total could not be verified. Please try again.');
+  if (!promo && expected.totalQuantity === 1 && payInfo?.checkout_flow !== 'multi_kit_v1') {
     if (!Number.isSafeInteger(payInfo?.amount_pence) || payInfo.amount_pence !== expected.amountPence) throw Error('The payment total could not be verified. Please try again.');
     return expected;
   }
@@ -63,7 +70,7 @@ export function paymentKitOrder(payInfo, expectedItems) {
     || JSON.stringify(normalizeKitItems(items)) !== JSON.stringify(normalizeKitItems(expectedItems))
     || payInfo.total_quantity !== expected.totalQuantity
     || !Number.isSafeInteger(payInfo.amount_pence)
-    || items.some(item => item.unit_amount_pence !== KIT_UNIT_PENCE[item.kit_id] || !Number.isSafeInteger(item.line_amount_pence) || item.line_amount_pence !== item.quantity * item.unit_amount_pence)
+    || items.some(item => item.unit_amount_pence !== KIT_UNIT_PENCE[item.kit_id] * (promo ? 0.9 : 1) || !Number.isSafeInteger(item.line_amount_pence) || item.line_amount_pence !== item.quantity * item.unit_amount_pence)
     || payInfo.amount_pence !== items.reduce((sum, item) => sum + item.line_amount_pence, 0)) throw Error('The payment total could not be verified. Please try again.');
   return { ...expected, items: [...items].sort((a, b) => a.kit_id.localeCompare(b.kit_id)), amountPence: payInfo.amount_pence };
 }

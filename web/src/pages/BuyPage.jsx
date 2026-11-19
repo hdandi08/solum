@@ -1,3 +1,6 @@
+import {useMetaPromo} from '../components/metaPromo/metaPromoContext.js';
+import {MetaPromoSummary} from '../components/metaPromo/MetaPromoProvider.jsx';
+import {promoPaymentFields} from '../lib/metaPromo.js';
 import KitQuantityEditor, { KitOrderLines } from '../components/KitQuantityEditor.jsx';
 import { multiKitCheckoutEnabled, multiKitEnvironmentAllowed, normalizeKitItems, kitOrder, changeKitQuantity, paymentKitOrder, kitStockError, saveKitSelection, restoreKitSelection, kitSelectionParam, parseKitSelectionParam } from '../lib/kitOrder.js';
 import { deliverySummary } from '../lib/deliverySummary.js';
@@ -5,7 +8,7 @@ import { captureCampaignAttribution } from '../lib/campaignAttribution.js';
 import { resolveBuyKit } from '../lib/buyLanding.js';
 import { rememberPaymentResult, rememberPaymentOrder } from '../lib/purchaseConfirmation.js';
 import ReservationTimer, { useReservationDeadline } from '../components/ReservationTimer.jsx';
-import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
+import {restorePendingPromoAttempt, assertReservationEditable, localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { stripePromise } from '../lib/stripe.js';
@@ -373,7 +376,7 @@ function BuyMobileHeader({ kit, order, price, dispatch, arrival, onCta, hideUnti
             </span>
           </div>
           <div className="co-mobile-price-block">
-            <span className="co-mobile-price">£{price}</span>
+            <span className="co-mobile-price">£{order?.promo ? Number(price).toFixed(2) : price}</span>
             <span className="co-mobile-price-note">one-time</span>
           </div>
         </button>
@@ -480,7 +483,8 @@ function BuyOrderSummary({ kit, order, price, dispatch, arrival }) {
     <aside className="co-right buy-order-summary" aria-label="Order summary">
       {order?.totalQuantity > 1 ? <><div className="co-kit-name">Your kits</div><KitOrderLines order={order} /></> : <>{kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}<div className="co-kit-name">{kit.name}</div></>}
       {kit.id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
-      <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
+      <MetaPromoSummary order={order} />
+      <div className="by-summary-total"><span>Total</span><strong>£{order?.promo ? Number(price).toFixed(2) : price}</strong></div>
       <p className="co-price-sub">One-time purchase · Free UK delivery</p>
       <p className="co-price-sub">{deliverySummary(dispatch, arrival)}</p>
       <details className="by-more" open>
@@ -572,7 +576,7 @@ function StepPayment({ activeKit, order, price, payInfo, form, source, onBack, o
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: errText(confirmError.message) });
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
-        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id, undefined, order.items);
+        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id, undefined, order.promo ? order : order.items);
         clearReservationAttempt('buy');
         successParams.set('ref', paymentIntent.id);
         navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
@@ -605,9 +609,10 @@ function StepPayment({ activeKit, order, price, payInfo, form, source, onBack, o
         <div className="co-order-pill-kit">{order.totalQuantity > 1 ? `Your ${order.label}` : `${activeKit.name} · One-Time Kit`}</div>
         {order.totalQuantity > 1 && <KitOrderLines order={order} />}
         {MULTI_KIT_ENABLED && <button type="button" className="kit-order-link" disabled={loading} onClick={() => editPayment(onEditOrder)}>Edit kits</button>}
+        <MetaPromoSummary order={order} />
         <div className="co-order-pill-charge-row">
           <span className="co-order-pill-charge-label">Charged today</span>
-          <span className="co-order-pill-charge-amount">£{price}</span>
+          <span className="co-order-pill-charge-amount">£{order?.promo ? Number(price).toFixed(2) : price}</span>
         </div>
         <div className="co-order-pill-detail">
           Ships {payInfo.dispatch_date} · Est. delivery {payInfo.arrival_date}
@@ -642,7 +647,7 @@ function StepPayment({ activeKit, order, price, payInfo, form, source, onBack, o
       </label>
 
       <button type="submit" className="co-submit" disabled={!stripe || !elements || loading || !termsAccepted || remaining === 0} data-testid="pay-btn">
-        {loading ? 'Processing…' : `Pay £${price} Now →`}
+        {loading ? 'Processing…' : `Pay £${order?.promo ? Number(price).toFixed(2) : price} Now →`}
       </button>
 
       <div className="co-trust-row">
@@ -716,6 +721,8 @@ function MittDemo() {
 }
 
 export default function BuyPage() {
+  const metaPromo = useMetaPromo();
+  const promo = metaPromo.promo;
   const [params, setParams] = useSearchParams();
   const { state: entryState } = useLocation();
 
@@ -743,6 +750,7 @@ export default function BuyPage() {
   const [quantityEditorOpen, setQuantityEditorOpen] = useState(false);
   const [quickOrderError, setQuickOrderError] = useState('');
   const [expressBusy, setExpressBusy] = useState(false);
+  const [pendingRecovery, setPendingRecovery] = useState(null);
   const expressAttempt = useRef(null);
   const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
   const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', county: '', postcode: '' });
@@ -786,13 +794,25 @@ export default function BuyPage() {
   useEffect(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
-      if (!saved.clientSecret || !saved.form) return;
+      if (!saved.clientSecret || !saved.form) {
+        for (const flow of ['buy','express']) {
+          const pending=restorePendingPromoAttempt(flow);
+          if (!pending) continue;
+          const body=pending.body;
+          const originalItems=normalizeKitItems(body.items ?? [{kit_id:body.kit_id,quantity:1}]);
+          setItems(originalItems);setSelectedKit(body.kit_id ?? originalItems[0].kit_id);
+          setForm(Object.fromEntries(['first_name','last_name','email','phone','line1','line2','city','county','postcode'].map(key=>[key,String(body[key]??'')])));
+          setPendingRecovery(flow);setStep('details');
+          break;
+        }
+        return;
+      }
       if (params.get('resume') !== '1' && !(['buy', 'express'].includes(saved.flow) && saved.payInfo?.reservation_expires_at && (!params.get('kit') || saved.kit === params.get('kit')))) return;
       const savedItems = saved.items ?? [{ kit_id: saved.kit ?? 'ritual', quantity: 1 }];
       if (!MULTI_KIT_ENVIRONMENT && kitOrder(savedItems).totalQuantity > 1) return;
       paymentKitOrder(saved.payInfo, savedItems);
       setItems(normalizeKitItems(savedItems));
-      rememberPaymentOrder(saved.clientSecret, saved.payInfo.order_items ?? kitOrder(savedItems).items);
+      rememberPaymentOrder(saved.clientSecret, paymentKitOrder(saved.payInfo, savedItems));
       setForm(Object.fromEntries(['first_name', 'last_name', 'email', 'phone', 'line1', 'line2', 'city', 'county', 'postcode'].map(key => [key, String(saved.form[key] ?? '')])));
       if (saved.flow === 'express') {
         expressAttempt.current = saved.payInfo;
@@ -838,9 +858,22 @@ export default function BuyPage() {
   const arrival  = estDeliveryDate(dispatch);
 
   const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
-  const order = step === 'payment' && payInfo ? paymentKitOrder(payInfo, items) : kitOrder(items);
+  const heldExpressOrder = expressAttempt.current?.promo ? paymentKitOrder(expressAttempt.current,items) : null;
+  const order = step === 'payment' && payInfo ? paymentKitOrder(payInfo, items) : heldExpressOrder ?? kitOrder(items, promo);
   const price = order.amountPence / 100;
   const checkoutBusy = loading || expressBusy;
+  useEffect(() => metaPromo.setCheckoutGuard({
+    suppressed: step !== 'details' || checkoutBusy || quantityEditorOpen || kitPickerOpen || iabGate,
+    beforeApply: async () => {
+      if (step !== 'details' || loading || expressBusy) throw Error('Finish your current checkout step before changing your offer.');
+      assertReservationEditable('express', expressAttempt.current);
+      assertReservationEditable('buy', payInfo);
+      setLoading(true);
+      try { await retireExpressAttempt(); }
+      finally { setLoading(false); }
+    },
+    onApplied: email => setForm(current => ({...current,email})),
+  }), [metaPromo.setCheckoutGuard, step, checkoutBusy, quantityEditorOpen, kitPickerOpen, iabGate]); // eslint-disable-line react-hooks/exhaustive-deps
   const alternativeKit = KITS.find(kit => kit.id !== selectedKit && !kit.comingSoon && !kit.hidden && inventory?.[kit.id]?.available === true);
 
   useEffect(() => {
@@ -892,11 +925,17 @@ export default function BuyPage() {
     }
   }
 
+  function assertPromoOrderEditable() {
+    assertReservationEditable('express',expressAttempt.current,true);
+    assertReservationEditable('buy',payInfo,true);
+  }
+
   async function switchKit(kitId) {
     if (checkoutBusy) return;
     setLoading(true);
     setSwitchError('');
     try {
+      assertPromoOrderEditable();
       await retireExpressAttempt();
       const fresh = await readCheckoutInventory(SUPABASE_URL, authHeaders);
       setInventory(fresh);
@@ -926,6 +965,7 @@ export default function BuyPage() {
     e.preventDefault();
     if (checkoutBusy || quantityEditorOpen) return;
     setError('');
+    try { assertReservationEditable('express',expressAttempt.current,true); promoPaymentFields(promo, form.email); } catch(cause) { setError(cause.message); return; }
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
     const emailVal = form.email.trim();
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
@@ -983,6 +1023,7 @@ export default function BuyPage() {
       const requestBody = await buildFirstBoxPaymentIntentBody({
         kitId: selectedKit,
         items,
+        promo,
         form,
         source,
         siteHost: window.location.hostname,
@@ -997,7 +1038,7 @@ export default function BuyPage() {
       });
       const data = localiseReservation(await res.json());
       if (!res.ok) {
-        if (['reservation_expired', 'sold_out'].includes(data.error)) clearReservationAttempt('buy');
+        if (['reservation_expired', 'sold_out'].includes(data.error)) { clearReservationAttempt('buy'); setPendingRecovery(null); }
         if (res.status === 409 && data.error === 'sold_out') {
           if (order.totalQuantity > 1) {
             setError(data.message ?? `${(data.kit_id ?? 'Requested kit').toUpperCase()} has insufficient stock. Please update your quantities.`);
@@ -1013,9 +1054,9 @@ export default function BuyPage() {
       }
 
       let confirmedOrder;
-      try { confirmedOrder = paymentKitOrder(data, items); }
+      try { confirmedOrder = paymentKitOrder(data, items, promo); }
       catch (cause) { await releaseReservation(SUPABASE_URL, authHeaders, data); clearReservationAttempt('buy'); throw cause; }
-      rememberPaymentOrder(data.client_secret, confirmedOrder.items);
+      rememberPaymentOrder(data.client_secret, confirmedOrder.promo ? confirmedOrder : confirmedOrder.items);
       identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
       capture('checkout_delivery_submitted', { kit: order.totalQuantity > 1 ? null : selectedKit, items: confirmedOrder.items, total_quantity: confirmedOrder.totalQuantity, source });
       capture('checkout_initiated', { kit: order.totalQuantity > 1 ? null : selectedKit, source, price: confirmedOrder.amountPence / 100, items: confirmedOrder.items, total_quantity: confirmedOrder.totalQuantity, method: 'standard' });
@@ -1025,6 +1066,7 @@ export default function BuyPage() {
       ttqAddPaymentInfo(order.totalQuantity > 1 ? null : selectedKit, confirmedOrder.label, confirmedOrder.amountPence / 100, order.totalQuantity > 1 ? confirmedOrder.items : undefined);
       try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch { /* Storage can be unavailable. */ }
 
+      setPendingRecovery(null);
       setClientSecret(data.client_secret);
       setPayInfo(data);
       setStep('payment');
@@ -1045,6 +1087,7 @@ export default function BuyPage() {
   async function leavePayment(nextStep) {
     await releaseReservation(SUPABASE_URL,authHeaders,payInfo);
     clearReservationAttempt('buy');
+    setPendingRecovery(null);
     try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { setInventory(null); }
     if (!MULTI_KIT_ENABLED && payInfo?.checkout_flow === 'multi_kit_v1') resetSingleKit(selectedKit);
     setClientSecret(null); setPayInfo(null); setStep(nextStep); jumpTop();
@@ -1058,6 +1101,7 @@ export default function BuyPage() {
     await releaseReservation(SUPABASE_URL, authHeaders, expressAttempt.current);
     expressAttempt.current = null;
     clearReservationAttempt('express');
+    setPendingRecovery(null);
     if (resetToSingle) resetSingleKit(selectedKit);
     try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { setInventory(null); }
     return resetToSingle;
@@ -1066,7 +1110,7 @@ export default function BuyPage() {
   async function openQuantityEditor() {
     if (checkoutBusy) return;
     setLoading(true); setError('');
-    try { await retireExpressAttempt(); setQuantityEditorOpen(true); setKitPickerOpen(false); }
+    try { assertPromoOrderEditable(); await retireExpressAttempt(); setQuantityEditorOpen(true); setKitPickerOpen(false); }
     catch (cause) { setError(cause.message); }
     finally { setLoading(false); }
   }
@@ -1100,6 +1144,7 @@ export default function BuyPage() {
     if (kitSelectionParam(next) === kitSelectionParam(items)) return;
     setLoading(true); setError(''); setQuickOrderError('');
     try {
+      assertPromoOrderEditable();
       const hadHold = Boolean(expressAttempt.current);
       await retireExpressAttempt();
       let available = inventory;
@@ -1132,7 +1177,7 @@ export default function BuyPage() {
       <div className="by-express-slot" aria-busy={expressStatus === 'loading'}>
       {expressStatus === 'loading' && <div className="by-express-skel" role="status" aria-label="Loading express checkout" />}
       <Elements
-        key={kitSelectionParam(items)}
+        key={`${kitSelectionParam(items)}:${order.promo?.code ?? "gross"}`}
         stripe={stripePromise}
         options={expressElementsOptions({
           amountPence: price * 100,
@@ -1142,6 +1187,8 @@ export default function BuyPage() {
         <ExpressCheckout
           kitId={selectedKit}
           items={items}
+          promo={promo}
+          pendingRecoveryFlow={pendingRecovery}
           attemptRef={expressAttempt}
           onBusyChange={setExpressBusy}
           kitName={activeKit?.name ?? selectedKit}
@@ -1320,8 +1367,9 @@ export default function BuyPage() {
                 <BuyKitConfirmation
                   kit={KITS.find(kit => kit.id === order.items[0].kit_id)}
                   price={price}
+                  promo={promo}
                   dispatch={iabGate || typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
-                  onChange={async () => { if (checkoutBusy) return; setLoading(true); try { await retireExpressAttempt(); setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); } catch (cause) { setError(cause.message); } finally { setLoading(false); } }}
+                  onChange={async () => { if (checkoutBusy) return; setLoading(true); try { assertPromoOrderEditable(); await retireExpressAttempt(); setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); } catch (cause) { setError(cause.message); } finally { setLoading(false); } }}
                   disabled={checkoutBusy}
                   quantity={order.totalQuantity}
                   controls={quickControls}
@@ -1333,14 +1381,14 @@ export default function BuyPage() {
                   <section className="kit-grouped-card" data-testid="kits-confirm" aria-label="Selected kits">
                     <header><strong>Your kits</strong>{MULTI_KIT_ENABLED && <button type="button" className="kit-order-link" disabled={checkoutBusy} onClick={openQuantityEditor}>Edit</button>}</header>
                     <KitOrderLines order={order} controls={quickControls} />
-                    <div className="kit-order-total"><span>Total</span><strong>£{price}</strong></div>
+                    <div className="kit-order-total"><span>Total</span><strong>£{order?.promo ? Number(price).toFixed(2) : price}</strong></div>
                     <p className="co-price-sub">Free UK delivery</p>
                     {order.totalQuantity === 5 && <p className="kit-order-limit">Maximum 5 kits per order.</p>}
                   </section>
               )}
               {step === 'details' && !quantityEditorOpen && quickOrderError && <p className="co-error" role="alert">{quickOrderError}</p>}
               {step === 'details' && quantityEditorOpen && error && <p className="co-error" role="alert">{error}</p>}
-              {step === 'details' && quantityEditorOpen && <KitQuantityEditor items={items} inventory={inventory} busy={checkoutBusy} onApply={applyItems} onCancel={() => setQuantityEditorOpen(false)} />}
+              {step === 'details' && quantityEditorOpen && <KitQuantityEditor items={items} promo={promo} inventory={inventory} busy={checkoutBusy} onApply={applyItems} onCancel={() => setQuantityEditorOpen(false)} />}
 
               {step === 'details' && inventory?.[selectedKit]?.available === false && <>
                 <p className="co-error">{activeKit?.name} is currently sold out.</p>
@@ -1386,7 +1434,7 @@ export default function BuyPage() {
                         <div className="by-kit-buyrow">
                           <div>
 
-                            <div className="by-kit-price">£{KIT_PRICES[id]}</div>
+                            <div className="by-kit-price">£{promo ? (KIT_PRICES[id] * .9).toFixed(2) : KIT_PRICES[id]}</div>
                             <div className="by-kit-price-label">one-time</div>
                             {isFirstBatch && (
                               <div className="by-kit-nextprice">£{id === 'ritual' ? 95 : 75} after this batch</div>
@@ -1414,7 +1462,7 @@ export default function BuyPage() {
                 <div className="by-express-wrap" ref={formStartRef} data-testid="express-checkout">
                   {iabGate ? (
                     <IabCheckoutGate
-                      key={kitSelectionParam(items)}
+                      key={`${kitSelectionParam(items)}:${order.promo?.code ?? "gross"}`}
                       kit={selectedKit}
                       kitName={order.totalQuantity > 1 ? order.label : (activeKit?.name ?? selectedKit)}
                       order={order}
@@ -1447,6 +1495,15 @@ export default function BuyPage() {
               {step === 'details' && iabGate && error && <p className="co-error" role="alert">{error}</p>}
               {step === 'details' && !iabGate && <ProgressBar step="details" />}
 
+              {step === 'details' && pendingRecovery && <p className="meta-promo-inline" role="status" data-testid="pending-payment-recovery">We could not confirm your previous payment attempt. Your original order and details are restored. {pendingRecovery === 'express' ? 'Retry the same wallet with its original delivery details to recover that payment.' : 'Continue with these details and delivery address to recover that payment.'}</p>}
+              {step === 'details' && promo && <div className="meta-promo-inline" data-testid="meta-promo-applied">
+                <strong>{promo.valid ? '10% applied to your entire order' : 'Your personal offer needs checking'}</strong>
+                <p>{promo.code} · {promo.email}</p>
+                <MetaPromoSummary order={order} />
+                {!promo.valid && <p role="alert">{heldExpressOrder ? 'Your reserved payment keeps its original price. To change it, remove the offer and review your order first.' : 'Your offer is unavailable or could not be verified. Remove it to review the full price before continuing.'}</p>}
+                <button type="button" disabled={checkoutBusy} onClick={metaPromo.remove}>Remove offer</button>
+                {metaPromo.error && <p role="alert">{metaPromo.error}</p>}
+              </div>}
               {/* Step 1: Details */}
               {step === 'details' && !iabGate && !quantityEditorOpen && (
                 <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">

@@ -6,6 +6,7 @@ import { capture, getTikTokIds } from './lib/analytics';
 import { captureAwinAttribution } from './lib/awinAttribution';
 import { captureLandingAwc } from './lib/awinCookieBridge';
 import { ensureAwinMasterTag, mustReloadWithoutAwin, shouldLoadAwinMasterTag } from './lib/awinMasterTag';
+import MetaPromoProvider from './components/metaPromo/MetaPromoProvider.jsx';
 import OfferBar from './components/OfferBar.jsx';
 import RouteMetadata from './seo/RouteMetadata.jsx';
 import './styles/global.css';
@@ -134,6 +135,7 @@ export default function App() {
   }, []);
   return (
     <BrowserRouter>
+      <MetaPromoProvider>
       <RouteMetadata />
       <AwinMasterTagGate />
       <OfferBar />
@@ -162,6 +164,7 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
+      </MetaPromoProvider>
     </BrowserRouter>
   );
 }

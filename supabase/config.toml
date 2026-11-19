@@ -26,3 +26,6 @@ verify_jwt = false # Authenticated with dedicated worker bearer secret, never th
 
 [functions.release-checkout-reservation]
 verify_jwt = true
+
+[functions.meta-promo]
+verify_jwt = false # Campaign signature + opaque visitor ledger; no account needed.

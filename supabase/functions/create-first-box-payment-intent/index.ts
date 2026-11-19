@@ -1,3 +1,4 @@
+import { discountedKitSelection, validatePromoPayment, preparePromoAttempt, promoResponse } from '../_shared/metaPromo.ts';
 import { canonicalKitItems, multiKitCheckoutEnabled, prepareMultiKitAttempt, createMultiKitPayment, multiKitSummary } from '../_shared/multiKitOrder.ts';
 import { campaignMetadata } from '../_shared/campaignAttribution.mjs';
 import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
@@ -38,8 +39,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id = body.kit_id;
     email  = body.email?.trim().toLowerCase();
-    const selection = Object.hasOwn(body, 'items') ? canonicalKitItems(body.items) : null;
-    const multiKit = !!selection && selection.total_quantity > 1;
+    const hasPromo = Object.hasOwn(body,'promo_code') || Object.hasOwn(body,'promo_visitor_token');
+    let selection = Object.hasOwn(body, 'items') ? canonicalKitItems(body.items) : (hasPromo ? canonicalKitItems([{kit_id,quantity:1}]) : null);
+    const multiKit = hasPromo || (!!selection && selection.total_quantity > 1);
+    if(hasPromo) { await validatePromoPayment(supabase,body); selection=discountedKitSelection(selection!); }
     if (selection && !multiKit) kit_id = selection.items[0].kit_id;
     if (multiKit && !multiKitCheckoutEnabled()) throw new ReservationError('multi_kit_unavailable', 409);
     const {
@@ -93,7 +96,7 @@ Deno.serve(async (req) => {
         });
 
     if (multiKit) {
-      attempt = await prepareMultiKitAttempt(supabase, body, selection!, customer.id);
+      attempt = hasPromo ? await preparePromoAttempt(supabase,body,selection!,customer.id) : await prepareMultiKitAttempt(supabase, body, selection!, customer.id);
       customer.id = attempt.stripe_customer_id;
     } else customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
 
@@ -151,6 +154,7 @@ Deno.serve(async (req) => {
       dispatch_date:  fmtDay(dispatch),
       arrival_date:   fmtDay(arrival),
       amount_pence:   amount,
+      ...(hasPromo ? {promo:promoResponse(attempt)} : {}),
       livemode:       pi.livemode,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

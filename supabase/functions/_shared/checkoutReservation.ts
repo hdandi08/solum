@@ -321,6 +321,6 @@ export async function auditLegacyDevPayments(
 }
 
 export function reservationErrorBody(code: string) {
- const messages:Record<string,string>={invalid_items:'Choose between one and five GROUND or RITUAL kits with whole-number quantities.',multi_kit_unavailable:'Multiple-kit checkout is not available just now.',sold_out:'This kit is currently sold out.',reservation_expired:'Your reservation has ended. Please continue again to check availability.',inventory_unavailable:'We could not check stock just now. Please try again shortly.',payment_completed:'This payment has already completed. Please check your order confirmation.',payment_processing:'Your payment is still processing. Please wait before trying again.'};
+ const messages:Record<string,string>={promo_unavailable:'Your offer could not be applied. Review or remove the offer before continuing.',invalid_items:'Choose between one and five GROUND or RITUAL kits with whole-number quantities.',multi_kit_unavailable:'Multiple-kit checkout is not available just now.',sold_out:'This kit is currently sold out.',reservation_expired:'Your reservation has ended. Please continue again to check availability.',inventory_unavailable:'We could not check stock just now. Please try again shortly.',payment_completed:'This payment has already completed. Please check your order confirmation.',payment_processing:'Your payment is still processing. Please wait before trying again.'};
  return {error:code,message:messages[code]??'We could not update your reservation. Please try again.'};
 }
