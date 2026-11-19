@@ -1,3 +1,4 @@
+import { KitOrderLines } from '../components/KitQuantityEditor.jsx';
 import {clearReservationAttempt} from '../lib/reservation.js';
 import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -61,7 +62,8 @@ export default function SuccessPage() {
   const inlineResult = state?.paymentResult;
   const [confirmation, setConfirmation] = useState({ status: 'checking' });
   const requestedKit = params.get('kit');
-  const kitId = confirmation.purchase?.kitId ?? requestedKit;
+  const kitId = confirmation.purchase ? confirmation.purchase.kitId : requestedKit;
+  const purchaseOrder = confirmation.purchase?.items ? { items: confirmation.purchase.items, totalQuantity: confirmation.purchase.totalQuantity } : null;
   const clientSecret = params.get('payment_intent_client_secret');
   const redirectStatus = params.get('redirect_status'); // set by Stripe on redirect-based payments
   // payment_intent is appended by Stripe after a redirect; ref is set by us for inline payments
@@ -104,7 +106,7 @@ export default function SuccessPage() {
     clearReservationAttempt('express');
     // Test payments never become live advertising conversions.
     if (!confirmation.purchase.livemode || !claimPurchaseEvent(confirmation)) return;
-    const { eventId, value, kitId: confirmedKit } = confirmation.purchase;
+    const { eventId, value, kitId: confirmedKit, items } = confirmation.purchase;
     let buyerEmail;
     try { buyerEmail = sessionStorage.getItem('solum_buyer_email'); } catch { /* Unavailable storage. */ }
     if (buyerEmail) {
@@ -113,9 +115,9 @@ export default function SuccessPage() {
       try { sessionStorage.removeItem('solum_buyer_email'); } catch { /* Unavailable storage. */ }
     }
     // The webhook uses the same PaymentIntent ID for Meta deduplication.
-    fbPurchase(confirmedKit, value, eventId);
+    fbPurchase(confirmedKit, value, eventId, items);
     gadsPurchase(value, eventId, buyerEmail);
-    ttqCompletePayment(confirmedKit, kitName, value, eventId);
+    ttqCompletePayment(confirmedKit, kitName, value, eventId, items);
   }, [confirmation, source, kitName]);
 
   if (paymentFailed) {
@@ -180,7 +182,12 @@ export default function SuccessPage() {
           <div className="su-check">✓</div>
           <div className="su-eyebrow">Order confirmed</div>
           <h1 className="su-heading">Ritual<br />Begins.</h1>
-          <div className="su-kit">{kitName} Kit</div>
+          {purchaseOrder ? <section data-testid="success-order" aria-label="Your paid kits">
+            <div className="su-kit">Your {purchaseOrder.totalQuantity} kits</div>
+            <KitOrderLines order={purchaseOrder} />
+            <div className="kit-order-total"><span>Total paid</span><strong>£{confirmation.purchase.value}</strong></div>
+            <p className="su-ritual-copy">Free UK delivery · One delivery address</p>
+          </section> : <div className="su-kit">{kitName} Kit</div>}
           {orderRef && (
             <div className="su-ref-block">
               <div className="su-ref-label">Order Reference</div>
@@ -203,8 +210,8 @@ export default function SuccessPage() {
             <div className="su-step">
               <span className="su-step-num">2</span>
               <div className="su-step-body">
-                <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</div>
-                <div className="su-step-copy">Your full {kitName} kit, shower essentials and refills, packed and dispatched.{arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
+                <div className="su-step-title">{dispatchDate ? `Ships ${dispatchDate}` : purchaseOrder ? 'Your kits are being prepared' : 'Kit ships within 2 days'}</div>
+                <div className="su-step-copy">{purchaseOrder ? `Your ${purchaseOrder.totalQuantity} kits, packed separately for the same delivery address.` : `Your full ${kitName} kit, shower essentials and refills, packed and dispatched.`}{arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</div>
               </div>
             </div>
             {isOneTime ? (

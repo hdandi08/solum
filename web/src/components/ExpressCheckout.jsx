@@ -1,7 +1,8 @@
+import { paymentKitOrder } from '../lib/kitOrder.js';
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
-import {localiseReservation,withReservationAttempt,clearReservationAttempt,canConfirmReservation} from '../lib/reservation.js';
+import { rememberPaymentResult, rememberPaymentOrder } from '../lib/purchaseConfirmation.js';
+import {localiseReservation,withReservationAttempt,clearReservationAttempt,canConfirmReservation,releaseReservation} from '../lib/reservation.js';
 import { ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import {
   capture,
@@ -27,8 +28,10 @@ const errText = (message) => String(message ?? '').slice(0, 200);
 
 export default function ExpressCheckout({
   kitId,
+  items,
+  attemptRef,
+  onBusyChange,
   kitName,
-  price,
   source,
   supabaseUrl,
   authHeaders,
@@ -38,6 +41,9 @@ export default function ExpressCheckout({
   onLoadError,
 }) {
   const loadMonitor = useRef(null);
+  const localAttempt = useRef(null);
+  const submitting = useRef(false);
+  const activeAttempt = attemptRef ?? localAttempt;
   useEffect(() => {
     const monitor = startExpressLoadTracking({ capture, kit: kitId, source });
     loadMonitor.current = monitor;
@@ -48,119 +54,93 @@ export default function ExpressCheckout({
   const elements = useElements();
 
   async function onConfirm(event) {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || submitting.current) return;
+    submitting.current = true;
+    onBusyChange?.(true);
     onError('');
-
-    const { error: submitError } = await elements.submit();
-    if (submitError) {
-      capture(EXPRESS_CHECKOUT_EVENTS.error, {
-        kit: kitId,
-        source,
-        stage: 'submit',
-        message: errText(submitError.message),
-      });
-      notifyExpressPaymentFailed(event, submitError.message ?? 'Could not start payment.');
-      onError(submitError.message ?? 'Could not start payment.');
-      return;
-    }
-
     try {
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'submit', message: errText(submitError.message) });
+        notifyExpressPaymentFailed(event, submitError.message ?? 'Could not start payment.');
+        onError(submitError.message ?? 'Could not start payment.');
+        return;
+      }
       const { buyer, body } = await buildExpressPaymentIntentBody({
-        event,
-        kitId,
-        source,
-        siteHost: window.location.hostname,
-        tikTokIds: getTikTokIds(),
-        metaIds: getMetaIds(),
-        attribution: captureAwinAttribution(),
+        event, kitId, items, source, siteHost: window.location.hostname,
+        tikTokIds: getTikTokIds(), metaIds: getMetaIds(), attribution: captureAwinAttribution(),
       });
-      const response = await fetch(`${supabaseUrl}/functions/v1/create-first-box-payment-intent`, {
-        method: 'POST',
-        headers: { ...authHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify(await withReservationAttempt(body,'express')),
-      });
-      const data = localiseReservation(await response.json());
-      if (!response.ok) {
-        if(data.error==='reservation_expired') clearReservationAttempt('express');
-        capture(EXPRESS_CHECKOUT_EVENTS.error, {
-          kit: kitId,
-          source,
-          stage: 'create_intent',
-          message: errText(data.message ?? data.error),
+      const bodyKey = JSON.stringify(body);
+      let data;
+      if (activeAttempt.current?.checkout_body_key === bodyKey && canConfirmReservation(activeAttempt.current.reservation_expires_at)) {
+        data = activeAttempt.current;
+      } else {
+        // A wallet retry with changed delivery/details must retire the first
+        // payable attempt. Processing/completed payments reject that release.
+        if (activeAttempt.current) {
+          await releaseReservation(supabaseUrl, authHeaders, activeAttempt.current);
+          activeAttempt.current = null;
+          clearReservationAttempt('express');
+        }
+        const response = await fetch(`${supabaseUrl}/functions/v1/create-first-box-payment-intent`, {
+          method: 'POST', headers: { ...authHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify(await withReservationAttempt(body, 'express')),
         });
-        notifyExpressPaymentFailed(event, data.message ?? data.error ?? 'Payment could not be started.');
-        if (response.status === 409 && data.error === 'sold_out' && onSoldOut) {
-          await onSoldOut(body);
+        data = localiseReservation(await response.json());
+        if (!response.ok) {
+          if (['reservation_expired', 'sold_out'].includes(data.error)) clearReservationAttempt('express');
+          capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'create_intent', message: errText(data.message ?? data.error) });
+          notifyExpressPaymentFailed(event, data.message ?? data.error ?? 'Payment could not be started.');
+          if (response.status === 409 && data.error === 'sold_out' && onSoldOut) { await onSoldOut(body); return; }
+          onError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
           return;
         }
-        onError(data.message ?? data.error ?? 'Something went wrong. Please try again.');
-        return;
+        data = { ...data, checkout_body_key: bodyKey };
+        activeAttempt.current = data;
+        try { sessionStorage.setItem('solum_payment_retry', JSON.stringify({ clientSecret: data.client_secret, payInfo: data, form: body, kit: kitId, items: items ?? [{ kit_id: kitId, quantity: 1 }], source, flow: 'express' })); } catch { /* Keep the attempt in memory when persistence is unavailable. */ }
       }
-
-      if(!canConfirmReservation(data.reservation_expires_at)) {
-        clearReservationAttempt('express');
-        notifyExpressPaymentFailed(event,'Your reservation has ended. Please try again.');
-        onError('Your reservation has ended. Please try again.');
-        return;
+      const order = paymentKitOrder(data, items ?? [{ kit_id: kitId, quantity: 1 }]);
+      if (!canConfirmReservation(data.reservation_expires_at)) {
+        notifyExpressPaymentFailed(event, 'Your reservation has ended. Please try again.');
+        onError('Your reservation has ended. Please try again.'); return;
       }
-      identify(buyer.email, { first_name: buyer.firstName, kit: kitId, source });
-      capture(EXPRESS_CHECKOUT_EVENTS.initiated, {
-        kit: kitId,
-        source,
-        price,
-        method: 'express',
-        wallet: event.expressPaymentType,
-      });
-      fbInitiateCheckout(kitId, price, { email: buyer.email });
+      rememberPaymentOrder(data.client_secret, order.items);
+      const analyticsKit = order.totalQuantity > 1 ? null : kitId;
+      const analyticsItems = order.totalQuantity > 1 ? order.items : undefined;
+      const value = order.amountPence / 100;
+      identify(buyer.email, { first_name: buyer.firstName, kit: analyticsKit, source });
+      capture(EXPRESS_CHECKOUT_EVENTS.initiated, { kit: analyticsKit, source, price: value, items: order.items, total_quantity: order.totalQuantity, method: 'express', wallet: event.expressPaymentType });
+      fbInitiateCheckout(analyticsKit, value, { email: buyer.email }, analyticsItems);
       ttqIdentify(buyer.email);
-      ttqInitiateCheckout(kitId, kitName, price);
-      ttqAddPaymentInfo(kitId, kitName, price);
+      ttqInitiateCheckout(analyticsKit, kitName, value, analyticsItems);
+      ttqAddPaymentInfo(analyticsKit, kitName, value, analyticsItems);
       try { sessionStorage.setItem('solum_buyer_email', buyer.email); } catch { /* unavailable */ }
-
-      const successParams = new URLSearchParams({
-        kit: kitId,
-        source,
-        dispatch: data.dispatch_date ?? '',
-        arrival: data.arrival_date ?? '',
-        amount: String(data.amount_pence),
-      });
+      const successParams = new URLSearchParams({ kit: kitId, source, dispatch: data.dispatch_date ?? '', arrival: data.arrival_date ?? '', amount: String(data.amount_pence) });
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        clientSecret: data.client_secret,
-        confirmParams: { return_url: `${window.location.origin}/success?${successParams.toString()}` },
-        redirect: 'if_required',
+        elements, clientSecret: data.client_secret,
+        confirmParams: { return_url: `${window.location.origin}/success?${successParams.toString()}` }, redirect: 'if_required',
       });
-
       if (confirmError) {
-        capture(EXPRESS_CHECKOUT_EVENTS.error, {
-          kit: kitId,
-          source,
-          stage: 'confirm',
-          message: errText(confirmError.message),
-        });
+        capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'confirm', message: errText(confirmError.message) });
         notifyExpressPaymentFailed(event, confirmError.message ?? 'Payment failed.');
-        onError(confirmError.message ?? 'Payment failed. Please try again.');
-        return;
+        onError(confirmError.message ?? 'Payment failed. Please try again.'); return;
       }
       if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
-        const paymentResult = rememberPaymentResult(paymentIntent, kitId);
-        clearReservationAttempt('express');
-        successParams.set('ref', paymentIntent.id);
-        navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
-        return;
+        const paymentResult = rememberPaymentResult(paymentIntent, kitId, undefined, order.items);
+        activeAttempt.current = null;
+        clearReservationAttempt('express'); successParams.set('ref', paymentIntent.id);
+        navigate(`/success?${successParams.toString()}`, { state: { paymentResult } }); return;
       }
-      capture(EXPRESS_CHECKOUT_EVENTS.error, {
-        kit: kitId,
-        source,
-        stage: 'confirm',
-        message: `unexpected status ${paymentIntent?.status ?? 'unknown'}`,
-      });
+      capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'confirm', message: `unexpected status ${paymentIntent?.status ?? 'unknown'}` });
       notifyExpressPaymentFailed(event, 'Payment could not be completed. Please try again or pay by card.');
       onError('Something went wrong. Please try again or pay by card.');
-    } catch {
+    } catch (cause) {
       capture(EXPRESS_CHECKOUT_EVENTS.error, { kit: kitId, source, stage: 'network', message: '' });
-      notifyExpressPaymentFailed(event, 'Network error. Please try again or pay by card.');
-      onError('Network error. Please try again or pay by card.');
+      notifyExpressPaymentFailed(event, 'Payment could not be completed. Please try again or pay by card.');
+      onError(cause.message || 'Network error. Please try again or pay by card.');
+    } finally {
+      submitting.current = false;
+      onBusyChange?.(false);
     }
   }
 
@@ -191,10 +171,11 @@ export default function ExpressCheckout({
           source,
           wallet: event.expressPaymentType,
         });
+        onBusyChange?.(true);
         event.resolve();
       }}
       onConfirm={onConfirm}
-      onCancel={() => capture(EXPRESS_CHECKOUT_EVENTS.cancelled, { kit: kitId, source })}
+      onCancel={() => { if (!submitting.current) onBusyChange?.(false); capture(EXPRESS_CHECKOUT_EVENTS.cancelled, { kit: kitId, source }); }}
     />
   );
 }

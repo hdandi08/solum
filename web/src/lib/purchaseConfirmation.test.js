@@ -56,3 +56,19 @@ describe('purchase confirmation', () => {
     expect(claimPurchaseEvent(confirmed, store)).toBe(true); expect(claimPurchaseEvent(confirmed, store)).toBe(false);
   });
 });
+
+describe('multi-kit payment recovery', () => {
+  const items = [{ kit_id: 'ground', quantity: 1, unit_amount_pence: 6500, line_amount_pence: 6500 }, { kit_id: 'ritual', quantity: 2, unit_amount_pence: 8500, line_amount_pence: 17000 }];
+  it('recovers every paid line and quantity from an inline result', async () => {
+    const store = storage();
+    const inlineResult = rememberPaymentResult({ ...paid, amount: 23500 }, 'ritual', store, items);
+    expect(await resolvePurchaseConfirmation({ reference: 'pi_paid', inlineResult, storage: store })).toMatchObject({ status: 'confirmed', purchase: { items, totalQuantity: 3, value: 235, kitId: null } });
+  });
+  it('restores redirect quantities only when their sum matches the verified Stripe amount', async () => {
+    const { rememberPaymentOrder } = await import('./purchaseConfirmation.js');
+    const store = storage(); rememberPaymentOrder('pi_paid_secret_test', items, store);
+    const input = { reference: 'pi_paid', clientSecret: 'pi_paid_secret_test', kitId: 'ritual', storage: store };
+    expect(await resolvePurchaseConfirmation({ ...input, stripe: { retrievePaymentIntent: async () => ({ paymentIntent: { ...paid, amount: 23500 } }) } })).toMatchObject({ status: 'confirmed', purchase: { items, totalQuantity: 3, value: 235 } });
+    expect(await resolvePurchaseConfirmation({ ...input, stripe: { retrievePaymentIntent: async () => ({ paymentIntent: paid }) } })).toEqual({ status: 'unverified' });
+  });
+});

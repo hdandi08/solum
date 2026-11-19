@@ -35,6 +35,8 @@ type OrderRow = {
   id: string
   customer_id: string
   kit_id: string
+  kit_quantity?: number
+  checkout_version?: string | null
   order_type: string
   status: string
   sendcloud_parcel_id: string | number | null
@@ -64,6 +66,12 @@ function validationError(context: AdminContext, message: string) {
     message,
     context,
   )
+}
+
+function guardMultiKitFulfillment(order: {kit_quantity?: number; checkout_version?: string | null} | null, context: AdminContext) {
+  if ((order?.kit_quantity ?? 1) > 1 || order?.checkout_version === 'multi_kit_v1') {
+    throw new AdminHttpError(409, 'MULTI_KIT_FULFILLMENT_UNAVAILABLE', 'Fulfillment for multiple kits is not available yet. Each kit needs a separate parcel.', context)
+  }
 }
 
 function actionFailureCode(error: unknown): string {
@@ -188,9 +196,10 @@ Deno.serve(async (req) => {
     if (getLabel) {
       const { data: existing, error } = await db
         .from('orders')
-        .select('sendcloud_parcel_id')
+        .select('sendcloud_parcel_id, kit_quantity, checkout_version')
         .eq('id', orderId)
         .single()
+      if (!error) guardMultiKitFulfillment(existing, context)
       if (error || !existing?.sendcloud_parcel_id) {
         throw new AdminHttpError(
           404,
@@ -228,7 +237,7 @@ Deno.serve(async (req) => {
     const { data, error: orderError } = await db
       .from('orders')
       .select(
-        'id, customer_id, kit_id, order_type, status, sendcloud_parcel_id, tracking_number, customers(first_name, last_name, email)',
+        'id, customer_id, kit_id, kit_quantity, checkout_version, order_type, status, sendcloud_parcel_id, tracking_number, customers(first_name, last_name, email)',
       )
       .eq('id', orderId)
       .single()
@@ -242,6 +251,7 @@ Deno.serve(async (req) => {
       )
     }
     const order = data as OrderRow
+    guardMultiKitFulfillment(order, context)
     if (order.sendcloud_parcel_id) {
       throw new AdminHttpError(
         409,

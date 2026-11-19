@@ -1,8 +1,10 @@
+import { normalizeKitItems } from './kitOrder.js';
 import { captureCampaignAttribution } from './campaignAttribution.js';
 import { resolveAwinPaymentIntentMetadata } from './awinAttribution.js';
 
 export async function buildFirstBoxPaymentIntentBody({
   kitId,
+  items,
   form,
   source,
   siteHost,
@@ -12,8 +14,10 @@ export async function buildFirstBoxPaymentIntentBody({
 }, tokenResolver) {
   const campaign = captureCampaignAttribution();
   const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, tokenResolver);
+  const selection = items ? normalizeKitItems(items) : null;
   return {
     kit_id: kitId,
+    ...(selection && selection.reduce((sum, item) => sum + item.quantity, 0) > 1 ? { items: selection } : {}),
     email: form.email.trim().toLowerCase(),
     first_name: form.first_name.trim(),
     last_name: form.last_name.trim() || null,

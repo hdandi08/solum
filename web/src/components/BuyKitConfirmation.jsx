@@ -1,12 +1,12 @@
 import { CheckoutDispatch } from './ExpressCheckoutInfo.jsx';
 import './BuyKitConfirmation.css';
 
-export default function BuyKitConfirmation({ kit, price, dispatch, onChange }) {
+export default function BuyKitConfirmation({ kit, price, dispatch, onChange, disabled = false }) {
   return (
     <section className="buy-kit-card" data-testid="kit-confirm" aria-label="Selected kit">
       <header className="buy-kit-card-header">
         <span>Your kit</span>
-        <button type="button" data-testid="change-kit" onClick={onChange}>Change kit</button>
+        <button type="button" data-testid="change-kit" disabled={disabled} onClick={onChange}>Change kit</button>
       </header>
       <div className="buy-kit-card-main">
         {kit?.image && (

@@ -178,3 +178,13 @@ Deno.test('legacy cancellation maintenance is forbidden outside dev test mode',a
   await assertRejects(()=>auditLegacyDevPayments({}));
  } finally {keys.forEach((k,i)=>original[i]===undefined?Deno.env.delete(k):Deno.env.set(k,original[i]!));}
 });
+
+Deno.test('expiry reconciliation settles a multi-item reservation by resource without requiring a legacy kit_id', async () => {
+  const h = harness('requires_confirmation');
+  const result = await reconcileReservation(h.db, h.stripe, {
+    ...row, kit_id: null,
+    items_snapshot: [{kit_id:'ground',quantity:1},{kit_id:'ritual',quantity:2}],
+  }, now);
+  assertEquals(result, 'released');
+  assertEquals(h.calls, ['cancel', 'released']);
+});

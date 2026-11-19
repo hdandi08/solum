@@ -1,3 +1,4 @@
+import { multiKitDevelopmentEnvironment, verifyMultiKitPayment, verifiedMultiKitShipping, multiKitSummary, multiKitEmailLines, type KitItem } from '../_shared/multiKitOrder.ts';
 import {ensureCheckoutSubscription} from '../_shared/checkoutSubscription.ts';
 import Stripe from 'https://esm.sh/stripe@14?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno';
@@ -27,7 +28,7 @@ const KIT_NAMES: Record<string, string> = {
 
 // Deduct inventory for a kit order. order_type: 'first_box' | 'refill'
 async function deductInventory(
-  db: ReturnType<typeof createClient>,
+  db: ReturnType<typeof createClient<any>>,
   kit_id: string,
   order_type: 'first_box' | 'refill',
   reference_id: string,
@@ -44,7 +45,7 @@ async function deductInventory(
     if (!kitProducts?.length) return;
 
     for (const kp of kitProducts) {
-      const qty = kp[qtyField] as number;
+      const qty = (kp as { first_box_qty?: number; refill_qty?: number })[qtyField] as number;
 
       // Decrement stock (floor at 0 — never go negative)
       const { data: product } = await db
@@ -76,14 +77,17 @@ async function deductInventory(
 }
 
 // Inventory state and order flags commit in the same database transaction.
-async function deductKitInventory(db: ReturnType<typeof createClient>, orderId: string, _kitId: string, resourceId?: string) {
+async function deductKitInventory(db: ReturnType<typeof createClient<any>>, orderId: string, _kitId: string, resourceId?: string) {
   const { error } = await db.rpc('finalise_checkout_inventory', {p_order_id:orderId,p_resource_id:resourceId ?? null});
   if(error) throw new Error(`kit_inventory_finalisation_failed: ${error.message}`);
 }
-async function restockKitInventory(db: ReturnType<typeof createClient>, orderId: string, _kitId: string) {
+async function restockKitInventory(db: ReturnType<typeof createClient<any>>, orderId: string, _kitId: string) {
   const { error } = await db.rpc('restock_checkout_inventory', {p_order_id:orderId});
   if(error) throw new Error(`kit_inventory_restock_failed: ${error.message}`);
 }
+
+function escapeEmailText(value: unknown) { return String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!)); }
+type MultiKitEmail = { items: KitItem[]; address: Record<string, any> };
 
 async function sendConfirmationEmail(
   email: string,
@@ -95,11 +99,12 @@ async function sendConfirmationEmail(
   arrivalDate?: string,
   subjectPrefix = '',
   idempotencyKey?: string,
+  multiKit?: MultiKitEmail,
 ) {
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) throw new Error('resend_email_not_configured:customer_confirmation');
 
-  const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+  const kitName = multiKit ? multiKitSummary(multiKit.items) : KIT_NAMES[kitId] ?? kitId.toUpperCase();
 
   const step3 = isOneTime
     ? `<tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
@@ -141,7 +146,7 @@ async function sendConfirmationEmail(
           <p style="margin:0 0 8px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">Order Confirmed</p>
           <h1 style="margin:0 0 20px;font-size:44px;font-weight:700;letter-spacing:0.04em;color:#F0ECE2;text-transform:uppercase;line-height:0.95;">Ritual Begins,<br>${firstName}.</h1>
           <div style="width:48px;height:1px;background:#2E6DA4;margin-bottom:20px;"></div>
-          <p style="margin:0;font-size:15px;color:rgba(240,236,226,0.65);line-height:1.7;">Your ${kitName} Kit is confirmed. Here's everything you need to know.</p>
+          <p style="margin:0;font-size:15px;color:rgba(240,236,226,0.65);line-height:1.7;">${multiKit ? 'Your kits are confirmed.' : `Your ${kitName} Kit is confirmed.`} Here's everything you need to know.</p>
         </td></tr>
 
         <!-- Order ref -->
@@ -155,6 +160,7 @@ async function sendConfirmationEmail(
           </table>
         </td></tr>
 
+        ${multiKit ? `<tr><td style="padding:0 48px 36px;color:#F0ECE2;font-size:15px;line-height:1.8;">${multiKitEmailLines(multiKit.items)}<br><strong>Total: £${(multiKit.items.reduce((sum,item)=>sum+item.line_amount_pence,0)/100).toFixed(2)}</strong><br>Free UK delivery. Your ${multiKit.items.reduce((sum,item)=>sum+item.quantity,0)} kits will be sent in separate parcels.<br><br>${['name','line1','line2','city','postcode','country'].map(key=>multiKit.address[key]).filter(Boolean).map(escapeEmailText).join('<br>')}</td></tr>` : ''}
         <!-- What happens next -->
         <tr><td bgcolor="#08090B" style="background-color:#08090B;padding:0 48px 48px;">
           <p style="margin:0 0 20px;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#4A8FC7;font-weight:700;">What Happens Next</p>
@@ -168,7 +174,7 @@ async function sendConfirmationEmail(
             <tr><td bgcolor="#181C24" style="background-color:#181C24;padding:20px 24px;border-bottom:1px solid #1e2530;">
               <table width="100%" cellpadding="0" cellspacing="0"><tr>
                 <td width="32" style="font-size:22px;font-weight:700;color:#2E6DA4;vertical-align:top;padding-top:2px;">2</td>
-                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">Your full ${kitName} Kit — tools and consumables.${arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
+                <td><p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#F0ECE2;">${dispatchDate ? `Ships ${dispatchDate}` : 'Kit ships within 2 days'}</p><p style="margin:0;font-size:13px;color:rgba(240,236,226,0.45);line-height:1.55;">${multiKit ? 'Your complete order — each kit in a separate parcel.' : `Your full ${kitName} Kit — tools and consumables.`}${arrivalDate ? ` Est. delivery ${arrivalDate}.` : ''} You'll get a tracking email when it's on its way.</p></td>
               </tr></table>
             </td></tr>
             ${step3}
@@ -218,12 +224,13 @@ async function sendAdminNotification(
   amountPence: number,
   subjectPrefix = '',
   idempotencyKey?: string,
+  multiKit?: MultiKitEmail,
 ) {
   console.log('admin_notification_start', { orderRef, firstName });
   const resendKey = Deno.env.get('RESEND_API_KEY');
   if (!resendKey) throw new Error('resend_email_not_configured:admin_notification');
 
-  const kitName = KIT_NAMES[kitId] ?? kitId.toUpperCase();
+  const kitName = multiKit ? multiKitSummary(multiKit.items) : KIT_NAMES[kitId] ?? kitId.toUpperCase();
   const amount = `£${(amountPence / 100).toFixed(2)}`;
   const now = new Date();
   const dateTime = `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)} UTC`;
@@ -244,7 +251,7 @@ async function sendAdminNotification(
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:400px;">
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;width:120px;">Order</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:16px;font-weight:700;letter-spacing:0.08em;">#${orderRef}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Name</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${firstName}</td></tr>
-  <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Kit</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${kitName}</td></tr>
+  <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Kit</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#F0ECE2;font-size:14px;">${multiKit ? multiKitEmailLines(multiKit.items) : kitName}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Amount</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;border-bottom:1px solid #1e2530;color:#4A8FC7;font-size:14px;font-weight:700;">${amount}</td></tr>
   <tr><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;">Date</td><td bgcolor="#181C24" style="padding:12px 20px;background-color:#181C24;color:rgba(240,236,226,0.6);font-size:13px;">${dateTime}</td></tr>
 </table>
@@ -259,7 +266,7 @@ async function sendAdminNotification(
 type StoredOrderEmailDeliveryState = OrderEmailDeliveryState & { id: string };
 
 async function deliverPaidOrderEmails(
-  db: ReturnType<typeof createClient>,
+  db: ReturnType<typeof createClient<any>>,
   input: {
     orderId: string;
     livemode: boolean | undefined;
@@ -271,6 +278,7 @@ async function deliverPaidOrderEmails(
     isOneTime: boolean;
     dispatchDate?: string;
     arrivalDate?: string;
+    multiKit?: MultiKitEmail;
   },
 ) {
   const policy = resolveOrderEmailDeliveryPolicy(
@@ -309,6 +317,7 @@ async function deliverPaidOrderEmails(
       input.arrivalDate,
       policy.subjectPrefix,
       `order-confirmation/${input.orderId}`,
+      input.multiKit,
     ),
     markCustomerConfirmationSent: async (resendId) => {
       const sentAt = new Date().toISOString();
@@ -332,6 +341,7 @@ async function deliverPaidOrderEmails(
       input.amountPence,
       policy.subjectPrefix,
       `founder-order-notification/${input.orderId}`,
+      input.multiKit,
     ),
     markAdminNotificationSent: async (resendId) => {
       const sentAt = new Date().toISOString();
@@ -352,7 +362,7 @@ async function deliverPaidOrderEmails(
 }
 
 async function logEvent(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   stripe_event_id: string,
   event_type: string,
   customer_id: string | null,
@@ -406,7 +416,7 @@ function paymentIntentClaimIsStale(data: Record<string, unknown>) {
 }
 
 async function claimPaymentIntent(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   event: Stripe.Event,
   pi: Stripe.PaymentIntent,
 ): Promise<PaymentIntentClaimResult> {
@@ -461,7 +471,7 @@ async function claimPaymentIntent(
 }
 
 async function updatePaymentIntentClaim(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   claim: PaymentIntentClaim,
   data: Record<string, unknown>,
   action: string,
@@ -483,7 +493,7 @@ async function updatePaymentIntentClaim(
 }
 
 async function completePaymentIntentClaim(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   claim: PaymentIntentClaim,
 ) {
   await updatePaymentIntentClaim(supabase, claim, {
@@ -494,7 +504,7 @@ async function completePaymentIntentClaim(
 }
 
 async function markPaymentIntentPurchaseSideEffectsAttempted(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   claim: PaymentIntentClaim,
 ) {
   claim.data = await updatePaymentIntentClaim(
@@ -506,7 +516,7 @@ async function markPaymentIntentPurchaseSideEffectsAttempted(
 }
 
 async function releasePaymentIntentClaim(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   claim: PaymentIntentClaim,
 ) {
   const previousRevision = paymentIntentClaimRevision(claim.data);
@@ -536,6 +546,7 @@ async function sendTikTokPurchaseEvent(opts: {
   phone?: string | null;
   kitId?: string | null;
   kitName: string;
+  items?: KitItem[];
   amountPence: number;
   eventId: string;
   ttclid?: string | null;
@@ -570,7 +581,7 @@ async function sendTikTokPurchaseEvent(opts: {
           properties: {
             currency: 'GBP',
             value: Number((opts.amountPence / 100).toFixed(2)),
-            contents: [{
+            contents: opts.items ? opts.items.map(item => ({content_id:item.kit_id,content_type:'product',content_name:item.kit_id.toUpperCase(),quantity:item.quantity,price:item.unit_amount_pence/100})) : [{
               content_id: opts.kitId ?? 'unknown',
               content_type: 'product',
               content_name: opts.kitName,
@@ -583,7 +594,7 @@ async function sendTikTokPurchaseEvent(opts: {
     if (result.code !== 0) console.error('tiktok_events_api_error', res.status);
     else console.log('tiktok_events_api_ok', opts.eventId);
   } catch (err) {
-    console.error('tiktok_events_api_throw', err.message);
+    console.error('tiktok_events_api_throw', (err instanceof Error ? err.message : String(err)));
   }
 }
 
@@ -592,6 +603,7 @@ async function sendMetaPurchaseEvent(opts: {
   phone?: string | null;
   kitId?: string | null;
   kitName: string;
+  items?: KitItem[];
   amountPence: number;
   eventId: string;
   fbp?: string | null;
@@ -624,7 +636,8 @@ async function sendMetaPurchaseEvent(opts: {
             value: parseFloat((opts.amountPence / 100).toFixed(2)),
             content_name: opts.kitName,
             content_type: 'product',
-            content_ids: [opts.kitId ?? 'unknown'],
+            content_ids: opts.items ? opts.items.map(item=>item.kit_id) : [opts.kitId ?? 'unknown'],
+            ...(opts.items ? {contents:opts.items.map(item=>({id:item.kit_id,quantity:item.quantity,item_price:item.unit_amount_pence/100})),num_items:opts.items.reduce((sum,item)=>sum+item.quantity,0)} : {}),
           },
         }],
       }),
@@ -633,13 +646,93 @@ async function sendMetaPurchaseEvent(opts: {
     if (result.error) console.error('meta_capi_error', res.status);
     else console.log('meta_capi_ok', opts.eventId, result.events_received);
   } catch (err) {
-    console.error('meta_capi_throw', err.message);
+    console.error('meta_capi_throw', (err instanceof Error ? err.message : String(err)));
+  }
+}
+
+async function handleMultiKitOrderFromPI(
+  eventPi: Stripe.PaymentIntent,
+  db: ReturnType<typeof createClient<any>>,
+  claim: PaymentIntentClaim,
+) {
+  // In-flight paid attempts remain processable after checkout flags are disabled.
+  if (!multiKitDevelopmentEnvironment()) throw new Error('multi_kit_environment_forbidden');
+  const pi = await stripe.paymentIntents.retrieve(eventPi.id);
+  if (pi.livemode !== false || pi.metadata?.checkout_flow !== 'multi_kit_v1') throw new Error('multi_kit_payment_forbidden');
+  const attemptId = pi.metadata?.multi_kit_attempt_id;
+  if (!/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(attemptId ?? '')) throw new Error('multi_kit_attempt_required');
+  const {data:attempt,error:attemptError} = await db.from('checkout_multi_attempts').select('*').eq('id',attemptId).single();
+  if (attemptError || !attempt) throw new Error('multi_kit_attempt_lookup_failed');
+  verifyMultiKitPayment(pi,attempt);
+  const address = verifiedMultiKitShipping(pi);
+  const {email:metaEmail,first_name,last_name,source,phone,site_host,dispatch_date,arrival_date,ttclid,ttp,fbp,fbc,awc,awin_channel} = pi.metadata;
+  const email = (pi.receipt_email ?? metaEmail)?.trim().toLowerCase();
+  if (!email) throw new Error('multi_kit_customer_email_required');
+  const {data:customer,error:customerError} = await db.from('customers').upsert({email,first_name,last_name:last_name || null,stripe_customer_id:attempt.stripe_customer_id},{onConflict:'email'}).select('id').single();
+  if (customerError || !customer) throw new Error('multi_kit_customer_upsert_failed');
+  const {data:order,error:orderError} = await db.rpc('finalise_multi_kit_order',{
+    p_attempt_id:attempt.id,p_payment_id:pi.id,p_customer_id:customer.id,p_amount_pence:pi.amount,p_address:address,p_source:source || null,
+  });
+  if (orderError || !order?.id) throw new Error('multi_kit_order_finalisation_failed');
+  await db.from('leads').update({checkout_status:'completed',updated_at:new Date().toISOString()}).eq('stripe_session_id',pi.id);
+  const {error:addressError} = await db.from('addresses').upsert({customer_id:customer.id,stripe_session_id:pi.id,...address,is_current:true,updated_at:new Date().toISOString()},{onConflict:'stripe_session_id'});
+  if (addressError) throw new Error('multi_kit_address_upsert_failed');
+  // Refund-before-order reconciliation is committed by finalization. Do not send
+  // confirmations or conversions for an order that was already fully refunded.
+  const {data:stored,error:storedError} = await db.from('orders').select('status').eq('id',order.id).single();
+  if (storedError || !stored) throw new Error('multi_kit_order_status_read_failed');
+  if (stored.status === 'refunded') return;
+  const eligibility = classifyAwinEligibility({
+    livemode: pi.livemode,
+    awc,
+    channel: awin_channel,
+  });
+  if (eligibility.eligible) {
+    const discountPence = validatedIntegerMetadata(pi.metadata.discount_amount_pence, 0);
+    const deliveryPence = validatedIntegerMetadata(pi.metadata.delivery_amount_pence, 0);
+    const vatEffectiveAt = Deno.env.get('SOLUM_VAT_EFFECTIVE_AT');
+    const vatRateBps = validatedIntegerMetadata(Deno.env.get('SOLUM_VAT_RATE_BPS'), 0);
+    const commission = calculateAwinCommissionableAmount({
+      customerPaidPence: pi.amount,
+      discountPence,
+      deliveryPence,
+      paidAt: paymentIntentCreatedAt(pi.created),
+      vatEffectiveAt: vatEffectiveAt || null,
+      vatRateBps,
+    });
+    await classifyThenEnqueueAwinConversion(db as never, customer.id, order, {
+      orderRef: pi.id,
+      orderId: order.id,
+      customerPaidPence: pi.amount,
+      discountPence,
+      deliveryPence,
+      vatPence: commission.vatPence,
+      amountPence: commission.commissionablePence,
+      voucherCode: validatedVoucher(pi.metadata.voucher_code),
+      financialBasisVersion: 'solum-commission-v1',
+      currency: 'GBP',
+      channel: awin_channel as 'aw' | 'display' | 'ppc' | 'email',
+      awc: awc!,
+    });
+  }
+
+  await deliverPaidOrderEmails(db,{
+    orderId:order.id,livemode:pi.livemode,customerEmail:email,firstName:escapeEmailText(first_name || 'there'),kitId:'',
+    orderRef:pi.id.slice(-8).toUpperCase(),amountPence:order.amount_pence,isOneTime:true,dispatchDate:dispatch_date,arrivalDate:arrival_date,
+    multiKit:{items:order.items,address:order.shipping_address},
+  });
+  if (shouldSendExternalPurchaseSideEffects({livemode:pi.livemode,orderAlreadyExists:false,purchaseSideEffectsAttempted:paymentIntentPurchaseSideEffectsAttempted(claim.data)})) {
+    await markPaymentIntentPurchaseSideEffectsAttempted(db,claim);
+    const common={email,phone,items:order.items,kitName:multiKitSummary(order.items),amountPence:order.amount_pence,eventId:pi.id};
+    await sendTikTokPurchaseEvent({...common,ttclid,ttp});
+    await sendMetaPurchaseEvent({...common,fbp,fbc});
+    await sendPosthogPurchase({email,items:order.items,amountPence:order.amount_pence,source,piId:pi.id,host:site_host || undefined});
   }
 }
 
 async function handleOneTimeOrderFromPI(
   pi: Stripe.PaymentIntent,
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   claim: PaymentIntentClaim,
 ) {
   const { kit_id, first_name, last_name, source, email: metaEmail, phone, site_host, dispatch_date, arrival_date, ttclid, ttp, fbp, fbc, awc, awin_channel } = pi.metadata ?? {};
@@ -786,7 +879,7 @@ async function handleOneTimeOrderFromPI(
 
 async function handleOneTimeOrder(
   session: Stripe.Checkout.Session,
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
 ) {
   const { kit_id, first_name, last_name, source, site_host } = session.metadata ?? {};
   const email = (session.customer_details?.email ?? session.customer_email)?.trim().toLowerCase();
@@ -911,7 +1004,7 @@ Deno.serve(async (req) => {
         stripe.webhooks.constructEventAsync(payload, signature, secret),
     });
   } catch (err) {
-    return new Response(`Webhook error: ${err.message}`, { status: 400 });
+    return new Response(`Webhook error: ${(err instanceof Error ? err.message : String(err))}`, { status: 400 });
   }
 
   try {
@@ -939,7 +1032,7 @@ Deno.serve(async (req) => {
             const pi = await stripe.paymentIntents.retrieve(session.payment_intent as string);
             stripe_subscription_id = await ensureCheckoutSubscription(supabase,stripe,pi,session.metadata ?? {});
           } catch (subErr) {
-            console.error('SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
+            console.error('SUBSCRIPTION_CREATE_ERROR', (subErr instanceof Error ? subErr.message : String(subErr)), { stripe_customer_id, kit_id });
             throw subErr;
           }
         }
@@ -1103,6 +1196,25 @@ Deno.serve(async (req) => {
 
         if (pi.metadata?.checkout_flow === 'hosted') break;
 
+        if (pi.metadata?.checkout_flow === 'multi_kit_v1') {
+          const result = await claimPaymentIntent(supabase,event,pi);
+          if (result.state === 'completed') break;
+          if (result.state === 'processing') throw new Error('payment_intent_claim_processing');
+          const claim = result.claim;
+          try { await handleMultiKitOrderFromPI(pi,supabase,claim); }
+          catch (error) {
+            if (paymentIntentPurchaseSideEffectsAttempted(claim.data)) {
+              await completePaymentIntentClaim(supabase,claim);
+              console.error('payment_intent_purchase_side_effect_attempt_failed',pi.id);
+              break;
+            }
+            await releasePaymentIntentClaim(supabase,claim);
+            throw error;
+          }
+          await completePaymentIntentClaim(supabase,claim);
+          break;
+        }
+
         // Only process intents created by our checkout (has kit_id metadata)
         if (!pi.metadata?.kit_id) break;
 
@@ -1124,7 +1236,7 @@ Deno.serve(async (req) => {
             try {
               await releasePaymentIntentClaim(supabase, claim);
             } catch (releaseErr) {
-              throw new Error(`payment_intent_handler_failed: ${err instanceof Error ? err.message : String(err)}; ${releaseErr instanceof Error ? releaseErr.message : String(releaseErr)}`);
+              throw new Error(`payment_intent_handler_failed: ${err instanceof Error ? (err instanceof Error ? err.message : String(err)) : String(err)}; ${releaseErr instanceof Error ? releaseErr.message : String(releaseErr)}`);
             }
             throw err;
           }
@@ -1162,7 +1274,7 @@ Deno.serve(async (req) => {
         try {
           stripe_subscription_id = await ensureCheckoutSubscription(supabase,stripe,pi,pi.metadata);
         } catch (subErr) {
-          console.error('PI_SUBSCRIPTION_CREATE_ERROR', subErr.message, { stripe_customer_id, kit_id });
+          console.error('PI_SUBSCRIPTION_CREATE_ERROR', (subErr instanceof Error ? subErr.message : String(subErr)), { stripe_customer_id, kit_id });
           throw subErr;
         }
 
@@ -1658,6 +1770,6 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     console.error(err);
-    return new Response(`Handler error: ${err.message}`, { status: 500 });
+    return new Response(`Handler error: ${(err instanceof Error ? err.message : String(err))}`, { status: 500 });
   }
 });

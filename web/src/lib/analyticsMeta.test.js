@@ -47,3 +47,16 @@ describe('Meta attribution continuity', () => {
     expect(sent[0]).toMatchObject({ event_name: 'ViewContent', value: 85 });
     expect(pixel[0][3].eventID).toBe(sent[0].event_id);
   });
+
+it('reports all real kit IDs and quantities in one mixed checkout and purchase event', async () => {
+  environment(); const pixel = []; const tiktok = [];
+  window.fbq = (...args) => pixel.push(args); window.ttq = { track: (...args) => tiktok.push(args) };
+  vi.stubGlobal('fetch', async () => ({}));
+  const analytics = await import('./analytics.js');
+  const items = [{ kit_id: 'ground', quantity: 1, unit_amount_pence: 6500, line_amount_pence: 6500 }, { kit_id: 'ritual', quantity: 2, unit_amount_pence: 8500, line_amount_pence: 17000 }];
+  analytics.fbInitiateCheckout(null, 235, {}, items); analytics.fbPurchase(null,235,'pi_mixed',items);
+  analytics.ttqCompletePayment(null,'3 kits',235,'pi_mixed',items);
+  expect(pixel[0][2]).toMatchObject({ content_ids: ['ground','ritual'], num_items: 3, contents: [{ id:'ground',quantity:1,item_price:65 },{ id:'ritual',quantity:2,item_price:85 }] });
+  expect(pixel[1][2]).toMatchObject({ value:235,num_items:3,content_ids:['ground','ritual'] });
+  expect(tiktok[0][1]).toMatchObject({ contents:[{content_id:'ground',content_name:'GROUND',quantity:1,price:65},{content_id:'ritual',content_name:'RITUAL',quantity:2,price:85}] });
+});

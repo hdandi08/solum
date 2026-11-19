@@ -27,3 +27,8 @@ Deno.test('buildPosthogPurchase falls back to bysolum.co.uk when host is null', 
   const e = buildPosthogPurchase({ apiKey: 'phc_x', email: 'a@b.com', piId: 'pi_000', kitId: 'ritual', amountPence: 8500, source: 'ig', host: null });
   assertEquals(e.properties.$host, 'bysolum.co.uk');
 });
+
+Deno.test('multi-kit purchase carries one total and real line quantities with no invented SKU',()=>{
+ const event=buildPosthogPurchase({apiKey:'phc_fixture',piId:'pi_multi',amountPence:23500,items:[{kit_id:'ground',quantity:1,unit_amount_pence:6500,line_amount_pence:6500},{kit_id:'ritual',quantity:2,unit_amount_pence:8500,line_amount_pence:17000}]} as any);
+ assertEquals(event.properties.revenue_pence,23500);assertEquals((event.properties as any).total_quantity,3);assertEquals((event.properties as any).items[1].quantity,2);assertEquals(Object.hasOwn(event.properties,'kit'),false);assertEquals(event.properties.$insert_id,'pi_multi');
+});

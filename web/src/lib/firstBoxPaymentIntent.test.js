@@ -96,3 +96,10 @@ describe('buildFirstBoxPaymentIntentBody', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+it('keeps all attribution and legacy kit_id while adding sorted quantities only for multiple kits', async () => {
+  const items = [{ kit_id: 'ritual', quantity: 2 }, { kit_id: 'ground', quantity: 1 }];
+  const body = await buildFirstBoxPaymentIntentBody({ ...input, items, attribution: { awc: '129171_direct', channel: 'aw' } }, async () => null);
+  expect(body).toEqual({ ...baseBody, awc: '129171_direct', awin_channel: 'aw', items: [{ kit_id: 'ground', quantity: 1 }, { kit_id: 'ritual', quantity: 2 }] });
+  expect(await buildFirstBoxPaymentIntentBody({ ...input, items: [{ kit_id: 'ritual', quantity: 1 }] }, async () => null)).not.toHaveProperty('items');
+});

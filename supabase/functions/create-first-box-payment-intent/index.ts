@@ -1,3 +1,4 @@
+import { canonicalKitItems, multiKitCheckoutEnabled, prepareMultiKitAttempt, createMultiKitPayment, multiKitSummary } from '../_shared/multiKitOrder.ts';
 import { campaignMetadata } from '../_shared/campaignAttribution.mjs';
 import { createReservedPayment, reservationErrorBody, ReservationError, reservationsEnabled, prepareCheckoutAttempt, bindCheckoutCustomer, checkoutAttemptTime } from '../_shared/checkoutReservation.ts';
 import { checkoutStockError } from '../_shared/checkoutStock.ts';
@@ -37,13 +38,17 @@ Deno.serve(async (req) => {
     const body = await req.json();
     kit_id = body.kit_id;
     email  = body.email?.trim().toLowerCase();
+    const selection = Object.hasOwn(body, 'items') ? canonicalKitItems(body.items) : null;
+    const multiKit = !!selection && selection.total_quantity > 1;
+    if (selection && !multiKit) kit_id = selection.items[0].kit_id;
+    if (multiKit && !multiKitCheckoutEnabled()) throw new ReservationError('multi_kit_unavailable', 409);
     const {
       first_name, last_name, source, phone, site_host, line1, line2, city,
       postcode, ttclid, ttp, fbp, fbc, awc, awin_channel, awin_attribution_token,
       payment_flow,
     } = body;
 
-    if (!KIT_PENCE[kit_id!]) {
+    if (!multiKit && !KIT_PENCE[kit_id!]) {
       return new Response(JSON.stringify({ error: 'Invalid kit_id' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -56,7 +61,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const attempt = await prepareCheckoutAttempt(supabase, 'payment_intent', body);
+    let attempt = multiKit ? null : await prepareCheckoutAttempt(supabase, 'payment_intent', body);
 
     const effectiveSource = normalizeOrderSource(source);
     const awinAttribution = await resolveAwinCheckoutAttribution({
@@ -65,11 +70,9 @@ Deno.serve(async (req) => {
       channel: awin_channel,
       secret: Deno.env.get('AWIN_ATTRIBUTION_SECRET') ?? '',
     });
-    const amount = KIT_PENCE[kit_id!];
+    const amount = multiKit ? selection!.amount_pence : KIT_PENCE[kit_id!];
     const kitName = KIT_NAMES[kit_id!];
 
-    const dispatch = getDispatchDate(checkoutAttemptTime(attempt));
-    const arrival  = estDeliveryDate(dispatch);
     const shipping = firstBoxPaymentIntentShipping({
       firstName: first_name,
       lastName: last_name,
@@ -89,19 +92,25 @@ Deno.serve(async (req) => {
           phone: phone ?? undefined,
         });
 
-    customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+    if (multiKit) {
+      attempt = await prepareMultiKitAttempt(supabase, body, selection!, customer.id);
+      customer.id = attempt.stripe_customer_id;
+    } else customer.id = await bindCheckoutCustomer(supabase, attempt, customer.id);
+
+    const dispatch = getDispatchDate(checkoutAttemptTime(attempt));
+    const arrival = estDeliveryDate(dispatch);
 
     // One-time PaymentIntent — no setup_future_usage, no subscription
-    const pi = await createReservedPayment(supabase, stripe, 'payment_intent', kit_id!, attempt, {
+    const paymentParams = {
       amount,
       currency: 'gbp',
       ...dynamicPaymentMethodOptions(),
       customer: customer.id,
       ...(shipping ? { shipping } : {}),
-      description: `SOLUM ${kitName} — One-time First Box`,
+      description: `SOLUM ${multiKit ? multiKitSummary(selection!.items) : kitName} — One-time First Box`,
       metadata: {
         ...campaignMetadata(body.campaign_attribution),
-        kit_id:       kit_id!,
+        ...(!multiKit ? { kit_id: kit_id! } : {}),
         email:        email!,
         first_name:   first_name  ?? '',
         last_name:    last_name   ?? '',
@@ -117,14 +126,17 @@ Deno.serve(async (req) => {
         dispatch_date: fmtDay(dispatch),
         arrival_date:  fmtDay(arrival),
       },
-    });
+    };
+    const pi = multiKit
+      ? await createMultiKitPayment(supabase, stripe, attempt, paymentParams)
+      : await createReservedPayment(supabase, stripe, 'payment_intent', kit_id!, attempt, paymentParams);
 
     // Capture lead
     await supabase.from('leads').upsert({
       email,
       first_name,
       last_name:          last_name ?? null,
-      kit_id,
+      kit_id: multiKit ? null : kit_id,
       stripe_customer_id: customer.id,
       stripe_session_id:  pi.id,
       checkout_status:    'initiated',
@@ -132,6 +144,7 @@ Deno.serve(async (req) => {
     }, { onConflict: 'stripe_session_id' });
 
     return new Response(JSON.stringify({
+      ...(multiKit ? { checkout_flow: 'multi_kit_v1', order_items: attempt.items, total_quantity: attempt.total_quantity } : {}),
       reservation_expires_at: pi.reservation_expires_at,
       reservation_server_now: new Date().toISOString(),
       client_secret:  pi.client_secret,
@@ -144,7 +157,7 @@ Deno.serve(async (req) => {
     });
 
   } catch (err) {
-    if (err instanceof ReservationError) return new Response(JSON.stringify(reservationErrorBody(err.code)), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
+    if (err instanceof ReservationError) return new Response(JSON.stringify({...reservationErrorBody(err.code), ...('kit_id' in err ? {kit_id:err.kit_id,available_count:(err as any).available_count} : {})}), {status:err.status,headers:{...corsHeaders,'Content-Type':'application/json'}});
     console.error('FIRST_BOX_PAYMENT_INTENT_ERROR', { kit_id });
     return new Response(
       JSON.stringify({ error: 'Something went wrong. Please try again or contact contact@bysolum.co.uk.' }),

@@ -108,6 +108,7 @@ function walletForm(event) {
 export async function buildExpressPaymentIntentBody({
   event,
   kitId,
+  items,
   source,
   siteHost,
   tikTokIds = {},
@@ -117,6 +118,7 @@ export async function buildExpressPaymentIntentBody({
   const { form, firstName } = walletForm(event);
   const body = await buildFirstBoxPaymentIntentBody({
     kitId,
+    items,
     form,
     source,
     siteHost,

@@ -61,3 +61,38 @@ describe('wallet loading', () => {
     expect(onLoadError).toHaveBeenCalledOnce();
   });
 });
+
+describe('multi-kit wallet snapshot', () => {
+  it('sends the quantities, retains the held attempt and persists the verified full receipt', async () => {
+    vi.stubGlobal('React', React);
+    const values = new Map(); vi.stubGlobal('sessionStorage', { getItem: key => values.get(key), setItem: (key,value) => values.set(key,value), removeItem:key=>values.delete(key) });
+    vi.stubGlobal('window', { location: { hostname: 'localhost', origin: 'http://localhost' } });
+    const items = [{kit_id:'ground',quantity:1},{kit_id:'ritual',quantity:2}];
+    const order_items=items.map(item=>({...item,unit_amount_pence:item.kit_id==='ground'?6500:8500,line_amount_pence:item.quantity*(item.kit_id==='ground'?6500:8500)}));
+    const data = {checkout_flow:'multi_kit_v1',client_secret:'pi_mixed_secret_test',order_items,total_quantity:3,amount_pence:23500,reservation_expires_at:new Date(Date.now()+600000).toISOString()};
+    const requests=[];vi.stubGlobal('fetch',async(_url,options)=>{requests.push(JSON.parse(options.body));return Response.json(data);});
+    stripe.confirmPayment.mockResolvedValue({paymentIntent:{id:'pi_mixed',status:'succeeded',amount:23500,currency:'gbp',livemode:false}});
+    const attemptRef={current:null};const onBusyChange=vi.fn();
+    renderToStaticMarkup(<ExpressCheckout kitId="ritual" kitName="3 kits" price={235} items={items} source="first_batch" supabaseUrl="https://example.com" authHeaders={{}} onError={vi.fn()} onAvailability={vi.fn()} attemptRef={attemptRef} onBusyChange={onBusyChange}/>);
+    await rendered.props.onConfirm({expressPaymentType:'apple_pay',billingDetails:{email:'buyer@example.test'},shippingAddress:{name:'Test Buyer',address:{line1:'1 Test Street',city:'London',postal_code:'SW1A 1AA'}}});
+    expect(requests[0].items).toEqual(items);
+    const receipt=JSON.parse(values.get('solum_payment_result_pi_mixed')); expect(receipt.items).toEqual(order_items);
+    expect(onBusyChange.mock.calls).toEqual([[true],[false]]);
+    expect(attemptRef.current).toBeNull();
+  });
+});
+
+it('persists a declined wallet attempt for refresh and reuses the unchanged payment on retry', async () => {
+  vi.stubGlobal('React', React); const values=new Map();
+  vi.stubGlobal('sessionStorage',{getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)});
+  vi.stubGlobal('window',{location:{hostname:'localhost',origin:'http://localhost'}});
+  const data={client_secret:'pi_retry_secret_test',amount_pence:8500,reservation_expires_at:new Date(Date.now()+600000).toISOString()};
+  const fetch=vi.fn(async()=>Response.json(data));vi.stubGlobal('fetch',fetch);
+  stripe.confirmPayment.mockResolvedValue({error:{message:'Try a different card.'}});
+  const attemptRef={current:null};const props={kitId:'ritual',kitName:'RITUAL',price:85,source:'first_batch',supabaseUrl:'https://example.com',authHeaders:{},onError:vi.fn(),onAvailability:vi.fn(),attemptRef};
+  const event={billingDetails:{email:'buyer@example.test'},shippingAddress:{name:'Test Buyer',address:{line1:'1 Test Street',city:'London',postal_code:'SW1A 1AA'}}};
+  renderToStaticMarkup(<ExpressCheckout {...props}/>); await rendered.props.onConfirm(event);
+  const saved=JSON.parse(values.get('solum_payment_retry'));expect(saved).toMatchObject({flow:'express',kit:'ritual',items:[{kit_id:'ritual',quantity:1}],payInfo:{client_secret:'pi_retry_secret_test'}});
+  renderToStaticMarkup(<ExpressCheckout {...props}/>); await rendered.props.onConfirm(event);
+  expect(fetch).toHaveBeenCalledOnce(); expect(stripe.confirmPayment).toHaveBeenCalledTimes(2);
+});

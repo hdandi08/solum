@@ -1,3 +1,4 @@
+import { KitOrderLines } from './KitQuantityEditor.jsx';
 import { useEffect, useState } from 'react';
 import posthog from 'posthog-js';
 import {
@@ -25,7 +26,7 @@ const APP_NAMES = {
   none: 'this app',
 };
 
-export default function IabCheckoutGate({ kit, kitName, price, dispatch, source, onContinue, expressReady, expressAvailable, children }) {
+export default function IabCheckoutGate({ kit, kitName, order, price, dispatch, source, onContinue, expressReady, expressAvailable, children }) {
   const app = detectInAppBrowser();
   const platform = detectPlatform();
   const [showOverlay, setShowOverlay] = useState(false);
@@ -63,6 +64,7 @@ export default function IabCheckoutGate({ kit, kitName, price, dispatch, source,
   return (
     <div className="iabg-card">
       <div className="iabg-selection">{summary.selection}</div>
+      {order?.totalQuantity > 1 && <KitOrderLines order={order} />}
       <CheckoutDispatch dispatch={dispatch} />
       <div className="iabg-delivery">{summary.delivery}</div>
       <ExpressCheckoutIntro />

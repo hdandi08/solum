@@ -115,14 +115,18 @@ Deno.serve(async (req) => {
       return new Response('ok', { status: 200, headers: corsHeaders });
     }
 
+    // Parent-order carrier state is only valid for one physical kit. Guard
+    // tracking too, including callbacks with an unmapped carrier status.
+    const { data: existingOrder, error: existingError } = await supabase
+      .from('orders').select('dispatch_status, kit_quantity, checkout_version').eq('id', orderNumber).single();
+    if (existingError || !existingOrder) return new Response('DB error', {status:500});
+    if ((existingOrder.kit_quantity ?? 1) > 1 || existingOrder.checkout_version === 'multi_kit_v1') {
+      return new Response('ok', {status:200,headers:corsHeaders});
+    }
+
     const newDispatchStatus = STATUS_MAP[statusId];
 
     if (newDispatchStatus) {
-      const { data: existingOrder } = await supabase
-        .from('orders')
-        .select('dispatch_status')
-        .eq('id', orderNumber)
-        .single();
       const statusChanged = existingOrder?.dispatch_status !== newDispatchStatus;
 
       const update: Record<string, string> = { dispatch_status: newDispatchStatus };
@@ -149,7 +153,8 @@ Deno.serve(async (req) => {
           .select('customers(email, first_name)')
           .eq('id', orderNumber)
           .single();
-        const customer = orderWithCustomer?.customers as { email: string; first_name: string | null } | null;
+        const relation = orderWithCustomer?.customers;
+        const customer = Array.isArray(relation) ? relation[0] : relation;
         if (customer?.email) {
           const statusMessage = (parcel.status as Record<string, unknown>)?.message as string | null ?? null;
           const emailResult = newDispatchStatus === 'delivered'
@@ -182,7 +187,7 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     // Unexpected error — return 500 so Sendcloud retries
-    console.error('SENDCLOUD_WEBHOOK_ERROR', err.message);
+    console.error('SENDCLOUD_WEBHOOK_ERROR', err instanceof Error ? err.message : String(err));
     return new Response('Internal error', { status: 500 });
   }
 });

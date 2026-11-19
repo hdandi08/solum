@@ -1,17 +1,19 @@
+import KitQuantityEditor, { KitOrderLines } from '../components/KitQuantityEditor.jsx';
+import { multiKitCheckoutEnabled, multiKitEnvironmentAllowed, normalizeKitItems, kitOrder, paymentKitOrder, kitStockError, saveKitSelection, restoreKitSelection, kitSelectionParam, parseKitSelectionParam } from '../lib/kitOrder.js';
 import { deliverySummary } from '../lib/deliverySummary.js';
 import { captureCampaignAttribution } from '../lib/campaignAttribution.js';
 import { resolveBuyKit } from '../lib/buyLanding.js';
-import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
+import { rememberPaymentResult, rememberPaymentOrder } from '../lib/purchaseConfirmation.js';
 import ReservationTimer, { useReservationDeadline } from '../components/ReservationTimer.jsx';
 import {localiseReservation, canConfirmReservation, withReservationAttempt, clearReservationAttempt, releaseReservation } from '../lib/reservation.js';
 import { useState, useEffect, useRef, Fragment } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { stripePromise } from '../lib/stripe.js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { KITS, kitWorth } from '../data/kits.js';
+import { KITS } from '../data/kits.js';
 import { PRODUCTS } from '../data/products.js';
 import { offerActive } from '../lib/offer.js';
-import { getDispatchDate, estDeliveryDate, nextDispatchCutoff } from '../lib/dispatch.js';
+import { getDispatchDate, estDeliveryDate } from '../lib/dispatch.js';
 import { capture, identify, fbViewContent, fbInitiateCheckout, ttqViewContent, ttqAddPaymentInfo, ttqPlaceAnOrder, ttqInitiateCheckout, ttqIdentify, getMetaIds, getTikTokIds } from '../lib/analytics.js';
 import { captureAwinAttribution, normalizeCheckoutSource } from '../lib/awinAttribution.js';
 import { trackAddToCart } from '../lib/addToCartTracker.js';
@@ -37,6 +39,8 @@ import { jumpTop } from '../lib/scroll.js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY     = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+const MULTI_KIT_ENABLED = multiKitCheckoutEnabled();
+const MULTI_KIT_ENVIRONMENT = multiKitEnvironmentAllowed();
 const KIT_PRICES = { ground: 65, ritual: 85 };
 const BUY_KIT_OUTCOMES = {
   ground: {
@@ -281,7 +285,7 @@ function KitContentsImage({ kit }) {
   </a>;
 }
 
-function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hideUntilScroll, suppressed = false }) {
+function BuyMobileHeader({ kit, order, price, dispatch, arrival, onCta, hideUntilScroll, suppressed = false }) {
   const [open, setOpen] = useState(false);
   const [zoomSrc, setZoomSrc] = useState(null);
 
@@ -300,7 +304,6 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
     return () => window.removeEventListener('scroll', onScroll);
   }, [hideUntilScroll, suppressed]);
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
-  const totalRemaining = (inventory?.ground?.count ?? 0) + (inventory?.ritual?.count ?? 0);
 
   // Swipe-down-to-dismiss for the expanded panel (a bottom sheet that opens
   // upward). Only engage when the panel is scrolled to the top, so a normal
@@ -364,7 +367,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
         >
           {kit.image && <img src={kit.image} alt="" className="co-mobile-hero-thumb" />}
           <div className="co-mobile-header-left">
-            <span className="co-mobile-kit-name">{kit.name}</span>
+            <span className="co-mobile-kit-name">{order?.totalQuantity > 1 ? order.label : kit.name}</span>
             <span className="co-mobile-see-more">
               {open ? 'Hide summary' : "What's inside ›"}
             </span>
@@ -408,6 +411,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
           <div className="co-mobile-dispatch">
             {deliverySummary(dispatch, arrival)}
           </div>
+          {order?.totalQuantity > 1 && <KitOrderLines order={order} />}
           <KitContentsImage kit={kit} />
           <div className="co-mobile-products">
             {products.map(p => (
@@ -470,12 +474,11 @@ function BuyCheckoutNav() {
 
 // ── Desktop right panel ───────────────────────────────────────────────────────
 
-function BuyOrderSummary({ kit, price, dispatch, arrival }) {
+function BuyOrderSummary({ kit, order, price, dispatch, arrival }) {
   const products = PRODUCTS.filter(p => kit.productNums.includes(p.num) && !p.comingSoon);
   return (
     <aside className="co-right buy-order-summary" aria-label="Order summary">
-      {kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}
-      <div className="co-kit-name">{kit.name}</div>
+      {order?.totalQuantity > 1 ? <><div className="co-kit-name">Your kits</div><KitOrderLines order={order} /></> : <>{kit.image && <img src={kit.image} alt={`${kit.name} kit`} className="co-summary-hero" />}<div className="co-kit-name">{kit.name}</div></>}
       {kit.id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
       <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
       <p className="co-price-sub">One-time purchase · Free UK delivery</p>
@@ -505,13 +508,13 @@ function BuyOrderSummary({ kit, price, dispatch, arrival }) {
 
 // ── Step 3: Payment ───────────────────────────────────────────────────────────
 
-function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDetails, onRestart }) {
+function StepPayment({ activeKit, order, price, payInfo, form, source, onBack, onEditDetails, onEditOrder, onRestart }) {
   const stripe     = useStripe();
   const elements   = useElements();
   const submitting = useRef(false);
   const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState('');
-  const [paymentType, setPaymentType]     = useState('card');
+  const [, setPaymentType] = useState('card');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const remaining = useReservationDeadline(payInfo.reservation_expires_at);
 
@@ -540,7 +543,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       });
 
       const piId = payInfo.client_secret?.split('_secret_')[0];
-      ttqPlaceAnOrder(activeKit.id, activeKit.name, payInfo.amount_pence / 100, piId);
+      ttqPlaceAnOrder(order.totalQuantity > 1 ? null : activeKit.id, order.label, payInfo.amount_pence / 100, piId, order.totalQuantity > 1 ? order.items : undefined);
 
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
@@ -569,7 +572,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: errText(confirmError.message) });
         setError(confirmError.message ?? 'Payment failed. Please try again.');
       } else if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
-        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id);
+        const paymentResult = rememberPaymentResult(paymentIntent, activeKit.id, undefined, order.items);
         clearReservationAttempt('buy');
         successParams.set('ref', paymentIntent.id);
         navigate(`/success?${successParams.toString()}`, { state: { paymentResult } });
@@ -578,7 +581,7 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
         capture('checkout_error', { kit: activeKit.id, source, stage: 'confirm', message: `unexpected status ${paymentIntent?.status}` });
         setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
       }
-    } catch (err) {
+    } catch {
       capture('checkout_error', { kit: activeKit.id, source, stage: 'network', message: '' });
       setError('Something went wrong. Please try again or contact contact@bysolum.co.uk.');
     } finally {
@@ -599,7 +602,9 @@ function StepPayment({ activeKit, price, payInfo, form, source, onBack, onEditDe
       </div>
 
       <div className="co-order-pill">
-        <div className="co-order-pill-kit">{activeKit.name} · One-Time Kit</div>
+        <div className="co-order-pill-kit">{order.totalQuantity > 1 ? `Your ${order.label}` : `${activeKit.name} · One-Time Kit`}</div>
+        {order.totalQuantity > 1 && <KitOrderLines order={order} />}
+        {MULTI_KIT_ENABLED && <button type="button" className="kit-order-link" disabled={loading} onClick={() => editPayment(onEditOrder)}>Edit kits</button>}
         <div className="co-order-pill-charge-row">
           <span className="co-order-pill-charge-label">Charged today</span>
           <span className="co-order-pill-charge-amount">£{price}</span>
@@ -712,6 +717,7 @@ function MittDemo() {
 
 export default function BuyPage() {
   const [params, setParams] = useSearchParams();
+  const { state: entryState } = useLocation();
 
   const landingViewed = useRef(false);
   const source    = normalizeCheckoutSource(params.get('source'));
@@ -733,6 +739,10 @@ export default function BuyPage() {
 
   const [inventory, setInventory]       = useState(null);
   const [selectedKit, setSelectedKit]   = useState(preselect ?? 'ritual');
+  const [items, setItems] = useState(() => MULTI_KIT_ENABLED ? (parseKitSelectionParam(params.get('items')) ?? (preselect ? [{ kit_id: preselect, quantity: 1 }] : restoreKitSelection('ritual'))) : [{ kit_id: preselect ?? 'ritual', quantity: 1 }]);
+  const [quantityEditorOpen, setQuantityEditorOpen] = useState(false);
+  const [expressBusy, setExpressBusy] = useState(false);
+  const expressAttempt = useRef(null);
   const [step, setStep]                 = useState('details'); // details | delivery | payment | soldout
   const [form, setForm]                 = useState({ first_name: '', last_name: '', email: '', phone: '', line1: '', line2: '', city: '', county: '', postcode: '' });
   const [loading, setLoading]           = useState(false);
@@ -769,22 +779,32 @@ export default function BuyPage() {
     setExpressStatus('loading');
     const timeout = setTimeout(() => setExpressStatus(status => status === 'loading' ? 'slow' : status), 4000);
     return () => clearTimeout(timeout);
-  }, [selectedKit]);
+  }, [selectedKit, items]);
 
   // Restore state after a failed redirect-based card payment.
   useEffect(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem('solum_payment_retry') ?? '{}');
       if (!saved.clientSecret || !saved.form) return;
-      if (params.get('resume') !== '1' && !(saved.flow === 'buy' && saved.payInfo?.reservation_expires_at && (!params.get('kit') || saved.kit === params.get('kit')))) return;
-      setForm(saved.form);
+      if (params.get('resume') !== '1' && !(['buy', 'express'].includes(saved.flow) && saved.payInfo?.reservation_expires_at && (!params.get('kit') || saved.kit === params.get('kit')))) return;
+      const savedItems = saved.items ?? [{ kit_id: saved.kit ?? 'ritual', quantity: 1 }];
+      if (!MULTI_KIT_ENVIRONMENT && kitOrder(savedItems).totalQuantity > 1) return;
+      paymentKitOrder(saved.payInfo, savedItems);
+      setItems(normalizeKitItems(savedItems));
+      rememberPaymentOrder(saved.clientSecret, saved.payInfo.order_items ?? kitOrder(savedItems).items);
+      setForm(Object.fromEntries(['first_name', 'last_name', 'email', 'phone', 'line1', 'line2', 'city', 'county', 'postcode'].map(key => [key, String(saved.form[key] ?? '')])));
+      if (saved.flow === 'express') {
+        expressAttempt.current = saved.payInfo;
+        if (saved.kit) setSelectedKit(saved.kit);
+        return;
+      }
       setPayInfo(saved.payInfo);
       setClientSecret(saved.clientSecret);
       if (saved.kit) setSelectedKit(saved.kit);
       setStep('payment');
       jumpTop();
       if (!saved.payInfo?.reservation_expires_at) sessionStorage.removeItem('solum_payment_retry');
-    } catch {}
+    } catch { /* Storage can be unavailable. */ }
   }, []); // eslint-disable-line
 
   // Always open the buy flow at the top, regardless of the scroll position it was clicked from.
@@ -805,9 +825,9 @@ export default function BuyPage() {
       .catch(() => setInventory(null));
   }, []); // eslint-disable-line
 
-  // Ticks every 30s so the cutoff countdown and dispatch date stay honest
+  // Ticks every 30s so the dispatch date stays current
   // across the 6 PM boundary without a reload.
-  const [nowTs, setNowTs] = useState(() => Date.now());
+  const [, setNowTs] = useState(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNowTs(Date.now()), 30_000);
     return () => clearInterval(t);
@@ -815,14 +835,11 @@ export default function BuyPage() {
 
   const dispatch = getDispatchDate();
   const arrival  = estDeliveryDate(dispatch);
-  const cutoff   = nextDispatchCutoff();
-  const cutoffMins = Math.max(1, Math.floor((cutoff.getTime() - new Date(new Date(nowTs).toLocaleString('en-US', { timeZone: 'Europe/London' })).getTime()) / 60000));
-  const cutoffText = cutoffMins < 720
-    ? `Order within ${Math.floor(cutoffMins / 60)}h ${cutoffMins % 60}m`
-    : `Order by ${cutoff.toLocaleDateString('en-GB', { weekday: 'long' })} 6 PM`;
 
   const activeKit = KITS.find(k => k.id === selectedKit) ?? KITS.find(k => k.id === 'ritual');
-  const price     = KIT_PRICES[selectedKit] ?? KIT_PRICES.ritual;
+  const order = step === 'payment' && payInfo ? paymentKitOrder(payInfo, items) : kitOrder(items);
+  const price = order.amountPence / 100;
+  const checkoutBusy = loading || expressBusy;
   const alternativeKit = KITS.find(kit => kit.id !== selectedKit && !kit.comingSoon && !kit.hidden && inventory?.[kit.id]?.available === true);
 
   useEffect(() => {
@@ -875,21 +892,18 @@ export default function BuyPage() {
   }
 
   async function switchKit(kitId) {
-    if (loading) return;
+    if (checkoutBusy) return;
     setLoading(true);
     setSwitchError('');
     try {
+      await retireExpressAttempt();
       const fresh = await readCheckoutInventory(SUPABASE_URL, authHeaders);
       setInventory(fresh);
       if (fresh[kitId]?.available !== true) {
         setSwitchError(`${kitId.toUpperCase()} has just sold out or its availability could not be confirmed. You can still join the waitlist.`);
         return;
       }
-      setSelectedKit(kitId);
-      const next = new URLSearchParams(params);
-      next.set('kit', kitId);
-      next.delete('resume');
-      setParams(next, { replace: true });
+      selectSingleKit(kitId);
       setClientSecret(null);
       setPayInfo(null);
       try { sessionStorage.removeItem('solum_payment_retry'); } catch { /* unavailable */ }
@@ -909,7 +923,7 @@ export default function BuyPage() {
 
   async function handleDetailsNext(e) {
     e.preventDefault();
-    if (loading) return;
+    if (checkoutBusy || quantityEditorOpen) return;
     setError('');
     if (!form.first_name.trim()) { setError('First name is required.'); return; }
     const emailVal = form.email.trim();
@@ -931,18 +945,22 @@ export default function BuyPage() {
       setError(`We couldn't find a mail server for ${domain}. Please double-check your email.`);
       setLoading(false); return;
     }
+    try { if (await retireExpressAttempt()) { setLoading(false); return; } }
+    catch (cause) { setError(cause.message); setLoading(false); return; }
     // Refresh stale display data; an outage is unknown, never "sold out".
     // The server checks again before creating a payment.
     let latestInventory = null;
     try { latestInventory = await readCheckoutInventory(SUPABASE_URL, authHeaders); } catch { /* authoritative check at payment */ }
     setInventory(latestInventory);
+    const stockError = kitStockError(items, latestInventory);
+    if (stockError && order.totalQuantity > 1) { setError(stockError); setLoading(false); setQuantityEditorOpen(true); return; }
     const kitSoldOut = latestInventory?.[selectedKit]?.available === false;
     if (kitSoldOut) {
       await showSoldOut();
       return;
     }
 
-    capture('checkout_details_submitted', { kit: selectedKit, source });
+    capture('checkout_details_submitted', { kit: order.totalQuantity > 1 ? null : selectedKit, items: order.items, total_quantity: order.totalQuantity, source });
     setLoading(false);
     setStep('delivery');
     jumpTop();
@@ -952,7 +970,7 @@ export default function BuyPage() {
 
   async function handleDeliveryNext(e) {
     e.preventDefault();
-    if (loading) return;
+    if (checkoutBusy || quantityEditorOpen) return;
     setError('');
     if (!form.line1.trim()) { setError('Address line 1 is required.'); return; }
     if (!form.city.trim())  { setError('City is required.'); return; }
@@ -960,8 +978,10 @@ export default function BuyPage() {
 
     setLoading(true);
     try {
+      if (await retireExpressAttempt()) { setStep('details'); return; }
       const requestBody = await buildFirstBoxPaymentIntentBody({
         kitId: selectedKit,
+        items,
         form,
         source,
         siteHost: window.location.hostname,
@@ -976,8 +996,13 @@ export default function BuyPage() {
       });
       const data = localiseReservation(await res.json());
       if (!res.ok) {
-        if (data.error === 'reservation_expired') clearReservationAttempt('buy');
+        if (['reservation_expired', 'sold_out'].includes(data.error)) clearReservationAttempt('buy');
         if (res.status === 409 && data.error === 'sold_out') {
+          if (order.totalQuantity > 1) {
+            setError(data.message ?? `${(data.kit_id ?? 'Requested kit').toUpperCase()} has insufficient stock. Please update your quantities.`);
+            try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { /* The endpoint remains authoritative. */ }
+            setStep('details'); setQuantityEditorOpen(true); return;
+          }
           await showSoldOut(form, 'payment');
           return;
         }
@@ -986,14 +1011,18 @@ export default function BuyPage() {
         return;
       }
 
+      let confirmedOrder;
+      try { confirmedOrder = paymentKitOrder(data, items); }
+      catch (cause) { await releaseReservation(SUPABASE_URL, authHeaders, data); clearReservationAttempt('buy'); throw cause; }
+      rememberPaymentOrder(data.client_secret, confirmedOrder.items);
       identify(form.email.trim().toLowerCase(), { first_name: form.first_name.trim(), kit: selectedKit, source });
-      capture('checkout_delivery_submitted', { kit: selectedKit, source });
-      capture('checkout_initiated', { kit: selectedKit, source, price, method: 'standard' });
-      fbInitiateCheckout(selectedKit, price, { email: form.email.trim().toLowerCase(), phone: form.phone.trim() });
+      capture('checkout_delivery_submitted', { kit: order.totalQuantity > 1 ? null : selectedKit, items: confirmedOrder.items, total_quantity: confirmedOrder.totalQuantity, source });
+      capture('checkout_initiated', { kit: order.totalQuantity > 1 ? null : selectedKit, source, price: confirmedOrder.amountPence / 100, items: confirmedOrder.items, total_quantity: confirmedOrder.totalQuantity, method: 'standard' });
+      fbInitiateCheckout(order.totalQuantity > 1 ? null : selectedKit, confirmedOrder.amountPence / 100, { email: form.email.trim().toLowerCase(), phone: form.phone.trim() }, order.totalQuantity > 1 ? confirmedOrder.items : undefined);
       ttqIdentify(form.email.trim().toLowerCase());
-      ttqInitiateCheckout(selectedKit, activeKit?.name ?? selectedKit, price);
-      ttqAddPaymentInfo(selectedKit, activeKit?.name ?? selectedKit, price);
-      try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch {}
+      ttqInitiateCheckout(order.totalQuantity > 1 ? null : selectedKit, confirmedOrder.label, confirmedOrder.amountPence / 100, order.totalQuantity > 1 ? confirmedOrder.items : undefined);
+      ttqAddPaymentInfo(order.totalQuantity > 1 ? null : selectedKit, confirmedOrder.label, confirmedOrder.amountPence / 100, order.totalQuantity > 1 ? confirmedOrder.items : undefined);
+      try { sessionStorage.setItem('solum_buyer_email', form.email.trim().toLowerCase()); } catch { /* Storage can be unavailable. */ }
 
       setClientSecret(data.client_secret);
       setPayInfo(data);
@@ -1001,12 +1030,12 @@ export default function BuyPage() {
       jumpTop();
       try {
         sessionStorage.setItem('solum_payment_retry', JSON.stringify({
-          clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, source, flow: 'buy',
+          clientSecret: data.client_secret, payInfo: data, form, kit: selectedKit, items, source, flow: 'buy',
         }));
-      } catch {}
-    } catch {
+      } catch { /* Storage can be unavailable. */ }
+    } catch (cause) {
       capture('checkout_error', { kit: selectedKit, source, stage: 'network', message: '' });
-      setError('Network error. Please try again.');
+      setError(cause.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -1014,20 +1043,69 @@ export default function BuyPage() {
 
   async function leavePayment(nextStep) {
     await releaseReservation(SUPABASE_URL,authHeaders,payInfo);
-    clearReservationAttempt('buy'); setClientSecret(null); setPayInfo(null); setStep(nextStep); jumpTop();
+    clearReservationAttempt('buy');
+    try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { setInventory(null); }
+    if (!MULTI_KIT_ENABLED && payInfo?.checkout_flow === 'multi_kit_v1') resetSingleKit(selectedKit);
+    setClientSecret(null); setPayInfo(null); setStep(nextStep); jumpTop();
   }
 
   // ── Shared header + summary props ─────────────────────────────────────────
 
-  const headerProps = { kit: activeKit, price, dispatch, arrival, inventory };
-  const expressCheckoutElement = (
+  async function retireExpressAttempt() {
+    if (!expressAttempt.current) return;
+    const resetToSingle = !MULTI_KIT_ENABLED && expressAttempt.current.checkout_flow === 'multi_kit_v1';
+    await releaseReservation(SUPABASE_URL, authHeaders, expressAttempt.current);
+    expressAttempt.current = null;
+    clearReservationAttempt('express');
+    if (resetToSingle) resetSingleKit(selectedKit);
+    try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { setInventory(null); }
+    return resetToSingle;
+  }
+
+  async function openQuantityEditor() {
+    if (checkoutBusy) return;
+    setLoading(true); setError('');
+    try { await retireExpressAttempt(); setQuantityEditorOpen(true); setKitPickerOpen(false); }
+    catch (cause) { setError(cause.message); }
+    finally { setLoading(false); }
+  }
+
+  function applyItems(nextItems) {
+    const next = normalizeKitItems(nextItems);
+    const stockError = kitStockError(next, inventory);
+    if (stockError) throw Error(stockError);
+    setItems(next); saveKitSelection(next);
+    const primary = next.some(item => item.kit_id === selectedKit) ? selectedKit : next[0].kit_id;
+    setSelectedKit(primary);
+    const search = new URLSearchParams(params); search.set('kit', primary); search.delete('resume');
+    if (kitOrder(next).totalQuantity > 1) search.set('items', kitSelectionParam(next)); else search.delete('items');
+    setParams(search, { replace: true, state: entryState });
+    setQuantityEditorOpen(false); setError('');
+  }
+
+  function selectSingleKit(id) {
+    if (checkoutBusy) return;
+    resetSingleKit(id);
+  }
+
+  function resetSingleKit(id) {
+    const selection = [{ kit_id: id, quantity: 1 }];
+    setSelectedKit(id); setItems(selection); saveKitSelection(selection);
+    const search = new URLSearchParams(params); search.set('kit', id); search.delete('items'); search.delete('resume');
+    setParams(search, { replace: true, state: entryState });
+  }
+
+  const headerProps = { kit: activeKit, order, price, dispatch, arrival, inventory };
+  const expressCheckoutElement = !MULTI_KIT_ENABLED && order.totalQuantity > 1
+    ? <p className="by-express-status" role="status">Your previous order is reserved. Continue below to release it and start with one kit.</p>
+    : (
     <>
       {expressStatus === 'slow' && <p className="by-express-status" role="status">Express checkout is taking a little longer. You can continue with card payment.</p>}
       {expressStatus === 'error' && !iabGate && <p className="by-express-status" role="status">Express checkout could not load. You can continue with your details below.</p>}
       <div className="by-express-slot" aria-busy={expressStatus === 'loading'}>
       {expressStatus === 'loading' && <div className="by-express-skel" role="status" aria-label="Loading express checkout" />}
       <Elements
-        key={selectedKit}
+        key={kitSelectionParam(items)}
         stripe={stripePromise}
         options={expressElementsOptions({
           amountPence: price * 100,
@@ -1036,13 +1114,16 @@ export default function BuyPage() {
       >
         <ExpressCheckout
           kitId={selectedKit}
+          items={items}
+          attemptRef={expressAttempt}
+          onBusyChange={setExpressBusy}
           kitName={activeKit?.name ?? selectedKit}
           price={price}
           source={source}
           supabaseUrl={SUPABASE_URL}
           authHeaders={authHeaders}
           onError={setError}
-          onSoldOut={buyer => showSoldOut(buyer, 'express')}
+          onSoldOut={order.totalQuantity > 1 ? async () => { clearReservationAttempt('express'); setError('There is not enough stock for these quantities. Please update your order.'); try { setInventory(await readCheckoutInventory(SUPABASE_URL, authHeaders)); } catch { /* Endpoint checks again. */ } setQuantityEditorOpen(true); } : buyer => showSoldOut(buyer, 'express')}
           onAvailability={(available) => {
             setExpressAvailable(available);
             setExpressStatus(available ? 'ready' : 'unavailable');
@@ -1161,10 +1242,12 @@ export default function BuyPage() {
               <ProgressBar step="payment" />
               <StepPayment
                 activeKit={activeKit}
+                order={order}
                 price={price}
                 payInfo={payInfo}
                 form={form}
                 source={source}
+                onEditOrder={async () => { await leavePayment('details'); setQuantityEditorOpen(true); }}
                 onRestart={() => leavePayment('delivery')}
                 onBack={() => leavePayment('delivery')}
                 onEditDetails={() => leavePayment('details')}
@@ -1206,14 +1289,26 @@ export default function BuyPage() {
               )}
 
               {/* Confirm the selected kit without reopening the whole decision. */}
-              {step === 'details' && !kitPickerOpen && (
+              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && order.totalQuantity === 1 && (
                 <BuyKitConfirmation
                   kit={activeKit}
                   price={price}
                   dispatch={iabGate || typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
-                  onChange={() => { setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); }}
+                  onChange={async () => { if (checkoutBusy) return; setLoading(true); try { await retireExpressAttempt(); setKitPickerOpen(true); capture('kit_picker_expanded', { kit: selectedKit, source }); } catch (cause) { setError(cause.message); } finally { setLoading(false); } }}
+                  disabled={checkoutBusy}
                 />
               )}
+
+              {step === 'details' && !kitPickerOpen && !quantityEditorOpen && (MULTI_KIT_ENABLED || order.totalQuantity > 1) && (order.totalQuantity > 1
+                ? <section className="kit-grouped-card" data-testid="kits-confirm" aria-label="Selected kits">
+                    <header><strong>Your kits</strong>{MULTI_KIT_ENABLED && <button type="button" className="kit-order-link" disabled={checkoutBusy} onClick={openQuantityEditor}>Edit</button>}</header>
+                    <KitOrderLines order={order} />
+                    <div className="kit-order-total"><span>Total</span><strong>£{price}</strong></div>
+                    <p className="co-price-sub">Free UK delivery</p>
+                  </section>
+                : <button type="button" className="kit-order-link kit-add-another" disabled={checkoutBusy} onClick={openQuantityEditor}>Add another kit</button>)}
+              {step === 'details' && quantityEditorOpen && error && <p className="co-error" role="alert">{error}</p>}
+              {step === 'details' && quantityEditorOpen && <KitQuantityEditor items={items} inventory={inventory} busy={checkoutBusy} onApply={applyItems} onCancel={() => setQuantityEditorOpen(false)} />}
 
               {step === 'details' && inventory?.[selectedKit]?.available === false && <>
                 <p className="co-error">{activeKit?.name} is currently sold out.</p>
@@ -1233,7 +1328,7 @@ export default function BuyPage() {
                         key={id}
                         data-testid={`kit-${id}`}
                         className={`by-kit${selectedKit === id ? ' selected' : ''}`}
-                        onClick={() => { setSelectedKit(id); trackAddToCart(id); }}
+                        onClick={() => { selectSingleKit(id); trackAddToCart(id); }}
                       >
                         {kit?.popular && <span className="by-kit-badge">Most Popular</span>}
                         {kit?.image && (
@@ -1268,7 +1363,7 @@ export default function BuyPage() {
                           <button
                             type="button"
                             className="by-kit-cta"
-                            onClick={(e) => { e.stopPropagation(); setSelectedKit(id); trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
+                            onClick={(e) => { e.stopPropagation(); selectSingleKit(id); trackAddToCart(id); capture('buy_kit_cta_clicked', { kit: id, source }); scrollToForm(); }}
                           >
                             Buy {kit?.name} →
                           </button>
@@ -1283,13 +1378,14 @@ export default function BuyPage() {
                   warm arrivals get it below the details form. */}
               {step === 'details' && kitPickerOpen && <details className="by-more"><summary>See how the ritual works</summary><MittDemo /></details>}
 
-              {step === 'details' && (
+              {step === 'details' && !quantityEditorOpen && (
                 <div className="by-express-wrap" ref={formStartRef} data-testid="express-checkout">
                   {iabGate ? (
                     <IabCheckoutGate
-                      key={selectedKit}
+                      key={kitSelectionParam(items)}
                       kit={selectedKit}
-                      kitName={activeKit?.name ?? selectedKit}
+                      kitName={order.totalQuantity > 1 ? order.label : (activeKit?.name ?? selectedKit)}
+                      order={order}
                       price={price}
                       dispatch={typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
                       source={source}
@@ -1316,10 +1412,11 @@ export default function BuyPage() {
                 </div>
               )}
 
+              {step === 'details' && iabGate && error && <p className="co-error" role="alert">{error}</p>}
               {step === 'details' && !iabGate && <ProgressBar step="details" />}
 
               {/* Step 1: Details */}
-              {step === 'details' && !iabGate && (
+              {step === 'details' && !iabGate && !quantityEditorOpen && (
                 <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">
                   <div className="co-step-heading">Your Details.</div>
                   <div className="co-step-subhead">Takes 60 seconds. We only ask what we need.</div>
@@ -1347,7 +1444,7 @@ export default function BuyPage() {
 
                   {error && <div className="co-error" data-testid="form-error">{error}</div>}
 
-                  <button className="co-submit" type="submit" disabled={loading} data-testid="continue-btn">
+                  <button className="co-submit" type="submit" disabled={checkoutBusy} data-testid="continue-btn">
                     {loading ? 'Saving…' : 'Next: Delivery →'}
                   </button>
 
@@ -1402,7 +1499,7 @@ export default function BuyPage() {
 
                   {error && <div className="co-error" data-testid="delivery-error">{error}</div>}
 
-                  <button className="co-submit" type="submit" disabled={loading} data-testid="delivery-btn">
+                  <button className="co-submit" type="submit" disabled={checkoutBusy} data-testid="delivery-btn">
                     {loading ? 'Preparing payment…' : 'Continue to Payment →'}
                   </button>
 

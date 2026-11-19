@@ -178,28 +178,27 @@ export function fbAddToCart(kitId, kitName, value) {
 // Fires when user submits details and reaches the payment step.
 // content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
 // contact (email/phone, when the form has them) lifts CAPI match quality.
-export function fbInitiateCheckout(kitId, value, contact = {}) {
+function metaOrderFields(kitId, items) {
+  return items?.length ? {
+    content_ids: items.map(item => item.kit_id), content_type: 'product',
+    contents: items.map(item => ({ id: item.kit_id, quantity: item.quantity, item_price: item.unit_amount_pence / 100 })),
+    num_items: items.reduce((sum, item) => sum + item.quantity, 0),
+  } : { content_ids: [kitId], content_type: 'product', content_name: kitId };
+}
+
+export function fbInitiateCheckout(kitId, value, contact = {}, items) {
   const eventId = newEventId();
-  fbq('track', 'InitiateCheckout', {
-    content_ids: [kitId],
-    content_type: 'product',
-    content_name: kitId,
-    value,
-    currency: 'GBP',
-    num_items: 1,
-  }, { eventID: eventId });
-  sendMetaCapi('InitiateCheckout', eventId, {
-    kit_id: kitId,
-    value,
-    email: contact.email || undefined,
-    phone: contact.phone || undefined,
+  fbq('track', 'InitiateCheckout', { num_items: 1, ...metaOrderFields(kitId, items), value, currency: 'GBP' }, { eventID: eventId });
+  // The legacy Meta relay accepts a single SKU. Multi-kit CAPI is emitted by
+  // the paid webhook with its trusted complete snapshot.
+  if (!items?.length) sendMetaCapi('InitiateCheckout', eventId, {
+    kit_id: kitId, value, email: contact.email || undefined, phone: contact.phone || undefined,
   });
 }
 
-// Fires on SuccessPage — eventId is the Stripe PaymentIntent ID for deduplication.
-// content_ids must match the Meta catalog item id (kit id: 'ground' | 'ritual').
-export function fbPurchase(kitId, value, eventId) {
-  fbq('track', 'Purchase', { content_ids: [kitId], content_type: 'product', content_name: kitId, value, currency: 'GBP' }, { eventID: eventId });
+// Stripe's payment ID matches the server conversion for deduplication.
+export function fbPurchase(kitId, value, eventId, items) {
+  fbq('track', 'Purchase', { ...metaOrderFields(kitId, items), value, currency: 'GBP' }, { eventID: eventId });
 }
 
 // Custom (non-standard) Meta event — e.g. QualifiedVisit
@@ -247,29 +246,27 @@ export function ttqAddToCart(kitId, kitName, value) {
   ttq('track', 'AddToCart', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
 
-// Payment form mounts — strong intent signal
-export function ttqAddPaymentInfo(kitId, kitName, value) {
-  ttq('track', 'AddPaymentInfo', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+function tiktokOrderFields(kitId, kitName, items) {
+  return items?.length ? {
+    contents: items.map(item => ({ content_id: item.kit_id, content_name: item.kit_id.toUpperCase(), quantity: item.quantity, price: item.unit_amount_pence / 100 })), content_type: 'product',
+  } : { content_id: kitId, content_name: kitName, content_type: 'product' };
 }
 
-// Pay button clicked — captures intent even if card is declined
-export function ttqPlaceAnOrder(kitId, kitName, value, eventId) {
-  ttq('track', 'PlaceAnOrder', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
+// Payment form mounts — strong intent signal.
+export function ttqAddPaymentInfo(kitId, kitName, value, items) {
+  ttq('track', 'AddPaymentInfo', { ...tiktokOrderFields(kitId, kitName, items), value, currency: 'GBP' });
 }
-
-// Kit page views (/buy, /checkout)
+export function ttqPlaceAnOrder(kitId, kitName, value, eventId, items) {
+  ttq('track', 'PlaceAnOrder', { ...tiktokOrderFields(kitId, kitName, items), value, currency: 'GBP' }, { event_id: eventId });
+}
 export function ttqViewContent(kitId, kitName, value) {
   ttq('track', 'ViewContent', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
 }
-
-// User reaches payment step
-export function ttqInitiateCheckout(kitId, kitName, value) {
-  ttq('track', 'InitiateCheckout', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' });
+export function ttqInitiateCheckout(kitId, kitName, value, items) {
+  ttq('track', 'InitiateCheckout', { ...tiktokOrderFields(kitId, kitName, items), value, currency: 'GBP' });
 }
-
-// Payment confirmed — event_id ties this to the server-side Events API call for deduplication
-export function ttqCompletePayment(kitId, kitName, value, eventId) {
-  ttq('track', 'CompletePayment', { content_id: kitId, content_name: kitName, value, currency: 'GBP', content_type: 'product' }, { event_id: eventId });
+export function ttqCompletePayment(kitId, kitName, value, eventId, items) {
+  ttq('track', 'CompletePayment', { ...tiktokOrderFields(kitId, kitName, items), value, currency: 'GBP' }, { event_id: eventId });
 }
 
 // Custom TikTok event — e.g. QualifiedVisit
