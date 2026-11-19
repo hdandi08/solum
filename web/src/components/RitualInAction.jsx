@@ -65,10 +65,10 @@ const CSS = `
 .ria-sub{font-size:15px;font-weight:300;color:var(--stone);text-align:center;margin:0 auto;max-width:480px;line-height:1.6;}
 .ria-cadence-summary{max-width:760px;margin:0 auto 28px;padding:0 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;}
 .ria-cadence-summary-item{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 16px;background:rgba(24,28,36,.7);border:1px solid rgba(240,236,226,.12);}
-.ria-cadence-summary-item.weekly{border-color:rgba(46,109,164,.42);}
+.ria-cadence-summary-item.weekly{border-color:rgba(200,169,110,.28);}
 .ria-cadence-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.055em;line-height:1;color:var(--bone);}
 .ria-cadence-time{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;color:var(--blit);text-align:right;}
-.ria-cadence-summary-item.weekly .ria-cadence-time{color:var(--blue);}
+.ria-cadence-summary-item.weekly .ria-cadence-time{color:#c8a96e;}
 
 .ria-ritual-stack{display:grid;gap:58px;}
 .ria-ritual-block{display:grid;gap:24px;}
@@ -117,7 +117,7 @@ const CSS = `
 
 .ria-arrow{display:none;}
 
-.ria-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:20px;padding:0 24px;flex-wrap:wrap;}
+.ria-dots{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:3;display:flex;justify-content:center;align-items:center;gap:8px;margin:0;padding:12px 14px;border-radius:24px;background:rgba(8,9,11,.88);border:1px solid rgba(240,236,226,.18);}
 .ria-dot{width:7px;height:7px;border-radius:50%;background:rgba(240,236,226,0.22);border:none;padding:0;cursor:pointer;transition:background .25s,width .25s;}
 .ria-dot.active{background:var(--blit);width:20px;border-radius:4px;}
 
@@ -145,7 +145,6 @@ const CSS = `
   .ria-ritual-card{grid-column:2;grid-row:1;}
   .ria-gallery{grid-column:1/-1;grid-row:2;}
   .ria-ritual-sequence{grid-column:2;grid-row:3;}
-  .ria-dots{grid-column:1/-1;grid-row:4;}
   .ria-ritual-card{padding:18px;}
   .ria-ritual-top{flex-direction:column;gap:8px;margin-bottom:14px;}
   .ria-ritual-cadence{text-align:left;white-space:normal;}
@@ -153,23 +152,47 @@ const CSS = `
   .ria-step-outcome{grid-column:2;}
 }
 
-/* A short, interactive preview for gift buyers; the homepage keeps both full rails. */
+/* A short, interactive preview with a daily / weekly selector. */
 .ria-compact .ria-ritual-overview{display:none;}
 .ria-compact .ria-ritual-stack{grid-template-columns:minmax(0,1fr);}
 .ria-compact .ria-ritual-block{display:block;min-width:0;}
 .ria-compact .ria-gallery,.ria-compact .ria-carousel{min-width:0;max-width:100%;}
 .ria-compact .ria-carousel{width:100%;}
-.ria-compact .ria-cadence-summary-item{font-family:inherit;cursor:pointer;}
+.ria-compact .ria-cadence-summary-item{font-family:inherit;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:76px;text-align:center;}
+.ria-compact .ria-cadence-title,.ria-compact .ria-cadence-time{text-align:center;}
 .ria-compact .ria-cadence-summary-item[aria-pressed="true"]{border-color:var(--blit);background:rgba(46,109,164,.2);}
 .ria-compact .ria-cadence-summary-item:focus-visible{outline:2px solid var(--blit);outline-offset:3px;}
 .ria-compact .ria-card-media{height:320px;max-height:48svh;width:auto;aspect-ratio:9/16;}
 .ria-compact .ria-card{flex:0 0 auto;max-width:none;}
 .ria-compact .ria-carousel{padding-left:calc(50% - 90px);padding-right:calc(50% - 90px);}
-.ria-compact .ria-dots{margin-top:14px;}
 .ria-compact .ria-ritual-card::before{display:none;}
-.ria-compact .ria-freq.weekly{color:var(--blit);border-color:var(--blue);background:rgba(46,109,164,.12);}
+.ria-compact .ria-cadence-summary-item.weekly[aria-pressed="true"]{border-color:#c8a96e;background:rgba(200,169,110,.1);}
+.ria-compact .ria-cadence-summary-item.weekly:focus-visible,.ria-ritual-block.weekly .ria-card:focus-visible{outline-color:#c8a96e;}
+.ria-ritual-block.weekly .ria-card.active .ria-card-media{border-color:rgba(200,169,110,.6);}
+.ria-compact .ria-freq.weekly{color:#c8a96e;border-color:rgba(200,169,110,.45);background:rgba(200,169,110,.12);}
+.ria-ritual-block.weekly .ria-dot.active{background:#c8a96e;}
+.ria-ritual-block.weekly .ria-arrow{background:var(--charcoal,#181C24);border-color:rgba(200,169,110,.45);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+.ria-ritual-block.weekly .ria-arrow:hover{background:#282c34;}
 .ria-preview-link{text-align:center;margin-top:24px;}
 .ria-preview-link a{font-size:18px;color:var(--bone);text-underline-offset:6px;}
+@media(max-width:768px){
+ .ria-section.ria-compact{--ria-preview-height:clamp(180px,calc(100svh - 400px),360px);padding:24px 0;}
+ .ria-compact .ria-head-wrap{margin-bottom:16px;}
+ .ria-compact .ria-head{font-size:32px;line-height:1;margin-bottom:8px;}
+ .ria-compact .ria-sub{font-size:14px;line-height:1.4;}
+ .ria-compact .ria-cadence-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px;}
+ .ria-compact .ria-cadence-summary-item{min-height:60px;padding:10px 8px;gap:4px;}
+ .ria-compact .ria-cadence-title{font-size:22px;}
+ .ria-compact .ria-cadence-time{font-size:11px;letter-spacing:1px;}
+ .ria-compact .ria-card-media{height:var(--ria-preview-height);max-height:none;}
+ .ria-compact .ria-carousel{padding-left:calc(50% - var(--ria-preview-height) * .28125);padding-right:calc(50% - var(--ria-preview-height) * .28125);}
+ .ria-compact .ria-stage-overlay{padding:12px;}
+ .ria-compact .ria-stage-name{font-size:20px;}
+ .ria-compact .ria-stage-action{display:none;}
+ .ria-compact .ria-dots{top:14px;}
+ .ria-compact .ria-preview-link{margin-top:12px;padding:0 24px;}
+ .ria-compact .ria-preview-link a{font-size:16px;line-height:1.4;}
+}
 `;
 
 const PLAY = (
@@ -181,7 +204,7 @@ const chevron = (dir) => (
   </svg>
 );
 
-function RitualRail({ ritual }) {
+function RitualRail({ ritual, showOverview = true }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [userSelected, setUserSelected] = useState(false);
   const [mediaActivated, setMediaActivated] = useState(false);
@@ -378,7 +401,7 @@ function RitualRail({ ritual }) {
 
   return (
     <article className={ritual.blockClass} ref={railRef}>
-      <div className="ria-ritual-overview">
+      {showOverview && <div className="ria-ritual-overview">
         <div className="ria-ritual-card reveal">
           <div className="ria-ritual-top">
             <h3 className="ria-ritual-title">{ritual.title}</h3>
@@ -396,7 +419,7 @@ function RitualRail({ ritual }) {
             </li>
           ))}
         </ol>
-      </div>
+      </div>}
 
       <div className="ria-gallery reveal">
         <button className="ria-arrow prev" aria-label={`Previous ${ritual.title} step`} onClick={() => goTo(activeIdx - 1)}>{chevron('prev')}</button>
@@ -456,8 +479,6 @@ function RitualRail({ ritual }) {
         </div>
 
         <button className="ria-arrow next" aria-label={`Next ${ritual.title} step`} onClick={() => goTo(activeIdx + 1)}>{chevron('next')}</button>
-      </div>
-
       <div className="ria-dots" role="tablist" aria-label={`${ritual.title} steps`}>
         {visibleSteps.map((step, i) => (
           <button
@@ -469,14 +490,15 @@ function RitualRail({ ritual }) {
           />
         ))}
       </div>
+      </div>
     </article>
   );
 }
 
 export default function RitualInAction({
-  title = 'See the ritual before the products.',
-  description = 'First see the method. Then the product list makes sense.',
-  compact = false,
+  title = 'A preview of your ritual.',
+  description = 'A first look here. Every step in the full video guide.',
+  compact = true,
 } = {}) {
   const [selectedRitual, setSelectedRitual] = useState('daily');
   const CadenceItem = compact ? 'button' : 'div';
@@ -485,7 +507,6 @@ export default function RitualInAction({
       <style>{CSS}</style>
       <section className={`ria-section${compact ? ' ria-compact' : ''}`} id="ritual">
         <div className="ria-head-wrap">
-          <div className="ria-eyebrow reveal">Daily and weekly</div>
           <h2 className="ria-head reveal">{title}</h2>
           <p className="ria-sub reveal">{description}</p>
         </div>
@@ -495,22 +516,23 @@ export default function RitualInAction({
             <CadenceItem
               className={`ria-cadence-summary-item ${key}`} key={key}
               type={compact ? 'button' : undefined}
+              aria-label={compact ? `${title} ${cadence}` : undefined}
               aria-pressed={compact ? selectedRitual === key : undefined}
               onClick={compact ? () => {
                 setSelectedRitual(key);
                 capture('ritual_preview_selected', { ritual: key });
               } : undefined}
             >
-              <span className="ria-cadence-title">{title}</span>
-              <span className="ria-cadence-time">{cadence}</span>
+              <span className="ria-cadence-title">{compact ? (key === 'daily' ? 'Daily' : 'Weekly reset') : title}</span>
+              <span className="ria-cadence-time">{compact ? (key === 'daily' ? '10 min' : '22 min') : cadence}</span>
             </CadenceItem>
           ))}
         </div>
 
         <div className="ria-ritual-stack">
-          {(compact ? RITUALS.filter(ritual => ritual.key === selectedRitual) : RITUALS).map((ritual) => <RitualRail key={ritual.key} ritual={ritual} />)}
+          {(compact ? RITUALS.filter(ritual => ritual.key === selectedRitual) : RITUALS).map((ritual) => <RitualRail key={ritual.key} ritual={ritual} showOverview={!compact} />)}
         </div>
-        {compact && <div className="ria-preview-link"><a href="/ritual">Explore his complete ritual</a></div>}
+        {compact && <div className="ria-preview-link"><a href="/ritual">Watch the full step-by-step guide →</a></div>}
       </section>
     </>
   );

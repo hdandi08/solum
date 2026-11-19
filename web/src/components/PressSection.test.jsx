@@ -31,7 +31,7 @@ describe('homepage press proof', () => {
     expect(press).toContain('Luxury Lifestyle Magazine');
     expect(press).toContain('Pioneering a new era of men’s body care');
     expect(press).toContain('Carl Thompson');
-    expect(press).toContain('rethinking body care');
+    expect(press).toContain('Essentially, it removes the guesswork.');
     expect(press).toContain('https://www.luxurylifestylemag.co.uk/style-and-beauty/solum-pioneering-a-new-era-of-mens-body-care/');
     expect(press).toContain('https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care');
     expect(home.indexOf('<Hero />')).toBeLessThan(home.indexOf('<PressSection />'));

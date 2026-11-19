@@ -172,7 +172,7 @@ function Pill({ id, active, onSelect }) {
   );
 }
 
-export default function RitualVideoSelector({ eyebrow = 'The Ritual System', heading = 'The Ritual.', sub = 'Daily every shower. Weekly once a week. Both matter.' }) {
+export default function RitualVideoSelector({ eyebrow = 'The Ritual System', heading = 'The Ritual.', sub = 'Daily every shower. Weekly once a week. Both matter.', headingAs: Heading = 'h2' }) {
   const [active, setActive] = useState('daily');
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
@@ -235,7 +235,7 @@ export default function RitualVideoSelector({ eyebrow = 'The Ritual System', hea
       <section className="rv-section" id="ritual-system">
         <div className="rv-inner">
           <div className="rv-eyebrow">{eyebrow}</div>
-          <h2 className="rv-head">{heading}</h2>
+          <Heading className="rv-head">{heading}</Heading>
           <p className="rv-sub">{sub}</p>
 
           <div className="rv-layout">

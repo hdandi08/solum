@@ -1,40 +1,55 @@
-import { useState } from 'react';
 import { KITS } from '../data/kits.js';
 import './WhatsInside.css';
 
-const INSIDE_ALT = "What's inside the SOLUM Ritual Kit: body wash, soft cleansing cloth, back scrub cloth, scalp massager, body lotion, Italy towel mitt, Atlas clay mask, argan body oil, mixing bowl and a step-by-step guide.";
-const DAILY = [
-  ['Body wash', 'Sulphate-free, pH 4.5'],
-  ['Soft cleansing cloth', 'Gentle daily lather'],
-  ['Back scrub cloth', '90cm, reaches your whole back'],
-  ['Scalp massager', 'For a proper scalp wash'],
-  ['Body lotion', 'Daily moisture with CoQ10'],
-];
-const WEEKLY = [
-  ['Italy towel mitt', 'Weekly exfoliation'],
-  ['Atlas clay mask', 'Weekly deep cleanse'],
-  ['Argan body oil', 'Mix into the clay, or finish with it'],
-  ['Mixing bowl', 'For your weekly clay'],
-];
-export default function WhatsInside() {
-  const [galleryImage, setGalleryImage] = useState(1);
-  const ritual = KITS.find(kit => kit.id === 'ritual');
-  return <div className="buy-landing home-whats-inside" id="whats-inside" data-track="whats_inside">
-    <section className="buy-inside" aria-labelledby="buy-inside-title">
-      <div className="buy-section-heading"><h2 id="buy-inside-title">What's inside</h2><p>The complete Ritual Kit. £85.</p></div>
-      <div className="buy-inside-grid">
-        <div className="buy-gallery">
-          <img className="buy-gallery-main" src={galleryImage === 0 ? ritual.image : '/products/kit/ritual-whats-inside.webp'} alt={galleryImage === 0 ? 'The complete SOLUM Ritual Kit in its presentation box' : INSIDE_ALT} width="1080" height="1350" loading="lazy" decoding="async" />
-          <div className="buy-gallery-thumbs" aria-label="Ritual Kit images">
-            {[ritual.image, '/products/kit/ritual-whats-inside.webp'].map((src, index) => <button key={src} type="button" aria-label={index === 0 ? 'Show Ritual Kit' : "Show what's inside"} aria-pressed={galleryImage === index} onClick={() => setGalleryImage(index)}><img src={src} alt="" width="64" height="80" loading="lazy" /></button>)}
-          </div>
+const DAILY = [['01', 'Body wash'], ['08', 'Soft cleansing cloth'], ['03', 'Back scrub cloth'], ['04', 'Scalp massager'], ['07', 'Body lotion']];
+const WEEKLY = [['02', 'Italy towel mitt'], ['05', 'Atlas clay mask'], ['06', 'Argan body oil'], ['11', 'Mixing bowl']];
 
+export default function WhatsInside() {
+  const ritual = KITS.find(kit => kit.id === 'ritual');
+  return (
+    <section className="home-whats-inside" id="whats-inside" data-track="whats_inside" aria-labelledby="inside-title">
+      <div className="inside-inner">
+        <header className="inside-heading">
+          <p className="inside-kicker">What's inside</p>
+          <h2 id="inside-title">You won’t use everything at once.</h2>
+          <p className="inside-product-key">Colour-coded and numbered for daily care and your weekly reset.</p>
+        </header>
+        <div className="inside-layout">
+          <article className="inside-routine" aria-labelledby="inside-daily-heading">
+            <div className="inside-routine-heading"><h3 id="inside-daily-heading">Your daily essentials</h3><span className="inside-duration"><strong>10</strong><span>min · Daily</span></span></div>
+            <figure className="inside-photograph">
+              <img src="/products/kit/daily-original-collage.webp" srcSet="/products/kit/daily-original-collage@900.webp 900w, /products/kit/daily-original-collage.webp 1800w" sizes="(max-width: 760px) calc(100vw - 48px), 50vw" alt="Original photos of 01 Body Wash, 03 Back Scrub Cloth in use, 04 Scalp Massager, 08 Soft Cleansing Cloth and 07 Body Lotion" width="1800" height="1000" loading="lazy" decoding="async" />
+            </figure>
+            <p>Cleanse, reach and hydrate. Care that fits into the shower you already take.</p>
+          </article>
+          <article className="inside-routine inside-weekly" aria-labelledby="inside-weekly-heading">
+            <div className="inside-routine-heading"><h3 id="inside-weekly-heading">Your at-home spa reset</h3><span className="inside-duration"><strong>22</strong><span>min · Weekly</span></span></div>
+            <figure className="inside-photograph">
+              <img src="/products/kit/weekly-original-collage.webp" srcSet="/products/kit/weekly-original-collage@900.webp 900w, /products/kit/weekly-original-collage.webp 1800w" sizes="(max-width: 760px) calc(100vw - 48px), 50vw" alt="Original photos of 05 Atlas Clay Mask, 06 Argan Body Oil, 11 Mixing Bowl and the actual 02 Italy Towel Mitt in use" width="1800" height="1000" loading="lazy" decoding="async" />
+            </figure>
+            <p>Earthy clay. Warm water. Slow exfoliation. A nourishing oil finish. Twenty-two minutes to reconnect with yourself.</p>
+            <p className="inside-cadence-note">Replaces your daily routine once a week.</p>
+          </article>
         </div>
-        <div className="buy-contents">
-          {[["Daily", DAILY, 1], ["Weekly", WEEKLY, 6]].map(([title, items, start]) => <div key={title}><h3>{title}</h3><ol start={start}>{items.map(([name, description]) => <li key={name}><strong>{name}:</strong> {description}</li>)}</ol></div>)}
-          <p className="buy-guide-note"><strong>Plus a step-by-step guide.</strong> Scan the QR code in the lid.</p>
+        <div className="inside-footer">
+          <div className="inside-guidance">
+            <h3>A clear guide. Every step.</h3>
+            <p>Scan the QR code in your box to see what to use, when and how. Follow along until it feels familiar.</p>
+          </div>
+          <div>
+            <p className="inside-kit-caption">The complete RITUAL Kit <span>£{ritual.firstBoxPrice}</span></p>
+            <details className="inside-contents">
+              <summary>See everything included</summary>
+              <div className="inside-contents-grid">
+                {[["Daily essentials", DAILY], ["Weekly care", WEEKLY]].map(([title, items]) => (
+                  <div key={title} className={title === 'Weekly care' ? 'inside-contents-weekly' : undefined}><h4>{title}</h4><ul>{items.map(([num, name]) => <li key={num}><span className="inside-product-num">{num}</span><span>{name}</span></li>)}</ul></div>
+                ))}
+              </div>
+              <p className="inside-contents-guide">Step-by-step guide included.</p>
+            </details>
+          </div>
         </div>
       </div>
     </section>
-  </div>;
+  );
 }

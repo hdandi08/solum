@@ -4,4 +4,5 @@ import { routePreload } from './build/routePreload.js'
 
 export default defineConfig({
   plugins: [react(), routePreload()],
+  build: { manifest: true },
 })

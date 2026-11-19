@@ -43,6 +43,7 @@ function assign(test, testId) {
 // Returns 'control' if test is paused, completed, or not found.
 export function useVariant(testId) {
   return useMemo(() => {
+    if (typeof window === 'undefined') return 'control';
     const test = AB_TESTS[testId];
     if (!test || test.status !== 'active') return 'control';
 

@@ -179,9 +179,6 @@ const CSS = `
 
 export default function TermsPage() {
   useEffect(() => {
-    document.title = 'Terms & Conditions | SOLUM';
-    let meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', 'Terms and conditions for SOLUM one-time kit purchases. Your statutory rights, future refill status, cosmetic product safety, returns, and governing law.');
     jumpTop();
   }, []);
 

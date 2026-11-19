@@ -16,8 +16,15 @@ export const PRESS = [
   {
     name: 'Carl Thompson',
     checkoutLogo: '/press/carl-thompson.webp',
-    quote: 'rethinking body care',
+    quote: 'Essentially, it removes the guesswork.',
     url: 'https://www.carlthompson.co.uk/further-reading-blogs/2026/8/24/solum-the-new-mens-grooming-brand-rethinking-body-care',
+    tier: 'support',
+  },
+  {
+    name: 'Men’s Fashion Magazine',
+    checkoutLogo: '/press/mens-fashion-magazine.jpg',
+    quote: 'a routine that feels manageable rather than demanding',
+    url: 'https://www.mensfashionmagazine.com/solum-daily-ritual/',
     tier: 'support',
   },
 ];

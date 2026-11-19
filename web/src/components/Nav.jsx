@@ -58,7 +58,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-drawer-account.logged-in svg{stroke:var(--blue);}
 .nav-drawer-cta{font-size:12px;letter-spacing:4px;text-transform:uppercase;background:var(--bone);color:var(--black);padding:16px 24px;text-decoration:none;text-align:center;font-weight:600;}
 
-@media(max-width:768px){
+@media(min-width:1101px) and (max-width:1320px){
+  .nav-links{gap:20px;}
+  .nav-links a{letter-spacing:3px;}
+}
+@media(max-width:1100px){
   .nav-links{display:none;}
   .nav-right .nav-account,.nav-right .nav-cta{display:none;}
   nav{padding:0 20px;}
@@ -72,6 +76,7 @@ const NAV_LINKS = [
   ['#products',     'Products'],
   ['/ritual',       'The Ritual'],
   ['/guide',        'Guide'],
+  ['/awards',       'Awards & Press'],
   ['/contact',      'Contact'],
 ];
 

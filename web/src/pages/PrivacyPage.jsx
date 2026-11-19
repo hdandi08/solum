@@ -163,9 +163,6 @@ const CSS = `
 
 export default function PrivacyPage() {
   useEffect(() => {
-    document.title = 'Privacy Policy | SOLUM';
-    let meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', "SOLUM's privacy policy — how we collect, use, and protect your personal data under UK GDPR and the Data Protection Act 2018.");
     jumpTop();
   }, []);
 

@@ -33,6 +33,7 @@ export default function RitualPage() {
       <Nav />
       <div className="ritual-page">
         <RitualVideoSelector
+          headingAs="h1"
           eyebrow="The System"
           heading="The Ritual."
           sub="Daily keeps you maintained. Weekly resets you. Pick one to watch it run and see the products."

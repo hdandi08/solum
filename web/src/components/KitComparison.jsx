@@ -15,6 +15,9 @@ const CSS = `
 .kits-header{margin:0 auto 20px;max-width:920px;border-top:1px solid rgba(240,236,226,.14);padding-top:20px;}
 .kits-header h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,4.2vw,52px);letter-spacing:.055em;color:var(--bone);line-height:.92;margin:0;}
 .kits-header p{font-size:17px;color:rgba(240,236,226,.72);font-weight:300;line-height:1.55;max-width:500px;margin:12px 0 0;}
+.kits-header .kits-scent{display:flex;flex-direction:column;gap:4px;margin-top:18px;max-width:none;padding-left:14px;border-left:2px solid var(--blit);}
+.kits-scent strong{font-family:'Barlow Condensed',sans-serif;font-size:23px;font-weight:600;line-height:1.1;color:var(--bone);}
+.kits-scent span{font-size:15px;font-weight:300;line-height:1.4;color:var(--mist);}
 .kits-grid{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:18px;max-width:1040px;margin:0 auto;align-items:start;}
 .kit-card{background:linear-gradient(180deg,rgba(18,21,28,.92),rgba(8,9,11,.98));border:1px solid rgba(240,236,226,.11);padding:42px 34px;display:flex;flex-direction:column;position:relative;box-shadow:0 18px 54px rgba(0,0,0,.18);}
 .kit-card:not(.featured){opacity:1;filter:none;}
@@ -231,6 +234,7 @@ export default function KitComparison({
           <div className="kits-header reveal">
             <h2>{title}</h2>
             <p>{description}</p>
+            <p className="kits-scent"><strong>Signature fragrance: Cedarwood + Vetiver</strong><span>Warm. Woody. Earthy.</span></p>
           </div>
           <div className="kits-grid reveal">
             {KITS.filter(k => !k.hidden).map(kit => {

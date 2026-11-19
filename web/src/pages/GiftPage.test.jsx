@@ -16,7 +16,7 @@ describe('gifting landing', () => {
   it('shows real kit imagery and current prices with both one-time checkout destinations', () => {
     const html = render(<GiftPage />);
     expect(html).toContain('This Christmas.');
-    expect(html.indexOf('Esquire Grooming Awards')).toBeLessThan(html.indexOf('<h1'));
+    expect(html.indexOf('Esquire Grooming Awards')).toBeLessThan(html.indexOf('class="gift-promise"'));
     expect(html.indexOf('alt="Luxury Lifestyle Magazine"')).toBeGreaterThan(html.indexOf('</h1>'));
     expect(html).toContain('A complete men’s body care system.');
     expect(html).toContain('View the SOLUM box');

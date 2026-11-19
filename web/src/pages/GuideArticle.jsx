@@ -176,12 +176,6 @@ export default function GuideArticle() {
 
   useEffect(() => {
     if (!article) return;
-    document.title = article.metaTitle;
-    let meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', article.metaDescription);
-    // Canonical
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute('href', `https://bysolum.co.uk/guide/${article.slug}`);
     jumpTop();
   }, [article]);
 

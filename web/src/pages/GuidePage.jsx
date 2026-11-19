@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Nav from '../components/Nav';
 import SolumFooter from '../components/SolumFooter';
@@ -150,12 +149,6 @@ const CSS = `
 `;
 
 export default function GuidePage() {
-  useEffect(() => {
-    document.title = "The SOLUM Guide | Men's Body Care";
-    let meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', "Guides on men's body care — the right shower routine, how to exfoliate, why sulphates damage your skin, and more. Education-first, no fluff.");
-  }, []);
-
   const [pillar, ...rest] = ARTICLES;
 
   return (

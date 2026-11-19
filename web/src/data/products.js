@@ -3,6 +3,7 @@ export const PRODUCTS = [
     num: '01',
     value: 16,  // standalone worth (£) · not sold separately
     name: 'Body Wash',
+    signatureScent: 'Cedarwood + Vetiver',
     fullName: 'Skin Protect Body Wash 250ml',
     size: '250ml',
     origin: '🇬🇧 United Kingdom',
@@ -228,6 +229,7 @@ export const PRODUCTS = [
     num: '07',
     value: 20,  // standalone worth (£) · not sold separately
     name: 'Body Lotion',
+    signatureScent: 'Cedarwood + Vetiver',
     fullName: 'Daily Restore Body Lotion 200ml',
     size: '200ml',
     origin: '🇬🇧 United Kingdom',

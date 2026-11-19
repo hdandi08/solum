@@ -93,6 +93,7 @@ export function identify(userId, traits = {}) {
 }
 
 const IS_PROD = !ANALYTICS_DISABLED &&
+  typeof window !== 'undefined' &&
   /^(www\.)?bysolum\.(com|co\.uk)\.?$/.test(window.location.hostname);
 
 function fbq(...args) {

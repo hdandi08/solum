@@ -29,3 +29,14 @@ describe('landing build safety', () => {
     expect(() => routePreload().transformIndexHtml.handler('', { bundle: {} })).toThrow('Missing landing page preload chunks');
   });
 });
+
+// Every statically rendered landing must preserve its content while the correct
+// interactive component downloads, including canonical trailing-slash aliases.
+import { PUBLIC_PATHS } from '../seo/metadata.js';
+import { initialRouteLoader, routeLoaders } from './routeLoaders.js';
+it('preloads the right interactive component for every public HTML landing', () => {
+  for (const path of [...PUBLIC_PATHS, '/full']) {
+    expect(initialRouteLoader(path)).not.toBe(routeLoaders.notFound);
+    expect(initialRouteLoader(path + '/')).toBe(initialRouteLoader(path));
+  }
+});

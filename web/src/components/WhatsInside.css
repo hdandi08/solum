@@ -1,25 +1,52 @@
-.home-whats-inside{scroll-margin-top:84px;max-width:1120px;margin:0 auto;padding:32px 40px 64px;color:var(--bone)}
-.home-whats-inside .buy-section-heading{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px}
-.home-whats-inside h2{font-family:'Bebas Neue',sans-serif;font-size:40px;font-weight:400;letter-spacing:.03em}
-.home-whats-inside .buy-section-heading p{color:var(--stone);font-size:18px}
-.home-whats-inside .buy-inside-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
-.home-whats-inside .buy-gallery-main{width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;background:var(--dark);display:block}
-.home-whats-inside .buy-gallery-thumbs{display:flex;gap:10px;margin-top:12px}
-.home-whats-inside .buy-gallery-thumbs button{background:var(--black);border:1px solid var(--lineb);padding:0;cursor:pointer}
-.home-whats-inside .buy-gallery-thumbs button[aria-pressed=true]{border-color:var(--blit)}
-.home-whats-inside .buy-gallery-thumbs button:focus-visible{outline:2px solid var(--bone);outline-offset:4px}
-.home-whats-inside .buy-gallery-thumbs img{display:block;object-fit:contain}
-.home-whats-inside h3{font-size:24px;color:var(--blit);font-weight:600;border-bottom:1px solid var(--lineb);padding-bottom:12px;margin-bottom:14px}
-.home-whats-inside .buy-contents>div+div{margin-top:26px}
-.home-whats-inside ol{padding-left:24px;font-size:18px;line-height:1.5;color:var(--mist)}
-.home-whats-inside li{padding:0 0 13px 6px}
-.home-whats-inside li::marker{color:var(--blit);font-weight:600}
-.home-whats-inside strong{font-weight:600;color:var(--bone)}
-.home-whats-inside .buy-guide-note{font-size:18px;line-height:1.5;color:var(--stone);margin-top:16px}
-@media(max-width:700px){
-.home-whats-inside{padding:32px 20px 48px}
-.home-whats-inside .buy-section-heading{display:block}
-.home-whats-inside .buy-section-heading p{margin-top:6px}
-.home-whats-inside h2{font-size:34px}
-.home-whats-inside .buy-inside-grid{grid-template-columns:1fr;gap:28px}
+.home-whats-inside{scroll-margin-top:84px;padding:64px 48px;background:var(--black);color:var(--bone);border-top:1px solid var(--line)}
+.inside-inner{max-width:1180px;margin:0 auto}
+.inside-heading{margin-bottom:32px}
+.inside-kicker{margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--blit)}
+.inside-heading h2{margin:0;font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,3.8vw,52px);font-weight:400;letter-spacing:.04em;line-height:1}
+.inside-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.inside-photograph{margin:20px 0 16px;min-width:0}
+.inside-photograph img{width:100%;height:auto;aspect-ratio:9/5;object-fit:contain;display:block;background:#08090b}
+.inside-kit-caption{display:flex;justify-content:space-between;gap:16px;margin:0 0 16px;font-size:14px;font-weight:500;color:var(--mist)}
+.inside-kit-caption span{color:var(--bone)}
+.inside-product-key{margin:14px 0 0;max-width:520px;font-size:17px;font-weight:300;line-height:1.4;color:var(--mist)}
+.inside-routine{--routine-accent:var(--blit);position:relative;padding:22px 0;border-top:1px solid var(--line)}
+.inside-routine::before{content:'';position:absolute;top:-1px;left:0;width:40px;height:2px;background:var(--routine-accent)}
+.inside-routine-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+.inside-routine h3,.inside-guidance h3{font-family:'Barlow Condensed',sans-serif;font-size:25px;line-height:1.1;font-weight:700;margin:0}
+.inside-routine h3{color:var(--routine-accent)}
+.inside-duration{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px;color:var(--routine-accent)}
+.inside-duration strong{font-family:'Bebas Neue',sans-serif;font-size:40px;font-weight:400;line-height:.9;letter-spacing:.025em;color:inherit}
+.inside-duration>span{font-size:10px;font-weight:600;letter-spacing:1px;line-height:1.2;text-transform:uppercase;white-space:nowrap}
+.inside-routine p,.inside-guidance p{max-width:520px;font-size:17px;font-weight:300;line-height:1.45;color:var(--mist);margin:10px 0 0}
+.inside-routine .inside-cadence-note{font-size:14px;color:var(--stone);margin-top:10px}
+.inside-weekly{--routine-accent:#c8a96e}
+.inside-weekly::before{width:88px}
+.inside-footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;margin-top:24px;padding-top:28px;border-top:1px solid var(--line)}
+.inside-guidance{padding-left:18px;border-left:2px solid var(--blue);margin:0}
+.inside-guidance h3{font-size:23px}
+.inside-guidance p{margin-top:8px}
+.inside-contents{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.inside-contents summary{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;list-style:none;font-size:16px;font-weight:600;cursor:pointer}
+.inside-contents summary::-webkit-details-marker{display:none}
+.inside-contents summary::after{content:'+';font-size:24px;font-weight:300;color:var(--blit)}
+.inside-contents[open] summary::after{content:'−'}
+.inside-contents summary:focus-visible{outline:2px solid var(--blit);outline-offset:4px}
+.inside-contents-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px 0 16px}
+.inside-contents h4{margin:0 0 10px;font-size:17px;font-weight:600;color:var(--bone)}
+.inside-contents ul{margin:0;padding:0;list-style:none;font-size:16px;font-weight:300;line-height:1.5;color:var(--mist)}
+.inside-contents li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;margin-bottom:6px}
+.inside-product-num{font-size:13px;font-weight:600;line-height:1.85;color:var(--blit)}
+.inside-contents-weekly .inside-product-num{color:#c8a96e}
+.inside-contents-guide{margin:0 0 18px;color:var(--mist);font-size:15px}
+@media(max-width:1000px){.inside-layout{gap:36px}}
+@media(max-width:760px){
+ .home-whats-inside{padding:48px 24px}
+ .inside-heading{margin-bottom:24px}
+ .inside-heading h2{font-size:clamp(32px,8.8vw,40px)}
+ .inside-layout{grid-template-columns:1fr;gap:28px}
+ .inside-routine{padding:20px 0}
+ .inside-routine h3{font-size:25px}
+ .inside-routine p,.inside-guidance p{font-size:16px}
+ .inside-footer{grid-template-columns:1fr;gap:28px;margin-top:8px}
+ .inside-guidance{margin:0}
 }

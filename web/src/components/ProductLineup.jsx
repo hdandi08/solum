@@ -39,6 +39,7 @@ const CSS = `
 /* Info — card shows name, tagline, view affordance only */
 .prod-info{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px;flex:1;}
 .prod-name{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bone);font-weight:700;line-height:1.3;}
+.prod-scent{font-size:13px;font-weight:500;line-height:1.4;color:var(--blit);margin:0;}
 .prod-tagline{font-size:13px;font-weight:600;color:var(--bone);line-height:1.4;margin-top:8px;}
 .prod-transform{font-size:13px;line-height:1.45;margin-top:8px;}
 .prod-transform .pt-now{color:var(--stone);font-weight:300;}
@@ -106,7 +107,7 @@ export default function ProductLineup() {
         <div className="products-header reveal">
           <div className="p-sec-left">
             <div className="p-sec-tag">One system. {shown.length} products inside.</div>
-            <h2 className="p-sec-title">The<br />System.</h2>
+            <h2 className="p-sec-title">Meet your body-care essentials.</h2>
           </div>
           <p className="p-sec-sub">
             See what each step changes before you tap into the detail.
@@ -146,6 +147,7 @@ export default function ProductLineup() {
             const infoEl = (
               <div className="prod-info">
                 <div className="prod-name">{p.name}</div>
+                {p.signatureScent && <p className="prod-scent">Signature scent · {p.signatureScent}</p>}
                 {p.outcome ? (
                   <>
                     <div className="prod-transform">

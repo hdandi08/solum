@@ -1,3 +1,4 @@
+import { routeLoaders } from './lib/routeLoaders.js';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { initQualifiedVisitTracker } from './lib/qualifiedVisitTracker';
@@ -6,11 +7,12 @@ import { captureAwinAttribution } from './lib/awinAttribution';
 import { captureLandingAwc } from './lib/awinCookieBridge';
 import { ensureAwinMasterTag, mustReloadWithoutAwin, shouldLoadAwinMasterTag } from './lib/awinMasterTag';
 import OfferBar from './components/OfferBar.jsx';
+import RouteMetadata from './seo/RouteMetadata.jsx';
 import './styles/global.css';
 
 // Keep each landing route independent: checkout must not download the homepage.
-const loadHomePage = () => import('./pages/FullSite');
-const loadBuyPage = () => import('./pages/BuyPage');
+const loadHomePage = routeLoaders.home;
+const loadBuyPage = routeLoaders.buy;
 const FullSite = lazy(loadHomePage);
 // Begin route and Stripe downloads together, before React renders the route.
 if (window.location.pathname === '/buy') {
@@ -19,22 +21,23 @@ if (window.location.pathname === '/buy') {
 } else if (['/', '/full'].includes(window.location.pathname)) {
   void loadHomePage().catch(() => {});
 }
-const CheckoutPage = lazy(() => import('./pages/checkout/CheckoutPage'));
-const SuccessPage = lazy(() => import('./pages/SuccessPage'));
-const AccountPage = lazy(() => import('./pages/AccountPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-const ConfirmPage = lazy(() => import('./pages/ConfirmPage'));
-const RitualPage = lazy(() => import('./pages/RitualPage'));
-const GuidePage = lazy(() => import('./pages/GuidePage'));
-const GuideArticle = lazy(() => import('./pages/GuideArticle'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const CreatorsApplyPage = lazy(() => import('./pages/CreatorsApplyPage'));
+const CheckoutPage = lazy(routeLoaders.checkout);
+const SuccessPage = lazy(routeLoaders.success);
+const AccountPage = lazy(routeLoaders.account);
+const NotFoundPage = lazy(routeLoaders.notFound);
+const ConfirmPage = lazy(routeLoaders.confirm);
+const RitualPage = lazy(routeLoaders.ritual);
+const GuidePage = lazy(routeLoaders.guide);
+const GuideArticle = lazy(routeLoaders.guideArticle);
+const TermsPage = lazy(routeLoaders.terms);
+const ContactPage = lazy(routeLoaders.contact);
+const PrivacyPage = lazy(routeLoaders.privacy);
+const CreatorsApplyPage = lazy(routeLoaders.creators);
 const BuyPage = lazy(loadBuyPage);
-const GiftPage = lazy(() => import('./pages/GiftPage.jsx'));
-const EmailPreviewPage = lazy(() => import('./pages/EmailPreviewPage'));
-const ProductPage = lazy(() => import('./pages/ProductPage.jsx'));
+const GiftPage = lazy(routeLoaders.gift);
+const EmailPreviewPage = lazy(routeLoaders.emailPreview);
+const ProductPage = lazy(routeLoaders.product);
+const AwardsPage = lazy(routeLoaders.awards);
 
 // Auth pages that handle their own session callbacks — do not redirect these.
 const AUTH_DESTINATIONS = ['/account'];
@@ -131,6 +134,7 @@ export default function App() {
   }, []);
   return (
     <BrowserRouter>
+      <RouteMetadata />
       <AwinMasterTagGate />
       <OfferBar />
       <AuthRedirectGuard />
@@ -141,6 +145,7 @@ export default function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/buy" element={<BuyPage />} />
           <Route path="/gift" element={<GiftPage />} />
+          <Route path="/awards" element={<AwardsPage />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/ritual" element={<RitualPage />} />

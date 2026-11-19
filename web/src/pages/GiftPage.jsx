@@ -19,6 +19,7 @@ const GIFT_NAV = [
   ['#gift-story', 'The gift'],
   ['#kits', 'Choose his kit'],
   ['#ritual', 'His ritual'],
+  ['/awards', 'Awards & Press'],
   ['#gift-questions', 'Questions'],
 ];
 
@@ -37,31 +38,7 @@ const GIFT_FAQS = [
   { q: 'Does he need a skincare routine already?', a: 'No. SOLUM brings the products and tools together with a guide he can follow. It is body care with a scalp massage step; it does not replace his face care, shampoo or deodorant. If he has known sensitivities, check the ingredients and patch test before use.' },
 ];
 
-// Keep metadata local to the route and restore it when navigating away.
-function useGiftMetadata() {
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'Christmas Gifts for Him | SOLUM Body Care Kits';
-    const values = [
-      ['meta[name="description"]', 'content', `Give him a body care ritual this Christmas. Explore SOLUM kits, from £${KITS.find(kit => kit.id === 'ground').firstBoxPrice}. One-time purchase with a step-by-step guide.`],
-      ['link[rel="canonical"]', 'href', 'https://bysolum.co.uk/gift'],
-      ['meta[property="og:title"]', 'content', 'This Christmas. Give him his ritual. | SOLUM'],
-      ['meta[property="og:description"]', 'content', 'His Christmas gift, brought together in one SOLUM box. Choose his one-time body care kit.'],
-      ['meta[property="og:url"]', 'content', 'https://bysolum.co.uk/gift'],
-      ['meta[property="og:image"]', 'content', 'https://bysolum.co.uk/products/kit/box-open.webp'],
-    ];
-    const previous = values.map(([selector, attribute, value]) => {
-      const el = document.querySelector(selector);
-      const old = el?.getAttribute(attribute);
-      el?.setAttribute(attribute, value);
-      return () => { if (el) { if (old === null) el.removeAttribute(attribute); else el.setAttribute(attribute, old); } };
-    });
-    return () => { document.title = previousTitle; previous.forEach(restore => restore()); };
-  }, []);
-}
-
 export default function GiftPage() {
-  useGiftMetadata();
   const viewed = useRef(false);
   useEffect(() => {
     if (viewed.current) return;

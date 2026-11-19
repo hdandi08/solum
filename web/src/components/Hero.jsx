@@ -102,44 +102,42 @@ const CSS = `
   .hero-box-img{object-position:center center;}
   .hero-visual-caption{display:block;position:absolute;bottom:16px;right:20px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,236,226,0.4);font-weight:500;z-index:1;}
 }
-.hero-award{margin-bottom:32px;}
-.hero-award .award-proof-compact{gap:24px;align-items:center;}
-.hero-award .award-proof-compact .award-proof-seal{width:164px;height:164px;}
-.hero-award .award-proof-compact .award-proof-copy{gap:10px;}
-.hero-award .award-proof-compact .award-proof-winner{font-size:13px;letter-spacing:2px;}
-.hero-award .award-proof-compact .award-proof-copy strong{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,3.6vw,54px);line-height:1;letter-spacing:.025em;font-weight:400;}
-.hero-award .award-proof-compact .award-proof-copy>span:last-child{font-size:17px;line-height:1.3;}
+.hero-award{position:absolute;top:88px;right:24px;z-index:2;pointer-events:none;}
+.hero-award .award-proof-compact .award-proof-seal{width:88px;height:88px;}
+.hero-award .award-proof-copy{display:none;}
+@media(prefers-reduced-motion:no-preference){
+ .hero-award .award-proof-seal{animation:awardPulse 2s ease-in-out 2s 2;}
+}
+@keyframes awardPulse{0%,100%{transform:scale(1);}45%{transform:scale(1.08);}}
 .hero-purchase-note{font-size:14px;font-weight:400;color:var(--mist);margin-top:16px;letter-spacing:.3px;}
 @media(min-width:960px){
  .hero-editorial-frame{border:0;padding:clamp(22px,4vh,48px) 0;background:transparent;box-shadow:none;justify-content:center;}
  .hero-title{font-size:clamp(30px,2.6vw,40px);line-height:1.08;margin-bottom:18px;max-width:470px;}
  .hero-subline{font-size:18px;line-height:1.5;max-width:430px;margin-bottom:24px;}
  .hero-visual{border-left:1px solid var(--line);}
+ .hero-award{position:static;margin-bottom:clamp(20px,3vh,32px);pointer-events:auto;}
+ .hero-award .award-proof-compact{gap:24px;}
+ .hero-award .award-proof-compact .award-proof-seal{width:clamp(88px,14vh,128px);height:clamp(88px,14vh,128px);}
+ .hero-award .award-proof-copy{display:flex;gap:8px;}
+ .hero-award .award-proof-copy strong{font-size:clamp(28px,2.6vw,40px);line-height:1;}
+ .hero-award .award-proof-winner{font-size:11px;letter-spacing:2px;}
+ .hero-award .award-proof-copy>span:last-child{font-size:15px;}
+}
+@media(min-width:960px) and (max-height:740px){
+ .hero-editorial-frame{padding:0;}
+ .hero-subline{font-size:16px;line-height:1.4;margin-bottom:18px;}
 }
 @media(max-width:959px){
  .hero-cols{padding-bottom:40px;background:linear-gradient(to top,rgba(8,9,11,.97),rgba(8,9,11,.76) 48%,rgba(8,9,11,.12));}
- .hero-award{margin-bottom:28px;}
- .hero-award .award-proof-compact{gap:16px;}
- .hero-award .award-proof-compact .award-proof-seal{width:120px;height:120px;}
- .hero-award .award-proof-compact .award-proof-copy{gap:7px;}
- .hero-award .award-proof-compact .award-proof-copy strong{font-size:36px;}
- .hero-award .award-proof-compact .award-proof-winner{font-size:11px;}
- .hero-award .award-proof-compact .award-proof-copy>span:last-child{font-size:14px;}
  .hero-title{font-size:30px;line-height:1.1;max-width:440px;margin-bottom:16px;}
  .hero-subline{font-size:16px;line-height:1.5;max-width:390px;margin-bottom:20px;}
  .hero-purchase-note{font-size:13px;margin-top:12px;}
 }
 @media(max-width:359px){
- .hero-award .award-proof-compact{gap:14px;}
- .hero-award .award-proof-compact .award-proof-seal{width:100px;height:100px;}
- .hero-award .award-proof-compact .award-proof-copy strong{font-size:29px;}
  .hero-title{font-size:27px;}
 }
 @media(max-height:700px) and (max-width:959px){
  .hero-cols{padding-top:90px;padding-bottom:28px;}
- .hero-award{margin-bottom:20px;}
- .hero-award .award-proof-compact .award-proof-seal{width:100px;height:100px;}
- .hero-award .award-proof-compact .award-proof-copy strong{font-size:30px;}
  .hero-title{font-size:27px;}
  .hero-subline{font-size:15px;margin-bottom:16px;}
 }
@@ -147,10 +145,10 @@ const CSS = `
 `;
 
 export default function Hero({
-  title = 'The shower ritual men were never given.',
-  description = 'A guided, deeper clean for your scalp, back, intimate areas and everything in between, with a clean finish that lasts.',
+  title = 'The shower routine for men who want to feel their best.',
+  description = 'Sulphate-free cleansing, exfoliation and nourishing hydration. A more rewarding daily shower, with every step guided.',
   ctaLabel = 'Start Your Ritual',
-  purchaseNote = 'One-time purchase · Free UK delivery',
+  purchaseNote = 'Free UK delivery',
   image,
 } = {}) {
   const videoReady = useHeroVideoReady();
@@ -163,7 +161,7 @@ export default function Hero({
         <div className="hero-cols">
           <div className="hero-content">
             <div className="hero-editorial-frame">
-              <div className="hero-award"><AwardProof compact /></div>
+              <div className="hero-award"><AwardProof compact kitName="RITUAL" /></div>
               <h1 className="hero-title">
                 {title}
               </h1>

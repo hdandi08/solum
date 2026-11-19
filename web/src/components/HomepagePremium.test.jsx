@@ -29,8 +29,8 @@ describe('premium homepage direction', () => {
     const hero = component('Hero');
 
     expect(hero).not.toContain('The shower system for men');
-    expect(hero).toContain('The shower ritual men were never given.');
-    expect(hero).toContain('A guided, deeper clean for your scalp, back, intimate areas and everything in between, with a clean finish that lasts.');
+    expect(hero).toContain('The shower routine for men who want to feel their best.');
+    expect(hero).toContain('Sulphate-free cleansing, exfoliation and nourishing hydration. A more rewarding daily shower, with every step guided.');
     expect(hero).toContain('Start Your Ritual');
     expect(hero).not.toContain('See the Kits');
     expect(hero).not.toContain('hero-meta');
@@ -76,7 +76,7 @@ describe('premium homepage direction', () => {
     expect(hero).toContain('hero-editorial-frame');
     expect(hero).toContain('hero-subline');
     expect(hero).toContain('hero-press-proof');
-    expect(hero).toContain('<AwardProof compact />');
+    expect(hero).toContain('<AwardProof compact kitName="RITUAL" />');
     expect(component('AwardProof')).toContain('The Best Grooming Kit');
     expect(hero).not.toContain('<blockquote');
     expect(hero).not.toContain('The ritual your shower was missing');
@@ -122,41 +122,31 @@ describe('premium homepage direction', () => {
     expect(copy).not.toContain('--');
   });
 
-  it('makes the shower difference clear in one fast comparison', () => {
+  it('explains the difference through three concise product benefits', () => {
     const problem = component('ProblemSection');
 
-    expect(problem).toContain('The ten minutes you already spend in the shower.<br />A better system for your body.');
-    expect(problem).not.toContain('Same ten minutes.<br />A better system.');
-    expect(problem).toContain('What most men do');
-    expect(problem).toContain('One bottle.<br /><span>Hands.</span><br /><span>Hot water.</span>');
-    expect(problem).toContain('Cleans the easy parts. The rest is left to chance.');
-    expect(problem).toContain('The SOLUM plan');
-    expect(problem).toContain('Cleanse. Reach. Reset. Finish.');
-    expect(problem).toContain('A guided, deeper clean that lasts.');
-    expect(problem).not.toContain('Choose Your Kit');
-    expect(problem).not.toContain('Your shower is doing half the job.');
-    expect(problem).not.toContain('Clean is not the same as cared for.');
-    expect(problem).not.toContain('Most men do not need more products.');
-    expect(problem).not.toContain('That explains the rough skin, the missed back, the scalp buildup and the clean-for-an-hour feeling.');
-    expect(problem).not.toContain("It isn't hygiene.");
-    expect(problem).not.toContain("You still don't feel clean.");
+    expect(problem).toContain('You shower every day.<br />Make it count.');
+    expect(problem).toContain('Cleanse without stripping');
+    expect(problem).toContain('Sulphate-free wash. Skin left comfortable.');
+    expect(problem).toContain('Reach the places you miss');
+    expect(problem).toContain('Your back, scalp and everywhere in between.');
+    expect(problem).toContain('Softer, smoother skin');
+    expect(problem).toContain('Exfoliation. Nourishing hydration.');
+    expect(problem).toContain('Know the steps. Find your rhythm.');
+    expect(problem).toContain('One kit. Clear steps. A routine that becomes habit.');
+    expect(problem).not.toContain('What most men do');
+    expect(problem).not.toContain('Cleanse. Reach. Reset. Finish.');
   });
 
-  it('uses a visual comparison instead of a dense diagnosis grid', () => {
+  it('pairs each benefit with photography without comparison boxes', () => {
     const problem = component('ProblemSection');
 
-    expect(problem).toContain('problem-comparison');
-    expect(problem).toContain('problem-panel old');
-    expect(problem).toContain('problem-panel solum');
-    expect(problem).toContain('problem-status old');
-    expect(problem).toContain('problem-status solum');
-    expect(problem).toContain('.problem-status{width:28px;height:28px;');
-    expect(problem).toContain('.problem-status.old{color:#c85b5b;}');
-    expect(problem).toContain('.problem-status.solum{color:var(--blit);}');
-    expect(problem).toContain('.problem-comparison{display:grid;grid-template-columns:1fr 1fr;');
-    expect(problem).toContain('.problem-header{max-width:820px;}');
-    expect(problem).toContain("font-size:clamp(36px,3.4vw,44px);");
-    expect(problem).not.toContain('problem-diagnosis');
+    expect(problem).toContain('/products/01/still@600.webp');
+    expect(problem).toContain('/products/03/use-1.webp');
+    expect(problem).toContain('/products/07/use-2.webp');
+    expect(problem).toContain('loading="lazy"');
+    expect(problem).not.toContain('problem-panel');
+    expect(problem).not.toContain('problem-status');
     expect(problem).not.toContain('position:sticky');
   });
 
@@ -174,7 +164,7 @@ describe('premium homepage direction', () => {
     expect(problem).toContain('.problem-section{background:linear-gradient(180deg,var(--black),#0b0d11);border-top:1px solid var(--line);padding:clamp(56px,6vw,76px) 48px;}');
     expect(problem).toContain('.problem-header{max-width:820px;}');
     expect(problem).toContain('font-size:clamp(36px,3.4vw,44px);');
-    expect(problem).toContain('.problem-panel{min-height:270px;');
+    expect(problem).toContain('grid-template-columns:repeat(3,minmax(0,1fr));');
     expect(kits).toContain('.kits-section{background:linear-gradient(180deg,#090b0f,var(--black));padding:clamp(48px,5vw,64px) 48px;border-top:1px solid var(--line);min-height:calc(100svh - 62px);display:flex;align-items:center;}');
     expect(kits).toContain('font-size:clamp(36px,4.2vw,52px);');
     expect(kits).toContain('Both give you a complete body clean. RITUAL adds body oil for the weekly finish.');
@@ -196,8 +186,8 @@ describe('premium homepage direction', () => {
     const provenance = component('ProvenanceSection');
     const products = component('ProductLineup');
 
-    expect(problem).toContain('Cleans the easy parts. The rest is left to chance.');
-    expect(problem).toContain('A guided, deeper clean that lasts.');
+    expect(problem).toContain('Skin left comfortable.');
+    expect(problem).toContain('Softer, smoother skin');
     expect(products).toContain('See what each step changes before you tap into the detail.');
     expect(provenance).toContain('Chosen For The Result');
     expect(provenance).toContain('Skin feels calm after washing and comfortable after towelling.');
@@ -219,7 +209,8 @@ describe('premium homepage direction', () => {
     expect(system).toContain('Pure ingredients. Proper finish.');
     expect(system).not.toContain('Nobody ever gave you');
     expect(system).not.toContain('ritual-ledger');
-    expect(ritual).toContain('First see the method. Then the product list makes sense.');
+    expect(ritual).toContain('A preview of your ritual.');
+    expect(ritual).toContain('A first look here. Every step in the full video guide.');
     expect(ritual).toContain('Less buildup and a fresher root feel.');
     expect(ritual).toContain('Seals the weekly reset so skin feels fed, not dry.');
     expect(ritual).toContain('Clay mix, scalp, full-body reset, oil finish.');
@@ -256,7 +247,7 @@ describe('premium homepage direction', () => {
   it('moves the first guided ritual framing out of the top repetition loop', () => {
     const what = component('WhatSolumIs');
 
-    expect(what).toContain('The Body Ritual Men Were Missing');
+    expect(what).toContain('Built for men. From the ground up.');
     expect(what).not.toContain('The First Guided');
     expect(what).not.toContain('Ritual for Men');
   });
@@ -268,7 +259,7 @@ describe('premium homepage direction', () => {
     expect(ritual).toContain('ria-cadence-summary');
     expect(ritual).toContain('aria-label="Daily and weekly ritual cadence"');
     expect(ritual).toContain('RITUALS.map(({ key, title, cadence }) => (');
-    expect(ritual).not.toContain('.ria-cadence-summary-item.weekly .ria-cadence-time{color:#c8a96e;}');
+    expect(ritual).toContain('.ria-cadence-summary-item.weekly .ria-cadence-time{color:#c8a96e;}');
     expect(ritual).toContain('ria-ritual-block daily');
     expect(ritual).toContain('ria-ritual-block weekly');
     expect(ritual).toContain('aria-label={`${ritual.title} videos`}');

@@ -37,7 +37,7 @@ const MOBILE_QUERY = '(max-width: 768px)';
 export default function StickyKitBar() {
   const [pastHero, setPastHero] = useState(false);
   const [kitsInView, setKitsInView] = useState(false);
-  const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches);
   const shownOnce = useRef(false);
 
   useEffect(() => {

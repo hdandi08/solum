@@ -32,6 +32,7 @@ const CSS = `
 }
 .pp-num{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--blit);}
 .pp-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6.5vw,74px);letter-spacing:.04em;line-height:.92;margin:2px 0;color:var(--bone);}
+.pp-scent{font-size:15px;font-weight:500;line-height:1.4;color:var(--blit);margin:0;}
 .pp-tagline{font-size:17px;font-weight:300;color:var(--mist);max-width:460px;line-height:1.4;}
 .pp-body{max-width:760px;margin:0 auto;padding:56px 24px;}
 .pp-desc{font-size:16px;line-height:1.7;font-weight:300;color:var(--mist);}
@@ -121,11 +122,6 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (!p) return;
-    document.title = `${p.fullName || p.name} · SOLUM`;
-    const m = document.querySelector('meta[name="description"]');
-    if (m) m.setAttribute('content', p.tagline || p.desc?.slice(0, 150) || '');
-    let c = document.querySelector('link[rel="canonical"]');
-    if (c) c.setAttribute('href', `https://bysolum.co.uk/product/${slug}`);
     capture('product_page_viewed', { slug });
     markProductDetail();
   }, [p, slug]);
@@ -174,6 +170,7 @@ export default function ProductPage() {
           <div className="pp-hero-info">
             <div className="pp-num">PRODUCT · {p.num}</div>
             <h1 className="pp-name">{p.name}</h1>
+            {p.signatureScent && <p className="pp-scent">Signature scent · {p.signatureScent}</p>}
             <p className="pp-tagline">{p.tagline}</p>
             <div className="pp-meta">
               <span>{p.origin}</span>{p.size && <span>{p.size}</span>}{p.lifespan && <span>{p.lifespan}</span>}

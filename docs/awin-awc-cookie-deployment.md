@@ -21,7 +21,16 @@ Its required order is:
 
 1. `/.well-known/<*>` passthrough.
 2. `/feeds/awin.csv` proxy to the fixed production `awin-feed` Edge Function.
-3. The existing SPA fallback, including its complete static-extension allow-list.
+3. Exact public-route rewrites generated from `web/src/seo/metadata.js` (including
+   trailing-slash variants and the `/full` homepage alias).
+4. The private-route SPA fallback to `/app.html`, including the complete
+   static-extension allow-list. XML and HTML must bypass this fallback.
+
+The SEO delivery handoff is
+[`artefacts/2026-11-19-seo-delivery-audit.md`](../artefacts/2026-11-19-seo-delivery-audit.md).
+Before applying the artifact, compare the live app rules and preserve any
+live-only domain redirects. Deploy the complete validated `web/dist` artifact
+before applying rewrites that reference newly generated HTML files.
 
 Verify the committed artifact without contacting AWS:
 

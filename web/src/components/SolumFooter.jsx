@@ -6,6 +6,9 @@ footer.solum-footer{background:var(--black);border-top:1px solid var(--line);pad
 .footer-logo{display:block;margin-bottom:10px;}.footer-logo img{height:24px;width:auto;display:block;}
 .footer-tagline{font-size:13px;color:var(--stone);letter-spacing:2px;font-style:italic;margin-bottom:8px;}
 .footer-scope{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blit);font-weight:600;}
+.footer-award{display:block;max-width:240px;margin-top:18px;font-size:14px;font-weight:400;line-height:1.4;color:var(--bone);text-decoration:none;}
+.footer-award span{display:block;color:var(--blit);margin-top:4px;font-size:12px;}
+.footer-award:focus-visible{outline:2px solid var(--blit);outline-offset:4px;}
 .footer-col-title{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blit);font-weight:600;margin-bottom:20px;}
 .footer-links{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0;}
 .footer-links a{font-size:14px;color:var(--stone);text-decoration:none;letter-spacing:.5px;transition:color .2s;}
@@ -29,6 +32,7 @@ export default function SolumFooter() {
             <div className="footer-logo"><img src="/solum-wordmark-clean.svg" alt="SOLUM" /></div>
             <div className="footer-tagline">Body care, finally built for men.</div>
             <div className="footer-scope">Body Care · Men</div>
+            <a className="footer-award" href="/awards">RITUAL · Best Grooming Kit<span>Esquire Grooming Awards 2026 winner ↗</span></a>
           </div>
           <div>
             <div className="footer-col-title">The System</div>
@@ -45,6 +49,7 @@ export default function SolumFooter() {
               <li><a href={sectionHref('what')}>Why SOLUM</a></li>
               <li><a href={sectionHref('origins')}>Where It's From</a></li>
               <li><a href="/guide">The Guide</a></li>
+              <li><a href="/awards">Awards &amp; Press</a></li>
               <li><a href="/creators">Create With Us</a></li>
             </ul>
           </div>

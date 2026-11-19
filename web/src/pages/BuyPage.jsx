@@ -1,3 +1,4 @@
+import { deliverySummary } from '../lib/deliverySummary.js';
 import { captureCampaignAttribution } from '../lib/campaignAttribution.js';
 import { resolveBuyKit } from '../lib/buyLanding.js';
 import { rememberPaymentResult } from '../lib/purchaseConfirmation.js';
@@ -266,9 +267,6 @@ const CSS = `
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function fmtDay(d) {
-  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-}
 
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
@@ -428,7 +426,7 @@ function BuyMobileHeader({ kit, price, dispatch, arrival, inventory, onCta, hide
             </button>
           </div>
           <div className="co-mobile-dispatch">
-            Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}
+            {deliverySummary(dispatch, arrival)}
           </div>
           <KitContentsImage kit={kit} />
           <div className="co-mobile-products">
@@ -501,7 +499,7 @@ function BuyOrderSummary({ kit, price, dispatch, arrival }) {
       {kit.id === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
       <div className="by-summary-total"><span>Total</span><strong>£{price}</strong></div>
       <p className="co-price-sub">One-time purchase · Free UK delivery</p>
-      <p className="co-price-sub">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</p>
+      <p className="co-price-sub">{deliverySummary(dispatch, arrival)}</p>
       <details className="by-more" open>
         <summary>What's inside · {products.length} essentials</summary>
         <KitContentsImage kit={kit} />
@@ -743,7 +741,7 @@ export default function BuyPage() {
   // React Router's history writes an idx into history.state; 0 means /buy is
   // the first entry in this tab (ad click / direct landing) — a "Back to kits"
   // link would point at a page the visitor has never seen.
-  const isDirectLanding = (window.history.state?.idx ?? 0) === 0;
+  const isDirectLanding = typeof window === 'undefined' || (window.history.state?.idx ?? 0) === 0;
 
   // Warm arrivals get a shorter orientation. Any explicit kit in the URL is
   // already a meaningful decision, including direct links from ads, so the
@@ -775,7 +773,7 @@ export default function BuyPage() {
   const [iabContinued, setIabContinued] = useState(() => {
     try { return sessionStorage.getItem(IAB_CONTINUE_KEY) === '1'; } catch { return false; }
   });
-  const iabGate = !iabContinued && shouldShowIabGate(undefined, window.location.search);
+  const iabGate = typeof window !== 'undefined' && !iabContinued && shouldShowIabGate(undefined, window.location.search);
   const continueInApp = () => {
     try { sessionStorage.setItem(IAB_CONTINUE_KEY, '1'); } catch { /* unavailable */ }
     setIabContinued(true);
@@ -1242,7 +1240,7 @@ export default function BuyPage() {
                     <span className="by-kit-confirm-name">{activeKit?.name}</span>
                     {selectedKit === 'ritual' && <span className="by-kit-award-label">Award-winning kit</span>}
                     <span className="by-kit-confirm-meta">£{price} total · Free UK delivery</span>
-                    {!iabGate && <CheckoutDispatch dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch} />}
+                    {!iabGate && <CheckoutDispatch dispatch={typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch} />}
                     </div>
                   </div>
                   <button
@@ -1332,7 +1330,7 @@ export default function BuyPage() {
                       kit={selectedKit}
                       kitName={activeKit?.name ?? selectedKit}
                       price={price}
-                      dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch}
+                      dispatch={typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch}
                       source={source}
                       onContinue={continueInApp}
                       expressReady={expressReady}
@@ -1343,7 +1341,7 @@ export default function BuyPage() {
                   ) : (
                     <>
                       <InAppBrowserBanner variant="inline" />
-                      {kitPickerOpen && <CheckoutDispatch dispatch={inventory?.[selectedKit]?.available === false ? null : dispatch} />}
+                      {kitPickerOpen && <CheckoutDispatch dispatch={typeof window === 'undefined' || inventory?.[selectedKit]?.available === false ? null : dispatch} />}
                       <ExpressCheckoutIntro />
                       {expressCheckoutElement}
                       {expressAvailable && (
@@ -1436,7 +1434,7 @@ export default function BuyPage() {
                   <div className="co-ship-strip">
                     <span className="co-ship-strip-icon">📦</span>
                     <div className="co-ship-strip-text">
-                      <span className="co-ship-strip-main">Ships {fmtDay(dispatch)} · Est. delivery {fmtDay(arrival)}</span>
+                      <span className="co-ship-strip-main">{deliverySummary(dispatch, arrival)}</span>
                       <span className="co-ship-strip-sub">Royal Mail Tracked 48 · Free</span>
                     </div>
                   </div>

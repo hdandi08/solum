@@ -10,8 +10,263 @@
     "status": "200"
   },
   {
-    "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|mp4|webm|csv)$)([^.]+$)/>",
+    "source": "/",
     "target": "/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/gift",
+    "target": "/gift/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/gift/",
+    "target": "/gift/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/buy",
+    "target": "/buy/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/buy/",
+    "target": "/buy/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/ritual",
+    "target": "/ritual/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/ritual/",
+    "target": "/ritual/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide",
+    "target": "/guide/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/",
+    "target": "/guide/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/awards",
+    "target": "/awards/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/awards/",
+    "target": "/awards/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/contact",
+    "target": "/contact/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/contact/",
+    "target": "/contact/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/terms",
+    "target": "/terms/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/terms/",
+    "target": "/terms/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/privacy",
+    "target": "/privacy/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/privacy/",
+    "target": "/privacy/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/mens-body-care-routine",
+    "target": "/guide/mens-body-care-routine/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/mens-body-care-routine/",
+    "target": "/guide/mens-body-care-routine/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/how-to-exfoliate-body-men",
+    "target": "/guide/how-to-exfoliate-body-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/how-to-exfoliate-body-men/",
+    "target": "/guide/how-to-exfoliate-body-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/best-body-wash-men-uk",
+    "target": "/guide/best-body-wash-men-uk/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/best-body-wash-men-uk/",
+    "target": "/guide/best-body-wash-men-uk/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/mens-shower-routine",
+    "target": "/guide/mens-shower-routine/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/mens-shower-routine/",
+    "target": "/guide/mens-shower-routine/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/scalp-massager-men",
+    "target": "/guide/scalp-massager-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/scalp-massager-men/",
+    "target": "/guide/scalp-massager-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/rhassoul-clay-men",
+    "target": "/guide/rhassoul-clay-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/rhassoul-clay-men/",
+    "target": "/guide/rhassoul-clay-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/how-to-moisturise-after-shower-men",
+    "target": "/guide/how-to-moisturise-after-shower-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/guide/how-to-moisturise-after-shower-men/",
+    "target": "/guide/how-to-moisturise-after-shower-men/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/01-body-wash",
+    "target": "/product/01-body-wash/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/01-body-wash/",
+    "target": "/product/01-body-wash/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/02-italy-towel-mitt",
+    "target": "/product/02-italy-towel-mitt/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/02-italy-towel-mitt/",
+    "target": "/product/02-italy-towel-mitt/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/03-back-scrub-cloth",
+    "target": "/product/03-back-scrub-cloth/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/03-back-scrub-cloth/",
+    "target": "/product/03-back-scrub-cloth/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/04-scalp-massager",
+    "target": "/product/04-scalp-massager/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/04-scalp-massager/",
+    "target": "/product/04-scalp-massager/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/05-atlas-clay",
+    "target": "/product/05-atlas-clay/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/05-atlas-clay/",
+    "target": "/product/05-atlas-clay/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/06-argan-oil",
+    "target": "/product/06-argan-oil/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/06-argan-oil/",
+    "target": "/product/06-argan-oil/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/07-body-lotion",
+    "target": "/product/07-body-lotion/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/07-body-lotion/",
+    "target": "/product/07-body-lotion/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/08-cleansing-cloth",
+    "target": "/product/08-cleansing-cloth/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/08-cleansing-cloth/",
+    "target": "/product/08-cleansing-cloth/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/11-clay-mixing-bowl",
+    "target": "/product/11-clay-mixing-bowl/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/product/11-clay-mixing-bowl/",
+    "target": "/product/11-clay-mixing-bowl/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/full",
+    "target": "/index.html",
+    "status": "200"
+  },
+  {
+    "source": "/full/",
+    "target": "/index.html",
+    "status": "200"
+  },
+  {
+    "source": "</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp|mp4|webm|csv|xml|html)$)([^.]+$)/>",
+    "target": "/app.html",
     "status": "200"
   }
 ]
