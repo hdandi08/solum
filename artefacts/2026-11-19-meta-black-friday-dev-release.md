@@ -34,6 +34,18 @@ Final checks: 346 frontend units across 46 files; build with 25 prerendered page
 
 Before declaring the dev storefront live, finish final unit/build and browser checks, commit only feature files, push HEAD:dev, wait for Amplify success, and verify the published popup/claim with payment requests blocked.
 
+## Published source and remaining infrastructure prerequisite
+
+Source commit 995999b was pushed only to dev; Amplify dev job 357 succeeded. Production master remains 909a52b.
+
+Live browser acceptance found the existing DEV AWIN bridge was never deployed: track-dev.bysolum.co.uk returns DNS resolution failure, no matching DNS record exists, and only the production tracking stack is present. The provider correctly sends attribution_checked=false, so the offer remains hidden. Do not treat a tracking failure as proof of no affiliate attribution.
+
+The published popup plus real promo API/email storage were verified with only the missing bridge replaced by an isolated test response. The personal grant applied £235→£211.50 and survived reload; unchecked consent was stored accurately. Payment transports were blocked, no offer email was sent, and the fake signup/visitor records were deleted. This is conditional acceptance, not proof the ordinary live browser can currently qualify.
+
+The configured AWS user sourceri-dev-console was denied acm:ListCertificates, acm:DescribeCertificate and acm:RequestCertificate. Public TLS inspection confirms the production certificate covers only track.bysolum.co.uk, so it cannot be reused for DEV. No certificate or DEV tracking stack was created, and no production infrastructure was changed.
+
+Remaining prerequisite: an issued ACM certificate in eu-west-2 covering track-dev.bysolum.co.uk, or certificate request/description access. Then deploy the existing isolated infra/awin-tracking stack with DEV-only origins and matching DEV token secret, add only its DEV DNS record, and rerun unmocked live acceptance. User was asked for that prerequisite; the affiliate exclusion guard remains intact.
+
 ## Disable creation
 
 Set META_PROMO_ENABLED=false explicitly on DEV, disable the campaign row and remove/disable VITE_META_PROMO_ENABLED on dev before rebuilding. Leave schema, webhook and reservation cleanup in place for existing attempts. Do not restore stock manually or delete paid promo records.
