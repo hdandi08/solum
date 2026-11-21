@@ -130,9 +130,10 @@ export default function MetaPromoProvider({children}){
        <input ref={emailInput} id="meta-promo-email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/>
        <label className="meta-promo-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={busy}/><span>{META_PROMO_CONSENT} <small>(optional)</small></span></label>
        {error&&<p role="alert" className="meta-promo-error">{error}</p>}
+       <PromoAvailability />
        <button className="meta-promo-submit" disabled={busy}>{busy?'Checking your invitation…':'Unlock my 10%'}</button>
       </form>
-      <p className="meta-promo-fine">One personal offer per email. Ends 30 November, 11:59pm UK. Free UK delivery included. <a href="/privacy">Privacy</a></p>
+      <p className="meta-promo-fine">One personal offer per email. Free UK delivery included. <a href="/privacy">Privacy</a></p>
      </>}
     </div>
    </section>
@@ -142,4 +143,7 @@ export default function MetaPromoProvider({children}){
 export function MetaPromoSummary({order}){
  if(!order?.promo)return null;
  return <div className="meta-promo-saving" data-testid="meta-promo-summary"><span>Subtotal <s>£{(order.subtotalPence/100).toFixed(2)}</s></span><strong>10% applied · You save £{(order.discountPence/100).toFixed(2)}</strong></div>;
+}
+export function PromoAvailability(){
+ return <p className="meta-promo-availability">Limited Black Friday offer. Ends 30 November, 11:59pm UK, while kits last.</p>;
 }

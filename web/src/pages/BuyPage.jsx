@@ -1,5 +1,5 @@
 import {useMetaPromo} from '../components/metaPromo/metaPromoContext.js';
-import {MetaPromoSummary} from '../components/metaPromo/MetaPromoProvider.jsx';
+import {MetaPromoSummary,PromoAvailability} from '../components/metaPromo/MetaPromoProvider.jsx';
 import PromoCode from '../components/metaPromo/PromoCode.jsx';
 import {promoPaymentFields} from '../lib/metaPromo.js';
 import KitQuantityEditor, { KitOrderLines } from '../components/KitQuantityEditor.jsx';
@@ -1465,6 +1465,7 @@ export default function BuyPage() {
                 <p>For {promo.email}</p>
                 <MetaPromoSummary order={order} />
                 {(promo.valid || heldExpressOrder) && <p className="meta-promo-confirmed-total">Order total <strong>£{price.toFixed(2)}</strong></p>}
+                <PromoAvailability />
                 {!promo.valid && <p role="alert">{heldExpressOrder ? 'Your reserved payment keeps its original price. To change it, remove the offer and review your order first.' : 'Your offer is unavailable or could not be verified. Remove it to review the full price before continuing.'}</p>}
                 <button type="button" disabled={checkoutBusy} onClick={metaPromo.remove}>Remove offer</button>
                 {metaPromo.error && <p role="alert">{metaPromo.error}</p>}
