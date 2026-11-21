@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "acm:RequestCertificate",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "eu-west-2",
+          "acm:ValidationMethod": "DNS"
+        },
+        "ForAllValues:StringEquals": {
+          "acm:DomainNames": ["track-dev.bysolum.co.uk"]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "acm:DescribeCertificate",
+      "Resource": "arn:aws:acm:eu-west-2:798470762256:certificate/*"
+    }
+  ]
+}

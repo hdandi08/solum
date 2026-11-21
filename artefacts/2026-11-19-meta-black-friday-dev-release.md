@@ -49,3 +49,15 @@ Remaining prerequisite: an issued ACM certificate in eu-west-2 covering track-de
 ## Disable creation
 
 Set META_PROMO_ENABLED=false explicitly on DEV, disable the campaign row and remove/disable VITE_META_PROMO_ENABLED on dev before rebuilding. Leave schema, webhook and reservation cleanup in place for existing attempts. Do not restore stock manually or delete paid promo records.
+
+## Infrastructure prerequisite resolved — 21 November 2026
+
+After the user added the scoped certificate permissions, requested and DNS-validated the DEV certificate 4f55b11b-023b-4670-9f9b-93f29d11dab0 in eu-west-2. Deployed isolated solum-awin-tracking-dev and mapped only track-dev.bysolum.co.uk to d-ujiowawky1.execute-api.eu-west-2.amazonaws.com. The DEV API endpoint is https://swzy5fe3th.execute-api.eu-west-2.amazonaws.com. Its origin allowlist contains only the DEV Amplify storefront.
+
+The template now has a TrackingRuntime parameter, preserving the existing production default while DEV explicitly uses nodejs22.x. Ten tracking tests and SAM validation passed; CloudFormation completed successfully. No production stack, DNS record, secret or storefront was changed.
+
+DEV AWIN credentials are isolated in Secrets Manager solum/awin/attribution-dev and DEV Vault awin_tracking_secret_dev; the matching AWIN_ATTRIBUTION_SECRET was configured only on rodvvmfzkyjsqbufkjbc. Private values were never printed. Verified actual DNS/TLS, no-cookie resolution, rejected production origin, encrypted affiliate-token resolution and the matching Edge secret digest.
+
+Unmocked published DEV browser acceptance now passes: delayed original-photo popup, email and explicit false marketing-consent storage, personal code application, RITUAL £76.50 and mixed £235→£211.50, £23.50 saving and refresh persistence. Only payments/analytics were blocked. No payment or offer email was sent. The fake signup and visitor records were removed. Separate unmocked browser checks excluded direct/affiliate visits and retained affiliate exclusion after a signed Meta return.
+
+This resolves the historical blocker above. Generate the signed campaign preview link using the existing DEV configuration helper; normal direct visits deliberately do not show the offer. Email delivery remains preview-only and marketing is not automatically subscribed.

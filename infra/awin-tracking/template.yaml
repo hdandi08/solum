@@ -3,6 +3,12 @@ Transform: AWS::Serverless-2016-10-31
 Description: Isolated first-party AWIN attribution cookie service
 
 Parameters:
+  TrackingRuntime:
+    Type: String
+    Default: nodejs20.x
+    AllowedValues:
+      - nodejs20.x
+      - nodejs22.x
   TrackingDomainName:
     Type: String
     Default: track-dev.bysolum.co.uk
@@ -38,7 +44,7 @@ Resources:
     Properties:
       CodeUri: src/
       Handler: index.handler
-      Runtime: nodejs20.x
+      Runtime: !Ref TrackingRuntime
       Architectures:
         - arm64
       MemorySize: 128
