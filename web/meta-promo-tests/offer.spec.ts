@@ -16,6 +16,24 @@ async function offerSetup(page:Page,{blocked=false,resolveFail=false}={}){
  return requests;
 }
 async function showOffer(page:Page){await page.goto(entry);await page.getByTestId('details-form').waitFor();await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('solum_meta_black_friday_2026')??'{}').visitor_token)).toBe('opaque');await page.clock.runFor(21000);}
+test('invitation reminder appears only after dismissal and disappears after claiming',async({page})=>{
+ await offerSetup(page);await page.goto(entry);await page.getByTestId('details-form').waitFor();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('solum_meta_black_friday_2026')??'{}').visitor_token)).toBe('opaque');
+ const reminder=page.getByRole('button',{name:'Your 10% invitation',exact:true});
+ await expect(reminder).not.toBeVisible();
+ await page.clock.runFor(21000);
+ const dialog=page.getByRole('dialog',{name:'Your Black Friday invitation.'});
+ await expect(dialog).toBeVisible();await expect(reminder).not.toBeVisible();
+ await dialog.getByRole('button',{name:'Close invitation',exact:true}).click();
+ await expect(reminder).toBeVisible();await reminder.click();
+ await dialog.getByLabel('Email address',{exact:true}).fill('buyer@example.test');
+ await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
+ await expect(dialog.getByText('PERSONAL',{exact:true})).toBeVisible();
+ await dialog.getByRole('button',{name:'Continue shopping'}).click();
+ await expect(reminder).not.toBeVisible();
+ await page.reload();await page.clock.runFor(30000);
+ await expect(reminder).not.toBeVisible();await expect(dialog).not.toBeVisible();
+});
 test('delays, claims with unchecked consent, applies net prices and persists dismissal',async({page})=>{
  const requests=await offerSetup(page);await showOffer(page);
  const dialog=page.getByRole('dialog',{name:'Your Black Friday invitation.'});await expect(dialog).toBeVisible();
@@ -115,7 +133,7 @@ test('wallet email must match the grant before any payment request',async({page}
 
 test('an automatic appearance is remembered even when the page reloads before dismissal',async({page})=>{
  await offerSetup(page);await showOffer(page);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).toBeVisible();
- await page.reload();await expect(page.getByRole('button',{name:'Your 10% invitation'})).toBeVisible();await page.clock.runFor(22000);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).not.toBeVisible();
+ await page.reload();await page.getByTestId('details-form').waitFor();await expect(page.getByRole('button',{name:'Your 10% invitation'})).not.toBeVisible();await page.clock.runFor(22000);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).not.toBeVisible();
 });
 test('issued card quote stays discounted after offer expiry',async({page})=>{
  const requests=await offerSetup(page);await mockedPromoPayments(page,requests);await claimOffer(page);await startCard(page);await expect(page.getByTestId('pay-btn')).toHaveText('Pay £76.50 Now →');
@@ -156,7 +174,7 @@ test('unknown payment creation blocks removing the offer or changing its quantit
 });
 
 test('automatic offer waits for twelve visible seconds and browsing',async({page})=>{
- await offerSetup(page);await page.goto(entry);await expect(page.getByRole('button',{name:'Your 10% invitation'})).toBeVisible();await page.clock.runFor(11500);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).not.toBeVisible();
+ await offerSetup(page);await page.goto(entry);await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('solum_meta_black_friday_2026')??'{}').visitor_token)).toBe('opaque');await expect(page.getByRole('button',{name:'Your 10% invitation'})).not.toBeVisible();await page.clock.runFor(11500);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).not.toBeVisible();
  await page.evaluate(()=>window.scrollTo(0,150));await page.clock.runFor(1000);await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).toBeVisible();
 });
 test('dialog traps focus and keeps close available with a narrow keyboard viewport',async({page})=>{

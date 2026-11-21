@@ -115,7 +115,7 @@ export default function MetaPromoProvider({children}){
  }
  const value={promo,eligible,setCheckoutGuard,reopen:()=>{if(eligible&&!guard.current?.suppressed&&(guard.current||!pendingCheckout())&&!forbiddenRoute.current&&!document.querySelector('[aria-modal="true"],dialog[open]')){setError('');setOpen(true);}},remove,error};
  return <Context.Provider value={enabled?value:EMPTY}>{children}
-  {enabled&&eligible&&!suppressed&&!routeSuppressed&&!pendingWithoutGuard&&!open&&!state.claimed&&<button type="button" className="meta-promo-reopen" onClick={value.reopen}>Your 10% invitation</button>}
+  {enabled&&eligible&&!suppressed&&!routeSuppressed&&!pendingWithoutGuard&&!open&&!state.claimed&&Boolean(state.dismissedUntil)&&<button type="button" className="meta-promo-reopen" onClick={value.reopen}>Your 10% invitation</button>}
   {open&&eligible&&(!suppressed||busy)&&!routeSuppressed&&!pendingWithoutGuard&&<div className="meta-promo-overlay" onClick={e=>{if(e.target===e.currentTarget&&!busy)close();}}>
    <section ref={dialog} className="meta-promo-dialog" role="dialog" aria-modal="true" aria-labelledby="meta-promo-title">
     <div className="meta-promo-close-wrap"><button type="button" className="meta-promo-close" aria-label="Close invitation" disabled={busy} onClick={close}>×</button></div>
@@ -145,5 +145,5 @@ export function MetaPromoSummary({order}){
  return <div className="meta-promo-saving" data-testid="meta-promo-summary"><span>Subtotal <s>£{(order.subtotalPence/100).toFixed(2)}</s></span><strong>10% applied · You save £{(order.discountPence/100).toFixed(2)}</strong></div>;
 }
 export function PromoAvailability(){
- return <p className="meta-promo-availability">Limited Black Friday offer. Ends 30 November, 11:59pm UK, while kits last.</p>;
+ return <p className="meta-promo-availability"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Limited Black Friday offer. Ends 30 November, 11:59pm UK, while kits last.</span></p>;
 }
