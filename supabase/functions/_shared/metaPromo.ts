@@ -37,22 +37,6 @@ export async function signMetaPromoEntry(secret: string): Promise<string> {
     ),
   ).map((x) => x.toString(16).padStart(2, "0")).join("");
 }
-async function verifyEntry(entry: string, secret: string) {
-  if (!secret || !/^[a-f0-9]{64}$/.test(entry)) return false;
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["verify"],
-  );
-  return crypto.subtle.verify(
-    "HMAC",
-    key,
-    Uint8Array.from(entry.match(/../g)!, (x) => parseInt(x, 16)),
-    new TextEncoder().encode(`${META_PROMO_CAMPAIGN}:${META_PROMO_ENDS_AT}`),
-  );
-}
 // Extension list: add known partner names/keys here as channels are introduced.
 // Any AWIN token (even malformed/expired) is attribution evidence and fails closed.
 const AFFILIATE_KEYS =
@@ -84,7 +68,7 @@ export function promoAffiliateEvidence(body: any): boolean {
 }
 export async function metaPromoAdmission(
   body: any,
-  secret: string,
+  _secret: string,
   now = Date.now,
 ): Promise<{ eligible: boolean; blocked: boolean }> {
   if (promoAffiliateEvidence(body)) return { eligible: false, blocked: true };
@@ -94,21 +78,25 @@ export async function metaPromoAdmission(
   ) return { eligible: false, blocked: false };
   try {
     const url = new URL(body.landing_url);
-    // Reject ambiguous source/entry parameter pollution rather than choosing one.
+    // Direct, organic and ad visits share the offer on the DEV storefront.
+    // A checked affiliate bridge and the sticky server ledger still take priority.
+    const allowedOrigins = [
+      "https://dev.d3pa095gzazg3c.amplifyapp.com",
+      "https://dev.bysolum.co.uk",
+      "http://localhost:4190",
+      "http://localhost:5173",
+    ];
+    if (!allowedOrigins.includes(url.origin) || url.username || url.password) {
+      return { eligible: false, blocked: false };
+    }
+    // Optional legacy ad tags never grant extra access. Reject ambiguous tags
+    // rather than selecting one value; all affiliate URL values were checked above.
     if (
       ["offer_entry", "utm_source", "utm_medium"].some((key) =>
-        url.searchParams.getAll(key).length !== 1
+        url.searchParams.getAll(key).length > 1
       )
     ) return { eligible: false, blocked: false };
-    const source = url.searchParams.get("utm_source")?.toLowerCase();
-    const medium = url.searchParams.get("utm_medium")?.toLowerCase();
-    return {
-      eligible:
-        ["meta", "facebook", "instagram", "fb", "ig"].includes(source ?? "") &&
-        ["paid_social", "paidsocial", "cpc", "paid"].includes(medium ?? "") &&
-        await verifyEntry(url.searchParams.get("offer_entry") ?? "", secret),
-      blocked: false,
-    };
+    return { eligible: true, blocked: false };
   } catch {
     return { eligible: false, blocked: false };
   }
@@ -148,6 +136,12 @@ export async function recordPromoVisit(db: any, body: any, env = getEnv) {
   });
   if (error || !data?.visitor_token) {
     throw new ReservationError("promo_unavailable", 409);
+  }
+  // The ledger preserves prior admission across navigation. Every visit must
+  // still have a valid DEV URL and a successful current attribution check.
+  // Claims omit landing_url and use the previously admitted private ledger.
+  if (body.action !== "claim" && !admission.eligible) {
+    return { ...data, eligible: false };
   }
   return data;
 }

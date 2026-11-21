@@ -1,5 +1,7 @@
 # Meta Black Friday offer: approved direction
 
+Updated 21 November: user requested a Copy code button and broadened eligibility to ordinary direct visitors, while continuing to exclude AWIN and recognised affiliate partners. Signed Meta links are optional; checked non-affiliate visits on the known dev storefront may claim. All email, pricing, consent, redemption, timing and dev-only safeguards remain. This supersedes the original Meta-only admission requirement below.
+
 User chose a delayed popup and instructed implementation with strong imagery. Dev only. 10% across the complete kit order, including all 1–5 mixed GROUND/RITUAL kits; free delivery unchanged. Production stays on commit 909a52b until a separate request.
 
 ## Experience and visual direction

@@ -1,5 +1,6 @@
 import {useMetaPromo} from '../components/metaPromo/metaPromoContext.js';
 import {MetaPromoSummary} from '../components/metaPromo/MetaPromoProvider.jsx';
+import PromoCode from '../components/metaPromo/PromoCode.jsx';
 import {promoPaymentFields} from '../lib/metaPromo.js';
 import KitQuantityEditor, { KitOrderLines } from '../components/KitQuantityEditor.jsx';
 import { multiKitCheckoutEnabled, multiKitEnvironmentAllowed, normalizeKitItems, kitOrder, changeKitQuantity, paymentKitOrder, kitStockError, saveKitSelection, restoreKitSelection, kitSelectionParam, parseKitSelectionParam } from '../lib/kitOrder.js';
@@ -1458,6 +1459,17 @@ export default function BuyPage() {
                   warm arrivals get it below the details form. */}
               {step === 'details' && kitPickerOpen && <details className="by-more"><summary>See how the ritual works</summary><MittDemo /></details>}
 
+              {step === 'details' && promo && <div className="meta-promo-inline" data-testid="meta-promo-applied">
+                <strong>{promo.valid ? '10% applied to your entire order' : 'Your personal offer needs checking'}</strong>
+                <PromoCode code={promo.code} compact />
+                <p>For {promo.email}</p>
+                <MetaPromoSummary order={order} />
+                {(promo.valid || heldExpressOrder) && <p className="meta-promo-confirmed-total">Order total <strong>£{price.toFixed(2)}</strong></p>}
+                {!promo.valid && <p role="alert">{heldExpressOrder ? 'Your reserved payment keeps its original price. To change it, remove the offer and review your order first.' : 'Your offer is unavailable or could not be verified. Remove it to review the full price before continuing.'}</p>}
+                <button type="button" disabled={checkoutBusy} onClick={metaPromo.remove}>Remove offer</button>
+                {metaPromo.error && <p role="alert">{metaPromo.error}</p>}
+              </div>}
+
               {step === 'details' && !quantityEditorOpen && (
                 <div className="by-express-wrap" ref={formStartRef} data-testid="express-checkout">
                   {iabGate ? (
@@ -1496,14 +1508,7 @@ export default function BuyPage() {
               {step === 'details' && !iabGate && <ProgressBar step="details" />}
 
               {step === 'details' && pendingRecovery && <p className="meta-promo-inline" role="status" data-testid="pending-payment-recovery">We could not confirm your previous payment attempt. Your original order and details are restored. {pendingRecovery === 'express' ? 'Retry the same wallet with its original delivery details to recover that payment.' : 'Continue with these details and delivery address to recover that payment.'}</p>}
-              {step === 'details' && promo && <div className="meta-promo-inline" data-testid="meta-promo-applied">
-                <strong>{promo.valid ? '10% applied to your entire order' : 'Your personal offer needs checking'}</strong>
-                <p>{promo.code} · {promo.email}</p>
-                <MetaPromoSummary order={order} />
-                {!promo.valid && <p role="alert">{heldExpressOrder ? 'Your reserved payment keeps its original price. To change it, remove the offer and review your order first.' : 'Your offer is unavailable or could not be verified. Remove it to review the full price before continuing.'}</p>}
-                <button type="button" disabled={checkoutBusy} onClick={metaPromo.remove}>Remove offer</button>
-                {metaPromo.error && <p role="alert">{metaPromo.error}</p>}
-              </div>}
+
               {/* Step 1: Details */}
               {step === 'details' && !iabGate && !quantityEditorOpen && (
                 <form onSubmit={handleDetailsNext} noValidate data-testid="details-form">

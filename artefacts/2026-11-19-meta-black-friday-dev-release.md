@@ -1,5 +1,11 @@
 # Meta Black Friday DEV release
 
+21 November follow-up: add a personal-code copy button with truthful copied feedback/manual-selection fallback, and allow direct non-affiliate visits. AWIN/recognised partners and retained affiliate history remain excluded; attribution resolution must still succeed. No signed campaign URL is required for direct entry. This supersedes the earlier Meta-only entry rule in this historical release record.
+
+Further user requests in the same update: shorten codes to BF- plus eight unambiguous characters, and move the applied-offer confirmation above Express Checkout with the saving and net total. Copy is available in the popup and compact confirmation. Migration 20261121000001 changes the default and shortens only unredeemed claims with no prepared attempt; existing prepared/paid codes and snapshots remain unchanged. Rollback fixtures verified actual migration preservation; isolated eight-request concurrency proof passed without stock/provider operations.
+
+Follow-up checks: 346 frontend units/build25 pages/scoped lint; 246 backend tests and changed typechecks; complete60-case popup browser matrix passed before the banner move. Focused final copy/direct/banner cases passed; two parallel mixed-order timeouts passed on isolated rerun at all three widths. No new pricing or redemption logic was introduced. Only the DEV meta-promo function and short-code migration were deployed; production remains unchanged.
+
 User approved delayed popup, strong original imagery, email capture and 10% across the entire 1–5 kit order. Production remains on 909a52b; no production schema, secrets, functions, flags or source promotion belongs to this release.
 
 ## Campaign and experience

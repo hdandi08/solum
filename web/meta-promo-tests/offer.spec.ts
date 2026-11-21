@@ -9,7 +9,7 @@ async function offerSetup(page:Page,{blocked=false,resolveFail=false}={}){
   const body=route.request().postDataJSON();requests.push(body);
   const ends_at='2026-12-01T00:00:00Z';
   if(body.action==='claim') {claimed={code:'PERSONAL',email:body.email.toLowerCase(),discount_percent:10};return route.fulfill({json:{...claimed,ends_at,email_delivery:'preview'}});}
-  const url=new URL(body.landing_url);if(url.searchParams.has('offer_entry')&&url.searchParams.get('utm_source')==='meta'&&url.searchParams.get('utm_medium')==='paid_social')admitted=true;
+  const url=new URL(body.landing_url);if(url.hostname==='127.0.0.1')admitted=true;
   return route.fulfill({json:{visitor_token:'opaque',eligible:admitted&&!blocked&&body.attribution_checked,blocked,ends_at,discount_percent:10,...(claimed?{claimed}:{})}});
  });
  await page.clock.install({time:new Date('2026-11-20T12:00:00Z')});
@@ -26,6 +26,10 @@ test('delays, claims with unchecked consent, applies net prices and persists dis
  await dialog.getByLabel('Email address',{exact:true}).fill('buyer@example.test');await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
  await expect(dialog.getByText('PERSONAL',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Continue shopping'}).click();
  await expect(page.getByTestId('meta-promo-summary').first()).toContainText('10% applied');
+ const confirmation=page.getByTestId('meta-promo-applied');
+ await expect(confirmation).toContainText('Order total £76.50');
+ await expect(confirmation.getByRole('button',{name:'Copy code',exact:true})).toBeVisible();
+ expect(await confirmation.evaluate(el=>Boolean(el.compareDocumentPosition(document.querySelector('[data-testid="express-checkout"]'))&Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
  expect(requests.find(r=>r.action==='claim')).toMatchObject({marketing_consent:false,attribution_checked:true});
  await page.reload();await page.clock.runFor(30000);await expect(dialog).not.toBeVisible();
 });
@@ -46,6 +50,27 @@ async function claimOffer(page:Page,email='buyer@example.test'){
  await dialog.getByLabel('Email address',{exact:true}).fill(email);await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
  await expect(dialog.getByText('PERSONAL',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Continue shopping'}).click();
 }
+test('personal code can be copied with clear confirmation',async({page})=>{
+ await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+ await offerSetup(page);await showOffer(page);
+ const dialog=page.getByRole('dialog',{name:'Your Black Friday invitation.'});
+ await dialog.getByLabel('Email address',{exact:true}).fill('buyer@example.test');
+ await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
+ await dialog.getByRole('button',{name:'Copy code',exact:true}).click();
+ await expect(dialog.getByRole('status',{name:'Copy status'})).toHaveText('Code copied.');
+ expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('PERSONAL');
+});
+test('blocked clipboard selects the personal code without claiming it was copied',async({page})=>{
+ await offerSetup(page);await showOffer(page);
+ const dialog=page.getByRole('dialog',{name:'Your Black Friday invitation.'});
+ await dialog.getByLabel('Email address',{exact:true}).fill('buyer@example.test');
+ await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
+ await page.evaluate(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('blocked');}}});Object.defineProperty(document,'execCommand',{configurable:true,value:()=>false});});
+ await dialog.getByRole('button',{name:'Copy code',exact:true}).click();
+ await expect(dialog.getByRole('status',{name:'Copy status'})).toHaveText('Code selected. Copy it using your device’s copy option.');
+ expect(await page.evaluate(()=>window.getSelection()?.toString())).toBe('PERSONAL');
+ await expect(dialog.getByRole('button',{name:'Copied',exact:true})).toHaveCount(0);
+});
 async function mockedPromoPayments(page:Page,requests:Record<string,unknown>[]){
  await page.route('**/functions/v1/create-first-box-payment-intent',async route=>{
   const body=route.request().postDataJSON();requests.push(body);
@@ -97,8 +122,11 @@ test('issued card quote stays discounted after offer expiry',async({page})=>{
  await page.evaluate(()=>{window.__paymentAmount=Number(sessionStorage.getItem('mockStripeAmount'));});await page.getByRole('checkbox').check();await page.getByTestId('pay-btn').click();await expect(page.getByTestId('success-order')).toContainText('£76.50');
 });
 
-test('direct visitors have no eligible offer control or popup',async({page})=>{
- await offerSetup(page);await page.goto('/buy?kit=ritual');await page.getByTestId('details-form').waitFor();await page.clock.runFor(22000);await expect(page.getByRole('button',{name:'Your 10% invitation'})).not.toBeVisible();await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).not.toBeVisible();
+test('direct visitors can claim the delayed offer without campaign tags',async({page})=>{
+ await offerSetup(page);await page.goto('/buy?kit=ritual');await page.getByTestId('details-form').waitFor();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('solum_meta_black_friday_2026')??'{}').visitor_token)).toBe('opaque');
+ await page.clock.runFor(22000);
+ await expect(page.getByRole('dialog',{name:'Your Black Friday invitation.'})).toBeVisible({timeout:1500});
 });
 test('queued affiliate navigation uses the first visitor identity and cannot be restored by stale Meta response',async({page})=>{
  await offerSetup(page);const visits:any[]=[];let releaseFirst:()=>void=()=>{};

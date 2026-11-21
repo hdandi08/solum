@@ -5,6 +5,7 @@ import {captureAwinAttribution} from '../../lib/awinAttribution.js';
 import {resolveAwcAttribution} from '../../lib/awinCookieBridge.js';
 import {META_PROMO_STORAGE_KEY, metaPromoEnabled, promoIsEligible, shouldAutoShowPromo, META_PROMO_CONSENT} from '../../lib/metaPromo.js';
 import './metaPromo.css';
+import PromoCode from './PromoCode.jsx';
 import {MetaPromoContext as Context,EMPTY_META_PROMO as EMPTY} from './metaPromoContext.js';
 const enabled=metaPromoEnabled();
 function pendingCheckout(){try{assertReservationEditable('buy',null);assertReservationEditable('express',null);return false;}catch{return true;}}
@@ -121,7 +122,7 @@ export default function MetaPromoProvider({children}){
     <div className="meta-promo-photo"><img src="/products/kit/holding-box@600.webp" alt="Opening the SOLUM ritual kit"/><span>SOLUM<br/><small>Your body. Done right.</small></span></div>
     <div className="meta-promo-content">
      <p className="meta-promo-eyebrow" id="meta-promo-title">Your Black Friday invitation.</p>
-     {state.claimed?<><h2>10% applied.</h2><p>Your personal code</p><output className="meta-promo-code">{state.claimed.code}</output><p>Bound to {state.claimed.email}. Ready to use on your entire kit order.</p><p className="meta-promo-fine">DEV preview: your code is shown here. No offer email has been sent.</p><button type="button" className="meta-promo-submit" onClick={close}>Continue shopping</button></>:<>
+     {state.claimed?<><h2>10% applied.</h2><p>Your personal code</p><PromoCode code={state.claimed.code}/><p>Bound to {state.claimed.email}. Ready to use on your entire kit order.</p><p className="meta-promo-fine">DEV preview: your code is shown here. No offer email has been sent.</p><button type="button" className="meta-promo-submit" onClick={close}>Continue shopping</button></>:<>
       <h2><span>10% off</span> your entire order.</h2>
       <p className="meta-promo-intro">A daily ritual. A weekly reset.<br/>Yours for a little less.</p>
       <form onSubmit={claim}>
