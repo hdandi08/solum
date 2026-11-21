@@ -2,9 +2,13 @@ import {describe,it,expect} from 'vitest';
 import {metaPromoEnabled,shouldAutoShowPromo,promoPaymentFields} from './metaPromo.js';
 import {resolveAwcAttribution} from './awinCookieBridge.js';
 const env={VITE_META_PROMO_ENABLED:'true',VITE_SUPABASE_URL:'https://rodvvmfzkyjsqbufkjbc.supabase.co',VITE_STRIPE_PUBLISHABLE_KEY:'pk_test_mock'};
-describe('DEV offer guard',()=>{
- it('requires exact DEV project, test key and explicit activation',()=>{
+describe('offer environment guard',()=>{
+ it('requires exact DEV/test or production/live pairing and explicit activation',()=>{
   expect(metaPromoEnabled(env)).toBe(true);
+  const production={...env,VITE_SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co',VITE_STRIPE_PUBLISHABLE_KEY:'pk_live_fixture'};
+  expect(metaPromoEnabled(production)).toBe(true);
+  expect(metaPromoEnabled({...production,VITE_STRIPE_PUBLISHABLE_KEY:'pk_test_fixture'})).toBe(false);
+  expect(metaPromoEnabled({...production,VITE_META_PROMO_ENABLED:'false'})).toBe(false);
   for(const patch of [{VITE_META_PROMO_ENABLED:'false'},{VITE_SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co'},{VITE_STRIPE_PUBLISHABLE_KEY:'pk_live_no'},{VITE_SUPABASE_URL:'https://other.supabase.co'}])expect(metaPromoEnabled({...env,...patch})).toBe(false);
  });
  it('waits for visible browsing and suppresses dismissed, claimed, blocked or expired offers',()=>{

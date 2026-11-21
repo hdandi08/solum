@@ -143,7 +143,7 @@ export async function createMultiKitPayment(
   attempt: any,
   params: any,
 ) {
-  if (attempt.promo_claim_id && (Deno.env.get('SUPABASE_URL') !== DEV_URL || !Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test_') || Date.now() >= Date.parse('2026-12-01T00:00:00Z'))) {
+  if (attempt.promo_claim_id && (!multiKitEnvironmentAllowed() || Date.now() >= Date.parse('2026-12-01T00:00:00Z'))) {
     throw new ReservationError('promo_unavailable',409);
   }
   let intentParams: any = {

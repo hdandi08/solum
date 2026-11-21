@@ -23,8 +23,11 @@ const env: Record<string, string> = {
 };
 const now = () => Date.parse("2026-11-20T00:00:00Z");
 const secret = env.META_PROMO_ENTRY_SECRET;
-Deno.test("promo requires exact DEV test environment, dependencies and explicit flag", () => {
+Deno.test("promo requires exact DEV/test or production/live environment, dependencies and explicit flag", () => {
   assertEquals(metaPromoEnabled((k) => env[k]), true);
+  const production:Record<string,string>={...env,SUPABASE_URL:'https://gvfptmjluxpngfjendbi.supabase.co',STRIPE_SECRET_KEY:'sk_live_fixture'};
+  assertEquals(metaPromoEnabled(k=>production[k]),true);
+  for(const patch of [{STRIPE_SECRET_KEY:'sk_test_fixture'},{META_PROMO_ENABLED:'false'},{CHECKOUT_RESERVATIONS_ENABLED:'false'},{MULTI_KIT_CHECKOUT_ENABLED:'false'}])assertEquals(metaPromoEnabled(k=>({...production,...patch} as Record<string,string|undefined>)[k]),false);
   for (
     const patch of [
       { SUPABASE_URL: "https://gvfptmjluxpngfjendbi.supabase.co" },
@@ -48,6 +51,8 @@ Deno.test("verified non-affiliate direct, organic and Meta visits admit without 
   const signature = await signMetaPromoEntry(secret);
   for (
     const landing_url of [
+      "https://bysolum.co.uk/",
+      "https://www.bysolum.co.uk/buy?kit=ritual",
       "https://dev.bysolum.co.uk/",
       "https://dev.d3pa095gzazg3c.amplifyapp.com/buy?kit=ritual",
       "https://dev.bysolum.co.uk/?utm_source=google&utm_medium=organic",
@@ -93,8 +98,8 @@ Deno.test("admission rejects unchecked attribution, expiry, unsupported hosts/pr
   );
   for (
     const landing_url of [
-      "https://bysolum.co.uk/",
-      "https://www.bysolum.co.uk/",
+      "http://bysolum.co.uk/",
+      "https://bysolum.co.uk.evil.test/",
       "https://dev.bysolum.co.uk.evil.test/",
       "https://evil.test/?host=dev.bysolum.co.uk",
       "http://dev.bysolum.co.uk/",
@@ -309,7 +314,7 @@ Deno.test("direct visits cannot use duplicate parameters to conceal affiliate or
     );
   }
 });
-Deno.test("an existing eligible visitor cannot bypass the DEV landing URL or attribution checks", async () => {
+Deno.test("an existing eligible visitor cannot bypass supported landing URL or attribution checks", async () => {
   const ledger = {
     visitor_token: "11111111-1111-4111-8111-111111111111",
     eligible: true,
@@ -320,7 +325,7 @@ Deno.test("an existing eligible visitor cannot bypass the DEV landing URL or att
     const body of [
       {
         action: "visit",
-        landing_url: "https://bysolum.co.uk/",
+        landing_url: "https://untrusted.example/",
         attribution_checked: true,
       },
       {

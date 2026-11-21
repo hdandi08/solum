@@ -2,8 +2,7 @@ export const META_PROMO_STORAGE_KEY = 'solum_meta_black_friday_2026';
 export const META_PROMO_CONSENT = 'Send me SOLUM news and offers';
 export function metaPromoEnabled(env = import.meta.env) {
   return env.VITE_META_PROMO_ENABLED === 'true'
-    && env.VITE_SUPABASE_URL === 'https://rodvvmfzkyjsqbufkjbc.supabase.co'
-    && /^pk_test_\S+$/.test(env.VITE_STRIPE_PUBLISHABLE_KEY ?? '');
+    && multiKitEnvironmentAllowed(env);
 }
 export function promoIsEligible(state, now = Date.now()) {
   return state?.eligible === true && !state.blocked && Date.parse(state.ends_at) > now;
@@ -18,3 +17,4 @@ export function promoPaymentFields(promo, email) {
   if (String(email).trim().toLowerCase() !== promo.email) throw Error(`Use ${promo.email} for your personal offer, or remove the offer before paying. Your wallet email must match too.`);
   return {promo_code:promo.code,promo_visitor_token:promo.visitor_token};
 }
+import {multiKitEnvironmentAllowed} from './kitOrder.js';

@@ -98,8 +98,8 @@ Deno.serve(async (req) => {
         409,
       );
     }
-    // DEV is preview only: never call a mail transport or claim an email was sent.
-    return json({ ...data, email_delivery: "preview" });
+    // The personal code is shown on screen; claiming never sends an email.
+    return json({ ...data, email_delivery: Deno.env.get("SUPABASE_URL") === "https://rodvvmfzkyjsqbufkjbc.supabase.co" ? "preview" : "onscreen" });
   } catch (error) {
     if (error instanceof ReservationError) {
       return json(

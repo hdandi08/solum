@@ -123,7 +123,7 @@ export default function MetaPromoProvider({children}){
     <div className="meta-promo-content">
      <p className="meta-promo-eyebrow" id="meta-promo-title">Your Black Friday invitation.</p>
      <PromoAvailability />
-     {state.claimed?<><h2>10% applied.</h2><p>Your personal code</p><PromoCode code={state.claimed.code}/><p>Bound to {state.claimed.email}. Ready to use on your entire kit order.</p><p className="meta-promo-fine">DEV preview: your code is shown here. No offer email has been sent.</p><button type="button" className="meta-promo-submit" onClick={close}>Continue shopping</button></>:<>
+     {state.claimed?<><h2>10% applied.</h2><p>Your personal code</p><PromoCode code={state.claimed.code}/><p>Bound to {state.claimed.email}. Ready to use on your entire kit order.</p><p className="meta-promo-fine">Your offer is applied automatically at checkout. Copy your code above to keep it handy.</p><button type="button" className="meta-promo-submit" onClick={close}>Continue shopping</button></>:<>
       <h2><span>10% off</span> your entire order.</h2>
       <p className="meta-promo-intro">A daily ritual. A weekly reset.<br/>Yours for a little less.</p>
       <form onSubmit={claim}>

@@ -77,6 +77,10 @@ begin
  result:=public.finalise_multi_kit_order((edited->>'id')::uuid,payment,customer,5850,address,'first_batch');oid:=(result->>'id')::uuid;
  if result->'promo'->>'subtotal_pence'<>'6500' or result->'promo'->>'discount_pence'<>'650' or not exists(select 1 from public.orders where id=oid and amount_pence=5850 and subtotal_pence=6500 and discount_pence=650 and promo_claim_id=claim and kit_quantity=1 and checkout_version='multi_kit_v1') then raise exception 'TEST promo financial order snapshot';end if;
  if not exists(select 1 from public.meta_promo_claims where id=claim and redeemed_order_id=oid and redeemed_at is not null) then raise exception 'TEST redemption not atomic';end if;
+ rejected:=false;begin
+  insert into public.orders(customer_id,kit_id,order_type,amount_pence,status) values(customer,null,'first_box',6500,'paid');
+ exception when check_violation then rejected:=true;end;
+ if not rejected then raise exception 'TEST legacy single-kit order accepted a missing kit identity';end if;
  update public.meta_promo_campaigns set enabled=true where id='black-friday-2026';
  update public.meta_promo_visitors set affiliate_blocked=false where token=v; -- fixture isolates redemption from earlier exclusion
  result:=public.record_meta_promo_visit(v,true,false,true);

@@ -2,6 +2,7 @@ import {
   canonicalKitItems,
   type KitSelection,
   multiKitCheckoutEnabled,
+  multiKitEnvironmentAllowed,
 } from "./multiKitOrder.ts";
 import { ReservationError } from "./checkoutReservation.ts";
 export const META_PROMO_CAMPAIGN = "black-friday-2026";
@@ -10,8 +11,7 @@ export const META_PROMO_CONSENT_TEXT = "Send me SOLUM news and offers";
 export const META_PROMO_CONSENT_VERSION = "black-friday-2026-v1";
 const getEnv = (key: string) => Deno.env.get(key);
 export function metaPromoEnvironmentAllowed(env = getEnv) {
-  return env("SUPABASE_URL") === "https://rodvvmfzkyjsqbufkjbc.supabase.co" &&
-    !!env("STRIPE_SECRET_KEY")?.startsWith("sk_test_");
+  return multiKitEnvironmentAllowed(env);
 }
 export function metaPromoEnabled(env = getEnv): boolean {
   return metaPromoEnvironmentAllowed(env) && multiKitCheckoutEnabled(env) &&
@@ -78,9 +78,11 @@ export async function metaPromoAdmission(
   ) return { eligible: false, blocked: false };
   try {
     const url = new URL(body.landing_url);
-    // Direct, organic and ad visits share the offer on the DEV storefront.
+    // Direct, organic and ad visits share the offer on supported storefronts.
     // A checked affiliate bridge and the sticky server ledger still take priority.
     const allowedOrigins = [
+      "https://bysolum.co.uk",
+      "https://www.bysolum.co.uk",
       "https://dev.d3pa095gzazg3c.amplifyapp.com",
       "https://dev.bysolum.co.uk",
       "http://localhost:4190",
@@ -138,7 +140,7 @@ export async function recordPromoVisit(db: any, body: any, env = getEnv) {
     throw new ReservationError("promo_unavailable", 409);
   }
   // The ledger preserves prior admission across navigation. Every visit must
-  // still have a valid DEV URL and a successful current attribution check.
+  // still have a valid storefront URL and a successful current attribution check.
   // Claims omit landing_url and use the previously admitted private ledger.
   if (body.action !== "claim" && !admission.eligible) {
     return { ...data, eligible: false };

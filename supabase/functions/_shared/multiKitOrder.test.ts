@@ -277,11 +277,18 @@ Deno.test('promo retrieve failure binds first and records cancellation before st
   assertEquals(calls.slice(0,2),['freeze_meta_promo_payment_params','bind_meta_promo_payment']);assertEquals(calls.includes('reserve_multi_kit_stock'),false);assertEquals(calls.includes('release_meta_promo_payment'),canceled);
  }
 });
-Deno.test('promo payment creation refuses production even when ordinary multi-kit live checkout is enabled',async()=>{
+Deno.test('production promo payment uses frozen net snapshot and live Stripe resources',async()=>{
  Deno.env.set('SUPABASE_URL','https://gvfptmjluxpngfjendbi.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_live_fixture');
  try {
   const h=paymentHarness('held','requires_payment_method',true);
-  await assertRejects(()=>createMultiKitPayment(h.db,h.stripe,{...attempt,promo_claim_id:'claim_fixture'},{}));assertEquals(h.calls.length,0);
+  const rpc=h.db.rpc;
+  h.db.rpc=(name:string,args:any)=>name==='freeze_meta_promo_payment_params'?Promise.resolve({data:args.p_params,error:null}):rpc(name,args);
+  const paidResource={id:'pi_test',client_secret:'pi_test_secret_hidden',status:'requires_payment_method',customer:'cus_test',amount:21150,currency:'gbp',livemode:true};
+  h.stripe.paymentIntents.create=(params:any)=>{assertEquals(params.amount,21150);return Promise.resolve(paidResource);};
+  h.stripe.paymentIntents.retrieve=()=>Promise.resolve(paidResource);
+  const result=await createMultiKitPayment(h.db,h.stripe,{...attempt,amount_pence:21150,promo_claim_id:'claim_fixture',promo_email:'fixture@example.test'},{metadata:{email:'fixture@example.test'}});
+  assertEquals(result.amount,21150);assertEquals(result.livemode,true);
+  assertEquals(h.calls.some(c=>c.name==='bind_meta_promo_payment'),true);
  }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
 });
 Deno.test('promo retries freeze original Stripe parameters before any create even after an unknown outcome',async()=>{

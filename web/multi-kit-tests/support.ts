@@ -1,20 +1,22 @@
-import { Page } from '@playwright/test';
+import { Page,test,expect } from '@playwright/test';
 export async function setup(page: Page, counts = { ritual: 5, ground: 5 }) {
+  const production=test.info().config.metadata.production===true;
   const requests: Record<string, unknown>[] = [];
   await page.route('**/*', async route => {
     const url = new URL(route.request().url());
     if (url.hostname === '127.0.0.1') {
       if (url.pathname === '/src/lib/stripe.js') return route.fulfill({ contentType: 'application/javascript', body: 'export const stripePromise=Promise.resolve(null);' });
-      if (url.pathname.includes('@stripe_stripe-js.js')) return route.fulfill({contentType:'application/javascript',body:`export const loadStripe=async()=>({retrievePaymentIntent:async()=>({paymentIntent:{id:'pi_mock123',status:'succeeded',currency:'gbp',amount:Number(sessionStorage.getItem('mockStripeAmount')),livemode:false}})});`});
+      if (url.pathname.includes('@stripe_stripe-js.js')) return route.fulfill({contentType:'application/javascript',body:`export const loadStripe=async()=>({retrievePaymentIntent:async()=>({paymentIntent:{id:'pi_mock123',status:'succeeded',currency:'gbp',amount:Number(sessionStorage.getItem('mockStripeAmount')),livemode:${production}}})});`});
       if (url.pathname.includes('@stripe_react-stripe-js.js')) return route.fulfill({ contentType: 'application/javascript', body: `import React from '/node_modules/.vite/deps/react.js';
 export const Elements=({children})=>children;
 export const PaymentElement=()=>null;
 export const useElements=()=>({submit:async()=>({})});
-export const useStripe=()=>({confirmPayment:async()=>{if(window.__declinePayment) return {error:{message:'Try another card.'}};if(window.__confirmBlocked) await new Promise(resolve=>window.__finishConfirm=resolve); return {paymentIntent:{id:'pi_mock123',status:'succeeded',amount:window.__paymentAmount,currency:'gbp',livemode:false}};}});
+export const useStripe=()=>({confirmPayment:async()=>{if(window.__declinePayment) return {error:{message:'Try another card.'}};if(window.__confirmBlocked) await new Promise(resolve=>window.__finishConfirm=resolve); return {paymentIntent:{id:'pi_mock123',status:'succeeded',amount:window.__paymentAmount,currency:'gbp',livemode:${production}}};}});
 export const ExpressCheckoutElement=(props)=>{React.useEffect(()=>props.onReady({availablePaymentMethods:{applePay:true}}),[]);return React.createElement('button',{type:'button','data-testid':'mock-wallet',onClick:()=>{props.onClick({expressPaymentType:'apple_pay',resolve:()=>{}}); props.onConfirm({expressPaymentType:'apple_pay',paymentFailed:()=>{},billingDetails:{email:'buyer@example.test',name:'Test Buyer'},shippingAddress:{name:'Test Buyer',address:{line1:'10 Test Street',city:'London',postal_code:'SW1A 1AA'}}});}},'Mock wallet');};` });
       return route.continue();
     }
     if (url.hostname === 'cloudflare-dns.com') return route.fulfill({ json: { Status: 0, Answer: [{ type: 15, data: 'mail.example.test' }] } });
+    if(production&&url.pathname.startsWith('/functions/v1/'))expect(url.hostname).toBe('gvfptmjluxpngfjendbi.supabase.co');
     const endpoint = url.pathname.split('/').pop();
     if (endpoint === 'get-inventory-status') return route.fulfill({ json: { kits: Object.fromEntries(Object.entries(counts).map(([id,count])=>[id,{available:count>0,count}])) } });
     if (endpoint === 'create-first-box-payment-intent') {

@@ -6,6 +6,7 @@ async function offerSetup(page:Page,{blocked=false,resolveFail=false}={}){
  let admitted=false;let claimed:any;
  await page.route('**/awin/resolve',route=>resolveFail?route.fulfill({status:503,json:{}}):route.fulfill({json:{token:blocked?'affiliate-token':null}}));
  await page.route('**/functions/v1/meta-promo',async route=>{
+  if(test.info().config.metadata.production===true)expect(new URL(route.request().url()).hostname).toBe('gvfptmjluxpngfjendbi.supabase.co');
   const body=route.request().postDataJSON();requests.push(body);
   const ends_at='2026-12-01T00:00:00Z';
   if(body.action==='claim') {claimed={code:'PERSONAL',email:body.email.toLowerCase(),discount_percent:10};return route.fulfill({json:{...claimed,ends_at,email_delivery:'preview'}});}
@@ -92,6 +93,7 @@ test('blocked clipboard selects the personal code without claiming it was copied
 });
 async function mockedPromoPayments(page:Page,requests:Record<string,unknown>[]){
  await page.route('**/functions/v1/create-first-box-payment-intent',async route=>{
+  if(test.info().config.metadata.production===true)expect(new URL(route.request().url()).hostname).toBe('gvfptmjluxpngfjendbi.supabase.co');
   const body=route.request().postDataJSON();requests.push(body);
   const items=body.items??[{kit_id:body.kit_id,quantity:1}];
   const subtotal_pence=items.reduce((sum,item)=>sum+item.quantity*(item.kit_id==='ritual'?8500:6500),0);

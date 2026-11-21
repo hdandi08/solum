@@ -270,3 +270,17 @@ Deno.test('paid promo finalizes after flags disabled using claimed email despite
  const mismatch=fixture({verifiedPi:{...paid,metadata:{...paid.metadata,email:'wrong@example.test'}},storedAttempt:promoAttempt});
  assertEquals((await deliver('payment_intent.succeeded',paid)).status,500);assertEquals(mismatch.calls.some(c=>c==='POST /rest/v1/customers'),false);assertEquals(mismatch.rpc.length,0);
 });
+
+Deno.test('production paid promo settles with creation disabled and preserves discounted financials',async()=>{
+ Deno.env.set('SUPABASE_URL','https://gvfptmjluxpngfjendbi.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_live_fixture');Deno.env.set('META_PROMO_ENABLED','false');
+ try{
+  const promoAttempt={...attempt,items:lines.map(i=>({...i,unit_amount_pence:i.unit_amount_pence*9/10,line_amount_pence:i.line_amount_pence*9/10})),amount_pence:21150,subtotal_pence:23500,discount_pence:2350,promo_claim_id:'claim_fixture',promo_code:'BF-fixture',promo_email:'fixture@example.test'};
+  const paid={...pi,livemode:true,amount:21150,amount_received:21150,receipt_email:'different-wallet@example.test'};
+  const f=fixture({verifiedPi:paid,storedAttempt:promoAttempt});
+  assertEquals((await deliver('payment_intent.succeeded',paid)).status,200);assertEquals(f.rpc.length,1);assertEquals(f.emails[0].to,'fixture@example.test');
+  for(const email of f.emails){assertEquals(email.html.includes('£235.00'),true);assertEquals(email.html.includes('£23.50'),true);assertEquals(email.html.includes('£211.50'),true);}
+  assertEquals((await deliver('payment_intent.succeeded',paid)).status,200);assertEquals(f.rpc.length,1);
+  const wrong=fixture({verifiedPi:{...paid,livemode:false},storedAttempt:promoAttempt});
+  assertEquals((await deliver('payment_intent.succeeded',{...paid,livemode:false})).status,500);assertEquals(wrong.rpc.length,0);
+ }finally{Deno.env.set('SUPABASE_URL','https://rodvvmfzkyjsqbufkjbc.supabase.co');Deno.env.set('STRIPE_SECRET_KEY','sk_test_fixture');}
+});
