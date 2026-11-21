@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createLandingAwcCapture,
   resolveAwcToken,
+  resolveAwcAttribution,
   storeAwcCookie,
   trackingOrigin,
 } from './awinCookieBridge.js';
@@ -76,6 +77,17 @@ describe('landing AWC capture', () => {
 });
 
 describe('resolveAwcToken', () => {
+  it('lets offer checks wait for a cold service without treating failure as no affiliate', async () => {
+    vi.useFakeTimers();globalThis.location={hostname:'localhost'};
+    const fetchImpl=(_url,{signal})=>new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>resolve({ok:true,json:async()=>({token:null})}),800);
+      signal.addEventListener('abort',()=>{clearTimeout(timer);reject(Error('aborted'));},{once:true});
+    });
+    const result=resolveAwcAttribution(fetchImpl,{timeoutMs:2500});
+    await vi.advanceTimersByTimeAsync(800);
+    await expect(result).resolves.toEqual({checked:true});
+    expect(vi.getTimerCount()).toBe(0);
+  });
   it('requests an opaque fallback token with credentials', async () => {
     globalThis.location = { hostname: 'localhost' };
     const calls = [];

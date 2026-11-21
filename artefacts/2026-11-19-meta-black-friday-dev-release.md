@@ -6,6 +6,8 @@ Further user requests in the same update: shorten codes to BF- plus eight unambi
 
 Follow-up checks: 346 frontend units/build25 pages/scoped lint; 246 backend tests and changed typechecks; complete60-case popup browser matrix passed before the banner move. Focused final copy/direct/banner cases passed; two parallel mixed-order timeouts passed on isolated rerun at all three widths. No new pricing or redemption logic was introduced. Only the DEV meta-promo function and short-code migration were deployed; production remains unchanged.
 
+Unmocked follow-up found the affiliate service can exceed the inherited500ms check deadline when cold. Promo checks now allow2500ms, retaining the existing500ms default for ordinary attribution lookups. Timeout/network/error still yields unchecked and no offer; this does not bypass exclusion. A regression reproduced the failure with an800ms response before the fix. Final347 units/build/lint and12 focused browser cases pass after the fix.
+
 User approved delayed popup, strong original imagery, email capture and 10% across the entire 1–5 kit order. Production remains on 909a52b; no production schema, secrets, functions, flags or source promotion belongs to this release.
 
 ## Campaign and experience

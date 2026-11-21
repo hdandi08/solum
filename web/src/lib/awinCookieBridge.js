@@ -37,9 +37,9 @@ export function createLandingAwcCapture(store = storeAwcCookie) {
 
 export const captureLandingAwc = createLandingAwcCapture();
 
-export async function resolveAwcAttribution(fetchImpl = fetch) {
+export async function resolveAwcAttribution(fetchImpl = fetch, {timeoutMs = RESOLVE_TIMEOUT_MS} = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), RESOLVE_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetchImpl(`${trackingOrigin(location.hostname)}/awin/resolve`, {
       method: 'POST',

@@ -31,7 +31,7 @@ export default function MetaPromoProvider({children}){
  const commit=useCallback(next=>{stateRef.current=next;setState(next);persist(next);},[]);
  const setCheckoutGuard=useCallback(value=>{guard.current=value;setSuppressed(value.suppressed);return()=>{if(guard.current===value){guard.current=null;setSuppressed(false);}};},[]);
  async function request(action,extra={},landingUrl=window.location.href,attribution=captureAwinAttribution()){
-  const resolved=await resolveAwcAttribution();
+  const resolved=await resolveAwcAttribution(fetch,{timeoutMs:2500});
   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/meta-promo`,{
    method:'POST',headers:{'Content-Type':'application/json',apikey:import.meta.env.VITE_SUPABASE_ANON_KEY,Authorization:`Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`},
    body:JSON.stringify({action,visitor_token:stateRef.current.visitor_token,landing_url:landingUrl,attribution,attribution_checked:resolved.checked,...(resolved.token?{awin_attribution_token:resolved.token}:{}),...extra}),

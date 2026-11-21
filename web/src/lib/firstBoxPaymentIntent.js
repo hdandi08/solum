@@ -17,7 +17,7 @@ export async function buildFirstBoxPaymentIntentBody({
 }, tokenResolver) {
   const promoFields = promoPaymentFields(promo, form.email);
   const campaign = captureCampaignAttribution();
-  const resolution = promo ? (tokenResolver ? {checked:true,token:await tokenResolver()} : await resolveAwcAttribution()) : null;
+  const resolution = promo ? (tokenResolver ? {checked:true,token:await tokenResolver()} : await resolveAwcAttribution(fetch,{timeoutMs:2500})) : null;
   if (promo && !resolution.checked) throw Error('We could not check your offer attribution. Please try again before paying.');
   const awinMetadata = await resolveAwinPaymentIntentMetadata(attribution, promo ? async()=>resolution.token : tokenResolver);
   const selection = items ? normalizeKitItems(items) : promo ? [{kit_id:kitId,quantity:1}] : null;
