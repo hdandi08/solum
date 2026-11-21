@@ -19,12 +19,13 @@ async function showOffer(page:Page){await page.goto(entry);await page.getByTestI
 test('delays, claims with unchecked consent, applies net prices and persists dismissal',async({page})=>{
  const requests=await offerSetup(page);await showOffer(page);
  const dialog=page.getByRole('dialog',{name:'Your Black Friday invitation.'});await expect(dialog).toBeVisible();
+ await expect(dialog).toContainText('Limited Black Friday offer. Ends 30 November, 11:59pm UK, while kits last.');
  await expect(dialog.getByRole('checkbox')).not.toBeChecked();
  await expect(dialog.locator('img')).toHaveAttribute('src','/products/kit/holding-box@600.webp');
  await dialog.screenshot({path:`/tmp/solum-meta-promo-${page.viewportSize()!.width}.png`});
  const box=await dialog.boundingBox();expect(box!.width).toBeLessThanOrEqual((page.viewportSize()!.width));
  await dialog.getByLabel('Email address',{exact:true}).fill('buyer@example.test');await dialog.getByRole('button',{name:'Unlock my 10%'}).click();
- await expect(dialog.getByText('PERSONAL',{exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Continue shopping'}).click();
+ await expect(dialog.getByText('PERSONAL',{exact:true})).toBeVisible();await expect(dialog).toContainText('Limited Black Friday offer.');await dialog.getByRole('button',{name:'Continue shopping'}).click();
  await expect(page.getByTestId('meta-promo-summary').first()).toContainText('10% applied');
  const confirmation=page.getByTestId('meta-promo-applied');
  await expect(confirmation).toContainText('Order total £76.50');

@@ -122,6 +122,7 @@ export default function MetaPromoProvider({children}){
     <div className="meta-promo-photo"><img src="/products/kit/holding-box@600.webp" alt="Opening the SOLUM ritual kit"/><span>SOLUM<br/><small>Your body. Done right.</small></span></div>
     <div className="meta-promo-content">
      <p className="meta-promo-eyebrow" id="meta-promo-title">Your Black Friday invitation.</p>
+     <PromoAvailability />
      {state.claimed?<><h2>10% applied.</h2><p>Your personal code</p><PromoCode code={state.claimed.code}/><p>Bound to {state.claimed.email}. Ready to use on your entire kit order.</p><p className="meta-promo-fine">DEV preview: your code is shown here. No offer email has been sent.</p><button type="button" className="meta-promo-submit" onClick={close}>Continue shopping</button></>:<>
       <h2><span>10% off</span> your entire order.</h2>
       <p className="meta-promo-intro">A daily ritual. A weekly reset.<br/>Yours for a little less.</p>
@@ -130,7 +131,6 @@ export default function MetaPromoProvider({children}){
        <input ref={emailInput} id="meta-promo-email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/>
        <label className="meta-promo-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={busy}/><span>{META_PROMO_CONSENT} <small>(optional)</small></span></label>
        {error&&<p role="alert" className="meta-promo-error">{error}</p>}
-       <PromoAvailability />
        <button className="meta-promo-submit" disabled={busy}>{busy?'Checking your invitation…':'Unlock my 10%'}</button>
       </form>
       <p className="meta-promo-fine">One personal offer per email. Free UK delivery included. <a href="/privacy">Privacy</a></p>
